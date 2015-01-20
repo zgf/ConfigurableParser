@@ -1,0 +1,236 @@
+		
+		/*
+		token和IgnoreToken的定义
+
+		*/
+		class GenTokenDefine
+		{
+			enum TokenOptional
+			{
+				False,
+				True,
+			};
+			wstring			name;
+			wstring			regex;
+			TokenOptional	ignore;
+		};
+
+		/*类型对象定义*/
+		class GenTypeObject
+		{
+
+		};
+
+		class GenArrayTypeObject :  GenTypeObject
+		{
+			GenTypeObject			element;
+		};
+		//对string类型的使用
+		class GenStringTypeObject :  GenTypeObject
+		{
+
+		};
+		//对自定义类型的使用
+		class GenNormalTypeObject :  GenTypeObject
+		{
+			wstring									name;
+		};
+		//对嵌套定义类型的使用 例如 类型A下定义了类型B     A.B cc;
+		class GenSubTypeObject :  GenTypeObject
+		{
+			GenTypeObject						parent;
+			wstring									name;
+		};
+		
+		/*
+		类型的声明的定义
+		*/
+		class GenTypeDefine
+		{
+
+		};
+		class GenClassTypeDefine :  GenTypeDefine
+		{
+			GenTypeDefine[]				subTypes;
+			GenClassMemberTypeDefine[]	members;
+			GenTypeObject				parent;
+			wstring						name;
+		};
+		class GenEnumTypeDefine :  GenTypeDefine
+		{
+			GenEnumMemberTypeDefine[]			members;
+			wstring								name;
+		};
+		class GenClassMemberTypeDefine :  GenTypeDefine
+		{
+			GenTypeObject						   type;
+			wstring									name;
+		};
+		class GenEnumMemberTypeDefine :  GenTypeDefine
+		{
+			wstring									name;
+		};
+		class GenGrammarTypeDefine 
+		{
+
+		};
+		class GenGrammarTextTypeDefine :  GenGrammarTypeDefine
+		{
+			wstring												text;
+		};
+		class GenGrammarNormalTypeDefine :  GenGrammarTypeDefine
+		{
+			wstring												name;
+		};
+		class GenGrammarSequenceTypeDefine :  GenGrammarTypeDefine
+		{
+			GenGrammarTypeDefine				first;
+			GenGrammarTypeDefine				second;
+		};
+		//循环
+		class GenGrammarLoopTypeDefine :  GenGrammarTypeDefine
+		{
+			GenGrammarTypeDefine				grammar;
+		};
+		//可选
+		class GenGrammarOptionalTypeDefine :  GenGrammarTypeDefine
+		{
+			GenGrammarTypeDefine				grammar;
+		};
+		//赋值
+		class GenGrammarAssignTypeDefine :  GenGrammarTypeDefine
+		{
+			wstring									name;
+			GenGrammarTypeDefine				grammar;
+		};
+		
+		//附加的key-value对
+		class GenGrammarSetterTypeDefine :  GenGrammarTypeDefine
+		{
+			GrammarDef grammar;
+			wstring												name;
+			wstring												value;
+		};
+		//附加赋值 with{}
+		class GenGrammarAdditionTypeDefine :  GenGrammarTypeDefine
+		{
+			GenGrammarTypeDefine				grammar;
+			GenGrammarSetterTypeDefine[]		setters;
+		};
+		//Using操作. 隐式类型转换
+		class GenGrammarUsingTypeDefine :  GenGrammarTypeDefine
+		{
+			GenGrammarTypeDefine				grammar;
+		};
+		//创建节点 区别返回类型
+		class GenGrammarCreateTypeDefine :  GenGrammarTypeDefine
+		{
+			GenTypeObject						type;
+			GenGrammarTypeDefine				grammar;
+		};
+		
+		class GenGrammarAlternationTypeDefine : GenGrammarTypeDefine
+		{
+			GenGrammarTypeDefine left;
+			GenGrammarTypeDefine right;
+		}
+		class GenRuleDefine
+		{
+			GenTypeObject						type;
+			wstring									name;
+			GenGrammarTypeDefine[]				grammars;
+		};
+		class GenTableDefine
+		{
+			GenTypeDefine[]   types;
+			GenTokenDefine[]  tokens;
+			GenRuleDefine[]   rules;
+		};
+		
+token CLASS = "class";
+token ENUM = "enum";
+token TOKEN = "token";
+token DISCARDTOKEN = "ignoretoken";
+token RULE = "rule";
+token AS = "as";
+token WITH = "with";
+token OPEN = "{";
+token CLOSE = "}";
+token SEMICOLON = ";";
+token COLON = ":";
+token COMMA = ",";
+token DOT = ".";
+token ASSIGN = "=";
+token USING = "!";
+token OR = "|";
+token OPTOPEN = "/[";
+token OPTCLOSE = "/]";
+token PREOPEN = "/(";
+token PRECLOSE = "/)";
+token NAME = "[a-zA-Z_]/w*";
+token STRING = "\"(\\\"|[^"])*\""
+ignoretoken SPACE = "/s+";
+ignoretoken LINENOTE = "//[^\n]*\n";
+ignoretoken BLOCKNOTE = "/*.*?*/";
+
+rule GenTypeObject Type
+        = NAME : name as GenNormalTypeObject
+        = "token" as GenTokenTypeObject
+        = Type : parent "." NAME : name as GenSubTypeObject 
+        = Type : element "[" "]" as GenArrayTypeObject
+        ;
+rule GenEnumMemberTypeDefine EnumMember
+        = NAME : name "," as GenEnumMemberTypeDefine 
+        ;
+rule GenEnumTypeDefine Enum
+        = "enum" NAME : name  "{" { EnumMember : members } "}" as GenEnumTypeDefine
+        ;
+rule GenClassMemberTypeObject ClassMember
+        = Type : type NAME : name ";" as GenClassMemberTypeObject
+        ;
+rule GenTypeDefine TypeDecl
+        = !Enum | !Class
+        ;
+
+rule GenClassTypeDefine Class
+        = "class" NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" as GenClassTypeDefine
+        ;
+		
+rule GenGrammarTypeDefine SequenceGrammar
+        = !PrimitiveGrammar
+        = SequenceGrammar : first PrimitiveGrammar : second as GenGrammarSequenceTypeDefine
+        ;
+rule GenGrammarTypeDefine AlternativeGrammar
+        = !SequenceGrammar
+        = AlternativeGrammar : left "|" SequenceGrammar : right as GenGrammarAlternationTypeDefine
+        ;
+		
+rule GenGrammarTypeDefine SetterGrammar
+        = NAME : name "=" STRING : value  as GenGrammarSetterTypeDefine
+rule GenGrammarTypeDefine Grammar
+        = !AlternativeGrammar
+        = Grammar : grammar "as" Type : type as GenGrammarCreateTypeDefine
+        = Grammar : grammar "with" "{" NAME : name "=" STRING : value "}" as GenGrammarSetterTypeDefine
+        ;
+
+
+rule GenGrammarTypeDefine PrimitiveGrammar
+        = NAME : name as GenGrammarNormalTypeDefine
+        = STRING : text as GenGrammarTextTypeDefine
+        = PrimitiveGrammar : grammar ":" NAME : name as GenGrammarAssignTypeDefine
+        = "!" PrimitiveGrammar : grammar as GenGrammarUsingTypeDefine
+        = "[" Grammar : grammar "]" as GenGrammarOptionalTypeDefine
+        = "{" Grammar : grammar "}" as GenGrammarLoopTypeDefine
+        = "(" !Grammar ")"
+        ;
+
+rule GenTokenDefine TokenDecl
+        = "token" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "False" }
+        = "ignoretoken" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "True" }
+        ;
+rule GenRuleDefine RuleDecl
+        = "rule" Type : type NAME : name { "=" Grammar : grammars } ";" as GenRuleDefine
+        ;
+rule GenTableDefine ParserDecl
+        =  { TypeDecl : definitions | TokenDecl : definitions | RuleDecl : definitions } ( TypeDecl : definitions | TokenDecl : definitions | RuleDecl : definitions ) as GenTableDefine
+        ;

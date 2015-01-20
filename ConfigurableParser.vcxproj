@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B923A10F-DFDE-483A-A805-5913A16DA09A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ConfigurableParser</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>F:\boost;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\boost\stage\lib32-msvc-12.0;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>F:\boost;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\boost\stage\lib32-msvc-12.0;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>Include\stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Profile>true</Profile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>Include\stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <Profile>true</Profile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="Doc\lexer设计.txt" />
+    <Text Include="Doc\代码规范.txt" />
+    <Text Include="Doc\工作项.txt" />
+    <Text Include="Doc\总体设计.txt" />
+    <Text Include="Doc\我自己的规范设计.txt" />
+    <Text Include="Doc\符号表的设计.txt" />
+    <Text Include="Doc\规范文件模板1.txt" />
+    <Text Include="Doc\规范文件模板2.txt" />
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Lib\Regex\forward.cpp" />
+    <ClCompile Include="Lib\Regex\ztl_regex_automachine.cpp" />
+    <ClCompile Include="Lib\Regex\ztl_regex_expression.cpp" />
+    <ClCompile Include="Lib\Regex\ztl_regex_interpretor.cpp" />
+    <ClCompile Include="Lib\Regex\ztl_regex_lex.cpp" />
+    <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp" />
+    <ClCompile Include="Source\BootstrapDefineTable.cpp" />
+    <ClCompile Include="Source\GeneralAnalyze.cpp" />
+    <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
+    <ClCompile Include="Source\GenerateNodeDefineFile.cpp" />
+    <ClCompile Include="Source\GeneralTableWriter.cpp" />
+    <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\ParserSymbol.cpp" />
+    <ClCompile Include="Source\stdafx.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Include/stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Include/stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\SymbolManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Lib\Regex\forward.h" />
+    <ClInclude Include="Lib\Regex\ztl_regex_automachine.h" />
+    <ClInclude Include="Lib\Regex\ztl_regex_data.h" />
+    <ClInclude Include="Lib\Regex\ztl_regex_expression.h" />
+    <ClInclude Include="Lib\Regex\ztl_regex_interpretor.h" />
+    <ClInclude Include="Lib\Regex\ztl_regex_lex.h" />
+    <ClInclude Include="Lib\Regex\ztl_regex_parser.h" />
+    <ClInclude Include="Lib\ZTL\ztl_algorithm.h" />
+    <ClInclude Include="Lib\ZTL\ztl_exception.h" />
+    <ClInclude Include="Lib\ZTL\ztl_generator.hpp" />
+    <ClInclude Include="Lib\ZTL\ztl_hash.hpp" />
+    <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
+    <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
+    <ClInclude Include="Source\Include\GeneralTableDefine.h" />
+    <ClInclude Include="Source\Include\GeneralTableWriter.h" />
+    <ClInclude Include="Source\Include\GeneralLexer.hpp" />
+    <ClInclude Include="Source\Include\ParserSymbol.h" />
+    <ClInclude Include="Source\Include\ParserSymbolDefine.h" />
+    <ClInclude Include="Source\Include\stdafx.h" />
+    <ClInclude Include="Source\Include\SymbolManager.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

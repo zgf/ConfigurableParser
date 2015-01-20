@@ -1,0 +1,49 @@
+#pragma once
+符号表用于语义分析.
+符号表对符号进行管理.对于已经查询过的符号, 提供缓存,绑定预定义的语法树节点和Symbol的关系
+绑定类定义的语法树节点和Symbol的关系.
+符号类,结构化符号的信息.作用域,符号的父子关系,定义和类型的关系.提供对这些关系和信息的查询
+
+符号的成员如下:
+enum class SymbolType
+			{
+				Global,
+				EnumType,
+				ClassType,		// descriptor == base type
+				ArrayType,		// descriptor == element type
+				TokenType,      //token type
+				RegexDef,		// name == regex
+				EnumDef,		// descriptor == parent
+				FieldDef,		// descriptor == field type
+				TokenDef,		// descriptor == RegexDef
+				RuleDef,		// descriptor == rule type
+			};
+		private:
+			SymbolManager*										manager;
+			SymbolType											type;
+			wstring												name;
+			ParserSymbol*										parent;
+			ParserSymbol*										descriptor;
+			//unique_ptr<vector<ParserSymbol*>>					subSymbolList;
+			
+			unique_ptr<unordered_map<wstring, ParserSymbol*>>	subSymbolMap;
+
+在一个符号内部定义的符号都属于这个符号的字符号.
+例如class的字段,subType,Enum的item,
+所以收集符号的时候,对于types.遍历时去要安排subSymbol.另外descriptor含义和注释一致.parent就是该符号定义时的外部作用域.根符号是Global
+
+
+ValidateDefinition(definition, &symbolManager, errors);
+PrepareSymbols(definition, manager, errors);
+PrepareSymbolsTypeDefinitionVisitor 收集符号类型和定义
+
+能够定义符号的作用域只有 enumType Global ClassType 
+class的基类和派生类符号只能唯一
+所有对于搜索class使用SearchClassSubSymbol
+
+void CheckNameReDefineError(const wstring& name, ParserSymbol* parentSymbol);
+检查重定义错误.class的派生链上的符号算同不同作用域.不同作用域名称不冲突
+ParserSymbol* CheckNameHasDefine(const wstring name, ParserSymbol* scope);
+检查名字是否已经被定义了.对于scope不是类来说,当前名字找不到,就去parentType找.
+对于scope是类来说,当前scope找不到符号,去descriptor去找base类,都找不到,再找scope的parentType.
+所以 CheckNameHasDefine != !CheckNameReDefineError;

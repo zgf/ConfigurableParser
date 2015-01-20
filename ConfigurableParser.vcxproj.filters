@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{9a2e2cae-0c93-4f52-88ed-5037ca557096}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{a3fbf7a6-148e-4159-824a-27cd0c8645fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTest">
+      <UniqueIdentifier>{bdad7d3a-81e3-4cfc-91ca-82f2c0306650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Doc">
+      <UniqueIdentifier>{4eed1e83-9b73-4bdf-ad1b-d034865c16e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Implement">
+      <UniqueIdentifier>{d84760c3-6ea0-44b3-82a7-506a731fbbe7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\AInclude">
+      <UniqueIdentifier>{8fc15351-fad2-4a15-8cbd-424d64a81f17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\Regex">
+      <UniqueIdentifier>{d8223c18-b01d-4711-bcc8-614eed4ffb78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib\ZTL">
+      <UniqueIdentifier>{a415d544-e0c7-4843-8f23-09c5301e2018}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+    <Text Include="Doc\lexer设计.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="Doc\代码规范.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="Doc\规范文件模板1.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="Doc\规范文件模板2.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="Doc\我自己的规范设计.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="Doc\总体设计.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="Doc\工作项.txt">
+      <Filter>Doc</Filter>
+    </Text>
+    <Text Include="Doc\符号表的设计.txt">
+      <Filter>Doc</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Main.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralTableWriter.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\stdafx.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BootstrapDefineTable.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Regex\forward.cpp">
+      <Filter>Lib\Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Regex\ztl_regex_automachine.cpp">
+      <Filter>Lib\Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Regex\ztl_regex_expression.cpp">
+      <Filter>Lib\Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Regex\ztl_regex_interpretor.cpp">
+      <Filter>Lib\Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Regex\ztl_regex_lex.cpp">
+      <Filter>Lib\Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp">
+      <Filter>Lib\Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GenerateNodeDefineFile.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SymbolManager.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ParserSymbol.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralAnalyze.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Include\GeneralTableDefine.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralTableWriter.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\stdafx.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralLexer.hpp">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\SymbolManager.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\ParserSymbolDefine.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Regex\forward.h">
+      <Filter>Lib\Regex</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Regex\ztl_regex_automachine.h">
+      <Filter>Lib\Regex</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Regex\ztl_regex_data.h">
+      <Filter>Lib\Regex</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Regex\ztl_regex_expression.h">
+      <Filter>Lib\Regex</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Regex\ztl_regex_interpretor.h">
+      <Filter>Lib\Regex</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Regex\ztl_regex_lex.h">
+      <Filter>Lib\Regex</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\Regex\ztl_regex_parser.h">
+      <Filter>Lib\Regex</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ZTL\ztl_exception.h">
+      <Filter>Lib\ZTL</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ZTL\ztl_generator.hpp">
+      <Filter>Lib\ZTL</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ZTL\ztl_hash.hpp">
+      <Filter>Lib\ZTL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\ParserSymbol.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ZTL\ztl_algorithm.h">
+      <Filter>Lib\ZTL</Filter>
+    </ClInclude>
+    <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp">
+      <Filter>Lib\ZTL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

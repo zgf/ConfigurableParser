@@ -1,0 +1,52 @@
+
+
+
+
+
+辅助枚举类
+类名: LexTag
+成员: LexTokenDefine里面对应name的枚举;
+描述: 词法分析的文法定义
+
+	struct LexTokenDefine
+	{
+		wstring name;
+		wstring regex;
+		bool    ignore;
+	};
+
+	struct TokenPosition
+	{
+		int index;
+		int length;
+	};
+	struct TokenInfo
+	{
+		ParserTag		tag;
+		TokenPosition	position;
+		wstring			lex;
+	};
+	struct FileInfo
+	{
+		wstring name;
+		wstring content;
+	};
+
+类名:GeneralLexer
+输入:vector<LexTokenDefine> regexList;
+regex名和regex串的key-value
+
+输出: vector<RegexToken> regexTokenList;
+成员:
+static unordered_map<wstring, ParserTag>								NameToEnumMap;
+		vector<FileInfo>												fileInfoList;
+		unordered_map<wstring, LexTokenDefine>							lexDefineMap;
+		wstring															regex;
+		unordered_map<wstring, vector<TokenInfo>>						reusltList;
+初始化NameToEunmMap;
+描述:
+让输入组成正则,使用命名捕获组,然后去对文本进行解析
+返回RegexToken的列表 
+
+解析结果是一个name-string key-value的数组
+然后调用NameToEnumMap获取枚举值,完成RegexToken

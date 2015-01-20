@@ -1,0 +1,49 @@
+目标:可自举通用编译器生成.
+扩展的EBNF文法源码->指定的编译器源码
+输入对象源码->生成的编译器运行->生成语法树
+构造通用编译器:
+输入:预定义Table信息.其实就是结构化的扩展EBNF文法源码
+用手写语法树完成预定义Table信息.已解决
+根据TableInfo的Tokens部分,构造词法分析器,不使用枚举.用int->string string->int的两个map去标记Tag类型
+对TableInfo用Visitor模式遍历.去除Grammar部分中""包含的内容,改为""对应的终结符号的name.
+根据TableInfo的Tokens和rules,构造int->string和string->int映射.放入词法分析时的map.
+这样就不需要为了能生成枚举类型变量去生成Lxer文件了.直接用int就OK了.
+对于TableInfo的class定义部分,遍历生成Class定义文件,并且include进通用编译器.后面LALR构造语法树节点的时候需要用到.
+根据TableInfo的rule部分,生成LALR.不使用龙书给出的方法.
+根据正则引擎的做法去做(有向图),其实LALR就是带了一个栈,可以同时处于多个状态的NFA自动机.
+先生成每个rule的图.然后连接起来,构造reduce表 shift表 down表
+每个节点标号Xn.
+边的类型有
+using setter assign creat reduce shift elipson等等.
+构造 reduce 和down的时候需要一个栈,记录上一层,好在下一层reduce时推入正确的ahead符号
+对于构造语法树的各种action.另外准备一个栈.当前节点放到current上.之前的节点丢在栈里.
+所有的动作都是对栈顶的几个元素和current元素的交互.
+reduce就是栈推出一个元素,压入current.current等于nullptr.
+LALR核心就是三张表和一个语法树节点的记录栈还有一个当前处于的多个状态记录栈
+LALR构造完后,输入Lexer解析后的源码.自动生成语法树.
+在写一个语义分析,根据语法树,生成手写语法树的字符串,替换掉当前的手写语法树核心.就完成了自举.生成了新编译器.
+也就是说生成新编译器,其实就是写一个语义分析,序列化一下语法树,丢进核心替换掉.
+这样就完成了可自举功能.
+
+剩余问题:
+左右递归的处理与变换
+提公因子问题还未评估
+ENBF对正则语法扩展的支持....
+当前可以完成class定义生成,预定义class完善,Lexer的构造,parser的LALR构造和符号处理的部分.
+
+模块划分:
+GeneralTableDefine.h cpp 预定义的核心序列化结构 结构化输入的EBNF源码扩展 完成
+GeneralTableWriter.h cpp 预定义的核心序列化手写工具 手写结构化输入的EBNF源码扩展 完成
+BootstrapDefineTable.cpp 手写的结构核心,并对核心进行修正 ""替换成name之类的.暴露一个对外函数,这样直接调用Bootstrap获取最终的核心 完成
+SymbolStruct.h cpp 符号表单元结构
+SymbolManager.h cpp 符号表管理器和生成工具.根据核心收集符号表和设定tag.和namespace PaserTag 里面是int的tag和string到int的双向映射表
+GeneralAstNodeDefine.h cpp 根据核心生成LALR需要的语法树节点的定义文件,并且include进来.
+Lexer.h Lexer.cpp 读取结构核心.生成词法分析器. 内容包括 Lexer类
+LALRStruct.h cpp LALR的结构定义.
+LALRMachine.h cpp 根据核心构造LALR自动机.
+GeneralParser.h GeneralParser.cpp 根据LALR进行解析,生成满足核心要求的源文件的语法树
+GeneralSemanticAnalysis.h cpp 对生成的语法树做语义分析,构造 使用预定义手写工具实现的语法树核心的字符串.
+GeneralParserFeile.h cpp 生成替换掉核心的编译器文件.构造出了需要的编译器.over.
+
+
+

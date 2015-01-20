@@ -1,0 +1,379 @@
+create procedure admin_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from admin Where admin.admin_id = @Pname
+end
+create procedure admin_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from admin Where admin.admin_name = @Pname
+end
+create procedure news_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from news Where news.news_id = @Pname
+end
+create procedure news_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from news Where news.news_name = @Pname
+end
+create procedure purchase_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from purchase Where purchase.purchase_id = @Pname
+end
+create procedure purchase_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from purchase Where purchase.purchase_name = @Pname
+end
+create procedure bid_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from bid Where bid.bid_id = @Pname
+end
+create procedure bid_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from bid Where bid.bid_name = @Pname
+end
+create procedure company_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from company Where company.company_id = @Pname
+end
+create procedure company_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from company Where company.company_name = @Pname
+end
+create procedure expert_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from expert Where expert.expert_id = @Pname
+end
+create procedure expert_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from expert Where expert.expert_name = @Pname
+end
+create procedure vendor_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from vendor Where vendor.vendor_id = @Pname
+end
+create procedure vendor_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from vendor Where vendor.vendor_name = @Pname
+end
+create procedure team_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from team Where team.team_id = @Pname
+end
+create procedure team_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from team Where team.team_name = @Pname
+end
+create procedure audit_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from audit Where audit.audit_id = @Pname
+end
+create procedure audit_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from audit Where audit.audit_name = @Pname
+end
+create procedure invitation_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from invitation Where invitation.invitation_id = @Pname
+end
+create procedure invitation_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from invitation Where invitation.invitation_name = @Pname
+end
+create procedure member_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from member Where member.member_id = @Pname
+end
+create procedure member_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from member Where member.member_name = @Pname
+end
+create procedure admin_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from admin Where admin.admin_id = @Pname
+end
+create procedure admin_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from admin Where admin.admin_name = @Pname
+end
+create procedure news_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from news Where news.news_id = @Pname
+end
+create procedure news_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from news Where news.news_name = @Pname
+end
+create procedure purchase_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from purchase Where purchase.purchase_id = @Pname
+end
+create procedure purchase_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from purchase Where purchase.purchase_name = @Pname
+end
+create procedure bid_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from bid Where bid.bid_id = @Pname
+end
+create procedure bid_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from bid Where bid.bid_name = @Pname
+end
+create procedure company_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from company Where company.company_id = @Pname
+end
+create procedure company_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from company Where company.company_name = @Pname
+end
+create procedure expert_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from expert Where expert.expert_id = @Pname
+end
+create procedure expert_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from expert Where expert.expert_name = @Pname
+end
+create procedure vendor_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from vendor Where vendor.vendor_id = @Pname
+end
+create procedure vendor_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from vendor Where vendor.vendor_name = @Pname
+end
+create procedure team_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from team Where team.team_id = @Pname
+end
+create procedure team_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from team Where team.team_name = @Pname
+end
+create procedure audit_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from audit Where audit.audit_id = @Pname
+end
+create procedure audit_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from audit Where audit.audit_name = @Pname
+end
+create procedure invitation_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from invitation Where invitation.invitation_id = @Pname
+end
+create procedure invitation_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from invitation Where invitation.invitation_name = @Pname
+end
+create procedure member_select_all_by_id
+@Pname varchar(30)
+as
+begin
+select * from member Where member.member_id = @Pname
+end
+create procedure member_select_all_by_name
+@Pname varchar(30)
+as
+begin
+select * from member Where member.member_name = @Pname
+end
+create procedure company_insert
+@Pcompany_id  int,
+@Pcompany_name  varchar(20),
+@Pcompany_telephone  varchar(20),
+@Pcompany_mail  varchar(50),
+@Pcompany_address  varchar(300),
+@Pcompany_introduction  varchar(500),
+@Pcompany_password  varchar(20),
+as
+begin
+INSERT INTO company (company_id,company_name,company_telephone,company_mail,company_address,company_introduction,company_password) VALUES (@Pcompany_id,@Pcompany_name,@Pcompany_telephone,@Pcompany_mail,@Pcompany_address,@Pcompany_introduction,@Pcompany_password)
+end
+create procedure bid_insert
+@Pbid_id  int,
+@Ppurchase_id  int,
+@Pvendor_id  int,
+@Pbid_title  varchar(50),
+@Pbid_device_name  varchar(50),
+@Pbid_time  datetime,
+@Pbid_number  int,
+@Pbid_introduction  varchar(1500),
+@Pbid_content  text,
+as
+begin
+INSERT INTO bid (bid_id,purchase_id,vendor_id,bid_title,bid_device_name,bid_time,bid_number,bid_introduction,bid_content) VALUES (@Pbid_id,@Ppurchase_id,@Pvendor_id,@Pbid_title,@Pbid_device_name,@Pbid_time,@Pbid_number,@Pbid_introduction,@Pbid_content)
+end
+create procedure news_insert
+@Pnews_id  int,
+@Pcompany_id  int,
+@Pnews_title  varchar(20),
+@Pnews_content  text,
+@Pnews_time  datetime,
+as
+begin
+INSERT INTO news (news_id,company_id,news_title,news_content,news_time) VALUES (@Pnews_id,@Pcompany_id,@Pnews_title,@Pnews_content,@Pnews_time)
+end
+create procedure admin_insert
+@Padmin_id  int,
+@Padmin_name  varchar(30),
+@Padmin_pwd  varchar(20),
+@Ptime  datetime,
+as
+begin
+INSERT INTO admin (admin_id,admin_name,admin_pwd,time) VALUES (@Padmin_id,@Padmin_name,@Padmin_pwd,@Ptime)
+end
+create procedure purchase_insert
+@Ppurchase_id  int,
+@Pcompany_id  int,
+@Ppurchase_title  varchar(20),
+@Ppurchase_content  text,
+@Ppurchase_time  datetime,
+@Phit_id  int,
+as
+begin
+INSERT INTO purchase (purchase_id,company_id,purchase_title,purchase_content,purchase_time,hit_id) VALUES (@Ppurchase_id,@Pcompany_id,@Ppurchase_title,@Ppurchase_content,@Ppurchase_time,@Phit_id)
+end
+create procedure expert_insert
+@Pexpert_id  int,
+@Pexpert_name  varchar(20),
+@Pexpert_telephone  varchar(20),
+@Pexpert_mail  varchar(50),
+@Pexpert_address  varchar(300),
+@Pexpert_introduce  varchar(500),
+@Pexpert_password  varchar(20),
+as
+begin
+INSERT INTO expert (expert_id,expert_name,expert_telephone,expert_mail,expert_address,expert_introduce,expert_password) VALUES (@Pexpert_id,@Pexpert_name,@Pexpert_telephone,@Pexpert_mail,@Pexpert_address,@Pexpert_introduce,@Pexpert_password)
+end
+create procedure vendor_insert
+@Pvendor_id  int,
+@Pvendor_name  varchar(20),
+@Pvendor_telephone  varchar(20),
+@Pvendor_mail  varchar(50),
+@Pvendor_address  varchar(300),
+@Pvendor_introduction  varchar(500),
+@Pvendor_password  varchar(20),
+as
+begin
+INSERT INTO vendor (vendor_id,vendor_name,vendor_telephone,vendor_mail,vendor_address,vendor_introduction,vendor_password) VALUES (@Pvendor_id,@Pvendor_name,@Pvendor_telephone,@Pvendor_mail,@Pvendor_address,@Pvendor_introduction,@Pvendor_password)
+end
+create procedure audit_insert
+@Pbid_id  int,
+@Pexpert_id  int,
+@Paudit_id  int,
+@Paudit_content  varchar(500),
+as
+begin
+INSERT INTO audit (bid_id,expert_id,audit_id,audit_content) VALUES (@Pbid_id,@Pexpert_id,@Paudit_id,@Paudit_content)
+end
+create procedure team_insert
+@Pteam_id  int,
+@Ppurchase_id  int,
+@Pteam_name  varchar(30),
+@Pteam_introduction  varchar(300),
+as
+begin
+INSERT INTO team (team_id,purchase_id,team_name,team_introduction) VALUES (@Pteam_id,@Ppurchase_id,@Pteam_name,@Pteam_introduction)
+end
+create procedure invitation_insert
+@Ppurchase_id  int,
+@Pexpert_id  int,
+@Pinvitation_id  int,
+@Pinvitation_content  varchar(500),
+as
+begin
+INSERT INTO invitation (purchase_id,expert_id,invitation_id,invitation_content) VALUES (@Ppurchase_id,@Pexpert_id,@Pinvitation_id,@Pinvitation_content)
+end
+create procedure member_insert
+@Pvendor_id  int,
+@Pteam_id  int,
+@Pmember_id  int,
+as
+begin
+INSERT INTO member (vendor_id,team_id,member_id) VALUES (@Pvendor_id,@Pteam_id,@Pmember_id)
+end
