@@ -340,6 +340,7 @@ namespace ztl
 		}
 		wstring LinearStringToRegex(const wstring &regex)
 		{
+
 			return ztl::LinearStringToRegexString(regex);
 		}
 	}
