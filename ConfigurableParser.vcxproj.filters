@@ -103,6 +103,9 @@
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ParserLog.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -163,6 +166,9 @@
       <Filter>Lib\ZTL</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\ParserLog.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

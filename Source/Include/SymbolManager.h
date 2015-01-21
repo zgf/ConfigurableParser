@@ -143,8 +143,8 @@ namespace ztl
 		void CollectAndValidateTypeDefine(SymbolManager* manager);
 		wstring LinearStringToRegex(const wstring&);
 		void ValidateGrammarNode(SymbolManager* manager);
-		void ValidateGeneratePathStructure(SymbolManager * manager);
-		unordered_map<GeneralRuleDefine*, vector<shared_ptr<GeneratePath>>> CollectGeneratePath(SymbolManager* manager);
+		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap);
+		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> CollectGeneratePath(SymbolManager* manager);
 		void ValidateGeneratorCoreSemantic(const shared_ptr<GeneralTableDefine>& table);
 	}
 }

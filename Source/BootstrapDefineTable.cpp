@@ -292,7 +292,8 @@ namespace ztl
 								GrammarSymbol(L"NAME")[L"name"] +
 								Text(L"{") + 
 								*(
-									GrammarSymbol(L"EnumMember")[L"members"]) +
+									GrammarSymbol(L"EnumMember")[L"members"]
+								  ) +
 									Text(L"}"))
 							.Create(Normal(L"GenEnumTypeDefine"))
 						)
@@ -479,9 +480,9 @@ namespace ztl
 							.Name(L"ParserDecl")
 							.ReturnType(Normal(L"GenTableDefine"))
 							| (
-								*GrammarSymbol(L"TypeDecl")[L"types"] +
-								*GrammarSymbol(L"TokenDecl")[L"tokens"] +
-								*GrammarSymbol(L"RuleDecl")[L"rules"] 
+								*(GrammarSymbol(L"TypeDecl")[L"types"]) +
+								*(GrammarSymbol(L"TokenDecl")[L"tokens"]) +
+								*(GrammarSymbol(L"RuleDecl")[L"rules"]) 
 							)
 							.Create(Normal(L"GenTableDefine"))
 						)

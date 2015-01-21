@@ -17,12 +17,10 @@ namespace ztl
 			PushDownAutoMachine(const PushDownAutoMachine&)  = default;
 			PushDownAutoMachine& operator=(PushDownAutoMachine&&)  = default;
 			PushDownAutoMachine& operator=(const PushDownAutoMachine&)   = default;
-		private: 
 		
 		private:
 			GeneralTableDefine* table;
 			SymbolManager* manager;
-			unique_ptr<unordered_map<GeneralRuleDefine*, vector<shared_ptr<GeneratePath>>> > pathMap;
 		};
 		
 

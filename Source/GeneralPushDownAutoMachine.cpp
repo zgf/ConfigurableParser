@@ -4,10 +4,10 @@ namespace ztl
 {
 	namespace general_parser
 	{
-			PushDownAutoMachine::PushDownAutoMachine():manager(nullptr),pathMap(nullptr),table(nullptr)
-			{
-				
-			}
+		PushDownAutoMachine::PushDownAutoMachine():manager(nullptr),table(nullptr)
+		{
+			
+		}
 
 
 	}

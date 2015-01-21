@@ -202,7 +202,6 @@ namespace ztl
 		class ValidateGrammarNodeIVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
 			SymbolManager* manager;
-			bool		   meetLoop = false;
 		public:
 			ValidateGrammarNodeIVisitor(SymbolManager* _manager) :manager(_manager)
 			{
@@ -244,7 +243,6 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarLoopTypeDefine* node)
 			{
-				meetLoop = true;
 				node->grammar->Accept(this);
 			}
 			void								Visit(GeneralGrammarOptionalTypeDefine* node)
@@ -257,18 +255,12 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
-				if(this->meetLoop)
-				{
-					throw ztl_exception(L"'!' symbol can't in loop");
-				}
+				
 				node->grammar->Accept(this);
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
-				if(this->meetLoop)
-				{
-					throw ztl_exception(L"'!' symbol can't in loop");
-				}
+				
 				auto findSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
 				if(!findSymbol->IsClassType())
 				{
@@ -286,6 +278,10 @@ namespace ztl
 			{
 				node->grammar->Accept(this);
 				auto normalTypeNodeDefine = dynamic_cast<GeneralGrammarNormalTypeDefine*>(node->grammar.get());
+				if (!normalTypeNodeDefine)
+				{
+					throw ztl_exception(L"assgin's sub node type only is GeneralGrammarNormalTypeDefine");
+				}
 			}
 		};
 		void ValidateGrammarNode(SymbolManager * manager)
@@ -300,6 +296,334 @@ namespace ztl
 			}
 		}
 
+
+		//生成路径设计:
+		//
+		enum class NodeType
+		{
+			Create,
+			Normal,
+			Text,
+			Assign,
+			Using,
+			//Optional,
+			Setter,
+			//Alteration,
+			LoopStart,
+			LoopEnd,
+			//Sequence,
+		};
+		class GeneratePathNode
+		{
+			
+			//节点对应的文法
+			//assgin只能是classtype和tokentype
+			//setter只能是tokentype和enumtype 对于set value可以是string. tokenType直接就可以获得值了.enumType可以从缓存拿到字段type然后搜索子符号得到enumDefType和name
+			//对于assign.只能是classType或tokenType和rule返回节点.返回节点没法知道,但是返回节点的类型可以拿到.返回节点value类型从规则名就可以知道,所以需要一个wstring的normalGrammar的name
+			//字段类型可以从缓存得到.
+			//tokenType的值是wstring.所以应该用wstring
+			//这里可以获得字段名和{字段值} setter 字段值是wstring value.assign的value是grammar返回的节点.可以从
+			//对于assgin文法.字段类型只能是class和token的type.赋值的value,得不到,是语法树返回节点,从ruleName可以知道,ruleName到ruleDef已经缓存了.
+			//对于setter文法.字段类型只能是enum和token的type.filedSymbol已经被缓存,类型也就被缓存了.value的值是string获得enum值,enum值可以从enumType的subSymbol获得.
+			//对于using文法.直接存ruleName就OK
+			//对于created.parserSymbol存在path结构内.
+			GeneralGrammarTypeDefine*	grammar;
+			NodeType					type;
+			wstring						descriptor;
+
+		public:
+			GeneratePathNode()  = default;
+			~GeneratePathNode()  = default;
+			GeneratePathNode(GeneratePathNode&&)  = default;
+			GeneratePathNode(const GeneratePathNode&)  = default;
+			GeneratePathNode& operator=(GeneratePathNode&&)  = default;
+			GeneratePathNode& operator=(const GeneratePathNode&)   = default;
+			GeneratePathNode(GeneralGrammarTypeDefine* _grammar, NodeType _type, const wstring& _descriptor) :grammar(_grammar), type(_type), descriptor(_descriptor)
+			{
+
+			}
+		public:
+			NodeType GetType() const
+			{
+				return type;
+			}
+
+			wstring GetDescriptor()const
+			{
+				return descriptor;
+			}
+			GeneralGrammarTypeDefine* GetGrammarTypeDefine()const
+			{
+				return grammar;
+			}
+			wstring GetTypeToWString() const
+			{
+				wstring result;
+				switch(type)
+				{
+					case ztl::general_parser::NodeType::Create:
+						result = L"Create";
+						break;
+					case ztl::general_parser::NodeType::Normal:
+						result = L"Normal";
+						break;
+					case ztl::general_parser::NodeType::Text:
+						result = L"Text";
+						break;
+					case ztl::general_parser::NodeType::Assign:
+						result = L"Assign";
+						break;
+					case ztl::general_parser::NodeType::Using:
+						result = L"Using";
+						break;
+					case ztl::general_parser::NodeType::Setter:
+						result = L"Setter";
+						break;
+					case ztl::general_parser::NodeType::LoopStart:
+						result = L"LoopStart";
+						break;
+					case ztl::general_parser::NodeType::LoopEnd:
+						result = L"LoopEnd";
+						break;
+					default:
+						assert(false);
+						break;
+				}
+				return result;
+			}
+
+			bool IsCreate()const
+			{
+				return type == NodeType::Create;
+			}
+			bool IsNormal()const
+			{
+				return type == NodeType::Normal;
+			}
+			bool IsText()const
+			{
+				return type == NodeType::Text;
+			}
+			bool IsAssign()const
+			{
+				return type == NodeType::Assign;
+			}
+			bool IsUsing()const
+			{
+				return type == NodeType::Using;
+			}
+			bool IsLoopStart()const
+			{
+				return type == NodeType::LoopStart;
+			}
+			bool IsSetter()const
+			{
+				return type == NodeType::Setter;
+			}
+			bool IsLoopEnd()const
+			{
+				return type == NodeType::LoopEnd;
+			}
+			/*bool IsLoop()const
+			{
+				return type == NodeType::Loop;
+			}*/
+		/*	bool IsSequence()const
+			{
+				return type == NodeType::Sequence;
+			}
+*/
+		};
+		class GeneratePath
+		{
+			vector<GeneratePathNode> pathNodeList;
+			ParserSymbol* createdTyepSymbol = nullptr;
+		public:
+			GeneratePath()  =default;
+			~GeneratePath()  = default;
+			GeneratePath(GeneratePath&&)  = default;
+			GeneratePath(const GeneratePath&)  = default;
+			GeneratePath& operator=(GeneratePath&&)  = default;
+			GeneratePath& operator=(const GeneratePath&)   = default;
+		public:
+			
+			void AddNextNode(GeneralGrammarTypeDefine* grammar, NodeType type, const wstring& descriptor)
+			{
+				pathNodeList.emplace_back(GeneratePathNode( grammar,type,descriptor ));
+				
+			}
+			void SetCreatedTypeSymbol(ParserSymbol* _createdTypeSymbol)
+			{
+				this->createdTyepSymbol = _createdTypeSymbol;
+			}
+			ParserSymbol* GetCreatTypeSymbol()const
+			{
+				return createdTyepSymbol;
+			}
+			vector<GeneratePathNode>& GetPathNodeList()
+			{
+				return pathNodeList;
+			}
+		};
+		//对rule下的每一条grammar收集路径
+		//
+		class CollectGeneratePathVisitor: public GeneralGrammarTypeDefine::IVisitor
+		{
+			SymbolManager*							manager;//grammar->TypeSymbol
+			vector<unique_ptr<GeneratePath>>		paths;
+			
+		public:
+			CollectGeneratePathVisitor()  = default;
+			~CollectGeneratePathVisitor()  = default;
+			CollectGeneratePathVisitor(CollectGeneratePathVisitor&&)  = default;
+			CollectGeneratePathVisitor(CollectGeneratePathVisitor& target):manager(target.manager)
+			{
+				for (auto& iter:target.paths)
+				{
+					paths.emplace_back(make_unique<GeneratePath>(*iter));
+				}
+				
+			}
+			CollectGeneratePathVisitor& operator=(CollectGeneratePathVisitor&&)  = default;
+			CollectGeneratePathVisitor& operator=(CollectGeneratePathVisitor&target)
+			{
+				manager = target.manager;
+				for(auto& iter : target.paths)
+				{
+					paths.emplace_back(make_unique<GeneratePath>(*iter));
+				}
+			}
+			CollectGeneratePathVisitor(SymbolManager* _manager) :manager(_manager)
+			{
+
+			}
+		public:
+			void AddNode(GeneralGrammarTypeDefine* grammar, NodeType type, const wstring& descriptor)
+			{
+				if (paths.empty())
+				{
+					paths.emplace_back(make_unique<GeneratePath>());
+					paths.back()->AddNextNode(grammar, type, descriptor);
+				}
+				else
+				{
+					for (auto&& pathIter : paths)
+					{
+						pathIter->AddNextNode(grammar,type,descriptor);
+					}
+				}
+				
+			}
+			void SetCreatSymbolNode(ParserSymbol* createdTypeSymbol)
+			{
+				assert(!paths.empty());
+				
+				for(auto&& pathIter : paths)
+				{
+					pathIter->SetCreatedTypeSymbol(createdTypeSymbol);
+				}
+				
+
+			}
+			void JoinPaths(CollectGeneratePathVisitor& target)
+			{
+				for (auto&& iter:target.paths)
+				{
+					paths.emplace_back(std::move(iter));
+				}
+				target.paths.clear();
+			}
+			auto begin()->decltype(paths.begin())
+			{
+				return paths.begin();
+			}
+			auto end() ->decltype(paths.end())
+			{
+				return paths.end();
+			}
+			void								Visit(GeneralGrammarTextTypeDefine* node)
+			{
+				AddNode(node, NodeType::Text,node->text);
+			}
+			void								Visit(GeneralGrammarNormalTypeDefine* node)
+			{
+				AddNode(node, NodeType::Normal,node->name);
+			}
+			void								Visit(GeneralGrammarSequenceTypeDefine* node)
+			{
+				node->first->Accept(this);
+				node->second->Accept(this);
+			}
+			void								Visit(GeneralGrammarLoopTypeDefine* node)
+			{
+				CollectGeneratePathVisitor visitor(*this);
+				visitor.AddNode(node, NodeType::LoopStart, L"");
+				node->grammar->Accept(&visitor);
+				visitor.AddNode(node, NodeType::LoopEnd, L"");
+				JoinPaths(visitor);
+			}
+			void								Visit(GeneralGrammarOptionalTypeDefine* node)
+			{
+				CollectGeneratePathVisitor visitor(*this);
+				node->grammar->Accept(&visitor);
+				JoinPaths(visitor);
+			}
+			void								Visit(GeneralGrammarSetterTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+				AddNode(node, NodeType::Setter, node->value);
+			}
+			void								Visit(GeneralGrammarUsingTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+				assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(node->grammar.get()));
+				auto ruleName = manager->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get())->GetName();
+				AddNode(node, NodeType::Using, ruleName);
+			}
+			void								Visit(GeneralGrammarCreateTypeDefine* node)
+			{
+				auto createdTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
+				AddNode(node, NodeType::Create,createdTypeSymbol->GetName());
+				node->grammar->Accept(this);
+				SetCreatSymbolNode(createdTypeSymbol);
+			}
+			void								Visit(GeneralGrammarAlterationTypeDefine* node)
+			{
+				CollectGeneratePathVisitor visitor(*this);
+				node->left->Accept(&visitor);
+				node->right->Accept(this);
+				JoinPaths(visitor);
+			}
+			void								Visit(GeneralGrammarAssignTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+				assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(node->grammar.get()));
+				auto ruleName = manager->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get())->GetName();
+				AddNode(node, NodeType::Assign, ruleName);
+			}
+		};
+		
+		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>  CollectGeneratePath(SymbolManager* manager)
+		{
+			unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> pathMap;
+			for(auto&& ruleIter : manager->GetTable()->rules)
+			{
+				auto rulePointer = ruleIter.get();
+				pathMap[rulePointer];
+				for(auto&& grammarIter : ruleIter->grammars)
+				{
+					CollectGeneratePathVisitor visitor(manager);
+					grammarIter->Accept(&visitor);
+					for (auto&& visitorIter: visitor)
+					{
+						pathMap[rulePointer].emplace_back(move(visitorIter));
+					}
+					
+				}
+			}
+			return pathMap;
+		}
+
 		//生成路径验证
 		//一个路径上只有一个creat Node
 		//对于非数组的成员,多次赋值给警告.
@@ -312,6 +636,7 @@ namespace ztl
 		//CraetGrammar一条路径上只能有一个
 		//CreatGrammar要求能转换为Rule声明的类型
 		//Using的返回的语法树节点应该可以转换到rule的type节点
+		//路径上只要有Using就不需要Creat了
 		//缓存GrammarNode到classFieldSymbol的映射
 		class ValidateGeneratePathIVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
@@ -320,8 +645,8 @@ namespace ztl
 			ParserSymbol*  createdTypeSymbol = nullptr;
 
 			size_t		   creatNodeCount = 0;
-			shared_ptr<unordered_set<ParserSymbol*>> fieldSet;
-			bool		   meetLoop = false;
+			unique_ptr<unordered_set<ParserSymbol*>> fieldSet;
+			bool		   inLoop = false;
 
 		public:
 			ValidateGeneratePathIVisitor() noexcept = default;
@@ -330,8 +655,17 @@ namespace ztl
 			ValidateGeneratePathIVisitor(const ValidateGeneratePathIVisitor&) noexcept = default;
 			ValidateGeneratePathIVisitor& operator=(ValidateGeneratePathIVisitor&&) noexcept = default;
 			ValidateGeneratePathIVisitor& operator=(const ValidateGeneratePathIVisitor&) noexcept = default;
-			ValidateGeneratePathIVisitor(SymbolManager* _manager, GeneralRuleDefine* _ruleDefine)noexcept :manager(_manager), ruleDefine(_ruleDefine), fieldSet(make_shared<unordered_set<ParserSymbol*>>())
+			ValidateGeneratePathIVisitor(SymbolManager* _manager, GeneralRuleDefine* _ruleDefine)noexcept :manager(_manager), ruleDefine(_ruleDefine), fieldSet(make_unique<unordered_set<ParserSymbol*>>())
 			{
+			}
+		public:
+			void SetLoopFlag()
+			{
+				inLoop = true;
+			}
+			void ClearLoopFlag()
+			{
+				inLoop = false;
 			}
 		private:
 			void CheckEnumTypeFieldCompatibleValue(ParserSymbol* fieldTypeSymbol, GeneralGrammarSetterTypeDefine* grammar)
@@ -402,7 +736,13 @@ namespace ztl
 					return ruleSymbol;
 				}
 			}
-
+			void CheckCreatNodeMoreTimeError()
+			{
+				if(++creatNodeCount > 1)
+				{
+					throw ztl_exception(L"One generator path only could have one creat node or using");
+				}
+			}
 			void CheckSetFiledMoreTime(ParserSymbol* filedDefSymbol)
 			{
 				assert(filedDefSymbol->IsFieldDef());
@@ -431,36 +771,38 @@ namespace ztl
 					throw ztl_exception(error);
 				}
 			}
+			void CheckCreatAndUsingInLoopError()
+			{
+				if(this->inLoop)
+				{
+					throw ztl_exception(L"'!' or 'as' symbol can't in loop");
+				}
+			}
 		public:
 
-			void								Visit(GeneralGrammarTextTypeDefine* node)
+			void								Visit(GeneralGrammarTextTypeDefine*)
 			{
 				return;
 			}
-			void								Visit(GeneralGrammarNormalTypeDefine* node)
+			void								Visit(GeneralGrammarNormalTypeDefine*)
 			{
 				return;
 			}
-			void								Visit(GeneralGrammarSequenceTypeDefine* node)
+			void								Visit(GeneralGrammarSequenceTypeDefine*)
 			{
-				node->first->Accept(this);
-				node->second->Accept(this);
+				assert(false);
 			}
-			void								Visit(GeneralGrammarLoopTypeDefine* node)
+			void								Visit(GeneralGrammarLoopTypeDefine*)
 			{
-				meetLoop = true;
-				ValidateGeneratePathIVisitor visitor(*this);
-				node->grammar->Accept(&visitor);
+				assert(false);
 			}
-			void								Visit(GeneralGrammarOptionalTypeDefine* node)
+			void								Visit(GeneralGrammarOptionalTypeDefine*)
 			{
-				ValidateGeneratePathIVisitor visitor(*this);
-				node->grammar->Accept(&visitor);
+				assert(false);
 			}
 
 			void								Visit(GeneralGrammarSetterTypeDefine* node)
 			{
-				node->grammar->Accept(this);
 				CheckCreatNodeExist();
 				auto fieldSymbol = createdTypeSymbol->SearchClassFieldSymbol(node->name);
 				if(!fieldSymbol)
@@ -472,7 +814,7 @@ namespace ztl
 				assert(fieldTypeSymbol);
 
 
-				if(!meetLoop)
+				if(!inLoop)
 				{
 					CheckSetFiledMoreTime(fieldSymbol);
 				}
@@ -496,7 +838,7 @@ namespace ztl
 				auto fieldTypeSymbol = fieldSymbol->GetDescriptorSymbol();
 
 				assert(fieldTypeSymbol);
-				if(!meetLoop)
+				if(!inLoop)
 				{
 					CheckSetFiledMoreTime(fieldSymbol);
 				}
@@ -507,10 +849,12 @@ namespace ztl
 				}
 				CheckFieldTypeCompatibleValue(fieldTypeSymbol, node);
 				manager->CacheGrammarToFieldDefSymbol(node, fieldSymbol);
-				node->grammar->Accept(this);
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
+				CheckCreatNodeMoreTimeError();
+				CheckCreatAndUsingInLoopError();
+
 				auto returnRuleDefineSymbol = GetRuleSymbolByNormalGrammarParent(node->grammar.get());
 				auto returnRuleTypeSymbol = returnRuleDefineSymbol->GetDescriptorSymbol();
 
@@ -521,15 +865,12 @@ namespace ztl
 				{
 					throw ztl_exception(L"'!' return tree node need could convert to rule create node");
 				}
-				node->grammar->Accept(this);
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
-				//TODO 这里不对
-				if(creatNodeCount++ > 0)
-				{
-					throw ztl_exception(L"One generator path only could have one creat node");
-				}
+
+				CheckCreatNodeMoreTimeError();
+				CheckCreatAndUsingInLoopError();
 
 				createdTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
 				auto&& ruleTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), ruleDefine->type.get());
@@ -538,286 +879,75 @@ namespace ztl
 				{
 					throw ztl_exception(L"Can't convet grammar creat node type to rule node type");
 				}
-				node->grammar->Accept(this);
 			}
-			void								Visit(GeneralGrammarAlterationTypeDefine* node)
+			void								Visit(GeneralGrammarAlterationTypeDefine*)
 			{
-				ValidateGeneratePathIVisitor visitor(*this);
-				node->left->Accept(this);
-				node->right->Accept(&visitor);
+				assert(false);
 			}
 
 		private:
 		};
 
-	
-		void ValidateGeneratePathStructure(SymbolManager * manager)
+
+		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*,vector<unique_ptr<GeneratePath>>>& pathMap)
 		{
-			for(auto&& ruleIter : manager->GetTable()->rules)
+			for(auto&& mapIter : pathMap)
 			{
-				for(auto&& grammarIter : ruleIter->grammars)
+				auto& ruleDef = mapIter.first;
+				auto& paths = mapIter.second;
+				for(auto&& pathIter : paths)
 				{
-					ValidateGeneratePathIVisitor visitor(manager, ruleIter.get());
-					grammarIter->Accept(&visitor);
-				}
-			}
-		}
-		//分析路径设计:
-		//
-		enum class NodeType
-		{
-			Create,
-			Normal,
-			Text,
-			Assign,
-			Using,
-			//Optional,
-			Setter,
-			//Alteration,
-			LoopStart,
-			LoopEnd,
-			//Sequence,
-		};
-		class GeneratePathNode
-		{
-			
-			//节点对应的文法
-			//assgin只能是classtype和tokentype
-			//setter只能是tokentype和enumtype 对于set value可以是string. tokenType直接就可以获得值了.enumType可以从缓存拿到字段type然后搜索子符号得到enumDefType和name
-			//对于assign.只能是classType或tokenType和rule返回节点.返回节点没法知道,但是返回节点的类型可以拿到.返回节点value类型从规则名就可以知道,所以需要一个wstring的normalGrammar的name
-			//字段类型可以从缓存得到.
-			//tokenType的值是wstring.所以应该用wstring
-			//这里可以获得字段名和{字段值} setter 字段值是wstring value.assign的value是grammar返回的节点.可以从
-			//对于assgin文法.字段类型只能是class和token的type.赋值的value,得不到,是语法树返回节点,从ruleName可以知道,ruleName到ruleDef已经缓存了.
-			//对于setter文法.字段类型只能是enum和token的type.filedSymbol已经被缓存,类型也就被缓存了.value的值是string获得enum值,enum值可以从enumType的subSymbol获得.
-			//对于using文法.直接存ruleName就OK
-			//对于created.parserSymbol存在path结构内.
-			GeneralGrammarTypeDefine*	grammar;
-			NodeType					type;
-			wstring						descriptor;
-
-		public:
-			GeneratePathNode()  = default;
-			~GeneratePathNode()  = default;
-			GeneratePathNode(GeneratePathNode&&)  = default;
-			GeneratePathNode(const GeneratePathNode&)  = default;
-			GeneratePathNode& operator=(GeneratePathNode&&)  = default;
-			GeneratePathNode& operator=(const GeneratePathNode&)   = default;
-			GeneratePathNode(GeneralGrammarTypeDefine* _grammar, NodeType _type, const wstring& _descriptor) :grammar(_grammar), type(_type), descriptor(_descriptor)
-			{
-
-			}
-		public:
-			NodeType GetType() const
-			{
-				return type;
-			}
-
-			wstring GetDescriptor()const
-			{
-				return descriptor;
-			}
-			
-
-
-			bool IsCreate()const
-			{
-				return type == NodeType::Create;
-			}
-			bool IsNormal()const
-			{
-				return type == NodeType::Normal;
-			}
-			bool IsText()const
-			{
-				return type == NodeType::Text;
-			}
-			bool IsAssign()const
-			{
-				return type == NodeType::Assign;
-			}
-			bool IsUsing()const
-			{
-				return type == NodeType::Using;
-			}
-			bool IsLoopStart()const
-			{
-				return type == NodeType::LoopStart;
-			}
-			bool IsSetter()const
-			{
-				return type == NodeType::Setter;
-			}
-			bool IsLoopEnd()const
-			{
-				return type == NodeType::LoopEnd;
-			}
-			/*bool IsLoop()const
-			{
-				return type == NodeType::Loop;
-			}*/
-		/*	bool IsSequence()const
-			{
-				return type == NodeType::Sequence;
-			}
-*/
-		};
-		class GeneratePath
-		{
-			vector<shared_ptr<GeneratePathNode>> pathNodeList;
-			ParserSymbol* createdTyepSymbol = nullptr;
-		public:
-			GeneratePath()  = default;
-			~GeneratePath()  = default;
-			GeneratePath(GeneratePath&&)  = default;
-			GeneratePath(const GeneratePath&)  = default;
-			GeneratePath& operator=(GeneratePath&&)  = default;
-			GeneratePath& operator=(const GeneratePath&)   = default;
-		public:
-			
-			void AddNextNode(GeneralGrammarTypeDefine* grammar, NodeType type, const wstring& descriptor)
-			{
-				pathNodeList.emplace_back(make_shared<GeneratePathNode>( grammar,type,descriptor ));
-			}
-			void SetCreatedTypeSymbol(ParserSymbol* _createdTypeSymbol)
-			{
-				this->createdTyepSymbol = _createdTypeSymbol;
-			}
-			ParserSymbol* GetCreatTypeSymbol()const
-			{
-				return createdTyepSymbol;
-			}
-		};
-		//对rule下的每一条grammar收集路径
-		//
-		class CollectGeneratePathVisitor: public GeneralGrammarTypeDefine::IVisitor
-		{
-			SymbolManager*							manager;//grammar->TypeSymbol
-			vector<shared_ptr<GeneratePath>>		paths;
-			
-		public:
-			CollectGeneratePathVisitor()  = default;
-			~CollectGeneratePathVisitor()  = default;
-			CollectGeneratePathVisitor(CollectGeneratePathVisitor&&)  = default;
-			CollectGeneratePathVisitor(const CollectGeneratePathVisitor&)  = default;
-			CollectGeneratePathVisitor& operator=(CollectGeneratePathVisitor&&)  = default;
-			CollectGeneratePathVisitor& operator=(const CollectGeneratePathVisitor&)  = default;
-			CollectGeneratePathVisitor(SymbolManager* _manager) :manager(_manager)
-			{
-
-			}
-		public:
-			void AddNode(GeneralGrammarTypeDefine* grammar, NodeType type, const wstring& descriptor)
-			{
-				if (paths.empty())
-				{
-					paths.emplace_back(make_shared<GeneratePath>());
-					paths.back()->AddNextNode(grammar, type, descriptor);
-				}
-				else
-				{
-					for (auto&& pathIter : paths)
+					ValidateGeneratePathIVisitor visitor(manager, ruleDef);
+					for(auto&& pathNodeIter : pathIter->GetPathNodeList())
 					{
-						pathIter->AddNextNode(grammar,type,descriptor);
+						if (pathNodeIter.IsLoopStart())
+						{
+							visitor.SetLoopFlag();
+						}
+						else if(pathNodeIter.IsLoopEnd())
+						{
+							visitor.ClearLoopFlag();
+						}
+						else
+						{
+							pathNodeIter.GetGrammarTypeDefine()->Accept(&visitor);
+						}
 					}
 				}
 			}
-			void JoinPaths(CollectGeneratePathVisitor& target)
-			{
-				paths.insert(paths.end(), target.begin(),target.end());
-			}
-			auto begin()->decltype(paths.begin())
-			{
-				return paths.begin();
-			}
-			auto end() ->decltype(paths.end())
-			{
-				return paths.end();
-			}
-			void								Visit(GeneralGrammarTextTypeDefine* node)
-			{
-				AddNode(node, NodeType::Text,node->text);
-			}
-			void								Visit(GeneralGrammarNormalTypeDefine* node)
-			{
-				AddNode(node, NodeType::Normal,node->name);
-			}
-			void								Visit(GeneralGrammarSequenceTypeDefine* node)
-			{
-				node->first->Accept(this);
-				node->second->Accept(this);
-			}
-			void								Visit(GeneralGrammarLoopTypeDefine* node)
-			{
-				CollectGeneratePathVisitor visitor(*this);
-				AddNode(node, NodeType::LoopStart, L"");
-				node->grammar->Accept(this);
-				AddNode(node, NodeType::LoopEnd, L"");
-				JoinPaths(visitor);
-			}
-			void								Visit(GeneralGrammarOptionalTypeDefine* node)
-			{
-				CollectGeneratePathVisitor visitor(*this);
-				node->grammar->Accept(this);
-				JoinPaths(visitor);
-			}
-			void								Visit(GeneralGrammarSetterTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-				AddNode(node, NodeType::Setter, node->value);
-			}
-			void								Visit(GeneralGrammarUsingTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-				assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(node->grammar.get()));
-				auto ruleName = manager->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get())->GetName();
-				AddNode(node, NodeType::Using, ruleName);
-			}
-			void								Visit(GeneralGrammarCreateTypeDefine* node)
-			{
-				AddNode(node, NodeType::Create,L"");
-				node->grammar->Accept(this);
-			}
-			void								Visit(GeneralGrammarAlterationTypeDefine* node)
-			{
-				CollectGeneratePathVisitor visitor(*this);
-				node->left->Accept(&visitor);
-				node->right->Accept(this);
-				JoinPaths(visitor);
-			}
-			void								Visit(GeneralGrammarAssignTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-				assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(node->grammar.get()));
-				auto ruleName = manager->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get())->GetName();
-				AddNode(node, NodeType::Assign, ruleName);
-			}
-		};
-		
-		unordered_map<GeneralRuleDefine*, vector<shared_ptr<GeneratePath>>>  CollectGeneratePath(SymbolManager* manager)
-		{
-			unordered_map<GeneralRuleDefine*, vector<shared_ptr<GeneratePath>>> pathMap;
-			for(auto&& ruleIter : manager->GetTable()->rules)
-			{
-				auto rulePointer = ruleIter.get();
-				pathMap[rulePointer];
-				for(auto&& grammarIter : ruleIter->grammars)
-				{
-					CollectGeneratePathVisitor visitor(manager);
-					grammarIter->Accept(&visitor);
+		}
 
-					pathMap[rulePointer].insert(pathMap[rulePointer].end(), visitor.begin(), visitor.end());
+
+		void LogGeneratePath(const wstring fileName, const unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap)
+		{
+			wofstream output(fileName);
+			assert(output.is_open());
+			for(auto&& mapIter : pathMap)
+			{
+				auto& ruleDef = mapIter.first;
+				auto& paths = mapIter.second;
+				output << L"RuleName: " << ruleDef->name  << endl;
+				for(auto&& pathIter : paths)
+				{
+					output << L"		Grammar: " << ruleDef->name  << endl;
+					output << L"				";
+					for(auto&& pathNodeIter : pathIter->GetPathNodeList())
+					{
+						output << pathNodeIter.GetTypeToWString() << L" : "<<pathNodeIter.GetDescriptor()<<L" ";
+					}
+					output << endl;
 				}
 			}
-			return pathMap;
 		}
 		void ValidateGeneratorCoreSemantic(const shared_ptr<GeneralTableDefine>& table)
 		{
 			SymbolManager manager(table);
 			CollectAndValidateTypeDefine(&manager);
 			ValidateGrammarNode(&manager);
-			ValidateGeneratePathStructure(&manager);
-			//CollectGeneratePath(&manager);
+			auto&& pathMap = CollectGeneratePath(&manager);
+			ValidateGeneratePathStructure(&manager, pathMap);
+			LogGeneratePath(L"test.txt", pathMap);
 		}
+
 	}
 }
