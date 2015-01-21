@@ -3,13 +3,17 @@
 
 #include "Include\stdafx.h"
 #include "Include\SymbolManager.h"
-
+#include "Include\GeneralPushDownAutoMachine.h"
 
 int main()
 {
 
 	auto table = ztl::general_parser::BootStrapDefineTable();
-	ztl::general_parser::ValidateGeneratorCoreSemantic(table);
+	ztl::general_parser::SymbolManager manger(table);
+	ztl::general_parser::ValidateGeneratorCoreSemantic(&manger);
+	ztl::general_parser::PushDownAutoMachine machine(&manger);
+	ztl::general_parser::CreateEpsilonPDAGraph(machine);
+
 
 	return 0;
 }

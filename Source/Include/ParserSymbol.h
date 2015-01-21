@@ -70,7 +70,7 @@ namespace ztl
 			bool									IsFieldDef() const;
 			bool									IsTokenDef() const;
 			bool									IsRuleDef()  const;
-			bool									IsIgnoreToken() const;
+			bool									IsIgnore() const;
 
 			bool EqualToBaseClassType(ParserSymbol* baseDef);
 			ParserSymbol* SearchClassFieldSymbol(const wstring& _name);

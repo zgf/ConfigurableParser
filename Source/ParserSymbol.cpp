@@ -2,6 +2,7 @@
 #include "Include\ParserSymbol.h"
 #include "Include\SymbolManager.h"
 #include "Include\ParserSymbolDefine.h"
+#include "Include\GeneralPushDownAutoMachine.h"
 
 namespace ztl
 {
@@ -26,6 +27,7 @@ namespace ztl
 		{
 			return this->manager;
 		}
+
 
 		SymbolType ParserSymbol::GetType()const
 		{
@@ -138,7 +140,7 @@ namespace ztl
 			return type == SymbolType::RuleDef;
 		}
 
-		bool ParserSymbol::IsIgnoreToken() const
+		bool ParserSymbol::IsIgnore() const
 		{
 			return this->ignore;
 		}

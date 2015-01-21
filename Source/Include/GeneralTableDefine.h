@@ -36,6 +36,7 @@ namespace ztl
 			wstring regex;
 			bool	ignore;
 		};
+
 		/*类型对象前置声明*/
 		struct GeneralArrayTypeObject;
 		struct GeneralStringTypeObject;

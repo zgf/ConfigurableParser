@@ -56,6 +56,8 @@ namespace ztl
 			TypeObjectToSymbolMapType			 typeSymbolMap;
 			RuleNameToSymbolMapType				 ruleNameSymbolMap;
 			TokenNameToSymbolMapType			 tokenNameSymbolMap;
+			TokenNameToSymbolMapType			 disTokenNameSymbolMap;
+
 			RegexStringToSymbolMapType			 regexSymbolMap;
 			GrammarNodeToDefSymbolMapType		 grammarNodeDefSymbolMap;
 			/*TokenDefToSymbolMapType			 tokenDefineSymbolMap;
@@ -115,6 +117,7 @@ namespace ztl
 			ParserSymbol* GetCacheRuleNameToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheTokenNameToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheRegexStringToSymbol(const wstring& name)const;
+			ParserSymbol* GetCacheDisTokenNameSymbol(const wstring& name)const;
 
 			//setter or assign
 			void		  CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine* grammar, ParserSymbol* fieldDefSymbol);
@@ -136,6 +139,7 @@ namespace ztl
 
 			void CacheRuleNameToSymbolMap(const wstring& name, ParserSymbol* symbol);
 			void CacheTokenNameToSymbolMap(const wstring& name, ParserSymbol* symbol);
+			void CacheDisTokenNameSymbolMap(const wstring& name, ParserSymbol* symbol);
 			void CacheRegexStringToSymbolMap(const wstring& name, ParserSymbol* symbol);
 		};
 
@@ -145,6 +149,6 @@ namespace ztl
 		void ValidateGrammarNode(SymbolManager* manager);
 		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap);
 		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> CollectGeneratePath(SymbolManager* manager);
-		void ValidateGeneratorCoreSemantic(const shared_ptr<GeneralTableDefine>& table);
+		void ValidateGeneratorCoreSemantic(SymbolManager* manager);
 	}
 }

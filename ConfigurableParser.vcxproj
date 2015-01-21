@@ -103,6 +103,7 @@
     <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp" />
     <ClCompile Include="Source\BootstrapDefineTable.cpp" />
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
+    <ClCompile Include="Source\GeneralPDAGraph.cpp" />
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
     <ClCompile Include="Source\GenerateNodeDefineFile.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />

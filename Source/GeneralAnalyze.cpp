@@ -206,6 +206,24 @@ namespace ztl
 			ValidateGrammarNodeIVisitor(SymbolManager* _manager) :manager(_manager)
 			{
 			}
+		private:
+			void CheckGrammarUseDisTokenNameError(const wstring& name)
+			{
+				auto disTokensymbol = manager->GetCacheDisTokenNameSymbol(name);
+				if (!disTokensymbol)
+				{
+					ztl_exception(L"can' use the distoken name in grammar");
+				}
+			}
+			ParserSymbol* CheckRuleNameDisExistError(const wstring& name)
+			{
+				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(name);
+				if(!ruleSymbol)
+				{
+					throw ztl_exception(L"This rule name not exist");
+				}
+				return ruleSymbol;
+			}
 		public:
 			void								Visit(GeneralGrammarTextTypeDefine* node)
 			{
@@ -213,26 +231,23 @@ namespace ztl
 				auto tokenSymbol = manager->GetCacheRegexStringToSymbol(regex);
 				if(!tokenSymbol)
 				{
-					throw ztl_exception(L"This regex not exist");
+					throw ztl_exception(L"This text"+node->text+L" not exist");
 				}
 				node->text = tokenSymbol->GetName();
 				manager->CacheTextGrammarToTokenDefSymbol(node, tokenSymbol);
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
 			{
+				CheckGrammarUseDisTokenNameError(node->name);
 				auto tokenSymbol = manager->GetCacheTokenNameToSymbol(node->name);
-
 				if(!tokenSymbol)
 				{
-					auto ruleSymbol = manager->GetCacheRuleNameToSymbol(node->name);
-					if(!ruleSymbol)
-					{
-						throw ztl_exception(L"This rule name or token name not exist");
-					}
+					auto ruleSymbol = CheckRuleNameDisExistError(node->name);
 					manager->CacheNormalGrammarToRuleDefSymbol(node, ruleSymbol);
 				}
 				else
 				{
+					assert(!tokenSymbol->IsIgnore());
 					manager->CacheNormalGrammarToTokenDefSymbol(node, tokenSymbol);
 				}
 			}
@@ -939,13 +954,12 @@ namespace ztl
 				}
 			}
 		}
-		void ValidateGeneratorCoreSemantic(const shared_ptr<GeneralTableDefine>& table)
+		void ValidateGeneratorCoreSemantic(SymbolManager* manager)
 		{
-			SymbolManager manager(table);
-			CollectAndValidateTypeDefine(&manager);
-			ValidateGrammarNode(&manager);
-			auto&& pathMap = CollectGeneratePath(&manager);
-			ValidateGeneratePathStructure(&manager, pathMap);
+			CollectAndValidateTypeDefine(manager);
+			ValidateGrammarNode(manager);
+			auto&& pathMap = CollectGeneratePath(manager);
+			ValidateGeneratePathStructure(manager, pathMap);
 			LogGeneratePath(L"test.txt", pathMap);
 		}
 
