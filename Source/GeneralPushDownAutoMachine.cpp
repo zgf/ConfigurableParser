@@ -26,26 +26,26 @@ namespace ztl
 			return GetSymbolManager()->GetTable();
 		}
 
-		unordered_map<GeneralRuleDefine*, vector<PDANode*>>& PushDownAutoMachine::GetPDAMap() 
+		unordered_map<GeneralRuleDefine*, vector<pair<PDANode*,PDANode*>>>& PushDownAutoMachine::GetPDAMap() 
 		{
 			return PDAMap;
 		}
 
-		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, ActionType action, GeneralGrammarTypeDefine * grammar)
+		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap& wrap)
 		{
-			auto edge = NewEdge(source, target, action, grammar);
+			auto edge = NewEdge(source, target, wrap);
 			source->nexts->emplace_back(edge);
 			target->fronts->emplace_back(edge);
 		}
 
-		void PushDownAutoMachine::AddGeneratePDA(GeneralRuleDefine * rule, PDANode * node)
+		void PushDownAutoMachine::AddGeneratePDA(GeneralRuleDefine * rule, PDANode * start,PDANode* end)
 		{
 			auto findIter = PDAMap.find(rule);
 			if(findIter == PDAMap.end())
 			{
 				PDAMap[rule];
 			}
-			PDAMap[rule].emplace_back(node);
+			PDAMap[rule].emplace_back(make_pair( start ,end));
 		
 		}
 
@@ -62,8 +62,15 @@ namespace ztl
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
-			MergeIndependentNodes(left.second, right.first);
-			return pair<PDANode*, PDANode*>(left.first,right.second);
+			auto mergeNode = MergeIndependentNodes(left.second, right.first);
+			if (right.first == right.second)
+			{
+				return pair<PDANode*, PDANode*>(mergeNode, mergeNode);
+			}
+			else
+			{
+				return pair<PDANode*, PDANode*>(left.first, right.second);
+			}
 		}
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddLoopLinkNode(PDANode * loopStart, PDANode * loopEnd)
@@ -90,6 +97,15 @@ namespace ztl
 			return pair<PDANode*, PDANode*>(mergeNode, mergeNode);
 		}
 
+		void PushDownAutoMachine::EdgeAdditionAction(PDANode* targetNode, const ActionWrap& wrap)
+		{
+			for (auto&& edgeIter: *targetNode->fronts)
+			{
+				this->BackInsertAction(edgeIter, wrap);
+			}
+		}
+
+
 		PDANode * PushDownAutoMachine::MergeIndependentNodes(PDANode * left, PDANode * right)
 		{
 
@@ -98,29 +114,33 @@ namespace ztl
 				iter->source = left;
 				left->nexts->emplace_back(iter);
 			}
+			right->nexts->clear();
 			for(auto&& iter : *right->fronts)
 			{
 				iter->target = left;
 				left->fronts->emplace_back(iter);
 			}
+			right->fronts->clear();
+			left->SetMergeFlag();
 			return left;
 		}
 
-		void PushDownAutoMachine::BackInsertAction(PDAEdge* edge, ActionType type)
+		void PushDownAutoMachine::BackInsertAction(PDAEdge* edge,const ActionWrap& wrap)
 		{
-			edge->actions->emplace_back(type);
+			edge->actions->emplace_back(wrap);
 		}
 
-		void PushDownAutoMachine::FrontInsertAction(PDAEdge* edge, ActionType type)
+		void PushDownAutoMachine::FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap)
 		{
-			edge->actions->emplace_front(type);
+			edge->actions->emplace_front(wrap);
 			++edge->mainActionIndex;
 		}
 
-		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, ActionType action, GeneralGrammarTypeDefine* grammar)
+		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
 		{
-			edges.emplace_back(make_shared<PDAEdge>(grammar, action, source,target));
+			edges.emplace_back(make_shared<PDAEdge>(wrap, source,target));
 			return edges.back().get();
 		}
+	
 	}
 }

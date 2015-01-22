@@ -270,7 +270,6 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
-				
 				node->grammar->Accept(this);
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
@@ -880,6 +879,7 @@ namespace ztl
 				{
 					throw ztl_exception(L"'!' return tree node need could convert to rule create node");
 				}
+				manager->CacheUsingGrammarToRuleDefSymbol(node, returnRuleDefineSymbol);
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{

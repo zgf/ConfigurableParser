@@ -231,18 +231,22 @@ namespace ztl
 
 		void SymbolManager::CacheRuleNameToSymbolMap(const wstring & name, ParserSymbol * symbol)
 		{
+			assert(symbol->IsRuleDef());
+
 			assert(ruleNameSymbolMap.find(name) == ruleNameSymbolMap.end());
 			this->ruleNameSymbolMap.insert({ name, symbol });
 		}
 
 		void SymbolManager::CacheTokenNameToSymbolMap(const wstring & name, ParserSymbol * symbol)
 		{
+			assert(symbol->IsTokenDef());
 			assert(tokenNameSymbolMap.find(name) == tokenNameSymbolMap.end());
 			this->tokenNameSymbolMap.insert({ name, symbol });
 		}
 
 		void SymbolManager::CacheDisTokenNameSymbolMap(const wstring & name, ParserSymbol * symbol)
 		{
+			assert(symbol->IsTokenDef());
 			assert(disTokenNameSymbolMap.find(name) == disTokenNameSymbolMap.end());
 			this->disTokenNameSymbolMap.insert({ name, symbol });
 		}
@@ -313,10 +317,28 @@ namespace ztl
 			this->grammarNodeDefSymbolMap.insert({ normalGrammar,ruleDefSymbol });
 
 		}
+		void SymbolManager::CacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine * usingGrammar, ParserSymbol * ruleDefSymbol)
+		{
+			assert(ruleDefSymbol->IsRuleDef());
+			assert(dynamic_cast<GeneralGrammarUsingTypeDefine*>(usingGrammar));
+			this->grammarNodeDefSymbolMap.insert({ usingGrammar,ruleDefSymbol });
+		}
+		ParserSymbol * SymbolManager::GetCacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine * usingGrammar)
+		{
+			auto findIter = grammarNodeDefSymbolMap.find(usingGrammar);
+			return findIter == grammarNodeDefSymbolMap.end() ? nullptr : findIter->second;
+		}
 		ParserSymbol* SymbolManager::GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar)
 		{
 			auto findIter = grammarNodeDefSymbolMap.find(normalGrammar);
 			return findIter == grammarNodeDefSymbolMap.end()?nullptr:findIter->second;
+		}
+
+		ParserSymbol * SymbolManager::GetCacheTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine * terminateGrammar)
+		{
+			assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(terminateGrammar)|| dynamic_cast<GeneralGrammarTextTypeDefine*>(terminateGrammar));
+			auto findIter = grammarNodeDefSymbolMap.find(terminateGrammar);
+			return findIter == grammarNodeDefSymbolMap.end() ? nullptr : findIter->second;
 		}
 
 

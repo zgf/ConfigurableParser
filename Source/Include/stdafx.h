@@ -15,6 +15,7 @@
 #include "boost/any.hpp"
 #include <locale>
 #include <deque>
+#include <set>
 #include<iterator>
 #include "../../Lib/ZTL/ztl_exception.h"
 
@@ -23,6 +24,7 @@ namespace ztl
 	//////////////////////////////////////////////////////////////////////////
 	// Ç°ÏòÉùÃ÷
 	//////////////////////////////////////////////////////////////////////////
+	using std::set;
 	using std::make_unique;
 	using std::vector;
 	using std::shared_ptr;

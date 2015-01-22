@@ -127,9 +127,12 @@ namespace ztl
 			void		  CacheNormalGrammarToTokenDefSymbol(GeneralGrammarTypeDefine* normalGrammar, ParserSymbol* tokenDefSymbol);
 			//normal rule
 			void		  CacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar, ParserSymbol* ruleDefSymbol);
+			//using rule
+			void		  CacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar, ParserSymbol* ruleDefSymbol);
 
-
+			ParserSymbol* GetCacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar);
 			ParserSymbol* GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar);
+			ParserSymbol* GetCacheTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* terminateGrammar);
 			//creatGrammar可以用findtype获取classTypeSymbol
 			//void		  CacheCreatGrammarNodeToClassDefSymbol(GeneralGrammarTypeDefine* createGrammar, ParserSymbol* classTypeSymbol);
 
