@@ -136,7 +136,7 @@ namespace ztl
 					CreateEpsilonPDAVisitor visitor(&machine, rulePointer);
 					grammarIter->Accept(&visitor);
 					assert(visitor.GetResult().first != visitor.GetResult().second);
-					machine.AddGeneratePDA(rulePointer,visitor.GetResult().first,visitor.GetResult().second);
+					machine.AddGeneratePDA(rulePointer->name,visitor.GetResult().first,visitor.GetResult().second);
 				}
 			}
 		}
@@ -207,7 +207,7 @@ namespace ztl
 			vector<wstring> contentList;
 			for (auto&& ruleIter: machine.GetPDAMap())
 			{
-				auto ruleName = ruleIter.first->name;
+				auto ruleName = ruleIter.first;
 				wstring front = L"RuleName: " + ruleName + L" ::= ";
 				auto actionMap = InitActionTypeAndGrammarLogMap();
 				for(auto&& grammarIter : ruleIter.second)
@@ -317,10 +317,8 @@ namespace ztl
 					{
 						machine.MergeIndependentNodes(setList.begin()->current, element.current);
 					});
-					auto front = setList.front();
-					setList.erase(setList.begin(), target);
+					setList.erase(setList.begin()+1, target);
 					//ºÏ²¢
-					setList.push_front(front);
 				}
 			}
 			if(gotoNext)
@@ -336,38 +334,75 @@ namespace ztl
 		{
 			for (auto&& ruleIter:machine.GetPDAMap())
 			{
-				auto ruleDef = ruleIter.first;
-				if (ruleDef->name == L"Grammar")
+				auto ruleName = ruleIter.first;
+				/*if (ruleName == L"Grammar")
 				{
 					int a = 0;
-				}
+				}*/
 				deque<ActionSet> actionSetList;
 				unordered_set<PDAEdge*> sign;
-				for (auto&& nodeIter : ruleIter.second)
+				for(auto&& nodeIter : ruleIter.second)
 				{
 					actionSetList.emplace_back(ActionSet());
 					actionSetList.back().current = nodeIter.first;
 				}
-				MergeGrammarCommonFactor(machine, actionSetList, sign,true);
+				MergeGrammarCommonFactor(machine, actionSetList, sign, true);
+				
 				sign.clear();
 				actionSetList.clear();
 
-				/*for(auto&& nodeIter : ruleIter.second)
+				for(auto&& nodeIter : ruleIter.second)
 				{
 					actionSetList.emplace_back(ActionSet());
 					actionSetList.back().current = nodeIter.second;
 				}
-				MergeGrammarCommonFactor(machine, actionSetList, sign, false);*/
-
+				MergeGrammarCommonFactor(machine, actionSetList, sign, false);
+				
+				
+				
 				assert(ruleIter.second.size() != 0);
-				if (ruleIter.second.size()!=1)
+				if (ruleIter.second.size() != 1)
 				{
-					ruleIter.second.erase(ruleIter.second.begin()+1,ruleIter.second.end());
+					ruleIter.second.erase(ruleIter.second.begin() + 1,ruleIter.second.end());
 				}
 			}
+		}
 
-
-
+		void MergeGraph(PushDownAutoMachine& machine)
+		{
+			for (auto&& ruleIter: machine.GetPDAMap())
+			{
+				unordered_set<PDAEdge*> sign;
+				deque<PDANode*> queue;
+				queue.emplace_back(ruleIter.second.front().first);
+				while(!queue.empty())
+				{
+					auto front = queue.front();
+					queue.pop_front();
+					for(size_t i = 0; i < front->GetNexts().size();i++ )
+					{
+						PDAEdge* edgeIter = front->GetNexts()[i];
+						if (sign.find(edgeIter)==sign.end())
+						{
+							sign.insert(edgeIter);
+							if (edgeIter->IsNonTerminateSymbol())
+							{
+								auto source = edgeIter->GetSource();
+								auto target = edgeIter->GetTarget();
+								auto actions = edgeIter->GetActions();
+								machine.DeleteEdge(edgeIter);
+								assert(actions.front().GetActionType() == ActionType::NonTerminate);
+								auto ruleName = actions.front().GetName();
+								auto findIter = machine.GetPDAMap().find(ruleName);
+								assert(findIter != machine.GetPDAMap().end());
+								assert(findIter->second.front().second != target);
+								machine.AddEdge(findIter->second.front().second,target , actions);
+								machine.MergeIndependentNodes(source, findIter->second.front().first);
+							}
+						}
+					}
+				}
+			}
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{

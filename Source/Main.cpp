@@ -16,6 +16,7 @@ int main()
 	ztl::general_parser::LogPDAGraph(L"LogPDAGraph.txt",machine);
 	ztl::general_parser::MergeGrammarCommonFactor(machine);
 	ztl::general_parser::LogPDAGraph(L"LogMegreGraph.txt", machine);
+	ztl::general_parser::MergeGraph(machine);
 
 	return 0;
 }

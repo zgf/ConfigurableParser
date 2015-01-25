@@ -132,7 +132,7 @@ namespace ztl
 
 			ParserSymbol* GetCacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar);
 			ParserSymbol* GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar);
-			ParserSymbol* GetCacheTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* terminateGrammar);
+			ParserSymbol* GetCacheNonTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* terminateGrammar);
 			//creatGrammar可以用findtype获取classTypeSymbol
 			//void		  CacheCreatGrammarNodeToClassDefSymbol(GeneralGrammarTypeDefine* createGrammar, ParserSymbol* classTypeSymbol);
 

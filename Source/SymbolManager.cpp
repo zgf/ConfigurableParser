@@ -334,7 +334,7 @@ namespace ztl
 			return findIter == grammarNodeDefSymbolMap.end()?nullptr:findIter->second;
 		}
 
-		ParserSymbol * SymbolManager::GetCacheTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine * terminateGrammar)
+		ParserSymbol * SymbolManager::GetCacheNonTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine * terminateGrammar)
 		{
 			assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(terminateGrammar)|| dynamic_cast<GeneralGrammarTextTypeDefine*>(terminateGrammar));
 			auto findIter = grammarNodeDefSymbolMap.find(terminateGrammar);

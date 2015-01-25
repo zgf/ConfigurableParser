@@ -99,6 +99,10 @@ namespace ztl
 			{
 				actions->emplace_back(wrap);
 			}
+			PDAEdge(PDANode* _source, PDANode* _target)noexcept
+				: target(_target), source(_source), actions(make_unique<deque<ActionWrap>>()), mainActionIndex(0)
+			{
+			}
 			const deque<ActionWrap>& GetActions()const
 			{
 				return *actions;
@@ -111,11 +115,16 @@ namespace ztl
 			{
 				return source;
 			}
+			bool IsNonTerminateSymbol()const
+			{
+				return actions->at(mainActionIndex).GetActionType() == ActionType::NonTerminate;
+			}
 		private:
 			PDANode* source;
 			PDANode* target;
 			int		 mainActionIndex;
 			unique_ptr<deque<ActionWrap>> actions;
+			
 		};
 		class PDANode
 		{
@@ -139,6 +148,7 @@ namespace ztl
 			{
 				return *fronts;
 			}
+			
 			void SetMergeFlag()
 			{
 				isMerge = true;
@@ -187,13 +197,16 @@ namespace ztl
 		public:
 			SymbolManager*				GetSymbolManager()const;
 			GeneralTableDefine*			GetTable()const;
-			unordered_map<GeneralRuleDefine*, vector<pair<PDANode*,PDANode*>>>& GetPDAMap();
+			unordered_map<wstring, vector<pair<PDANode*,PDANode*>>>& GetPDAMap();
 			pair<PDANode*, PDANode*>	NewNodePair();
 			PDANode*					NewNode();
 
 			void						AddEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
-			void						AddGeneratePDA(GeneralRuleDefine* rule, PDANode* start, PDANode* end);
-			pair<PDANode*, PDANode*>	AddSequenceLinkNode(pair<PDANode*,PDANode*>& left,pair<PDANode*,PDANode*>&right);
+			void						AddEdge(PDANode* source, PDANode* target, const deque<ActionWrap>& wrapList);
+			void DeleteEdge(PDAEdge* target);
+
+			void						AddGeneratePDA(wstring ruleName, PDANode * start, PDANode* end);
+			pair<PDANode*, PDANode*>	AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>&right);
 			pair<PDANode*, PDANode*>	AddLoopLinkNode(PDANode* loopStart, PDANode* loopEnd);
 			pair<PDANode*, PDANode*>	AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>&right);
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
@@ -206,17 +219,20 @@ namespace ztl
 			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
+			PDAEdge* NewEdge(PDANode* source, PDANode* target);
+
 		private:
 			vector<shared_ptr<PDAEdge>> edges;
 			vector<shared_ptr<PDANode>> nodes;
 			SymbolManager* manager;
-			unordered_map<GeneralRuleDefine*, vector<pair<PDANode*,PDANode*>>> PDAMap;
+			unordered_map<wstring, vector<pair<PDANode*,PDANode*>>> PDAMap;
 		};
 		
 		void CreatePDAGraph(PushDownAutoMachine& machine);
 		void LogPDAGraph(const wstring& fileName, PushDownAutoMachine& machine);
 		wstring ActionTypeToWString(ActionType type);
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
+		void MergeGraph(PushDownAutoMachine& machine);
 
 	}
 }
