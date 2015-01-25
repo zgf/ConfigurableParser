@@ -44,6 +44,14 @@ namespace ztl
 			return this->tokenTypeSymbol;
 		}
 		
+		void SymbolManager::CacheNameAndTagMap()
+		{
+			for (auto&& iter: *GetGlobalSymbol()->subSymbolMap)
+			{
+				CacheNameAndTagMap(iter.second->GetName());
+			}
+		}
+
 		void SymbolManager::TryAddSubSymbol(ParserSymbol * subSymbol, ParserSymbol * parentSymbol)
 		{
 			subSymbol->parent = parentSymbol;
@@ -287,6 +295,25 @@ namespace ztl
 		{
 			auto findIter = disTokenNameSymbolMap.find(name);
 			return (findIter == disTokenNameSymbolMap.end()) ? nullptr : findIter->second;
+		}
+
+		void SymbolManager::CacheNameAndTagMap(const wstring symbolName)
+		{
+			tagToNameList.emplace_back(symbolName);
+			nameToTagMap.insert(make_pair(symbolName, tagToNameList.size() - 1));
+		}
+
+		int SymbolManager::GetCacheTagByName(const wstring symbolName)
+		{
+			auto findIter = nameToTagMap.find(symbolName);
+			assert(findIter != nameToTagMap.end());
+			return (findIter == nameToTagMap.end()) ? -1 : findIter->second;
+		}
+
+		wstring SymbolManager::GetCacheNameByTag(size_t tag)
+		{
+			assert(tag >= 0 && tag < tagToNameList.size());
+			return tagToNameList[tag];
 		}
 
 		void SymbolManager::CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine * grammar, ParserSymbol * fieldDefSymbol)

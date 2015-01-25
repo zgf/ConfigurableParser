@@ -960,8 +960,11 @@ namespace ztl
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);
 			ValidateGeneratePathStructure(manager, pathMap);
+			manager->CacheNameAndTagMap();
 			LogGeneratePath(L"test.txt", pathMap);
 		}
+
+		
 
 	}
 }

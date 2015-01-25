@@ -165,6 +165,107 @@ namespace ztl
 			++edge->mainActionIndex;
 		}
 
+		void PushDownAutoMachine::InitNodeIndexMap()
+		{
+			unordered_set<PDANode*>sign;
+			deque<PDANode*> queue;
+			int count = 0;
+
+			for(auto&&ruleIter : PDAMap)
+			{
+				for (auto&& grammarIter:ruleIter.second)
+				{
+					queue.emplace_back(grammarIter.first);
+					while(!queue.empty())
+					{
+						PDANode* front = queue.front();
+						queue.pop_front();
+						if (sign.find(front) == sign.end())
+						{
+							sign.insert(front);
+							nodeIndexMap.insert(make_pair(front, count));
+							++count;
+							for(auto&& edgeIter : front->GetNexts())
+							{
+								queue.emplace_back(edgeIter->GetTarget());
+							}
+						}
+					}
+				}
+			}
+			InitNodeIndexToRuleNameMap();
+		}
+
+		void PushDownAutoMachine::CreateJumpTable()
+		{
+			unordered_set<PDAEdge*> sign;
+			deque<PDANode*> queue;
+			for(auto&& ruleIter : GetPDAMap())
+			{
+				for (auto&& grammarIter:ruleIter.second)
+				{
+					queue.emplace_back(grammarIter.first);
+					while(!queue.empty())
+					{
+						auto front = queue.front();
+						queue.pop_front();
+						jumpTable.insert(make_pair(GetNodeIndex(front), CreateJumpItem(front, sign, queue)));
+					}
+				}
+			}
+		}
+
+		void PushDownAutoMachine::ClearJumpTable()
+		{
+			jumpTable.clear();
+		}
+
+		const unordered_map<int, unordered_map<int, pair<int,deque<ActionWrap>>>>& PushDownAutoMachine::GetJumpTable() const
+{
+			return jumpTable;
+		}
+
+		int PushDownAutoMachine::GetNodeIndex(PDANode * target)
+		{
+			assert(nodeIndexMap.find(target) != nodeIndexMap.end());
+			return nodeIndexMap[target];
+		}
+
+		void PushDownAutoMachine::InitNodeIndexToRuleNameMap()
+		{
+			for (auto&& ruleIter:PDAMap)
+			{
+				auto&& ruleName = ruleIter.first;
+				for (auto&& grammarIter:ruleIter.second)
+				{
+					nodeIndexToRuleNameMap.insert(make_pair(GetNodeIndex(grammarIter.first), ruleName));
+				}
+			}
+		}
+
+		unordered_map<int, pair<int,deque<ActionWrap>>> PushDownAutoMachine::CreateJumpItem(PDANode* source,unordered_set<PDAEdge*>& sign,deque<PDANode*>& queue)
+		{
+			unordered_map<int, pair<int,deque<ActionWrap>>> result;
+			for(PDAEdge* edgeIter : source->GetNexts())
+			{
+				auto name = edgeIter->GetActions().begin()->GetName();
+				if(sign.find(edgeIter) == sign.end())
+				{
+					sign.insert(edgeIter);
+					result.insert(make_pair(manager->GetCacheTagByName(name),make_pair(GetNodeIndex(edgeIter->GetTarget()),*edgeIter->actions)));
+					queue.emplace_back(edgeIter->GetTarget());
+				}
+			}
+			return result;
+		}
+
+		wstring PushDownAutoMachine::GetRuleNameOrEmptyByNodeIndex(int index) 
+		{
+			//assert(nodeIndexToRuleNameMap.find(index) == nodeIndexToRuleNameMap.end());
+			return nodeIndexToRuleNameMap.find(index) == nodeIndexToRuleNameMap.end() ? wstring() : nodeIndexToRuleNameMap[index];
+		}
+
+
 		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
 		{
 			edges.emplace_back(make_shared<PDAEdge>(wrap, source,target));

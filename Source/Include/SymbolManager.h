@@ -60,6 +60,8 @@ namespace ztl
 
 			RegexStringToSymbolMapType			 regexSymbolMap;
 			GrammarNodeToDefSymbolMapType		 grammarNodeDefSymbolMap;
+			unordered_map<wstring, int>			 nameToTagMap;
+			vector<wstring>						 tagToNameList;
 			/*TokenDefToSymbolMapType			 tokenDefineSymbolMap;
 			SymbolToTokenMapType			 symbolTokenDefineMap;*/
 
@@ -118,6 +120,9 @@ namespace ztl
 			ParserSymbol* GetCacheTokenNameToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheRegexStringToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheDisTokenNameSymbol(const wstring& name)const;
+			void		  CacheNameAndTagMap(const wstring symbolName);
+			int			  GetCacheTagByName(const wstring symbolName);
+			wstring GetCacheNameByTag(size_t tag);
 
 			//setter or assign
 			void		  CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine* grammar, ParserSymbol* fieldDefSymbol);
@@ -129,15 +134,14 @@ namespace ztl
 			void		  CacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar, ParserSymbol* ruleDefSymbol);
 			//using rule
 			void		  CacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar, ParserSymbol* ruleDefSymbol);
+			void		  CacheNameAndTagMap();
 
 			ParserSymbol* GetCacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar);
 			ParserSymbol* GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar);
 			ParserSymbol* GetCacheNonTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* terminateGrammar);
-			//creatGrammar可以用findtype获取classTypeSymbol
-			//void		  CacheCreatGrammarNodeToClassDefSymbol(GeneralGrammarTypeDefine* createGrammar, ParserSymbol* classTypeSymbol);
+
 
 		private:
-			//ParserSymbol* AddRegexDefine(const wstring& regex);
 			void TryAddSubSymbol(ParserSymbol* subSymbol, ParserSymbol* parentSymbol);
 
 			void CacheRuleNameToSymbolMap(const wstring& name, ParserSymbol* symbol);

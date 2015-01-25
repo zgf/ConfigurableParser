@@ -32,7 +32,7 @@ namespace ztl
 			void								Visit(GeneralGrammarTextTypeDefine* node)
 			{
 				result = machine->NewNodePair();
-				ActionWrap wrap( node, ActionType::Terminate, node->text, L"");
+				ActionWrap wrap(ActionType::Terminate, node->text, L"");
 				machine->AddEdge(result.first, result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
@@ -40,13 +40,13 @@ namespace ztl
 				result = machine->NewNodePair();
 				if (machine->GetSymbolManager()->GetCacheRuleNameToSymbol(node->name))
 				{
-					ActionWrap wrap(node, ActionType::NonTerminate, node->name, L"");
+					ActionWrap wrap( ActionType::NonTerminate, node->name, L"");
 
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 				else
 				{
-					ActionWrap wrap(node, ActionType::Terminate, node->name, L"");
+					ActionWrap wrap(ActionType::Terminate, node->name, L"");
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 			}
@@ -71,7 +71,7 @@ namespace ztl
 			void								Visit(GeneralGrammarSetterTypeDefine* node)
 			{
 				node->grammar->Accept(this);
-				ActionWrap wrap(node, ActionType::Setter, node->name, node->value);
+				ActionWrap wrap(ActionType::Setter, node->name, node->value);
 				machine->EdgeAdditionAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
@@ -79,7 +79,7 @@ namespace ztl
 				node->grammar->Accept(this);
 				assert(result.second->GetFronts().size() == 1);
 				
-				ActionWrap wrap(node, ActionType::Using, machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node)->GetName(), L"");
+				ActionWrap wrap(ActionType::Using, machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node)->GetName(), L"");
 				machine->EdgeAdditionAction(result.second, move(wrap));
 
 			}
@@ -87,7 +87,7 @@ namespace ztl
 			{
 				node->grammar->Accept(this);
 				auto manager = machine->GetSymbolManager();
-				ActionWrap wrap(node, ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), L"");
+				ActionWrap wrap(ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), L"");
 
 
 				//合并的节点可能是因为循环.直接Addition这样的话会导致create在循环内出现多次
@@ -113,7 +113,7 @@ namespace ztl
 			void								Visit(GeneralGrammarAssignTypeDefine* node)
 			{
 				auto ruleSymbol = machine->GetSymbolManager()->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get());
-				ActionWrap wrap(node, ActionType::Assign, node->name, ruleSymbol->GetName());
+				ActionWrap wrap(ActionType::Assign, node->name, ruleSymbol->GetName());
 
 				node->grammar->Accept(this);
 				machine->EdgeAdditionAction(result.second, move(wrap));
@@ -124,7 +124,12 @@ namespace ztl
 			GeneralRuleDefine* rule;
 			pair<PDANode*, PDANode*> result;
 		};
-
+		void HelpLogJumpTable(wstring fileName,PushDownAutoMachine& machine)
+		{
+			machine.CreateJumpTable();
+			LogJumpTable(fileName,machine);
+			machine.ClearJumpTable();
+		}
 		void CreatePDAGraph(PushDownAutoMachine& machine)
 		{
 			for (auto&& ruleIter: machine.GetTable()->rules)
@@ -139,6 +144,14 @@ namespace ztl
 					machine.AddGeneratePDA(rulePointer->name,visitor.GetResult().first,visitor.GetResult().second);
 				}
 			}
+			machine.InitNodeIndexMap();
+			HelpLogJumpTable(L"LogJumpTable_RawTable.txt", machine);
+			ztl::general_parser::MergeGrammarCommonFactor(machine);
+			HelpLogJumpTable(L"LogJumpTable_MergeFactorTable.txt", machine);
+			ztl::general_parser::MergeGraph(machine);
+			HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
+			
+
 		}
 		using lambdaType = wstring(*)(const ActionWrap&);
 
@@ -172,7 +185,49 @@ namespace ztl
 			} });
 			return actionMap;
 		}
-		vector<wstring> LogPDAGraphNode(unordered_map<ActionType, lambdaType>& actionMap,PDANode* node,const wstring& front,unordered_set<PDAEdge*>& sign)
+		vector<wstring> ActionWrapStringList(const deque<ActionWrap>& wrapList)
+		{
+			vector<wstring> result;
+			auto actionMap = InitActionTypeAndGrammarLogMap();
+			std::for_each(wrapList.begin(), wrapList.end(), [&result, &actionMap](auto&& element)
+			{
+				result.emplace_back(L"action:"+actionMap[element.GetActionType()](element) + L";");
+			});
+			return result;
+		}
+		void LogJumpTable(wstring fileName, PushDownAutoMachine& machine)
+		{
+			auto&& table = machine.GetJumpTable();
+			auto&& manager = machine.GetSymbolManager();
+			wofstream output(fileName);
+			for (auto&& rowsIter : table)
+			{
+				auto&& nodeIndex = rowsIter.first;
+				auto ruleName = machine.GetRuleNameOrEmptyByNodeIndex(nodeIndex);
+				if (!ruleName.empty())
+				{
+					output << L"RuleName: " << ruleName<<endl;
+				}
+				output <<L"NodeIndex:" + to_wstring(nodeIndex)<<endl;
+				for (auto&& colsIter:rowsIter.second)
+				{
+					auto&& tagName = manager->GetCacheNameByTag(colsIter.first);
+					auto&& targetNodeIndex = colsIter.second.first;
+					output << L"	tagName: " << tagName <<L" targetIndex: "<< to_wstring(targetNodeIndex)<<endl;
+
+					auto&& actionWrapList = colsIter.second.second;
+					auto&& actionWrapStringList = ActionWrapStringList(actionWrapList);
+					for(auto&& iter : actionWrapStringList)
+					{
+						output << L"			"<<iter<<endl;
+					}
+				}
+			}
+		}
+		
+		
+
+		/*vector<wstring> LogPDAGraphNode(unordered_map<ActionType, lambdaType>& actionMap,PDANode* node,const wstring& front,unordered_set<PDAEdge*>& sign)
 		{
 			vector<wstring> result;
 			for(auto&& edgeIter : node->GetNexts())
@@ -201,8 +256,8 @@ namespace ztl
 			}
 			return result;
 		}
-		
-		vector<wstring> PDAGraphToString(PushDownAutoMachine& machine)
+		*/
+		/*vector<wstring> PDAGraphToString(PushDownAutoMachine& machine)
 		{
 			vector<wstring> contentList;
 			for (auto&& ruleIter: machine.GetPDAMap())
@@ -229,8 +284,8 @@ namespace ztl
 				}
 			}
 			return contentList;
-		}
-		void LogPDAGraph(const wstring& fileName, PushDownAutoMachine& machine)
+		}*/
+		/*void LogPDAGraph(const wstring& fileName, PushDownAutoMachine& machine)
 		{
 			auto result = PDAGraphToString(machine);
 			wofstream output(fileName);
@@ -239,7 +294,7 @@ namespace ztl
 				iter += L'\n';
 				output.write(iter.c_str(), iter.size());
 			}
-		}
+		}*/
 		//提取左公因子
 		class ActionSet
 		{
@@ -335,10 +390,6 @@ namespace ztl
 			for (auto&& ruleIter:machine.GetPDAMap())
 			{
 				auto ruleName = ruleIter.first;
-				/*if (ruleName == L"Grammar")
-				{
-					int a = 0;
-				}*/
 				deque<ActionSet> actionSetList;
 				unordered_set<PDAEdge*> sign;
 				for(auto&& nodeIter : ruleIter.second)
@@ -404,6 +455,7 @@ namespace ztl
 				}
 			}
 		}
+		
 		wstring ActionTypeToWString(ActionType type)
 		{
 			wstring result;

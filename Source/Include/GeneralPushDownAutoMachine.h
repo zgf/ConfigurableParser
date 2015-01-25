@@ -25,16 +25,18 @@ namespace ztl
 		class ActionWrap
 		{
 			ActionType action;
-			GeneralGrammarTypeDefine* grammar;
 			wstring name;//setter key using ruleNmae create className nonterm ruleName term tokenName assgin fieldName
 			wstring value;//setter value assgin ruleName
 		public:
 			ActionWrap() = default;
-			ActionWrap(GeneralGrammarTypeDefine* _grammar, ActionType _action, const wstring& _name, const wstring& _value)
-				:grammar(_grammar), action(_action), name(_name), value(_value)
+			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value)
+				: action(_action), name(_name), value(_value)
 			{
-				grammar = nullptr;
 			}
+			/*ActionWrap(ActionType _action, const wstring& _name, const wstring& _value)
+				: action(_action), name(_name), value(_value)
+			{
+			}*/
 			~ActionWrap() = default;
 			/*GeneralGrammarTypeDefine*const GetGrammar()const
 			{
@@ -211,21 +213,33 @@ namespace ztl
 			pair<PDANode*, PDANode*>	AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>&right);
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
 			void						EdgeAdditionAction(PDANode* targetNode, const ActionWrap& wrap);
+			wstring GetRuleNameOrEmptyByNodeIndex(int index) ;
 
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
+			void InitNodeIndexMap();
+			void CreateJumpTable();
+			void ClearJumpTable();
+			const unordered_map<int, unordered_map<int, pair<int,deque<ActionWrap>>>>& GetJumpTable()const;
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
-
+			int  GetNodeIndex(PDANode* target);
+			void InitNodeIndexToRuleNameMap();
+			unordered_map<int, pair<int, deque<ActionWrap>>> CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue);
 		private:
-			vector<shared_ptr<PDAEdge>> edges;
-			vector<shared_ptr<PDANode>> nodes;
-			SymbolManager* manager;
-			unordered_map<wstring, vector<pair<PDANode*,PDANode*>>> PDAMap;
+			vector<shared_ptr<PDAEdge>>											 edges;
+			vector<shared_ptr<PDANode>>											 nodes;
+			SymbolManager*														 manager;
+			unordered_map<wstring, vector<pair<PDANode*,PDANode*>>>				 PDAMap;
+			//int 1 nodeIndex int 2 tagIndex  int targetNodeIndex
+			unordered_map<int, unordered_map<int, pair<int,deque<ActionWrap>>>>  jumpTable;
+			unordered_map<PDANode*, int>										 nodeIndexMap;
+			unordered_map<int, wstring>											 nodeIndexToRuleNameMap;
+			
 		};
 		
 		void CreatePDAGraph(PushDownAutoMachine& machine);
@@ -233,6 +247,7 @@ namespace ztl
 		wstring ActionTypeToWString(ActionType type);
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
 		void MergeGraph(PushDownAutoMachine& machine);
+		void LogJumpTable(wstring fileName,PushDownAutoMachine& machine);
 
 	}
 }
