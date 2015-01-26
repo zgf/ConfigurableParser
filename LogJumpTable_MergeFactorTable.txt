@@ -1,285 +1,325 @@
+NodeIndex:8
+	tagName: Type targetIndex: 11
+			action:NonTerminate : Type;
+			action:Assign : element;
 NodeIndex:64
-	tagName: PrimitiveGrammar targetIndex: 56
-			action:NonTerminate : PrimitiveGrammar;
+	tagName: Grammar targetIndex: 67
+			action:NonTerminate : Grammar;
 			action:Assign : grammar;
-			action:Create : GenGrammarUsingTypeDefine;
-RuleName: Type
+RuleName: SequenceGrammar
 NodeIndex:0
-	tagName: NAME targetIndex: 1
+	tagName: PrimitiveGrammar targetIndex: 1
+			action:NonTerminate : PrimitiveGrammar;
+			action:Using : PrimitiveGrammar;
+	tagName: GenGrammarSequenceTypeDefine targetIndex: 2
+			action:Create : GenGrammarSequenceTypeDefine;
+NodeIndex:1
+NodeIndex:2
+	tagName: SequenceGrammar targetIndex: 3
+			action:NonTerminate : SequenceGrammar;
+			action:Assign : first;
+NodeIndex:3
+	tagName: PrimitiveGrammar targetIndex: 1
+			action:NonTerminate : PrimitiveGrammar;
+			action:Assign : second;
+RuleName: Type
+NodeIndex:4
+	tagName: GenNormalTypeObject targetIndex: 5
+			action:Create : GenNormalTypeObject;
+	tagName: GenStringTypeObject targetIndex: 6
+			action:Create : GenStringTypeObject;
+	tagName: GenSubTypeObject targetIndex: 7
+			action:Create : GenSubTypeObject;
+	tagName: GenArrayTypeObject targetIndex: 8
+			action:Create : GenArrayTypeObject;
+NodeIndex:5
+	tagName: NAME targetIndex: 9
 			action:Terminate : NAME;
 			action:Assign : name;
-			action:Create : GenNormalTypeObject;
-	tagName: TOKEN targetIndex: 1
+NodeIndex:6
+	tagName: TOKEN targetIndex: 9
 			action:Terminate : TOKEN;
-			action:Create : GenStringTypeObject;
-	tagName: Type targetIndex: 5
+NodeIndex:7
+	tagName: Type targetIndex: 10
 			action:NonTerminate : Type;
 			action:Assign : parent;
 NodeIndex:9
-	tagName: OPTOPEN targetIndex: 10
-			action:Terminate : OPTOPEN;
-NodeIndex:1
-NodeIndex:13
-NodeIndex:5
-	tagName: DOT targetIndex: 6
-			action:Terminate : DOT;
-NodeIndex:6
-	tagName: NAME targetIndex: 1
-			action:Terminate : NAME;
-			action:Assign : name;
-			action:Create : GenSubTypeObject;
 NodeIndex:10
-	tagName: OPTCLOSE targetIndex: 1
-			action:Terminate : OPTCLOSE;
-			action:Create : GenArrayTypeObject;
-NodeIndex:76
-	tagName: PRECLOSE targetIndex: 56
-			action:Terminate : PRECLOSE;
-RuleName: AlternativeGrammar
+	tagName: DOT targetIndex: 5
+			action:Terminate : DOT;
+NodeIndex:11
+	tagName: OPTOPEN targetIndex: 12
+			action:Terminate : OPTOPEN;
 NodeIndex:12
-	tagName: AlternativeGrammar targetIndex: 15
-			action:NonTerminate : AlternativeGrammar;
-			action:Assign : left;
-	tagName: SequenceGrammar targetIndex: 13
+	tagName: OPTCLOSE targetIndex: 9
+			action:Terminate : OPTCLOSE;
+RuleName: AlternativeGrammar
+NodeIndex:13
+	tagName: SequenceGrammar targetIndex: 14
 			action:NonTerminate : SequenceGrammar;
 			action:Using : SequenceGrammar;
-NodeIndex:79
-	tagName: NAME targetIndex: 80
-			action:Terminate : NAME;
-			action:Assign : name;
+	tagName: GenGrammarAlternationTypeDefine targetIndex: 15
+			action:Create : GenGrammarAlternationTypeDefine;
+NodeIndex:14
 NodeIndex:15
-	tagName: OR targetIndex: 16
-			action:Terminate : OR;
-NodeIndex:80
-	tagName: ASSIGN targetIndex: 81
-			action:Terminate : ASSIGN;
+	tagName: AlternativeGrammar targetIndex: 16
+			action:NonTerminate : AlternativeGrammar;
+			action:Assign : left;
 NodeIndex:16
-	tagName: SequenceGrammar targetIndex: 13
+	tagName: OR targetIndex: 17
+			action:Terminate : OR;
+NodeIndex:17
+	tagName: SequenceGrammar targetIndex: 14
 			action:NonTerminate : SequenceGrammar;
 			action:Assign : right;
-			action:Create : GenGrammarAlternationTypeDefine;
-NodeIndex:82
-	tagName: SEMICOLON targetIndex: 83
-			action:Terminate : SEMICOLON;
-			action:Create : GenTokenDefine;
-			action:Setter : ignore = False;
-RuleName: SequenceGrammar
+RuleName: EnumMember
 NodeIndex:18
-	tagName: PrimitiveGrammar targetIndex: 19
-			action:NonTerminate : PrimitiveGrammar;
-			action:Using : PrimitiveGrammar;
-	tagName: SequenceGrammar targetIndex: 21
-			action:NonTerminate : SequenceGrammar;
-			action:Assign : first;
-NodeIndex:83
+	tagName: GenEnumMemberTypeDefine targetIndex: 19
+			action:Create : GenEnumMemberTypeDefine;
 NodeIndex:19
-NodeIndex:85
-	tagName: NAME targetIndex: 86
+	tagName: NAME targetIndex: 20
 			action:Terminate : NAME;
 			action:Assign : name;
+NodeIndex:20
+	tagName: COMMA targetIndex: 21
+			action:Terminate : COMMA;
 NodeIndex:21
-	tagName: PrimitiveGrammar targetIndex: 19
-			action:NonTerminate : PrimitiveGrammar;
-			action:Assign : second;
-			action:Create : GenGrammarSequenceTypeDefine;
-NodeIndex:87
-	tagName: STRING targetIndex: 88
-			action:Terminate : STRING;
-			action:Assign : regex;
 RuleName: Enum
+NodeIndex:22
+	tagName: GenEnumTypeDefine targetIndex: 23
+			action:Create : GenEnumTypeDefine;
 NodeIndex:23
 	tagName: EnumMember targetIndex: 23
 			action:NonTerminate : EnumMember;
 			action:Assign : members;
 	tagName: CLOSE targetIndex: 24
 			action:Terminate : CLOSE;
-			action:Create : GenEnumTypeDefine;
-NodeIndex:88
-	tagName: SEMICOLON targetIndex: 83
-			action:Terminate : SEMICOLON;
-			action:Create : GenTokenDefine;
-			action:Setter : ignore = True;
 NodeIndex:24
-RuleName: EnumMember
+RuleName: ClassMember
 NodeIndex:25
-	tagName: NAME targetIndex: 26
-			action:Terminate : NAME;
-			action:Assign : name;
-RuleName: RuleDecl
-NodeIndex:90
-	tagName: ASSIGN targetIndex: 91
-			action:Terminate : ASSIGN;
-	tagName: SEMICOLON targetIndex: 92
-			action:Terminate : SEMICOLON;
-			action:Create : GenRuleDefine;
+	tagName: GenClassMemberTypeDefine targetIndex: 26
+			action:Create : GenClassMemberTypeDefine;
 NodeIndex:26
-	tagName: COMMA targetIndex: 27
-			action:Terminate : COMMA;
-			action:Create : GenEnumMemberTypeDefine;
-NodeIndex:91
-	tagName: Grammar targetIndex: 90
-			action:NonTerminate : Grammar;
-			action:Assign : grammars;
+	tagName: Type targetIndex: 27
+			action:NonTerminate : Type;
+			action:Assign : type;
 NodeIndex:27
-NodeIndex:92
-RuleName: SetterGrammar
-NodeIndex:28
-	tagName: NAME targetIndex: 29
+	tagName: NAME targetIndex: 28
 			action:Terminate : NAME;
 			action:Assign : name;
-RuleName: ParserDecl
-NodeIndex:93
-	tagName: RuleDecl targetIndex: 93
-			action:NonTerminate : RuleDecl;
-			action:Assign : rules;
-	tagName: TypeDecl targetIndex: 93
-			action:NonTerminate : TypeDecl;
-			action:Assign : types;
-	tagName: GenTableDefine targetIndex: 94
-			action:Create : GenTableDefine;
-	tagName: TokenDecl targetIndex: 93
-			action:NonTerminate : TokenDecl;
-			action:Assign : tokens;
+NodeIndex:28
+	tagName: SEMICOLON targetIndex: 29
+			action:Terminate : SEMICOLON;
 NodeIndex:29
-	tagName: ASSIGN targetIndex: 30
-			action:Terminate : ASSIGN;
+RuleName: TypeDecl
 NodeIndex:30
-	tagName: STRING targetIndex: 31
-			action:Terminate : STRING;
-			action:Assign : value;
-			action:Create : GenGrammarSetterTypeDefine;
+	tagName: Enum targetIndex: 31
+			action:NonTerminate : Enum;
+			action:Using : Enum;
+	tagName: Class targetIndex: 31
+			action:NonTerminate : Class;
+			action:Using : Class;
 NodeIndex:31
 RuleName: Class
 NodeIndex:32
-	tagName: ClassMember targetIndex: 32
+	tagName: GenClassTypeDefine targetIndex: 33
+			action:Create : GenClassTypeDefine;
+NodeIndex:33
+	tagName: ClassMember targetIndex: 33
 			action:NonTerminate : ClassMember;
 			action:Assign : members;
-	tagName: CLOSE targetIndex: 34
+	tagName: CLOSE targetIndex: 35
 			action:Terminate : CLOSE;
-			action:Create : GenClassTypeDefine;
-	tagName: TypeDecl targetIndex: 33
+	tagName: TypeDecl targetIndex: 34
 			action:NonTerminate : TypeDecl;
 			action:Assign : subTypes;
-NodeIndex:33
 NodeIndex:34
-RuleName: TypeDecl
 NodeIndex:35
-	tagName: Enum targetIndex: 36
-			action:NonTerminate : Enum;
-			action:Using : Enum;
-	tagName: Class targetIndex: 36
-			action:NonTerminate : Class;
-			action:Using : Class;
+RuleName: SetterGrammar
 NodeIndex:36
-RuleName: ClassMember
-NodeIndex:39
-	tagName: Type targetIndex: 40
-			action:NonTerminate : Type;
-			action:Assign : type;
-NodeIndex:40
-	tagName: NAME targetIndex: 41
+	tagName: GenGrammarSetterTypeDefine targetIndex: 37
+			action:Create : GenGrammarSetterTypeDefine;
+NodeIndex:37
+	tagName: NAME targetIndex: 38
 			action:Terminate : NAME;
 			action:Assign : name;
-NodeIndex:41
-	tagName: SEMICOLON targetIndex: 42
-			action:Terminate : SEMICOLON;
-			action:Create : GenClassMemberTypeDefine;
-NodeIndex:42
+NodeIndex:38
+	tagName: ASSIGN targetIndex: 39
+			action:Terminate : ASSIGN;
+NodeIndex:39
+	tagName: STRING targetIndex: 40
+			action:Terminate : STRING;
+			action:Assign : value;
+NodeIndex:40
 RuleName: Grammar
-NodeIndex:43
+NodeIndex:41
+	tagName: GenGrammarCreateTypeDefine targetIndex: 42
+			action:Create : GenGrammarCreateTypeDefine;
+	tagName: GenGrammarSetterTypeDefine targetIndex: 43
+			action:Create : GenGrammarSetterTypeDefine;
+NodeIndex:42
 	tagName: Grammar targetIndex: 44
 			action:NonTerminate : Grammar;
 			action:Assign : grammar;
+NodeIndex:43
+	tagName: Grammar targetIndex: 45
+			action:NonTerminate : Grammar;
+			action:Assign : grammar;
 NodeIndex:44
-	tagName: AS targetIndex: 45
+	tagName: AS targetIndex: 46
 			action:Terminate : AS;
-	tagName: WITH targetIndex: 49
-			action:Terminate : WITH;
 NodeIndex:45
-	tagName: Type targetIndex: 46
+	tagName: WITH targetIndex: 47
+			action:Terminate : WITH;
+NodeIndex:46
+	tagName: Type targetIndex: 48
 			action:NonTerminate : Type;
 			action:Assign : type;
-			action:Create : GenGrammarCreateTypeDefine;
-NodeIndex:49
-	tagName: OPEN targetIndex: 50
+NodeIndex:47
+	tagName: OPEN targetIndex: 49
 			action:Terminate : OPEN;
-NodeIndex:46
-NodeIndex:50
-	tagName: NAME targetIndex: 51
+NodeIndex:48
+NodeIndex:49
+	tagName: NAME targetIndex: 50
 			action:Terminate : NAME;
 			action:Assign : name;
-NodeIndex:51
-	tagName: ASSIGN targetIndex: 52
+NodeIndex:50
+	tagName: ASSIGN targetIndex: 51
 			action:Terminate : ASSIGN;
-NodeIndex:52
-	tagName: STRING targetIndex: 53
+NodeIndex:51
+	tagName: STRING targetIndex: 52
 			action:Terminate : STRING;
 			action:Assign : value;
-NodeIndex:53
-	tagName: CLOSE targetIndex: 46
+NodeIndex:52
+	tagName: CLOSE targetIndex: 48
 			action:Terminate : CLOSE;
-			action:Create : GenGrammarSetterTypeDefine;
 RuleName: PrimitiveGrammar
-NodeIndex:55
-	tagName: PrimitiveGrammar targetIndex: 60
-			action:NonTerminate : PrimitiveGrammar;
-			action:Assign : grammar;
-	tagName: STRING targetIndex: 56
-			action:Terminate : STRING;
-			action:Assign : text;
+NodeIndex:53
+	tagName: GenGrammarNormalTypeDefine targetIndex: 54
+			action:Create : GenGrammarNormalTypeDefine;
+	tagName: GenGrammarAssignTypeDefine targetIndex: 56
+			action:Create : GenGrammarAssignTypeDefine;
+	tagName: GenGrammarTextTypeDefine targetIndex: 55
 			action:Create : GenGrammarTextTypeDefine;
-	tagName: NAME targetIndex: 56
+	tagName: GenGrammarUsingTypeDefine targetIndex: 57
+			action:Create : GenGrammarUsingTypeDefine;
+	tagName: GenGrammarOptionalTypeDefine targetIndex: 58
+			action:Create : GenGrammarOptionalTypeDefine;
+	tagName: GenGrammarLoopTypeDefine targetIndex: 59
+			action:Create : GenGrammarLoopTypeDefine;
+	tagName: PREOPEN targetIndex: 60
+			action:Terminate : PREOPEN;
+NodeIndex:54
+	tagName: NAME targetIndex: 61
 			action:Terminate : NAME;
 			action:Assign : name;
-			action:Create : GenGrammarNormalTypeDefine;
-	tagName: OPEN targetIndex: 71
-			action:Terminate : OPEN;
-	tagName: OPTOPEN targetIndex: 67
-			action:Terminate : OPTOPEN;
-	tagName: USING targetIndex: 64
-			action:Terminate : USING;
-	tagName: PREOPEN targetIndex: 75
-			action:Terminate : PREOPEN;
+NodeIndex:55
+	tagName: STRING targetIndex: 61
+			action:Terminate : STRING;
+			action:Assign : text;
 NodeIndex:56
+	tagName: PrimitiveGrammar targetIndex: 62
+			action:NonTerminate : PrimitiveGrammar;
+			action:Assign : grammar;
+NodeIndex:57
+	tagName: USING targetIndex: 63
+			action:Terminate : USING;
+NodeIndex:58
+	tagName: OPTOPEN targetIndex: 64
+			action:Terminate : OPTOPEN;
+NodeIndex:59
+	tagName: OPEN targetIndex: 65
+			action:Terminate : OPEN;
 NodeIndex:60
-	tagName: COLON targetIndex: 61
-			action:Terminate : COLON;
-NodeIndex:67
-	tagName: Grammar targetIndex: 68
-			action:NonTerminate : Grammar;
-			action:Assign : grammar;
-NodeIndex:71
-	tagName: Grammar targetIndex: 72
-			action:NonTerminate : Grammar;
-			action:Assign : grammar;
-NodeIndex:75
-	tagName: Grammar targetIndex: 76
+	tagName: Grammar targetIndex: 66
 			action:NonTerminate : Grammar;
 			action:Using : Grammar;
 NodeIndex:61
-	tagName: NAME targetIndex: 56
+NodeIndex:62
+	tagName: COLON targetIndex: 54
+			action:Terminate : COLON;
+NodeIndex:63
+	tagName: PrimitiveGrammar targetIndex: 61
+			action:NonTerminate : PrimitiveGrammar;
+			action:Assign : grammar;
+NodeIndex:65
+	tagName: Grammar targetIndex: 68
+			action:NonTerminate : Grammar;
+			action:Assign : grammar;
+NodeIndex:66
+	tagName: PRECLOSE targetIndex: 61
+			action:Terminate : PRECLOSE;
+NodeIndex:67
+	tagName: OPTCLOSE targetIndex: 61
+			action:Terminate : OPTCLOSE;
+NodeIndex:68
+	tagName: CLOSE targetIndex: 61
+			action:Terminate : CLOSE;
+RuleName: TokenDecl
+NodeIndex:69
+	tagName: GenTokenDefine targetIndex: 70
+			action:Create : GenTokenDefine;
+NodeIndex:70
+	tagName: TOKEN targetIndex: 71
+			action:Terminate : TOKEN;
+	tagName: DISCARDTOKEN targetIndex: 72
+			action:Terminate : DISCARDTOKEN;
+NodeIndex:71
+	tagName: NAME targetIndex: 73
 			action:Terminate : NAME;
 			action:Assign : name;
-			action:Create : GenGrammarAssignTypeDefine;
-NodeIndex:68
-	tagName: OPTCLOSE targetIndex: 56
-			action:Terminate : OPTCLOSE;
-			action:Create : GenGrammarOptionalTypeDefine;
 NodeIndex:72
-	tagName: CLOSE targetIndex: 56
-			action:Terminate : CLOSE;
-			action:Create : GenGrammarLoopTypeDefine;
-RuleName: TokenDecl
-NodeIndex:78
-	tagName: TOKEN targetIndex: 79
-			action:Terminate : TOKEN;
-	tagName: DISCARDTOKEN targetIndex: 85
-			action:Terminate : DISCARDTOKEN;
-NodeIndex:86
-	tagName: ASSIGN targetIndex: 87
+	tagName: NAME targetIndex: 74
+			action:Terminate : NAME;
+			action:Assign : name;
+NodeIndex:73
+	tagName: ASSIGN targetIndex: 75
 			action:Terminate : ASSIGN;
-NodeIndex:81
-	tagName: STRING targetIndex: 82
+NodeIndex:74
+	tagName: ASSIGN targetIndex: 76
+			action:Terminate : ASSIGN;
+NodeIndex:75
+	tagName: STRING targetIndex: 77
 			action:Terminate : STRING;
 			action:Assign : regex;
-NodeIndex:94
+NodeIndex:76
+	tagName: STRING targetIndex: 78
+			action:Terminate : STRING;
+			action:Assign : regex;
+NodeIndex:77
+	tagName: SEMICOLON targetIndex: 79
+			action:Terminate : SEMICOLON;
+			action:Setter : ignore = False;
+NodeIndex:78
+	tagName: SEMICOLON targetIndex: 79
+			action:Terminate : SEMICOLON;
+			action:Setter : ignore = True;
+NodeIndex:79
+RuleName: RuleDecl
+NodeIndex:80
+	tagName: GenRuleDefine targetIndex: 81
+			action:Create : GenRuleDefine;
+NodeIndex:81
+	tagName: ASSIGN targetIndex: 82
+			action:Terminate : ASSIGN;
+	tagName: SEMICOLON targetIndex: 83
+			action:Terminate : SEMICOLON;
+NodeIndex:82
+	tagName: Grammar targetIndex: 81
+			action:NonTerminate : Grammar;
+			action:Assign : grammars;
+NodeIndex:83
+RuleName: ParserDecl
+NodeIndex:84
+	tagName: GenTableDefine targetIndex: 85
+			action:Create : GenTableDefine;
+NodeIndex:85
+	tagName: RuleDecl targetIndex: 85
+			action:NonTerminate : RuleDecl;
+			action:Assign : rules;
+	tagName: TypeDecl targetIndex: 85
+			action:NonTerminate : TypeDecl;
+			action:Assign : types;
+	tagName: TokenDecl targetIndex: 85
+			action:NonTerminate : TokenDecl;
+			action:Assign : tokens;

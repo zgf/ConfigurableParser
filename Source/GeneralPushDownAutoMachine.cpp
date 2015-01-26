@@ -26,7 +26,7 @@ namespace ztl
 			return GetSymbolManager()->GetTable();
 		}
 
-		unordered_map<wstring, vector<pair<PDANode*,PDANode*>>>& PushDownAutoMachine::GetPDAMap()
+		unordered_map<wstring, pair<PDANode*,PDANode*>>& PushDownAutoMachine::GetPDAMap()
 {
 			return PDAMap;
 		}
@@ -34,16 +34,16 @@ namespace ztl
 		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap& wrap)
 		{
 			auto edge = NewEdge(source, target, wrap);
-			source->nexts->emplace_back(edge);
-			target->fronts->emplace_back(edge);
+			source->nexts->push_back(edge);
+			target->fronts->push_back(edge);
 		}
 
 		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const deque<ActionWrap>& wrapList)
 		{
 			auto edge = NewEdge(source, target);
 			*edge->actions = wrapList;
-			source->nexts->emplace_back(edge);
-			target->fronts->emplace_back(edge);
+			source->nexts->push_back(edge);
+			target->fronts->push_back(edge);
 		}
 
 		void PushDownAutoMachine::DeleteEdge(PDAEdge* target)
@@ -60,15 +60,11 @@ namespace ztl
 			nextNode->fronts->erase(nextIter);
 		}
 
-		void PushDownAutoMachine::AddGeneratePDA(wstring ruleName, PDANode * start,PDANode* end)
+		void PushDownAutoMachine::AddGeneratePDA(wstring ruleName,const pair<PDANode *,PDANode*>& pairNode)
 		{
 			auto findIter = PDAMap.find(ruleName);
-			if(findIter == PDAMap.end())
-			{
-				PDAMap[ruleName];
-			}
-			PDAMap[ruleName].emplace_back(make_pair( start ,end));
-		
+			assert(findIter == PDAMap.end());
+			PDAMap.insert(make_pair(ruleName, pairNode));
 		}
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::NewNodePair()
@@ -119,11 +115,19 @@ namespace ztl
 			return pair<PDANode*, PDANode*>(mergeNode, mergeNode);
 		}
 
-		void PushDownAutoMachine::EdgeAdditionAction(PDANode* targetNode, const ActionWrap& wrap)
+		void PushDownAutoMachine::FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap)
 		{
 			for (auto&& edgeIter: *targetNode->fronts)
 			{
 				this->BackInsertAction(edgeIter, wrap);
+			}
+		}
+
+		void PushDownAutoMachine::NextEdgesAdditionFrontAction(PDANode * targetNode, const ActionWrap & wrap)
+		{
+			for(auto&& edgeIter : *targetNode->nexts)
+			{
+				this->FrontInsertAction(edgeIter, wrap);
 			}
 		}
 
@@ -173,8 +177,8 @@ namespace ztl
 
 			for(auto&&ruleIter : PDAMap)
 			{
-				for (auto&& grammarIter:ruleIter.second)
-				{
+				
+					auto&& grammarIter = ruleIter.second;
 					queue.emplace_back(grammarIter.first);
 					while(!queue.empty())
 					{
@@ -191,7 +195,7 @@ namespace ztl
 							}
 						}
 					}
-				}
+				
 			}
 			InitNodeIndexToRuleNameMap();
 		}
@@ -202,8 +206,8 @@ namespace ztl
 			deque<PDANode*> queue;
 			for(auto&& ruleIter : GetPDAMap())
 			{
-				for (auto&& grammarIter:ruleIter.second)
-				{
+				
+					auto&& grammarIter = ruleIter.second;
 					queue.emplace_back(grammarIter.first);
 					while(!queue.empty())
 					{
@@ -211,7 +215,7 @@ namespace ztl
 						queue.pop_front();
 						jumpTable.insert(make_pair(GetNodeIndex(front), CreateJumpItem(front, sign, queue)));
 					}
-				}
+				
 			}
 		}
 
@@ -236,28 +240,11 @@ namespace ztl
 			for (auto&& ruleIter:PDAMap)
 			{
 				auto&& ruleName = ruleIter.first;
-				for (auto&& grammarIter:ruleIter.second)
-				{
-					nodeIndexToRuleNameMap.insert(make_pair(GetNodeIndex(grammarIter.first), ruleName));
-				}
+				auto&& grammarIter = ruleIter.second;
+				nodeIndexToRuleNameMap.insert(make_pair(GetNodeIndex(grammarIter.first), ruleName));
 			}
 		}
 
-		unordered_map<int, pair<int,deque<ActionWrap>>> PushDownAutoMachine::CreateJumpItem(PDANode* source,unordered_set<PDAEdge*>& sign,deque<PDANode*>& queue)
-		{
-			unordered_map<int, pair<int,deque<ActionWrap>>> result;
-			for(PDAEdge* edgeIter : source->GetNexts())
-			{
-				auto name = edgeIter->GetActions().begin()->GetName();
-				if(sign.find(edgeIter) == sign.end())
-				{
-					sign.insert(edgeIter);
-					result.insert(make_pair(manager->GetCacheTagByName(name),make_pair(GetNodeIndex(edgeIter->GetTarget()),*edgeIter->actions)));
-					queue.emplace_back(edgeIter->GetTarget());
-				}
-			}
-			return result;
-		}
 
 		wstring PushDownAutoMachine::GetRuleNameOrEmptyByNodeIndex(int index) 
 		{
@@ -277,6 +264,32 @@ namespace ztl
 			edges.emplace_back(make_shared<PDAEdge>(source, target));
 			return edges.back().get();
 		}
-	
+
+		unordered_map<int, pair<int, deque<ActionWrap>>> PushDownAutoMachine::CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue)
+		{
+			unordered_map<int, pair<int, deque<ActionWrap>>> result;
+			for(PDAEdge* edgeIter : source->GetNexts())
+			{
+
+				if(sign.find(edgeIter) == sign.end())
+				{
+					sign.insert(edgeIter);
+					assert(edgeIter->GetActions().size() >= 1);
+					auto&& begin = *edgeIter->GetActions().begin();
+					wstring name = L"";
+					if(begin.GetActionType() != ActionType::Assign&& begin.GetActionType() != ActionType::Setter)
+					{
+						name = begin.GetName();
+					}
+					else
+					{
+						name = begin.GetValue();
+					}
+					result.insert(make_pair(manager->GetCacheTagByName(name), make_pair(GetNodeIndex(edgeIter->GetTarget()), *edgeIter->actions)));
+					queue.emplace_back(edgeIter->GetTarget());
+				}
+			}
+			return result;
+		}
 	}
 }
