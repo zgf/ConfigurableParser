@@ -13,6 +13,7 @@ namespace ztl
 		class PDAEdge;
 		enum class ActionType
 		{
+			Epsilon,
 			Using,
 			Shfit,
 			Reduce,
@@ -54,11 +55,11 @@ namespace ztl
 			{
 				return value;
 			}
-			friend bool operator==(const ActionWrap& left,const ActionWrap& target)
+			bool operator==(const ActionWrap& target)const
 			{
-				return target.action == left.action&&
-					target.name == left.name&&
-					target.value == left.value;
+				return target.action == action&&
+					target.name == name&&
+					target.value == value;
 			}
 			friend bool operator!=(const ActionWrap& left,const ActionWrap& target)
 			{
@@ -117,7 +118,7 @@ namespace ztl
 			{
 				return source;
 			}
-			int IsNonTerminateSymbol()const
+			int GetNonTermSymbolIndex()const
 			{
 				for(int i = 0; i < (int)actions->size();i++)
 				{

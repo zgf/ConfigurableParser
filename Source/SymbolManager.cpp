@@ -46,10 +46,11 @@ namespace ztl
 		
 		void SymbolManager::CacheNameAndTagMap()
 		{
-			for (auto&& iter: *GetGlobalSymbol()->subSymbolMap)
+			for(auto&& iter : *GetGlobalSymbol()->subSymbolMap)
 			{
 				CacheNameAndTagMap(iter.second->GetName());
 			}
+			CacheNameAndTagMap(L"Epsilon");
 		}
 
 		void SymbolManager::TryAddSubSymbol(ParserSymbol * subSymbol, ParserSymbol * parentSymbol)

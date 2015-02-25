@@ -7,20 +7,11 @@
 
 int main()
 {
-
 	auto table = ztl::general_parser::BootStrapDefineTable();
 	ztl::general_parser::SymbolManager manger(table);
 	ztl::general_parser::ValidateGeneratorCoreSemantic(&manger);
 	ztl::general_parser::PushDownAutoMachine machine(&manger);
 	ztl::general_parser::CreatePDAGraph(machine);
-	//LogJumpTable(L"LogJumpTable.txt",machine);
-	//ztl::general_parser::LogPDAGraph(L"LogPDAGraph.txt",machine);
-	//ztl::general_parser::MergeGrammarCommonFactor(machine);
-	//ztl::general_parser::LogPDAGraph(L"LogMegreGraph.txt", machine);
-
-	//ztl::general_parser::MergeGraph(machine);
-	//ztl::general_parser::LogPDAGraph(L"LogMegreJoinGraph.txt", machine);
-
 	return 0;
 }
 

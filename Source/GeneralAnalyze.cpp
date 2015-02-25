@@ -961,7 +961,7 @@ namespace ztl
 			auto&& pathMap = CollectGeneratePath(manager);
 			ValidateGeneratePathStructure(manager, pathMap);
 			manager->CacheNameAndTagMap();
-			LogGeneratePath(L"test.txt", pathMap);
+			//LogGeneratePath(L"test.txt", pathMap);
 		}
 
 		

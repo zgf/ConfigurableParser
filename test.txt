@@ -7,6 +7,9 @@ RuleName: Type
 				Create : GenSubTypeObject Normal : Type Assign : Type Text : DOT Normal : NAME Assign : NAME 
 		Grammar: Type
 				Create : GenArrayTypeObject Normal : Type Assign : Type Text : OPTOPEN Text : OPTCLOSE 
+RuleName: ClassMember
+		Grammar: ClassMember
+				Create : GenClassMemberTypeDefine Normal : Type Assign : Type Normal : NAME Assign : NAME Text : SEMICOLON 
 RuleName: Enum
 		Grammar: Enum
 				Create : GenEnumTypeDefine Text : ENUM Normal : NAME Assign : NAME Text : OPEN Text : CLOSE 
@@ -15,24 +18,6 @@ RuleName: Enum
 RuleName: EnumMember
 		Grammar: EnumMember
 				Create : GenEnumMemberTypeDefine Normal : NAME Assign : NAME Text : COMMA 
-RuleName: TypeDecl
-		Grammar: TypeDecl
-				Normal : Enum Using : Enum 
-		Grammar: TypeDecl
-				Normal : Class Using : Class 
-RuleName: ClassMember
-		Grammar: ClassMember
-				Create : GenClassMemberTypeDefine Normal : Type Assign : Type Normal : NAME Assign : NAME Text : SEMICOLON 
-RuleName: AlternativeGrammar
-		Grammar: AlternativeGrammar
-				Normal : SequenceGrammar Using : SequenceGrammar 
-		Grammar: AlternativeGrammar
-				Create : GenGrammarAlternationTypeDefine Normal : AlternativeGrammar Assign : AlternativeGrammar Text : OR Normal : SequenceGrammar Assign : SequenceGrammar 
-RuleName: SequenceGrammar
-		Grammar: SequenceGrammar
-				Normal : PrimitiveGrammar Using : PrimitiveGrammar 
-		Grammar: SequenceGrammar
-				Create : GenGrammarSequenceTypeDefine Normal : SequenceGrammar Assign : SequenceGrammar Normal : PrimitiveGrammar Assign : PrimitiveGrammar 
 RuleName: Class
 		Grammar: Class
 				Create : GenClassTypeDefine Text : CLASS Normal : NAME Assign : NAME Text : OPEN Text : CLOSE 
@@ -46,6 +31,21 @@ RuleName: Class
 				Create : GenClassTypeDefine Text : CLASS Normal : NAME Assign : NAME Text : OPEN LoopStart :  Normal : ClassMember Assign : ClassMember LoopEnd :  Text : CLOSE 
 		Grammar: Class
 				Create : GenClassTypeDefine Text : CLASS Normal : NAME Assign : NAME Text : COLON Normal : Type Assign : Type Text : OPEN LoopStart :  Normal : ClassMember Assign : ClassMember LoopEnd :  Text : CLOSE 
+RuleName: TypeDecl
+		Grammar: TypeDecl
+				Normal : Enum Using : Enum 
+		Grammar: TypeDecl
+				Normal : Class Using : Class 
+RuleName: AlternativeGrammar
+		Grammar: AlternativeGrammar
+				Normal : SequenceGrammar Using : SequenceGrammar 
+		Grammar: AlternativeGrammar
+				Create : GenGrammarAlternationTypeDefine Normal : AlternativeGrammar Assign : AlternativeGrammar Text : OR Normal : SequenceGrammar Assign : SequenceGrammar 
+RuleName: SequenceGrammar
+		Grammar: SequenceGrammar
+				Normal : PrimitiveGrammar Using : PrimitiveGrammar 
+		Grammar: SequenceGrammar
+				Create : GenGrammarSequenceTypeDefine Normal : SequenceGrammar Assign : SequenceGrammar Normal : PrimitiveGrammar Assign : PrimitiveGrammar 
 RuleName: SetterGrammar
 		Grammar: SetterGrammar
 				Create : GenGrammarSetterTypeDefine Normal : NAME Assign : NAME Text : ASSIGN Normal : STRING Assign : STRING 

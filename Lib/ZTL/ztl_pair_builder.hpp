@@ -51,4 +51,17 @@ namespace ztl
 			}\
 		};
 	}
+//
+//	namespace enum_builder
+//	{
+//#define Fast_Builder_Enum(EnumClassName,...)\
+//		enum class EnumClassName\
+//		{\
+//			__VA_ARGS__\
+//		};\
+//		wstring EnumClassName##ToWString(EnumClassName name)\
+//		{\
+//\
+//		}
+//	}
 }

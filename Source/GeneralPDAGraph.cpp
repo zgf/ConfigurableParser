@@ -88,21 +88,10 @@ namespace ztl
 				node->grammar->Accept(this);
 				auto manager = machine->GetSymbolManager();
 				ActionWrap wrap(ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), L"");
-
-
-				//合并的节点可能是因为循环.直接Addition这样的话会导致create在循环内出现多次
-				/*if(result.first->IsMergeNode())
-				{*/
-					auto newNode = machine->NewNode();
-					machine->AddEdge(newNode,result.first , move(wrap));
-					result.first = newNode;
-				//}
-				//else
-				//{
-				//	machine->NextEdgesAdditionFrontAction(result.first, move(wrap));
-				//	
-				//	//machine->EdgeAdditionAction(result.second, move(wrap));
-				//}
+				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
+				auto newNode = machine->NewNode();
+				machine->AddEdge(newNode,result.first , move(wrap));
+				result.first = newNode;
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -177,31 +166,15 @@ namespace ztl
 		unordered_map<ActionType, lambdaType> InitActionTypeAndGrammarLogMap()
 		{
 			unordered_map<ActionType, lambdaType> actionMap;
-
-			actionMap.insert({ ActionType::Assign, [](const ActionWrap& wrap)->wstring
+			auto functor =  [](const ActionWrap& wrap)->wstring
 			{
 				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
-			} });
-			actionMap.insert({ ActionType::Using, [](const ActionWrap& wrap)->wstring
+			};
+			vector<ActionType> ActionTypeList = {ActionType::Assign,ActionType::Create,ActionType::Epsilon,ActionType::NonTerminate,ActionType::Reduce,ActionType::Setter,ActionType::Shfit,ActionType::Terminate,ActionType::Using};
+			for(auto&& iter : ActionTypeList)
 			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
-			} });
-			actionMap.insert({ ActionType::Create, [](const ActionWrap& wrap)->wstring
-			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
-			} });
-			actionMap.insert({ ActionType::NonTerminate, [](const ActionWrap& wrap)->wstring
-			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
-			} });
-			actionMap.insert({ ActionType::Terminate, [](const ActionWrap& wrap)->wstring
-			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
-			} });
-			actionMap.insert({ ActionType::Setter, [](const ActionWrap& wrap)->wstring
-			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L" = " + wrap.GetValue();
-			} });
+				actionMap.insert(make_pair(iter, functor));
+			}
 			return actionMap;
 		}
 		vector<wstring> ActionWrapStringList(const deque<ActionWrap>& wrapList)
@@ -385,7 +358,7 @@ namespace ztl
 						if(sign.find(edgeIter) == sign.end())
 						{
 							sign.insert(edgeIter);
-							if(edgeIter->IsNonTerminateSymbol() != -1)
+							if(edgeIter->GetNonTermSymbolIndex() != -1)
 							{
 								result.emplace_back(edgeIter);
 							}
@@ -399,22 +372,23 @@ namespace ztl
 		}
 		void MergeGraph(PushDownAutoMachine& machine)
 		{
-			auto edgeList = CollectNontermiateEdge(machine);
-			for (auto&& edgeIter:edgeList)
+			auto&& edgeList = CollectNontermiateEdge(machine);
+			for(auto&& edgeIter : edgeList)
 			{
-				auto   index  = edgeIter->IsNonTerminateSymbol();
+				auto   index = edgeIter->GetNonTermSymbolIndex();
 				assert(index != -1);
 				auto&& source = edgeIter->GetSource();
 				auto&& target = edgeIter->GetTarget();
-				auto actions  = edgeIter->GetActions();
+				auto actions = edgeIter->GetActions();
 				auto&& nonTermiateIter = actions.begin() + index;
 				machine.DeleteEdge(edgeIter);
 				auto ruleName = nonTermiateIter->GetName();
 				auto findIter = machine.GetPDAMap().find(ruleName);
 				assert(findIter != machine.GetPDAMap().end());
 				actions.erase(nonTermiateIter);
+				actions.emplace_back(ActionType::Reduce, L"", L"");
 				machine.AddEdge(findIter->second.second, target, actions);
-				machine.MergeIndependentNodes(findIter->second.first,source);
+				machine.AddEdge(source, findIter->second.first,ActionWrap(ActionType::Shfit,L"",L""));
 			}
 		}
 
@@ -452,7 +426,9 @@ namespace ztl
 					break;
 				case ztl::general_parser::ActionType::Setter:
 					result = L"Setter";
-
+					break;
+				case ztl::general_parser::ActionType::Epsilon:
+					result = L"Epsilon";
 					break;
 				default:
 					assert(false);

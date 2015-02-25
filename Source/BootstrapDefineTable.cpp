@@ -2,7 +2,14 @@
 #include "Include\stdafx.h"
 
 #include "Include\GeneralTableWriter.h"
-
+/*!
+ * \file BootstrapDefineTable.cpp
+ *
+ * \author ZGF
+ * \date 二月 2015
+ *手写的序列化文法
+ * 
+ */
 namespace ztl
 {
 	namespace general_parser

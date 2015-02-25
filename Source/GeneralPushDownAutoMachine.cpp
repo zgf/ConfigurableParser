@@ -27,7 +27,7 @@ namespace ztl
 		}
 
 		unordered_map<wstring, pair<PDANode*,PDANode*>>& PushDownAutoMachine::GetPDAMap()
-{
+		{
 			return PDAMap;
 		}
 
@@ -104,7 +104,6 @@ namespace ztl
 			MergeIndependentNodes(newNodes.first, right.first);
 			MergeIndependentNodes(newNodes.second, left.second);
 			MergeIndependentNodes(newNodes.second, left.second);
-
 			return newNodes;
 		}
 
@@ -277,7 +276,12 @@ namespace ztl
 					assert(edgeIter->GetActions().size() >= 1);
 					auto&& begin = *edgeIter->GetActions().begin();
 					wstring name = L"";
-					if(begin.GetActionType() != ActionType::Assign&& begin.GetActionType() != ActionType::Setter)
+					if(begin.GetActionType() == ActionType::Epsilon)
+					{
+						name = L"Epsilon";
+					}
+					else if( begin.GetActionType() != ActionType::Assign&& 
+							begin.GetActionType() != ActionType::Setter)
 					{
 						name = begin.GetName();
 					}
