@@ -1,8 +1,5 @@
 #pragma once
-namespace ztl
-{
-	namespace pair_builder
-	{
+
 #define PAIR_BUILDER(PAIR_NAME,KEY1_TYPE_NAME,KEY1_NAME,KEY2_TYPE_NAME,KEY2_NAME)\
 		struct PAIR_NAME\
 		{\
@@ -50,18 +47,3 @@ namespace ztl
 				return Compare(pair) <= 0;\
 			}\
 		};
-	}
-//
-//	namespace enum_builder
-//	{
-//#define Fast_Builder_Enum(EnumClassName,...)\
-//		enum class EnumClassName\
-//		{\
-//			__VA_ARGS__\
-//		};\
-//		wstring EnumClassName##ToWString(EnumClassName name)\
-//		{\
-//\
-//		}
-//	}
-}

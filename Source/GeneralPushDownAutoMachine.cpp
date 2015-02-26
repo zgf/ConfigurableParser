@@ -176,7 +176,6 @@ namespace ztl
 
 			for(auto&&ruleIter : PDAMap)
 			{
-				
 					auto&& grammarIter = ruleIter.second;
 					queue.emplace_back(grammarIter.first);
 					while(!queue.empty())
@@ -276,18 +275,22 @@ namespace ztl
 					assert(edgeIter->GetActions().size() >= 1);
 					auto&& begin = *edgeIter->GetActions().begin();
 					wstring name = L"";
-					if(begin.GetActionType() == ActionType::Epsilon)
+					auto actionType = begin.GetActionType();
+					if(actionType == ActionType::Epsilon || actionType == ActionType::Shift || actionType == ActionType::Reduce)
 					{
-						name = L"Epsilon";
+						name = ActionTypeToWString(actionType);
 					}
-					else if( begin.GetActionType() != ActionType::Assign&& 
-							begin.GetActionType() != ActionType::Setter)
+					else if(actionType == ActionType::Assign||actionType== ActionType::Setter)
+					{
+						name = begin.GetValue();
+					}
+					else if(actionType == ActionType::Create||actionType == ActionType::Using|| actionType==ActionType::Terminate)
 					{
 						name = begin.GetName();
 					}
 					else
 					{
-						name = begin.GetValue();
+						assert(false);
 					}
 					result.insert(make_pair(manager->GetCacheTagByName(name), make_pair(GetNodeIndex(edgeIter->GetTarget()), *edgeIter->actions)));
 					queue.emplace_back(edgeIter->GetTarget());

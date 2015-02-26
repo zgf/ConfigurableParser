@@ -652,6 +652,7 @@ namespace ztl
 		//Using的返回的语法树节点应该可以转换到rule的type节点
 		//路径上只要有Using就不需要Creat了
 		//缓存GrammarNode到classFieldSymbol的映射
+		//Setter必须在as或者!后面才可以使用
 		class ValidateGeneratePathIVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
 			SymbolManager* manager;

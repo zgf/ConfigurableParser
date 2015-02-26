@@ -1,7 +1,6 @@
 #include "Include/stdafx.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
-
 #include "../Lib/Regex/ztl_regex_lex.h"
 #include "../Lib/Regex/ztl_regex_parser.h"
 #include "../Lib/ZTL/ztl_exception.h"
@@ -43,7 +42,7 @@ namespace ztl
 		{
 			return this->tokenTypeSymbol;
 		}
-		
+		//TODO ÕâÀïÌ«³ó
 		void SymbolManager::CacheNameAndTagMap()
 		{
 			for(auto&& iter : *GetGlobalSymbol()->subSymbolMap)
@@ -51,6 +50,9 @@ namespace ztl
 				CacheNameAndTagMap(iter.second->GetName());
 			}
 			CacheNameAndTagMap(L"Epsilon");
+			CacheNameAndTagMap(L"Shift");
+			CacheNameAndTagMap(L"Reduce");
+
 		}
 
 		void SymbolManager::TryAddSubSymbol(ParserSymbol * subSymbol, ParserSymbol * parentSymbol)

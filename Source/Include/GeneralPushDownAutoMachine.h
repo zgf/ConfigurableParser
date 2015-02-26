@@ -15,7 +15,7 @@ namespace ztl
 		{
 			Epsilon,
 			Using,
-			Shfit,
+			Shift,
 			Reduce,
 			Terminate,
 			NonTerminate,
@@ -255,10 +255,11 @@ namespace ztl
 		void CreatePDAGraph(PushDownAutoMachine& machine);
 		void LogPDAGraph(const wstring& fileName, PushDownAutoMachine& machine);
 		wstring ActionTypeToWString(ActionType type);
-		void MergeGrammarCommonFactor(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
-		void MergeGrammarCommonFactor(PushDownAutoMachine& machine, deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign, bool gotoNext);
+		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
+		//void MergeGrammarCommonFactor(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
+		//void MergeGrammarCommonFactor(PushDownAutoMachine& machine, deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign, bool gotoNext);
 		void MergeGraph(PushDownAutoMachine& machine);
 		void LogJumpTable(wstring fileName,PushDownAutoMachine& machine);
-
+		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
 	}
 }

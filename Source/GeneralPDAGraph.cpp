@@ -3,6 +3,8 @@
 #include "Include/GeneralTableDefine.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
+#include "../Lib/ZTL/ztl_pair_builder.hpp"
+
 namespace ztl
 {
 	namespace general_parser
@@ -147,12 +149,14 @@ namespace ztl
 				}
 			}
 			//HelpLogJumpTable(L"LogJumpTable_RawTable.txt", machine);
-			ztl::general_parser::MergeGrammarCommonFactor(machine, PDAMap);
+			MergeStartAndEndNode(machine, PDAMap);
+
 			for (auto&& ruleIter:PDAMap)
 			{
 				assert(ruleIter.second.size() > 0);
 				machine.AddGeneratePDA(ruleIter.first, *ruleIter.second.begin());
 			}
+			MergeGrammarCommonFactor(machine);
 			machine.InitNodeIndexMap();
 
 			//HelpLogJumpTable(L"LogJumpTable_MergeFactorTable.txt", machine);
@@ -170,7 +174,7 @@ namespace ztl
 			{
 				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
 			};
-			vector<ActionType> ActionTypeList = {ActionType::Assign,ActionType::Create,ActionType::Epsilon,ActionType::NonTerminate,ActionType::Reduce,ActionType::Setter,ActionType::Shfit,ActionType::Terminate,ActionType::Using};
+			vector<ActionType> ActionTypeList = {ActionType::Assign,ActionType::Create,ActionType::Epsilon,ActionType::NonTerminate,ActionType::Reduce,ActionType::Setter,ActionType::Shift,ActionType::Terminate,ActionType::Using};
 			for(auto&& iter : ActionTypeList)
 			{
 				actionMap.insert(make_pair(iter, functor));
@@ -217,130 +221,141 @@ namespace ztl
 			}
 		}
 		
+		//
+		////提取左公因子
+		//class ActionSet
+		//{
+		//public:
+		//	set<ActionWrap> actions;
+		//	PDANode*		current;
+		//};
+
+		//void GotoNextNodeFromFront(PushDownAutoMachine& machine, deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign,bool gotoNext)
+		//{
+		//	if (!setList.empty())
+		//	{
+		//		auto front = move(setList.front());
+		//		setList.pop_front();
+		//		for(auto&& iter : front.current->GetNexts())
+		//		{
+		//			if (sign.find(iter) == sign.end())
+		//			{
+		//				sign.insert(iter);
+		//				setList.emplace_back(ActionSet());
+		//				setList.back().current = iter->GetTarget();
+		//				setList.back().actions = front.actions;
+		//				setList.back().actions.insert(iter->GetActions().begin(), iter->GetActions().end());
+		//			}
+		//			
+		//		}
+		//		MergeGrammarCommonFactor(machine, setList,sign, gotoNext);
+		//	}
+		//}
+		//void GotoFrontNodeFromFront(PushDownAutoMachine& machine, deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign,bool gotoNext)
+		//{
+		//	if(!setList.empty())
+		//	{
+		//		auto front = move(setList.front());
+		//		setList.pop_front();
+		//		for(auto&& iter : front.current->GetFronts())
+		//		{
+		//			if(sign.find(iter) == sign.end())
+		//			{
+		//				sign.insert(iter);
+		//				setList.emplace_back(ActionSet());
+		//				setList.back().current = iter->GetSource();
+		//				setList.back().actions = front.actions;
+		//				setList.back().actions.insert(iter->GetActions().begin(), iter->GetActions().end());
+		//			}
+
+		//		}
+		//		MergeGrammarCommonFactor(machine, setList, sign, gotoNext);
+		//	}
+		//}
+		//void MergeGrammarCommonFactor(PushDownAutoMachine& machine,deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign,bool gotoNext)
+		//{
+		//	assert(std::accumulate(setList.begin(), setList.end(),size_t(), [](auto&& val, auto&& iter)
+		//	{
+		//		return val + (iter.current == nullptr?0:1);
+		//	})== setList.size());
+		//	if (setList.size()>1)
+		//	{
+		//		sort(setList.begin(), setList.end(), [](auto&& left, auto&& right)
+		//		{
+		//			return (left.actions.size() == right.actions.size()) ?
+		//				left.actions < right.actions :
+		//				left.actions.size() < right.actions.size();
+		//		});
+		//		auto&& target = setList.begin();
+		//		target = std::find_if_not(setList.begin()+1, setList.end(), [&target](auto&&element)
+		//		{
+		//			return element.actions == target->actions;
+		//		});
+		//		
+		//		if (target != setList.begin())
+		//		{
+		//			for_each(setList.begin() + 1, target, [&machine,&setList](auto&&element)
+		//			{
+		//				machine.MergeIndependentNodes(setList.begin()->current, element.current);
+		//			});
+		//			setList.erase(setList.begin()+1, target);
+		//			//合并
+		//		}
+		//	}
+		//	if(gotoNext)
+		//	{
+		//		GotoNextNodeFromFront(machine, setList, sign, gotoNext);
+		//	}
+		//	else
+		//	{
+		//		GotoFrontNodeFromFront(machine, setList, sign, gotoNext);
+		//	}
+		//}
 		
-		//提取左公因子
-		class ActionSet
-		{
-		public:
-			set<ActionWrap> actions;
-			PDANode*		current;
-		};
+		//可合并节点含义
 
-		void GotoNextNodeFromFront(PushDownAutoMachine& machine, deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign,bool gotoNext)
-		{
-			if (!setList.empty())
-			{
-				auto front = move(setList.front());
-				setList.pop_front();
-				for(auto&& iter : front.current->GetNexts())
-				{
-					if (sign.find(iter) == sign.end())
-					{
-						sign.insert(iter);
-						setList.emplace_back(ActionSet());
-						setList.back().current = iter->GetTarget();
-						setList.back().actions = front.actions;
-						setList.back().actions.insert(iter->GetActions().begin(), iter->GetActions().end());
-					}
-					
-				}
-				MergeGrammarCommonFactor(machine, setList,sign, gotoNext);
-			}
-		}
-		void GotoFrontNodeFromFront(PushDownAutoMachine& machine, deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign,bool gotoNext)
-		{
-			if(!setList.empty())
-			{
-				auto front = move(setList.front());
-				setList.pop_front();
-				for(auto&& iter : front.current->GetFronts())
-				{
-					if(sign.find(iter) == sign.end())
-					{
-						sign.insert(iter);
-						setList.emplace_back(ActionSet());
-						setList.back().current = iter->GetSource();
-						setList.back().actions = front.actions;
-						setList.back().actions.insert(iter->GetActions().begin(), iter->GetActions().end());
-					}
+		//同一个起点,包含同样信息的边,到达不同的节点,那么这个不同节点可以合并成同一个节点
 
-				}
-				MergeGrammarCommonFactor(machine, setList, sign, gotoNext);
-			}
-		}
-		void MergeGrammarCommonFactor(PushDownAutoMachine& machine,deque<ActionSet>& setList, unordered_set<PDAEdge*>& sign,bool gotoNext)
+	
+		void MergeGrammarCommonFactor(PushDownAutoMachine& machine)
 		{
-			assert(std::accumulate(setList.begin(), setList.end(),size_t(), [](auto&& val, auto&& iter)
-			{
-				return val + (iter.current == nullptr?0:1);
-			})== setList.size());
-			if (setList.size()>1)
-			{
-				sort(setList.begin(), setList.end(), [](auto&& left, auto&& right)
-				{
-					return (left.actions.size() == right.actions.size()) ?
-						left.actions < right.actions :
-						left.actions.size() < right.actions.size();
-				});
-				auto&& target = setList.begin();
-				target = std::find_if_not(setList.begin()+1, setList.end(), [&target](auto&&element)
-				{
-					return element.actions == target->actions;
-				});
-				
-				if (target != setList.begin())
-				{
-					for_each(setList.begin() + 1, target, [&machine,&setList](auto&&element)
-					{
-						machine.MergeIndependentNodes(setList.begin()->current, element.current);
-					});
-					setList.erase(setList.begin()+1, target);
-					//合并
-				}
-			}
-			if(gotoNext)
-			{
-				GotoNextNodeFromFront(machine, setList, sign, gotoNext);
-			}
-			else
-			{
-				GotoFrontNodeFromFront(machine, setList, sign, gotoNext);
-			}
+			
 		}
-		void MergeGrammarCommonFactor(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap)
-		{
-			assert(machine.GetPDAMap().size() == 0);
-			for (auto&& ruleIter: PDAMap)
-			{
-				auto ruleName = ruleIter.first;
-				deque<ActionSet> actionSetList;
-				unordered_set<PDAEdge*> sign;
-				for(auto&& nodeIter : ruleIter.second)
-				{
-					actionSetList.emplace_back(ActionSet());
-					actionSetList.back().current = nodeIter.first;
-				}
-				MergeGrammarCommonFactor(machine, actionSetList, sign, true);
-				
-				sign.clear();
-				actionSetList.clear();
 
-				for(auto&& nodeIter : ruleIter.second)
-				{
-					actionSetList.emplace_back(ActionSet());
-					actionSetList.back().current = nodeIter.second;
-				}
-				MergeGrammarCommonFactor(machine, actionSetList, sign, false);
-				
-				
-				
-				assert(ruleIter.second.size() != 0);
-				if (ruleIter.second.size() != 1)
-				{
-					ruleIter.second.erase(ruleIter.second.begin() + 1,ruleIter.second.end());
-				}
-			}
-		}
+		//void MergeGrammarCommonFactor(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap)
+		//{
+		//	assert(machine.GetPDAMap().size() == 0);
+		//	for (auto&& ruleIter: PDAMap)
+		//	{
+		//		auto ruleName = ruleIter.first;
+		//		deque<ActionSet> actionSetList;
+		//		unordered_set<PDAEdge*> sign;
+		//		for(auto&& nodeIter : ruleIter.second)
+		//		{
+		//			actionSetList.emplace_back(ActionSet());
+		//			actionSetList.back().current = nodeIter.first;
+		//		}
+		//		MergeGrammarCommonFactor(machine, actionSetList, sign, true);
+		//		
+		//		sign.clear();
+		//		actionSetList.clear();
+
+		//		for(auto&& nodeIter : ruleIter.second)
+		//		{
+		//			actionSetList.emplace_back(ActionSet());
+		//			actionSetList.back().current = nodeIter.second;
+		//		}
+		//		MergeGrammarCommonFactor(machine, actionSetList, sign, false);
+		//		
+		//		
+		//		
+		//		assert(ruleIter.second.size() != 0);
+		//		if (ruleIter.second.size() != 1)
+		//		{
+		//			ruleIter.second.erase(ruleIter.second.begin() + 1,ruleIter.second.end());
+		//		}
+		//	}
+		//}
 
 		vector<PDAEdge*> CollectNontermiateEdge(PushDownAutoMachine& machine)
 		{
@@ -370,6 +385,21 @@ namespace ztl
 			}
 			return result;
 		}
+		void MergeStartAndEndNode(PushDownAutoMachine& machine,unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap)
+		{
+			for (auto&& ruleIter:PDAMap)
+			{
+				auto& grammars = ruleIter.second;
+				assert(!grammars.empty());
+				for(int i = 0; i < grammars.size();++i)
+				{
+					machine.MergeIndependentNodes(grammars[0].first, grammars[i].first);
+					machine.MergeIndependentNodes(grammars[0].second, grammars[i].second);
+				}
+				grammars.erase(grammars.begin()+1,grammars.end());
+			}
+			
+		}
 		void MergeGraph(PushDownAutoMachine& machine)
 		{
 			auto&& edgeList = CollectNontermiateEdge(machine);
@@ -377,6 +407,7 @@ namespace ztl
 			{
 				auto   index = edgeIter->GetNonTermSymbolIndex();
 				assert(index != -1);
+				assert(index == 0);
 				auto&& source = edgeIter->GetSource();
 				auto&& target = edgeIter->GetTarget();
 				auto actions = edgeIter->GetActions();
@@ -388,7 +419,7 @@ namespace ztl
 				actions.erase(nonTermiateIter);
 				actions.emplace_back(ActionType::Reduce, L"", L"");
 				machine.AddEdge(findIter->second.second, target, actions);
-				machine.AddEdge(source, findIter->second.first,ActionWrap(ActionType::Shfit,L"",L""));
+				machine.AddEdge(source, findIter->second.first,ActionWrap(ActionType::Shift,L"",L""));
 			}
 		}
 
@@ -400,8 +431,8 @@ namespace ztl
 				case ztl::general_parser::ActionType::Using:
 					result = L"Using";
 					break;
-				case ztl::general_parser::ActionType::Shfit:
-					result = L"Shfit";
+				case ztl::general_parser::ActionType::Shift:
+					result = L"Shift";
 
 					break;
 				case ztl::general_parser::ActionType::Reduce:
@@ -436,9 +467,6 @@ namespace ztl
 			}
 			return result;
 		}
-	
-		
-
-
 	}
+	
 }
