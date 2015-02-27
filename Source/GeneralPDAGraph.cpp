@@ -319,7 +319,40 @@ namespace ztl
 	
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine)
 		{
-			
+			deque<PDANode*> nodes;
+			for(auto&& iter : machine.GetPDAMap())
+			{
+				nodes.emplace_back(iter.second.first);
+			}
+			deque<PDAEdge*> edges;
+			for (auto&& nodeIter:nodes)
+			{
+				edges.insert(edges.end(),nodeIter->GetNexts().begin(), nodeIter->GetNexts().end());
+				
+				
+				sort(edges.begin(), edges.end(), [](const PDAEdge* left, const PDAEdge* right)
+				{
+					return left->GetActions().size() < right->GetActions().size() ? 
+						true :
+						left->GetActions() < right->GetActions();
+				});
+				if (!edges.empty())
+				{
+					auto startIter = edges.begin();
+					while(startIter!=edges.end())
+					{
+						auto target = (*edges.begin())->GetActions();
+						auto endIter = std::find_if_not(startIter, edges.end(), [&target](const PDAEdge* element)
+						{
+							return element->GetActions() == target;
+						});
+
+						startIter = endIter;
+					}
+				
+					
+				}
+			}
 		}
 
 		//void MergeGrammarCommonFactor(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap)
