@@ -23,24 +23,17 @@ namespace ztl
 			vector<wstring>					tagToStringMap;
 			unordered_map<wstring, int>		stringToTagMap;
 			vector<TagType>					tagTypeList;
-			//using TypeToSymbolMapType = unordered_map<ParserSymbol*, unordered_map<GeneralTypeObject*, ParserSymbol*>>;
-			/*
-			using ClassDefineToSymbolMapType = unordered_map<GeneralClassTypeDefine*, ParserSymbol*>;
-			using SymbolToClassDefineMapType = unordered_map<ParserSymbol*, GeneralClassTypeDefine*>;
+		
 
-			using RuleDefToSymbolMapType = unordered_map<GeneralRuleDefine*, ParserSymbol*>;
-			using SymbolToRuleMapType = unordered_map<ParserSymbol*, GeneralRuleDefine*>;
-			using EnumToSymbolMapType = unordered_map<GeneralEnumTypeDefine*, ParserSymbol*>;
-			using SymbolToEnumMapType = unordered_map<ParserSymbol*, GeneralEnumTypeDefine*>;*/
-			//using ClassNameToSymbolMapType = unordered_map<wstring, GeneralClassTypeDefine>;
 			using TypeObjectToSymbolMapType = unordered_map<GeneralTypeObject*, ParserSymbol*>;
 			using RuleNameToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
 			using TokenNameToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
 			using RegexStringToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
+			using DefSymbolToRuleNodeMapType = unordered_map< ParserSymbol*,GeneralRuleDefine*>;
+			using RuleNodeToDefSymbolMapType = unordered_map< GeneralRuleDefine*, ParserSymbol*>;
 			using GrammarNodeToDefSymbolMapType = unordered_map<GeneralGrammarTypeDefine*, ParserSymbol*>;
-		/*	using TokenDefToSymbolMapType = unordered_map<GeneralTokenDefine*, ParserSymbol*>;
-			using SymbolToTokenMapType = unordered_map<ParserSymbol*, GeneralTokenDefine*>;
-		*/
+
+
 		private:
 			shared_ptr<GeneralTableDefine>   table;
 			vector<shared_ptr<ParserSymbol>> createdSymbolList;//符号的对象池
@@ -51,25 +44,20 @@ namespace ztl
 
 			//SymbolToClassDefineMapType		 symbolClassDefineMap;//从符号到类定义的绑定
 			//ClassDefineToSymbolMapType		 classDefineSymbolMap;//从类定义到符号的绑定
+			vector<wstring>						 startRuleList;
 			
-		//符号缓存
+			//符号缓存
 			TypeObjectToSymbolMapType			 typeSymbolMap;
 			RuleNameToSymbolMapType				 ruleNameSymbolMap;
 			TokenNameToSymbolMapType			 tokenNameSymbolMap;
 			TokenNameToSymbolMapType			 disTokenNameSymbolMap;
-
-			RegexStringToSymbolMapType			 regexSymbolMap;
+			DefSymbolToRuleNodeMapType           symbolRuleDefineMap;
 			GrammarNodeToDefSymbolMapType		 grammarNodeDefSymbolMap;
+			RegexStringToSymbolMapType			 regexSymbolMap;
 			unordered_map<wstring, int>			 nameToTagMap;
 			vector<wstring>						 tagToNameList;
-			/*TokenDefToSymbolMapType			 tokenDefineSymbolMap;
-			SymbolToTokenMapType			 symbolTokenDefineMap;*/
 
-			//RuleDefToSymbolMapType			 ruleDefineSymbolMap;
-			//SymbolToRuleMapType				 symbolRuleDefineMap;
-			//
-			//EnumToSymbolMapType				 enumTypeSymbolMap;
-			//SymbolToEnumMapType				 symboEnumTypeMap;
+			
 		public:
 			SymbolManager();
 			SymbolManager(const shared_ptr<GeneralTableDefine>& _table);
@@ -86,7 +74,15 @@ namespace ztl
 
 
 		public:
-
+			
+			vector<wstring>& StartRuleList()
+			{
+				return startRuleList;
+			}
+			void StartRuleList(vector<wstring> val)
+			{
+				startRuleList = val;
+			}
 			GeneralTableDefine* GetTable();
 
 			ParserSymbol* GetGlobalSymbol();
@@ -111,7 +107,8 @@ namespace ztl
 			ParserSymbol* CheckNameHasDefine(const wstring name, ParserSymbol* scope);
 
 			//void CacheClassDefineAndSymbolMap(GeneralClassTypeDefine* classDef, ParserSymbol* symbol);
-			//void CacheRuleDefineAndSymbolMap(GeneralRuleDefine* ruleDef, ParserSymbol* symbol);
+			void CacheRuleDefineAndSymbolMap(GeneralRuleDefine* ruleDef, ParserSymbol* symbol);
+			GeneralRuleDefine* GetCacheRuleDefineBySymbol(ParserSymbol* symbol);
 			//void CacheEnumTypeAndSymbolMap(GeneralEnumTypeDefine* enumType, ParserSymbol* symbol);
 			//void CacheTokenDefineAndSymbolMap(GeneralTokenDefine* tokenDef, ParserSymbol* symbol);
 
@@ -157,5 +154,6 @@ namespace ztl
 		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap);
 		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> CollectGeneratePath(SymbolManager* manager);
 		void ValidateGeneratorCoreSemantic(SymbolManager* manager);
+		void GetStartSymbol(SymbolManager* manager);
 	}
 }

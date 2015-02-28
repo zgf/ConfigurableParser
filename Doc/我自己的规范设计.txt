@@ -210,7 +210,7 @@ rule GenGrammarTypeDefine SetterGrammar
 rule GenGrammarTypeDefine Grammar
         = !AlternativeGrammar
         = Grammar : grammar "as" Type : type as GenGrammarCreateTypeDefine
-        = Grammar : grammar "with" "{" NAME : name "=" STRING : value "}" as GenGrammarSetterTypeDefine
+        =!SetterGrammar
         ;
 
 
@@ -232,5 +232,5 @@ rule GenRuleDefine RuleDecl
         = "rule" Type : type NAME : name { "=" Grammar : grammars } ";" as GenRuleDefine
         ;
 rule GenTableDefine ParserDecl
-        =  { TypeDecl : definitions | TokenDecl : definitions | RuleDecl : definitions } ( TypeDecl : definitions | TokenDecl : definitions | RuleDecl : definitions ) as GenTableDefine
+        =  { TypeDecl : definitions | TokenDecl : definitions | RuleDecl : definitions } as GenTableDefine
         ;

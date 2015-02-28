@@ -2,6 +2,8 @@
 #include "Include/GeneralTableDefine.h"
 #include "Include/GeneralPushDownAutoMachine.h"
 #include "Include/SymbolManager.h"
+
+
 namespace ztl
 {
 	namespace general_parser
@@ -83,14 +85,22 @@ namespace ztl
 			auto mergeNode = MergeIndependentNodes(left.second, right.first);
 			if (right.first == right.second)
 			{
-				return pair<PDANode*, PDANode*>(mergeNode, mergeNode);
+				return pair<PDANode*, PDANode*>(left.first, mergeNode);
 			}
 			else
 			{
 				return pair<PDANode*, PDANode*>(left.first, right.second);
 			}
 		}
-
+		PDANode*	PushDownAutoMachine::AddFinishNodeFollowTarget(PDANode* target)
+		{
+			auto newNode = NewNode();
+			ActionWrap wrap(ActionType::Terminate,L"<$>",L"");
+			auto edge = NewEdge(target, newNode, wrap);
+			target->nexts->emplace_back(edge);
+			newNode->fronts->emplace_back(edge);
+			return newNode;
+		}
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddLoopLinkNode(PDANode * loopStart, PDANode * loopEnd)
 		{
 			auto mergeNode = MergeIndependentNodes(loopEnd, loopStart);
@@ -99,12 +109,9 @@ namespace ztl
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
-			auto newNodes = NewNodePair();
-			MergeIndependentNodes(newNodes.first, left.first);
-			MergeIndependentNodes(newNodes.first, right.first);
-			MergeIndependentNodes(newNodes.second, left.second);
-			MergeIndependentNodes(newNodes.second, left.second);
-			return newNodes;
+			MergeIndependentNodes(left.first,right.first );
+			MergeIndependentNodes(left.second, right.second);
+			return{left.first,left.second};
 		}
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd)
@@ -165,7 +172,6 @@ namespace ztl
 		void PushDownAutoMachine::FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap)
 		{
 			edge->actions->emplace_front(wrap);
-			++edge->mainActionIndex;
 		}
 
 		void PushDownAutoMachine::InitNodeIndexMap()
@@ -222,8 +228,8 @@ namespace ztl
 			jumpTable.clear();
 		}
 
-		const unordered_map<int, unordered_map<int, pair<int,deque<ActionWrap>>>>& PushDownAutoMachine::GetJumpTable() const
-{
+		const unordered_map<int, vector<JumpItem>>& PushDownAutoMachine::GetJumpTable() const
+		{
 			return jumpTable;
 		}
 
@@ -263,36 +269,16 @@ namespace ztl
 			return edges.back().get();
 		}
 
-		unordered_map<int, pair<int, deque<ActionWrap>>> PushDownAutoMachine::CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue)
+		vector<JumpItem> PushDownAutoMachine::CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue)
 		{
-			unordered_map<int, pair<int, deque<ActionWrap>>> result;
+			vector<JumpItem > result;
 			for(PDAEdge* edgeIter : source->GetNexts())
 			{
-
 				if(sign.find(edgeIter) == sign.end())
 				{
 					sign.insert(edgeIter);
 					assert(edgeIter->GetActions().size() >= 1);
-					auto&& begin = *edgeIter->GetActions().begin();
-					wstring name = L"";
-					auto actionType = begin.GetActionType();
-					if(actionType == ActionType::Epsilon || actionType == ActionType::Shift || actionType == ActionType::Reduce)
-					{
-						name = ActionTypeToWString(actionType);
-					}
-					else if(actionType == ActionType::Assign||actionType== ActionType::Setter)
-					{
-						name = begin.GetValue();
-					}
-					else if(actionType == ActionType::Create||actionType == ActionType::Using|| actionType==ActionType::Terminate)
-					{
-						name = begin.GetName();
-					}
-					else
-					{
-						assert(false);
-					}
-					result.insert(make_pair(manager->GetCacheTagByName(name), make_pair(GetNodeIndex(edgeIter->GetTarget()), *edgeIter->actions)));
+					result.emplace_back(GetNodeIndex(edgeIter->GetTarget()), *edgeIter->actions);
 					queue.emplace_back(edgeIter->GetTarget());
 				}
 			}

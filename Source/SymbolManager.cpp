@@ -49,9 +49,10 @@ namespace ztl
 			{
 				CacheNameAndTagMap(iter.second->GetName());
 			}
-			CacheNameAndTagMap(L"Epsilon");
+			//CacheNameAndTagMap(L"Epsilon");
 			CacheNameAndTagMap(L"Shift");
 			CacheNameAndTagMap(L"Reduce");
+			CacheNameAndTagMap(L"<$>");
 
 		}
 
@@ -71,11 +72,16 @@ namespace ztl
 		//	symbolClassDefineMap.insert(make_pair(symbol, classDef));*/
 		//}
 		//
-		//void SymbolManager::CacheRuleDefineAndSymbolMap(GeneralRuleDefine * , ParserSymbol * symbol)
-		//{
-		//	/*this->ruleDefineSymbolMap.insert(make_pair(ruleDef, symbol));
-		//	this->symbolRuleDefineMap.insert(make_pair(symbol, ruleDef));*/
-		//}
+		void SymbolManager::CacheRuleDefineAndSymbolMap(GeneralRuleDefine * ruleDef, ParserSymbol * symbol)
+		{
+			this->symbolRuleDefineMap.insert(make_pair(symbol, ruleDef));
+		}
+		GeneralRuleDefine* SymbolManager::GetCacheRuleDefineBySymbol(ParserSymbol * symbol)
+		{
+			assert(symbol->IsRuleDef());
+			auto findIter = symbolRuleDefineMap.find(symbol);
+			return (findIter == symbolRuleDefineMap.end()) ? nullptr : findIter->second;
+		}
 		//void SymbolManager::CacheEnumTypeAndSymbolMap(GeneralEnumTypeDefine * , ParserSymbol * symbol)
 		//{
 		//	/*this->enumTypeSymbolMap.insert(make_pair(enumType, symbol));
@@ -372,11 +378,6 @@ namespace ztl
 		}
 
 
-	/*	ParserSymbol * SymbolManager::AddRegexDefine(const wstring & regex)
-		{
-			return CreatASymbol(SymbolType::RegexDef, regex, nullptr, nullptr);
-		}*/
-		
 
 		void SymbolManager::CheckNameReDefineError(const wstring& name, ParserSymbol * parentSymbol)
 		{

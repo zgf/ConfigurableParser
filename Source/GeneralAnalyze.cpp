@@ -177,6 +177,7 @@ namespace ztl
 				if(ruleType->IsClassType())
 				{
 					auto ruleSymbol = manager->AddRuleDefine(iter->name, ruleType);
+					manager->CacheRuleDefineAndSymbolMap(iter.get(), ruleSymbol);
 				}
 				else
 				{
@@ -961,11 +962,125 @@ namespace ztl
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);
 			ValidateGeneratePathStructure(manager, pathMap);
+			GetStartSymbol(manager);
 			manager->CacheNameAndTagMap();
 			//LogGeneratePath(L"test.txt", pathMap);
 		}
+		class GetStartSymbolVisitor :public GeneralGrammarTypeDefine::IVisitor
+		{
+		private:
+			SymbolManager*									manager;
+			unordered_map<ParserSymbol*, bool>				rules;
+			int												hitCount;
+		public:
+			GetStartSymbolVisitor()  = default;
+			~GetStartSymbolVisitor() noexcept = default;
+			GetStartSymbolVisitor(GetStartSymbolVisitor&&)  = default;
+			GetStartSymbolVisitor(const GetStartSymbolVisitor&)  = default;
+			GetStartSymbolVisitor& operator=(GetStartSymbolVisitor&&)  = default;
+			GetStartSymbolVisitor& operator=(const GetStartSymbolVisitor&)   = default;
+			GetStartSymbolVisitor(SymbolManager* _manager, unordered_map<ParserSymbol*, bool> _rules,int count) :manager(_manager),rules(_rules),hitCount(count)
+			{
+				
+			}
+		public:
+			size_t GetHitCount()const
+			{
+				return hitCount;
+			}
+		public:
+			void								Visit(GeneralGrammarTextTypeDefine*)
+			{
+				return;
+			}
+			void								Visit(GeneralGrammarNormalTypeDefine* node)
+			{
+				auto symbol = manager->GetCacheNormalGrammarToRuleDefSymbol(node);
+				if(symbol !=nullptr && 
+					symbol->IsRuleDef()&&
+					rules.find(symbol)->second == false)
+				{
+					rules[symbol] = true;
+					manager->StartRuleList().emplace_back(symbol->GetName());
+					auto ruleNode = manager->GetCacheRuleDefineBySymbol(symbol);
+					assert(ruleNode != nullptr);
+					hitCount++;
+					for (auto&& grammarIter : ruleNode->grammars)
+					{
+						grammarIter->Accept(this);
+					}
+				}
+			}
+			void								Visit(GeneralGrammarSequenceTypeDefine* node)
+			{
+				node->first->Accept(this);
+				node->second->Accept(this);
+			}
+			void								Visit(GeneralGrammarLoopTypeDefine*node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarOptionalTypeDefine*node)
+			{
+				node->grammar->Accept(this);
+			}
+
+			void								Visit(GeneralGrammarSetterTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+			}
+			void								Visit(GeneralGrammarAssignTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+			}
+			void								Visit(GeneralGrammarUsingTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+			}
+			void								Visit(GeneralGrammarCreateTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+
+			}
+			void								Visit(GeneralGrammarAlterationTypeDefine*node)
+			{
+				node->left->Accept(this);
+				node->right->Accept(this);
+
+			}
 
 		
+		};
+		void GetStartSymbol(SymbolManager * manager)
+		{
+			auto&& table = manager->GetTable();
+			unordered_map<ParserSymbol*, bool> rules;
+			for(auto&& ruleIter : table->rules)
+			{
+				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(ruleIter->name);
+				rules[ruleSymbol] = false;
+			}
+			for(auto&& ruleIter : table->rules)
+			{
+				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(ruleIter->name);
+				rules[ruleSymbol] = true;
+				manager->StartRuleList().emplace_back(ruleSymbol->GetName());
+				GetStartSymbolVisitor visitor(manager,rules,1);
+				rules[ruleSymbol] = false;
+				for (auto&& grammarIter:ruleIter->grammars)
+				{
+					grammarIter->Accept(&visitor);
+				}
 
+				if(visitor.GetHitCount() != rules.size())
+				{
+					manager->StartRuleList().clear();
+				}
+			}
+		}
 	}
 }

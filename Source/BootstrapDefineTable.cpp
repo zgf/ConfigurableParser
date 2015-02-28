@@ -387,9 +387,9 @@ namespace ztl
 							.Name(L"Grammar")
 							.ReturnType(Normal(L"GenGrammarTypeDefine"))
 							| (
-							GrammarSymbol(L"Grammar")[L"grammar"] +
-							Text(L"as") +
-							GrammarSymbol(L"Type")[L"type"]
+								GrammarSymbol(L"Grammar")[L"grammar"] +
+								Text(L"as") +
+								GrammarSymbol(L"Type")[L"type"]
 							)
 							.Create(Normal(L"GenGrammarCreateTypeDefine"))
 							| (
@@ -404,6 +404,8 @@ namespace ztl
 								 ) +
 								Text(L"}")
 							).Create(Normal(L"GenGrammarSetterTypeDefine"))
+							|!GrammarSymbol(L"AlternativeGrammar")
+							| !GrammarSymbol(L"SetterGrammar")
 						)
 						.Rule
 						(
@@ -487,7 +489,7 @@ namespace ztl
 							.Name(L"ParserDecl")
 							.ReturnType(Normal(L"GenTableDefine"))
 							| (
-								*(GrammarSymbol(L"TypeDecl")[L"types"]) +
+								*(GrammarSymbol(L"TypeDecl")[L"types"])  +
 								*(GrammarSymbol(L"TokenDecl")[L"tokens"]) +
 								*(GrammarSymbol(L"RuleDecl")[L"rules"]) 
 							)
