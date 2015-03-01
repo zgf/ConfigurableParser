@@ -89,8 +89,10 @@ namespace ztl
 				ActionWrap wrap(ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), L"");
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
-				machine->AddEdge(newNode, result.first, move(wrap));
-				result.first = newNode;
+				//machine->AddEdge(newNode, result.first, move(wrap));
+				//result.first = newNode;
+				machine->AddEdge(result.second,newNode, move(wrap));
+				result.second = newNode;
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -115,9 +117,11 @@ namespace ztl
 		};
 		void HelpLogJumpTable(wstring fileName, PushDownAutoMachine& machine)
 		{
+			machine.InitNodeIndexMap();
 			machine.CreateJumpTable();
 			LogJumpTable(fileName, machine);
 			machine.ClearJumpTable();
+			machine.ClearNodeIndexMap();
 		}
 		void AddGeneratePDA(unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap, wstring ruleName, PDANode * start, PDANode* end)
 		{
@@ -158,10 +162,12 @@ namespace ztl
 
 			//添加结束节点.
 			AddFinishNode(machine);
-
-			machine.InitNodeIndexMap();
 			HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
-			//machine.CreateJumpTable();
+			//合并冗余节点 BUG
+			//MergeNoTermSymbol(machine);
+			//MergeGrammarCommonFactor(machine);
+
+			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
 		}
 		using lambdaType = wstring(*)(const ActionWrap&);
 
@@ -183,7 +189,7 @@ namespace ztl
 		{
 			auto& pdaMap = machine.GetPDAMap();
 			assert(!machine.GetSymbolManager()->StartRuleList().empty());
-			auto rootRuleName = machine.GetSymbolManager()->StartRuleList()[0];
+			auto rootRuleName = machine.GetRootRuleName();
 			assert(machine.GetPDAMap().find(rootRuleName) != machine.GetPDAMap().end());
 			pdaMap[rootRuleName].second = machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second);
 		}
@@ -214,7 +220,7 @@ namespace ztl
 				for(auto&& colsIter : rowsIter.second)
 				{
 					auto&& targetNodeIndex = colsIter.targetIndex;
-					output <<L" targetIndex: " << to_wstring(targetNodeIndex) << endl;
+					output << L" targetIndex: " << to_wstring(targetNodeIndex) << endl;
 
 					auto&& actionWrapList = colsIter.actions;
 					auto&& actionWrapStringList = ActionWrapStringList(actionWrapList);
@@ -275,31 +281,35 @@ namespace ztl
 				MergeNodeByEdge(edges, machine);
 			}
 		}
-		vector<PDANode*> CollectGraphNode(PushDownAutoMachine& machine)
+
+		template<typename prediction_type>
+		vector<PDANode*> CollectGraphNode(PushDownAutoMachine& machine, prediction_type pred)
 		{
+			unordered_set<PDANode*>sign;
+			deque<PDANode*> queue;
 			vector<PDANode*> result;
-			unordered_set<PDANode*> sign;
-			for(auto&& ruleIter : machine.GetPDAMap())
+			for(auto&&ruleName : machine.GetSymbolManager()->StartRuleList())
 			{
-				deque<PDANode*> queue;
-				queue.emplace_back(ruleIter.second.first);
+				auto&& grammarIter = machine.GetPDAMap()[ruleName];
+				queue.emplace_back(grammarIter.first);
 				while(!queue.empty())
 				{
-					auto&& front = queue.front();
-					sign.insert(front);
-					if(front->GetNexts().size() > 1)
+					PDANode* front = queue.front();
+					queue.pop_front();
+					if(sign.find(front) == sign.end())
 					{
-						result.emplace_back(front);
-					}
-					for(auto&& edgeIter : front->GetNexts())
-					{
-						if(sign.find(edgeIter->GetTarget()) == sign.end())
+						sign.insert(front);
+						if (pred(front))
+						{
+							result.emplace_back(front);
+						}
+						for(auto&& edgeIter : front->GetNexts())
 						{
 							queue.emplace_back(edgeIter->GetTarget());
 						}
 					}
-					queue.pop_front();
 				}
+
 			}
 			return result;
 		}
@@ -307,7 +317,10 @@ namespace ztl
 		{
 			unordered_set<PDANode*> sign;
 			vector<PDAEdge*> edges;
-			auto&& nodeList = CollectGraphNode(machine);
+			auto&& nodeList = CollectGraphNode(machine, [](auto&&element)
+			{
+				return element->GetNexts().size() > 1;
+			});
 			assert(std::accumulate(nodeList.begin(), nodeList.end(), 0, [](int val, const PDANode* element)
 			{
 				return val + element->GetNexts().size() <= 1;
@@ -326,12 +339,12 @@ namespace ztl
 		{
 			vector<PDAEdge*> result;
 			unordered_set<PDAEdge*> sign;
-			assert(!machine.GetSymbolManager()->StartRuleList().empty());
 			//从Root表达式开始
 
 			for(auto&& iter : machine.GetSymbolManager()->StartRuleList())
 			{
 				auto&& ruleIter = machine.GetPDAMap()[iter];
+				//auto&& ruleIter = machine.GetPDAMap()[name];
 				deque<PDANode*> queue;
 				queue.emplace_back(ruleIter.first);
 				while(!queue.empty())
@@ -392,9 +405,105 @@ namespace ztl
 				machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, nonTerminateName, L""));
 			}
 		}
-		//合并非终结节点,每个边上都有一个终结节点.
+		bool HasTerminateAction(PDAEdge* target)
+		{
+			return find_if(target->GetActions().begin(), target->GetActions().end(), [](const ActionWrap& element)
+			{
+				if(element.GetActionType() == ActionType::Terminate)
+				{
+					return true;
+				}
+				return false;
+			}) != target->GetActions().end();
+		}
+		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine)
+		{
+			assert(!save.empty());
+			deque<ActionWrap> newActions;
+			auto source = save.front()->GetSource();
+			auto target = save.back()->GetTarget();
+			for(auto&& iter : save)
+			{
+				newActions.insert(newActions.end(), iter->GetActions().begin(), iter->GetActions().end());
+			}
+			auto nexts = source->GetNexts();
+			if(find_if(nexts.begin(), nexts.end(), [&newActions](PDAEdge* element)
+			{
+				return element->GetActions() == newActions;
+			}) == nexts.end())
+			{
+				machine.AddEdge(source, target, newActions);
+			}
+		}
+
 		void MergeNoTermSymbol(PushDownAutoMachine& machine)
 		{
+			//全部出发边都处理完毕的节点
+		//	unordered_set<PDANode*> sign;
+			unordered_set<PDANode*> signNode;
+			vector<PDAEdge*> signEdge;
+			vector<PDANode*> stack;
+			function<void(PDANode*)> FindPathByNode;
+			int record = 0;
+			unordered_map<PDANode*, int> EdgeCountMap;
+			FindPathByNode = [&EdgeCountMap,&machine, &record, &signEdge, &signNode, &stack, &FindPathByNode](PDANode* node)
+			{
+				auto nexts = node->GetNexts();
+				size_t old_length = EdgeCountMap[node];
+				for(size_t i = 0; i < old_length;++i)
+				{
+					auto&& edgeIter = nexts[i];
+					auto&& target = edgeIter->GetTarget();
+
+					if(signNode.find(target) == signNode.end()/* &&
+						find(signEdge.begin(), signEdge.end(), edgeIter) == signEdge.end()*/)
+					{
+						if(record + HasTerminateAction(edgeIter) < 2)
+						{
+							signNode.insert(target);
+							signEdge.emplace_back(edgeIter);
+							stack.emplace_back(target);
+							record += HasTerminateAction(edgeIter);
+							FindPathByNode(target);
+							record -= HasTerminateAction(edgeIter);
+							stack.pop_back();
+							signEdge.pop_back();
+							signNode.erase(target);
+						}
+						else
+						{
+							MergePathSymbol(signEdge, machine);
+						}
+					}
+					else
+					{
+						int a = 0;
+					}
+				}
+			};
+
+			auto nodes = CollectGraphNode(machine, [&EdgeCountMap](PDANode* element)
+			{
+				EdgeCountMap.insert({ element,element->GetNexts().size() });
+				return true;
+			});
+			for(size_t i = 0; i < nodes.size();++i)
+			{
+				
+				auto&& nodeIter = nodes[i];
+				stack.emplace_back(nodeIter);
+
+				FindPathByNode(stack.back());
+			}
+			for (auto&& nodeIter:EdgeCountMap)
+			{
+				auto nexts = nodeIter.first->GetNexts();
+				assert((size_t)nodeIter.second<=nexts.size());
+				for(auto i = 0; i < nodeIter.second; ++i)
+				{
+					machine.DeleteEdge(nexts[i]);
+				}
+			}
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{

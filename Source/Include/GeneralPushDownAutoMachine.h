@@ -204,23 +204,26 @@ namespace ztl
 			void						NextEdgesAdditionFrontAction(PDANode* targetNode, const ActionWrap& wrap);
 
 			wstring						GetRuleNameOrEmptyByNodeIndex(int index) ;
-
+			wstring						GetRootRuleName()const;
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-			void InitNodeIndexMap();
 			void													CreateJumpTable();
 			void													ClearJumpTable();
 				const unordered_map<int, vector<JumpItem>>& GetJumpTable()const;
 			vector<JumpItem> CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue);
 
+			void InitNodeIndexToRuleNameMap();
+			void InitNodeIndexMap();
+			void ClearNodeIndexMap();
+			void ClearNodeIndexToRuleNameMap();
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
 			int  GetNodeIndex(PDANode* target);
-			void InitNodeIndexToRuleNameMap();
+			
 		private:
 			vector<shared_ptr<PDAEdge>>											 edges;
 			vector<shared_ptr<PDANode>>											 nodes;

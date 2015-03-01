@@ -96,9 +96,7 @@ namespace ztl
 		{
 			auto newNode = NewNode();
 			ActionWrap wrap(ActionType::Terminate,L"<$>",L"");
-			auto edge = NewEdge(target, newNode, wrap);
-			target->nexts->emplace_back(edge);
-			newNode->fronts->emplace_back(edge);
+			this->AddEdge(target, newNode, wrap);
 			return newNode;
 		}
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddLoopLinkNode(PDANode * loopStart, PDANode * loopEnd)
@@ -204,6 +202,17 @@ namespace ztl
 			InitNodeIndexToRuleNameMap();
 		}
 
+		void PushDownAutoMachine::ClearNodeIndexMap()
+		{
+			nodeIndexMap.clear();
+			ClearNodeIndexToRuleNameMap();
+		}
+
+		void PushDownAutoMachine::ClearNodeIndexToRuleNameMap()
+		{
+			nodeIndexToRuleNameMap.clear();
+		}
+
 		void PushDownAutoMachine::CreateJumpTable()
 		{
 			unordered_set<PDAEdge*> sign;
@@ -284,5 +293,11 @@ namespace ztl
 			}
 			return result;
 		}
+		wstring	 PushDownAutoMachine::GetRootRuleName()const
+		{
+			assert(!this->GetSymbolManager()->StartRuleList().empty());
+			return this->GetSymbolManager()->StartRuleList()[0];
+		}
 	}
+
 }
