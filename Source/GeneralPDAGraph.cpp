@@ -91,7 +91,7 @@ namespace ztl
 				auto newNode = machine->NewNode();
 				//machine->AddEdge(newNode, result.first, move(wrap));
 				//result.first = newNode;
-				machine->AddEdge(result.second,newNode, move(wrap));
+				machine->AddEdge(result.second, newNode, move(wrap));
 				result.second = newNode;
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
@@ -164,10 +164,10 @@ namespace ztl
 			AddFinishNode(machine);
 			HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
 			//合并冗余节点 BUG
-			//MergeNoTermSymbol(machine);
+			MergeNoTermSymbol(machine);
 			//MergeGrammarCommonFactor(machine);
 
-			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
+			HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
 		}
 		using lambdaType = wstring(*)(const ActionWrap&);
 
@@ -299,7 +299,7 @@ namespace ztl
 					if(sign.find(front) == sign.end())
 					{
 						sign.insert(front);
-						if (pred(front))
+						if(pred(front))
 						{
 							result.emplace_back(front);
 						}
@@ -309,7 +309,6 @@ namespace ztl
 						}
 					}
 				}
-
 			}
 			return result;
 		}
@@ -435,75 +434,220 @@ namespace ztl
 				machine.AddEdge(source, target, newActions);
 			}
 		}
-
+		struct Path
+		{
+			vector<PDAEdge*> edges;
+		};
 		void MergeNoTermSymbol(PushDownAutoMachine& machine)
 		{
-			//全部出发边都处理完毕的节点
-		//	unordered_set<PDANode*> sign;
-			unordered_set<PDANode*> signNode;
-			vector<PDAEdge*> signEdge;
-			vector<PDANode*> stack;
-			function<void(PDANode*)> FindPathByNode;
-			int record = 0;
-			unordered_map<PDANode*, int> EdgeCountMap;
-			FindPathByNode = [&EdgeCountMap,&machine, &record, &signEdge, &signNode, &stack, &FindPathByNode](PDANode* node)
-			{
-				auto nexts = node->GetNexts();
-				size_t old_length = EdgeCountMap[node];
-				for(size_t i = 0; i < old_length;++i)
+			//assert(!machine.GetSymbolManager()->StartRuleList().empty());
+			//auto rootName = machine.GetSymbolManager()->StartRuleList()[0];
+			//vector<Path> paths;
+			////第i号路径已经完结集合
+			//unordered_set<int> save;
+			//deque<PDANode*>queue;
+			//unordered_set<PDANode*> sign;
+			//unordered_map<PDANode*, int> EdgeCountMap;
+			////unordered_map<PDANode*, int> nodeIndexMap;
+			////nodexIndex 代表的node的edge对应的path序列编号
+			//unordered_multimap<PDANode*, vector<int>> nodeEdgesMap;
+			//queue.emplace_back(machine.GetPDAMap()[rootName].first);
+			//nodeEdgesMap.insert(make_pair(queue.front(), vector<int>()));
+			//sign.insert(queue.back());
+			//while(!queue.empty())
+			//{
+			//	auto front = queue.front();
+			//	EdgeCountMap.insert(make_pair(front, front->GetNexts().size()));
+			//	queue.pop_front();
+
+			//	auto nexts = front->GetNexts();
+			//	size_t nextsLength = EdgeCountMap[front];
+			//	auto iterRange = nodeEdgesMap.equal_range(front);
+			//	vector<typename unordered_multimap<PDANode*, vector<int>>::iterator> iterList;
+			//	while(iterRange.first!=iterRange.second)
+			//	{
+			//		iterList.emplace_back(iterRange.first);
+			//		++iterRange.first;
+			//	}
+			//	for(auto&& iter : iterList)
+			//	{
+			//		auto& pathIndexList = iter->second;
+
+			//		if(pathIndexList.empty())
+			//		{
+			//			for(size_t i = 0; i < nextsLength; ++i)
+			//			{
+			//				pathIndexList.emplace_back(paths.size() + i);
+			//			}
+			//			for(size_t i = 0; i < nextsLength; ++i)
+			//			{
+			//				auto pathIndex = pathIndexList[i];
+			//				if(save.find(pathIndex) == save.end())
+			//				{
+			//					auto&& edgeIter = nexts[i];
+			//					paths.emplace_back();
+			//					paths[pathIndex].edges.emplace_back(edgeIter);
+			//					if(HasTerminateAction(edgeIter))
+			//					{
+			//						save.insert(pathIndex);
+			//						auto target = edgeIter->GetTarget();
+			//						if(sign.find(target) == sign.end())
+			//						{
+			//							queue.emplace_back(target);
+			//							sign.insert(target);
+			//						}
+			//						nodeEdgesMap.insert({ target,vector<int>() });
+
+			//					}
+			//					else
+			//					{
+			//						auto target = edgeIter->GetTarget();
+			//						if(sign.find(target) == sign.end())
+			//						{
+			//							queue.emplace_back(target);
+			//							sign.insert(target);
+			//						}
+			//						nodeEdgesMap.insert(make_pair(target, vector<int>(1, pathIndex)));
+
+			//					}
+			//				}
+			//			}
+			//		}
+			//		else
+			//		{
+			//			if(nextsLength > 1)
+			//			{
+			//				size_t count = nextsLength - 1;
+			//				auto endIndex = paths.size();
+			//				assert(!pathIndexList.empty());
+
+			//				paths.insert(paths.end(), count, paths[pathIndexList[0]]);
+			//				for(size_t i = 0; i < count; i++)
+			//				{
+			//					pathIndexList.emplace_back(i + endIndex);
+			//				}
+			//			}
+
+			//			for(size_t i = 0; i < nextsLength; ++i)
+			//			{
+			//				auto pathIndex = pathIndexList[i];
+
+			//				if(save.find(pathIndex) == save.end())
+			//				{
+			//					auto&& edgeIter = nexts[i];
+			//					paths[pathIndex].edges.emplace_back(edgeIter);
+
+			//					if(HasTerminateAction(edgeIter))
+			//					{
+			//						MergePathSymbol(paths[pathIndex].edges, machine);
+			//						save.insert(pathIndex);
+
+			//						auto target = edgeIter->GetTarget();
+			//						if(sign.find(target) == sign.end())
+			//						{
+			//							queue.emplace_back(target);
+			//							sign.insert(target);
+			//						}
+			//						nodeEdgesMap.insert({ target,vector<int>() });
+
+			//					}
+			//					else
+			//					{
+			//						unordered_set<PDANode*> pathNodes;
+			//						for_each(paths[pathIndex].edges.begin(), paths[pathIndex].edges.end(), [&pathNodes](PDAEdge* element)
+			//						{
+			//							pathNodes.insert(element->GetSource());
+			//						});
+
+			//						auto target = edgeIter->GetTarget();
+			//						if(pathNodes.find(target) != pathNodes.end())
+			//						{
+			//							//说明有环.强制结束
+			//							save.insert(pathIndex);
+			//						}
+			//						else
+			//						{
+			//							if(sign.find(target) == sign.end())
+			//							{
+			//								queue.emplace_back(target);
+			//								sign.insert(target);
+			//							}
+			//							nodeEdgesMap.insert(make_pair(target, vector<int>(1, pathIndex)));
+
+			//						}
+			//					}
+			//				}
+			//			}
+			//		}
+			//	}
+			//}
+			//int a = 0;
+			//	//全部出发边都处理完毕的节点
+			////	unordered_set<PDANode*> sign;
+			//	unordered_set<PDANode*> signNode;
+			//	vector<PDAEdge*> signEdge;
+			//	vector<PDANode*> stack;
+			//	function<void(PDANode*)> FindPathByNode;
+			//	int record = 0;
+			//	unordered_map<PDANode*, int> EdgeCountMap;
+			//	FindPathByNode = [&EdgeCountMap,&machine, &record, &signEdge, &signNode, &stack, &FindPathByNode](PDANode* node)
+			//	{
+			//		auto nexts = node->GetNexts();
+			//		size_t old_length = EdgeCountMap[node];
+			//		for(size_t i = 0; i < old_length;++i)
+			//		{
+			//			auto&& edgeIter = nexts[i];
+			//			auto&& target = edgeIter->GetTarget();
+
+			//			if(signNode.find(target) == signNode.end()/* &&
+			//				find(signEdge.begin(), signEdge.end(), edgeIter) == signEdge.end()*/)
+			//			{
+			//				if(record + HasTerminateAction(edgeIter) < 2)
+			//				{
+			//					signNode.insert(target);
+			//					signEdge.emplace_back(edgeIter);
+			//					stack.emplace_back(target);
+			//					record += HasTerminateAction(edgeIter);
+			//					FindPathByNode(target);
+			//					record -= HasTerminateAction(edgeIter);
+			//					stack.pop_back();
+			//					signEdge.pop_back();
+			//					signNode.erase(target);
+			//				}
+			//				else
+			//				{
+			//					MergePathSymbol(signEdge, machine);
+			//				}
+			//			}
+			//			else
+			//			{
+			//				int a = 0;
+			//			}
+			//		}
+			//	};
+
+			//	auto nodes = CollectGraphNode(machine, [&EdgeCountMap](PDANode* element)
+			//	{
+			//		EdgeCountMap.insert({ element,element->GetNexts().size() });
+			//		return true;
+			//	});
+			//	for(size_t i = 0; i < nodes.size();++i)
+			//	{
+			//
+			//		auto&& nodeIter = nodes[i];
+			//		stack.emplace_back(nodeIter);
+
+			//		FindPathByNode(stack.back());
+			//	}
+				/*for (auto&& nodeIter:EdgeCountMap)
 				{
-					auto&& edgeIter = nexts[i];
-					auto&& target = edgeIter->GetTarget();
-
-					if(signNode.find(target) == signNode.end()/* &&
-						find(signEdge.begin(), signEdge.end(), edgeIter) == signEdge.end()*/)
+					auto nexts = nodeIter.first->GetNexts();
+					assert((size_t)nodeIter.second<=nexts.size());
+					for(auto i = 0; i < nodeIter.second; ++i)
 					{
-						if(record + HasTerminateAction(edgeIter) < 2)
-						{
-							signNode.insert(target);
-							signEdge.emplace_back(edgeIter);
-							stack.emplace_back(target);
-							record += HasTerminateAction(edgeIter);
-							FindPathByNode(target);
-							record -= HasTerminateAction(edgeIter);
-							stack.pop_back();
-							signEdge.pop_back();
-							signNode.erase(target);
-						}
-						else
-						{
-							MergePathSymbol(signEdge, machine);
-						}
+						machine.DeleteEdge(nexts[i]);
 					}
-					else
-					{
-						int a = 0;
-					}
-				}
-			};
-
-			auto nodes = CollectGraphNode(machine, [&EdgeCountMap](PDANode* element)
-			{
-				EdgeCountMap.insert({ element,element->GetNexts().size() });
-				return true;
-			});
-			for(size_t i = 0; i < nodes.size();++i)
-			{
-				
-				auto&& nodeIter = nodes[i];
-				stack.emplace_back(nodeIter);
-
-				FindPathByNode(stack.back());
-			}
-			for (auto&& nodeIter:EdgeCountMap)
-			{
-				auto nexts = nodeIter.first->GetNexts();
-				assert((size_t)nodeIter.second<=nexts.size());
-				for(auto i = 0; i < nodeIter.second; ++i)
-				{
-					machine.DeleteEdge(nexts[i]);
-				}
-			}
+				}*/
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{
