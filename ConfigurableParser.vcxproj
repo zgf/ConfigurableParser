@@ -175,6 +175,7 @@
     <ClCompile Include="Source\BootstrapDefineTable.cpp" />
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
     <ClCompile Include="Source\GeneralJumpTable.cpp" />
+    <ClCompile Include="Source\GeneralLexerFile.cpp" />
     <ClCompile Include="Source\GeneralPDAGraph.cpp" />
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
     <ClCompile Include="Source\GenerateNodeDefineFile.cpp" />

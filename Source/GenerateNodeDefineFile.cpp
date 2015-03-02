@@ -2,8 +2,6 @@
 #include "Include/stdafx.h"
 #include "Include/GeneralTableDefine.h"
 #include "Include/SymbolManager.h"
-#include "../Lib/ZTL/ztl_exception.h"
-#include "../Lib/ZTL/ztl_generator.hpp"
 namespace ztl
 {
 	namespace general_parser

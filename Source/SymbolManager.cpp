@@ -9,27 +9,6 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		void SymbolManager::CreatStringAndTagMap()
-		{
-			for(auto&& iter : table->tokens)
-			{
-				SetNameToMap(iter->name, TagType::terminate);
-				
-			}
-			for(auto&& iter : table->rules)
-			{
-				SetNameToMap(iter->name, TagType::nonterminate);
-			}
-		}
-		unordered_map<wstring, LexTokenDefine> SymbolManager::GetLexTokenDefine()
-		{
-			unordered_map<wstring, LexTokenDefine> result;
-			for(auto&&iter : table->tokens)
-			{
-				result.insert(make_pair(iter->name, LexTokenDefine(iter->name, iter->regex, iter->ignore)));
-			}
-			return result;
-		}
 		vector<wstring>& SymbolManager::GetStartRuleList()
 		{
 			return startRuleList;
@@ -50,36 +29,13 @@ namespace ztl
 		{
 			return this->tokenTypeSymbol;
 		}
-		//TODO ÕâÀïÌ«³ó
-		void SymbolManager::CacheNameAndTagMap()
-		{
-			for(auto&& iter : *GetGlobalSymbol()->subSymbolMap)
-			{
-				CacheNameAndTagMap(iter.second->GetName());
-			}
-			//CacheNameAndTagMap(L"Epsilon");
-			CacheNameAndTagMap(L"Shift");
-			CacheNameAndTagMap(L"Reduce");
-			CacheNameAndTagMap(L"<$>");
-
-		}
+		
 
 		void SymbolManager::TryAddSubSymbol(ParserSymbol * subSymbol, ParserSymbol * parentSymbol)
 		{
 			subSymbol->parent = parentSymbol;
 			parentSymbol->AddSubSymbol(subSymbol);
 		}
-		/*void SymbolManager::CacheTokenDefineAndSymbolMap(GeneralTokenDefine *tokenDef, ParserSymbol * symbol)
-		{
-			tokenDefineSymbolMap.insert(make_pair(tokenDef, symbol));
-			symbolTokenDefineMap.insert(make_pair(symbol, tokenDef));
-		}*/
-		//void SymbolManager::CacheClassDefineAndSymbolMap(GeneralClassTypeDefine * , ParserSymbol * symbol)
-		//{
-		//	/*classDefineSymbolMap.insert(make_pair(classDef, symbol));
-		//	symbolClassDefineMap.insert(make_pair(symbol, classDef));*/
-		//}
-		//
 		void SymbolManager::CacheRuleDefineAndSymbolMap(GeneralRuleDefine * ruleDef, ParserSymbol * symbol)
 		{
 			this->symbolRuleDefineMap.insert(make_pair(symbol, ruleDef));
@@ -90,11 +46,6 @@ namespace ztl
 			auto findIter = symbolRuleDefineMap.find(symbol);
 			return (findIter == symbolRuleDefineMap.end()) ? nullptr : findIter->second;
 		}
-		//void SymbolManager::CacheEnumTypeAndSymbolMap(GeneralEnumTypeDefine * , ParserSymbol * symbol)
-		//{
-		//	/*this->enumTypeSymbolMap.insert(make_pair(enumType, symbol));
-		//	this->symboEnumTypeMap.insert(make_pair(symbol, enumType));*/
-		//}
 		ParserSymbol * SymbolManager::AddClass(const wstring & name, ParserSymbol * baseType, ParserSymbol * parentType)
 		{
 			assert(parentType->IsClassType() || parentType->IsGlobal());
@@ -114,48 +65,21 @@ namespace ztl
 		}
 		SymbolManager::SymbolManager() :table(BootStrapDefineTable())
 		{
-			CreatStringAndTagMap();
-
 			globalSymbol = CreatASymbol(SymbolType::Global, L"", nullptr, nullptr);
 			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"token", nullptr, nullptr);
 		}
 		SymbolManager::SymbolManager(const shared_ptr<GeneralTableDefine>& _table) :table(_table)
 		{
-			CreatStringAndTagMap();
-
 			globalSymbol = CreatASymbol(SymbolType::Global, L"", nullptr, nullptr);
 			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"token", nullptr, nullptr);
 		}
-				const vector<shared_ptr<GeneralTokenDefine>>& SymbolManager::GetTokens()const
+		const vector<shared_ptr<GeneralTokenDefine>>& SymbolManager::GetTokens()const
 		{
 			return table->tokens;
 		}
 		const vector<shared_ptr<GeneralTypeDefine>>& SymbolManager::GetTypes()const
 		{
-			// TODO: insert return statement here
 			return table->types;
-		}
-		int SymbolManager::GetTagByString(const wstring & name)const
-		{
-			return stringToTagMap.at(name);
-		}
-
-		wstring SymbolManager::GetStringByTag(int index)const
-		{
-			return tagToStringMap.at(index);
-		}
-
-		bool SymbolManager::IsLexerTag(int index)const
-		{
-			return tagTypeList[index] == TagType::terminate;
-		}
-
-		void SymbolManager::SetNameToMap(const wstring& name, TagType type)
-		{
-			this->tagToStringMap.emplace_back(name);
-			auto currentIndex = tagToStringMap.size() - 1;
-			tagTypeList.emplace_back(type);
-			this->stringToTagMap.insert(make_pair(tagToStringMap.back(), currentIndex));
 		}
 
 		ParserSymbol * SymbolManager::AddEnum(const wstring & name, ParserSymbol * parentType)
@@ -212,7 +136,6 @@ namespace ztl
 			if (tokenSymbol->IsIgnore())
 			{
 				CacheDisTokenNameSymbolMap(name, tokenSymbol);
-				//CacheRegexStringToSymbolMap(regex, tokenSymbol);
 			}
 			else
 			{
@@ -320,18 +243,6 @@ namespace ztl
 			nameToTagMap.insert(make_pair(symbolName, tagToNameList.size() - 1));
 		}
 
-		int SymbolManager::GetCacheTagByName(const wstring symbolName)
-		{
-			auto findIter = nameToTagMap.find(symbolName);
-			assert(findIter != nameToTagMap.end());
-			return (findIter == nameToTagMap.end()) ? -1 : findIter->second;
-		}
-
-		wstring SymbolManager::GetCacheNameByTag(size_t tag)
-		{
-			assert(tag >= 0 && tag < tagToNameList.size());
-			return tagToNameList[tag];
-		}
 
 		void SymbolManager::CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine * grammar, ParserSymbol * fieldDefSymbol)
 		{

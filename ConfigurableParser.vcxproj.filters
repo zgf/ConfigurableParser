@@ -115,6 +115,9 @@
     <ClCompile Include="Source\GeneralJumpTable.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GeneralLexerFile.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">

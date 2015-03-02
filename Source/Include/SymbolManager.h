@@ -20,11 +20,6 @@ namespace ztl
 				nonterminate,
 			};
 		private:
-			vector<wstring>					tagToStringMap;
-			unordered_map<wstring, int>		stringToTagMap;
-			vector<TagType>					tagTypeList;
-		
-
 			using TypeObjectToSymbolMapType = unordered_map<GeneralTypeObject*, ParserSymbol*>;
 			using RuleNameToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
 			using TokenNameToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
@@ -40,7 +35,6 @@ namespace ztl
 			ParserSymbol*					 globalSymbol;//根符号
 			ParserSymbol*					 tokenTypeSymbol;//token类型符号 
 			//作用域内类型到符号的映射.因为Symbol->type类型被擦除了,所以这样绑定后,下次不用使用visitor FindType去查看实际类型了.
-
 			//SymbolToClassDefineMapType		 symbolClassDefineMap;//从符号到类定义的绑定
 			//ClassDefineToSymbolMapType		 classDefineSymbolMap;//从类定义到符号的绑定
 			vector<wstring>						 startRuleList;
@@ -64,13 +58,6 @@ namespace ztl
 		public:
 			const vector<shared_ptr<GeneralTokenDefine>>& GetTokens() const;
 			const vector<shared_ptr<GeneralTypeDefine>>& GetTypes() const;
-			int GetTagByString(const wstring& name)const;
-			wstring GetStringByTag(int index)const;
-			bool IsLexerTag(int index)const;
-		private:
-			void SetNameToMap(const wstring& name, TagType type);
-			void CreatStringAndTagMap();
-			unordered_map<wstring, LexTokenDefine> GetLexTokenDefine();
 
 
 		public:
@@ -114,9 +101,7 @@ namespace ztl
 			ParserSymbol* GetCacheRegexStringToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheDisTokenNameSymbol(const wstring& name)const;
 			void		  CacheNameAndTagMap(const wstring symbolName);
-			int			  GetCacheTagByName(const wstring symbolName);
-			wstring		  GetCacheNameByTag(size_t tag);
-
+		
 			//setter or assign
 			void		  CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine* grammar, ParserSymbol* fieldDefSymbol);
 			//text
@@ -127,7 +112,6 @@ namespace ztl
 			void		  CacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar, ParserSymbol* ruleDefSymbol);
 			//using rule
 			void		  CacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar, ParserSymbol* ruleDefSymbol);
-			void		  CacheNameAndTagMap();
 			ParserSymbol* GetCacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar);
 			ParserSymbol* GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar);
 			ParserSymbol* GetCacheNonTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* terminateGrammar);

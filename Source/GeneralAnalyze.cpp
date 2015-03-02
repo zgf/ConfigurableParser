@@ -973,7 +973,7 @@ namespace ztl
 			auto&& pathMap = CollectGeneratePath(manager);
 			ValidateGeneratePathStructure(manager, pathMap);
 			GetStartSymbol(manager);
-			manager->CacheNameAndTagMap();
+			//manager->CacheNameAndTagMap();
 			//LogGeneratePath(L"test.txt", pathMap);
 		}
 		class GetStartSymbolVisitor :public GeneralGrammarTypeDefine::IVisitor
