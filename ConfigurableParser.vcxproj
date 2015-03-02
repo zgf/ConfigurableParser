@@ -181,7 +181,6 @@
     <ClCompile Include="Source\GenerateNodeDefineFile.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />
     <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\ParserLog.cpp" />
     <ClCompile Include="Source\ParserSymbol.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Include/stdafx.h</PrecompiledHeaderFile>
@@ -213,9 +212,7 @@
     <ClInclude Include="Source\Include\GeneralTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableWriter.h" />
     <ClInclude Include="Source\Include\GeneralLexer.hpp" />
-    <ClInclude Include="Source\Include\ParserLog.h" />
     <ClInclude Include="Source\Include\ParserSymbol.h" />
-    <ClInclude Include="Source\Include\ParserSymbolDefine.h" />
     <ClInclude Include="Source\Include\stdafx.h" />
     <ClInclude Include="Source\Include\SymbolManager.h" />
     <ClInclude Include="Source\Template\PDATemplate.hpp" />

@@ -117,11 +117,22 @@ namespace ztl
 		{
 			content = node->name + L",\n";
 		}
-		 wstring GetNodeDefineFileNamespace(SymbolManager* manager)
+		 vector<wstring> GetNodeDefineFileNamespace(SymbolManager* manager)
 		 {
 			 auto values = manager->GetCacheValueByProperty(L"namespace");
-			 assert(values.size() == 0 || values.size() == 1);
-			 return values.empty()?wstring() : values[0];
+			 return values;
+		 }
+		 void NodeDefineFileAddNamespace(wstring& content, SymbolManager* manager)
+		 {
+			 auto namespaceString = GetNodeDefineFileNamespace(manager);
+			 if(!namespaceString.empty())
+			 {
+				 reverse(namespaceString.begin(), namespaceString.end());
+				 for(auto&& iter : namespaceString)
+				 {
+					 content = iter + L"\n{\n" + content + L"\n};\n";
+				 }
+			 }
 		 }
 		 wstring GetNodeDefineFileInclude(SymbolManager* manager)
 		 {
@@ -146,18 +157,19 @@ namespace ztl
 				 return sum +L"\n\n"+ visitor.GetResult();
 			 });
 		 }
-		 void CreateNodeDefineFile(wstring fileName,SymbolManager* manager)
+		 void CreateFile(const wstring& fileName,const wstring& content)
 		 {
 			 wofstream output(fileName);
-			 auto body = GetNodeDefineFileBody(manager->GetTable());
-			 auto includeString = GetNodeDefineFileInclude(manager);
-			 auto namespaceString = GetNodeDefineFileNamespace(manager);
-			 if (!namespaceString.empty())
-			 {
-				 body = namespaceString + L"\n{\n" + body + L"\n};\n";
-			 }
-			 auto content = includeString +L"\n\n"+ body;
 			 output.write(content.c_str(), content.size());
+
+		 }
+		 void CreateNodeDefineFile(const wstring& fileName,SymbolManager* manager)
+		 {
+			 auto&& body = GetNodeDefineFileBody(manager->GetTable());
+			 auto includeString = GetNodeDefineFileInclude(manager);
+			 NodeDefineFileAddNamespace(body, manager);
+			 auto content = includeString +L"\n\n"+ body;
+			 CreateFile(fileName, content);
 		 }
 	}
 }

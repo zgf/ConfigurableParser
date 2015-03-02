@@ -1,7 +1,6 @@
 #pragma once
 #include "stdafx.h"
 #include "GeneralTableDefine.h"
-#include "Include\ParserSymbolDefine.h"
 
 namespace ztl
 {
@@ -9,7 +8,6 @@ namespace ztl
 	{
 		class ParserSymbol;
 		enum class SymbolType;
-		//PAIR_BUILDER(ScopeTypePair, ParserSymbol*, scope, ParserSymbol*, type);
 		class GeneratePath;
 		class SymbolManager
 		{
@@ -58,16 +56,9 @@ namespace ztl
 		public:
 			const vector<shared_ptr<GeneralTokenDefine>>& GetTokens() const;
 			const vector<shared_ptr<GeneralTypeDefine>>& GetTypes() const;
-
-
-		public:
-			
 			vector<wstring>& GetStartRuleList();
-			
 			void SetStartRuleList(vector<wstring> val);
-		
 			GeneralTableDefine* GetTable();
-
 			ParserSymbol* GetGlobalSymbol();
 			ParserSymbol* GetTokenTypeSymbol();
 
@@ -89,19 +80,15 @@ namespace ztl
 			void CheckNameReDefineError(const wstring& name, ParserSymbol* parentSymbol);
 			ParserSymbol* CheckNameHasDefine(const wstring name, ParserSymbol* scope);
 
-			//void CacheClassDefineAndSymbolMap(GeneralClassTypeDefine* classDef, ParserSymbol* symbol);
 			void CacheRuleDefineAndSymbolMap(GeneralRuleDefine* ruleDef, ParserSymbol* symbol);
 			GeneralRuleDefine* GetCacheRuleDefineBySymbol(ParserSymbol* symbol);
-			//void CacheEnumTypeAndSymbolMap(GeneralEnumTypeDefine* enumType, ParserSymbol* symbol);
-			//void CacheTokenDefineAndSymbolMap(GeneralTokenDefine* tokenDef, ParserSymbol* symbol);
+			
 
 			
 			ParserSymbol* GetCacheRuleNameToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheTokenNameToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheRegexStringToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheDisTokenNameSymbol(const wstring& name)const;
-			void		  CacheNameAndTagMap(const wstring symbolName);
-		
 			//setter or assign
 			void		  CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine* grammar, ParserSymbol* fieldDefSymbol);
 			//text
@@ -118,12 +105,10 @@ namespace ztl
 
 			void				  CachePropertyToValueMap(wstring property, const vector<wstring>& value);
 			void				  CachePropertyToValueMap(wstring property, wstring value);
-
 			vector<wstring>		  GetCacheValueByProperty(wstring property)const;
 			unordered_map<wstring, vector<wstring>>& GetPropertyToValueMap();
 		private:
 			void TryAddSubSymbol(ParserSymbol* subSymbol, ParserSymbol* parentSymbol);
-
 			void CacheRuleNameToSymbolMap(const wstring& name, ParserSymbol* symbol);
 			void CacheTokenNameToSymbolMap(const wstring& name, ParserSymbol* symbol);
 			void CacheDisTokenNameSymbolMap(const wstring& name, ParserSymbol* symbol);

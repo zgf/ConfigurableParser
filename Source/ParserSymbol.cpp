@@ -1,7 +1,6 @@
 #include "Include\stdafx.h"
 #include "Include\ParserSymbol.h"
 #include "Include\SymbolManager.h"
-#include "Include\ParserSymbolDefine.h"
 #include "Include\GeneralPushDownAutoMachine.h"
 
 namespace ztl

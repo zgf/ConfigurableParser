@@ -237,11 +237,7 @@ namespace ztl
 			return (findIter == disTokenNameSymbolMap.end()) ? nullptr : findIter->second;
 		}
 
-		void SymbolManager::CacheNameAndTagMap(const wstring symbolName)
-		{
-			tagToNameList.emplace_back(symbolName);
-			nameToTagMap.insert(make_pair(symbolName, tagToNameList.size() - 1));
-		}
+	
 
 
 		void SymbolManager::CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine * grammar, ParserSymbol * fieldDefSymbol)
