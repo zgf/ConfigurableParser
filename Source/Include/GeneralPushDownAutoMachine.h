@@ -111,25 +111,21 @@ namespace ztl
 			{
 				return source;
 			}
-			int GetNonTermSymbolIndex()const
+			bool HasNonTermActionType()const
 			{
-				return GetSymbolIndex(ActionType::NonTerminate);
+				return HasThisActionType(ActionType::NonTerminate);
 			}
-			int GetTermSymbolIndex()const
+			bool HasTermActionType()const
 			{
-				return GetSymbolIndex(ActionType::Terminate);
+				return HasThisActionType(ActionType::Terminate);
 			}
 		private:
-			int GetSymbolIndex(ActionType type)const
+			bool HasThisActionType(ActionType type)const
 			{
-				for(int i = 0; i < (int) actions.size(); i++)
+				return find_if(actions.begin(), actions.end(), [&type](const ActionWrap& wrap)
 				{
-					if(actions.at(i).GetActionType() == type)
-					{
-						return i;
-					}
-				}
-				return -1;
+					return wrap.GetActionType() == type;
+				}) != actions.end();
 			}
 		private:
 			PDANode* target;
@@ -208,17 +204,10 @@ namespace ztl
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
 			PDANode*					AddFinishNodeFollowTarget(PDANode* target);
 			void						FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap);
-		//	void						NextEdgesAdditionFrontAction(PDANode* targetNode, const ActionWrap& wrap);
-
 			wstring						GetRootRuleName()const;
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
-			
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-			//void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-		
-
-			
 			void CreateRoot();
 
 		private:
@@ -230,7 +219,7 @@ namespace ztl
 			vector<shared_ptr<PDANode>>											 nodes;
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*,PDANode*>>						 PDAMap;
-			PDANode*															 root = nullptr;
+			PDANode*															 root;
 		
 			
 		};

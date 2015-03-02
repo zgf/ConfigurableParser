@@ -31,11 +31,8 @@ namespace ztl
 			const unordered_map<int, vector<JumpItem>>&				GetJumpTable()const;
 			vector<JumpItem>										CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, 
 				deque<PDANode*>& queue);
-			void													InitNodeIndexToRuleNameMap();
 			void													InitNodeIndexMap();
 			void													ClearNodeIndexMap();
-			void													ClearNodeIndexToRuleNameMap();
-			wstring													GetRuleNameOrEmptyByNodeIndex(int index);
 
 		private:
 			PushDownAutoMachine*												machine;
@@ -44,9 +41,9 @@ namespace ztl
 
 			unordered_map<int, vector<JumpItem>>								 jumpTable;
 			unordered_map<PDANode*, int>										 nodeIndexMap;
-			unordered_map<int, wstring>											 nodeIndexToRuleNameMap;
 		};
-		void LogJumpTable(wstring fileName, GeneralJumpTable& jumpTable);
+		void CreateJumpTable(GeneralJumpTable& jumpTable);
+		void HelpLogJumpTable(wstring fileName, GeneralJumpTable& jumpTable);
 
 	}
 }

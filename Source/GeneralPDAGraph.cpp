@@ -89,10 +89,10 @@ namespace ztl
 				ActionWrap wrap(ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), L"");
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
-				//machine->AddEdge(newNode, result.first, move(wrap));
-				//result.first = newNode;
-				machine->AddEdge(result.second, newNode, move(wrap));
-				result.second = newNode;
+				machine->AddEdge(newNode, result.first, move(wrap));
+				result.first = newNode;
+			/*	machine->AddEdge(result.second, newNode, move(wrap));
+				result.second = newNode;*/
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -287,7 +287,6 @@ namespace ztl
 			for(auto&& iter : machine.GetSymbolManager()->GetStartRuleList())
 			{
 				auto&& ruleIter = machine.GetPDAMap()[iter];
-				//auto&& ruleIter = machine.GetPDAMap()[name];
 				deque<PDANode*> queue;
 				queue.emplace_back(ruleIter.first);
 				while(!queue.empty())
@@ -298,7 +297,7 @@ namespace ztl
 						if(sign.find(edgeIter) == sign.end())
 						{
 							sign.insert(edgeIter);
-							if(edgeIter->GetNonTermSymbolIndex() != -1)
+							if(edgeIter->HasNonTermActionType())
 							{
 								result.emplace_back(edgeIter);
 							}
@@ -329,9 +328,9 @@ namespace ztl
 			auto&& edgeList = CollectNontermiateEdge(machine);
 			for(auto&& edgeIter : edgeList)
 			{
-				auto   index = edgeIter->GetNonTermSymbolIndex();
+				auto   index = 0;
 				assert(index != -1);
-				assert(index == 0);
+				assert(edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
 				auto&& source = edgeIter->GetSource();
 				auto&& target = edgeIter->GetTarget();
 				auto actions = edgeIter->GetActions();
@@ -342,23 +341,14 @@ namespace ztl
 				auto ruleName = nonTermiateIter->GetName();
 				auto findIter = machine.GetPDAMap().find(ruleName);
 				assert(findIter != machine.GetPDAMap().end());
+				//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
 				actions.erase(nonTermiateIter);
-				actions.emplace_back(ActionType::Reduce, nonTerminateName, L"");
+				actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, L"");
 				machine.AddEdge(findIter->second.second, target, actions);
 				machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, nonTerminateName, L""));
 			}
 		}
-		bool HasTerminateAction(PDAEdge* target)
-		{
-			return find_if(target->GetActions().begin(), target->GetActions().end(), [](const ActionWrap& element)
-			{
-				if(element.GetActionType() == ActionType::Terminate)
-				{
-					return true;
-				}
-				return false;
-			}) != target->GetActions().end();
-		}
+		
 		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine)
 		{
 			assert(!save.empty());
@@ -393,15 +383,11 @@ namespace ztl
 		};
 		bool IsTermRingPath(vector<PDAEdge*>& path)
 		{
-			assert(path.size() > 1);
+			//assert(path.size() > 1);
 			for (auto&& iter:path)
 			{
 				auto actions = iter->GetActions();
-				auto result = find_if(actions.begin(), actions.end(), [](const ActionWrap& wrap)
-				{
-					return wrap.GetActionType() == ActionType::Terminate;
-				})!= actions.end();
-				if (result == true)
+				if (iter->HasTermActionType())
 				{
 					return true;
 				}
@@ -410,7 +396,7 @@ namespace ztl
 		}
 		bool IsLeftreCursionRingPath(vector<PDAEdge*>& path)
 		{
-			assert(path.size() > 1);
+			//assert(path.size() > 1);
 			return accumulate(path.begin(), path.end(), (size_t)0, [](int val, PDAEdge* iter)
 			{
 				auto actions = iter->GetActions();
@@ -467,7 +453,7 @@ namespace ztl
 						//对于包含Term的环,构造新环.
 						IsTermRingPath(path))
 					{
-						if(HasTerminateAction(edgeIter))
+						if(edgeIter->HasTermActionType())
 						{
 							//遇到Term了,当前路径可以终止搜索了.
 							MergePathSymbol(path, machine);
@@ -475,10 +461,7 @@ namespace ztl
 							deleter.insert(path.begin(), path.end());
 							assert(!path.empty());
 							//记录待处理的节点
-							assert(find_if(edgeIter->GetActions().begin(), edgeIter->GetActions().end(), [](const ActionWrap& wrap)
-							{
-								return wrap.GetActionType() == ActionType::Terminate;
-							}) != edgeIter->GetActions().end());
+							assert(edgeIter->HasTermActionType());
 							RecordNewNode(target, allNode, noNeed);
 						}
 						else

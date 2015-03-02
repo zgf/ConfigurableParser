@@ -25,16 +25,12 @@ namespace ztl
 		{
 			unordered_set<PDAEdge*> sign;
 			deque<PDANode*> queue;
-			for(auto&& ruleIter : machine->GetPDAMap())
+			queue.emplace_back(GetRoot());
+			while(!queue.empty())
 			{
-				auto&& grammarIter = ruleIter.second;
-				queue.emplace_back(grammarIter.first);
-				while(!queue.empty())
-				{
-					auto front = queue.front();
-					queue.pop_front();
-					jumpTable.insert(make_pair(GetNodeIndex(front), CreateJumpItem(front, sign, queue)));
-				}
+				auto front = queue.front();
+				queue.pop_front();
+				jumpTable.insert(make_pair(GetNodeIndex(front), CreateJumpItem(front, sign, queue)));
 			}
 		}
 		vector<JumpItem> GeneralJumpTable::CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue)
@@ -57,39 +53,27 @@ namespace ztl
 			unordered_set<PDANode*>sign;
 			deque<PDANode*> queue;
 			int count = 0;
-
-			for(auto&&ruleIter : machine->GetPDAMap())
+			queue.emplace_back(GetRoot());
+			while(!queue.empty())
 			{
-				auto&& grammarIter = ruleIter.second;
-				queue.emplace_back(grammarIter.first);
-				while(!queue.empty())
+				PDANode* front = queue.front();
+				queue.pop_front();
+				if(sign.find(front) == sign.end())
 				{
-					PDANode* front = queue.front();
-					queue.pop_front();
-					if(sign.find(front) == sign.end())
+					sign.insert(front);
+					nodeIndexMap.insert(make_pair(front, count));
+					++count;
+					for(auto&& edgeIter : front->GetNexts())
 					{
-						sign.insert(front);
-						nodeIndexMap.insert(make_pair(front, count));
-						++count;
-						for(auto&& edgeIter : front->GetNexts())
-						{
-							queue.emplace_back(edgeIter->GetTarget());
-						}
+						queue.emplace_back(edgeIter->GetTarget());
 					}
 				}
 			}
-			InitNodeIndexToRuleNameMap();
 		}
 
 		void GeneralJumpTable::ClearNodeIndexMap()
 		{
 			nodeIndexMap.clear();
-			ClearNodeIndexToRuleNameMap();
-		}
-
-		void GeneralJumpTable::ClearNodeIndexToRuleNameMap()
-		{
-			nodeIndexToRuleNameMap.clear();
 		}
 
 		void GeneralJumpTable::ClearJumpTable()
@@ -99,23 +83,8 @@ namespace ztl
 
 		const unordered_map<int, vector<JumpItem>>& GeneralJumpTable::GetJumpTable() const
 		{
+			assert(!jumpTable.empty());
 			return jumpTable;
-		}
-
-		void GeneralJumpTable::InitNodeIndexToRuleNameMap()
-		{
-			for(auto&& ruleIter : machine->GetPDAMap())
-			{
-				auto&& ruleName = ruleIter.first;
-				auto&& grammarIter = ruleIter.second;
-				nodeIndexToRuleNameMap.insert(make_pair(GetNodeIndex(grammarIter.first), ruleName));
-			}
-		}
-
-		wstring GeneralJumpTable::GetRuleNameOrEmptyByNodeIndex(int index)
-		{
-			//assert(nodeIndexToRuleNameMap.find(index) == nodeIndexToRuleNameMap.end());
-			return nodeIndexToRuleNameMap.find(index) == nodeIndexToRuleNameMap.end() ? wstring() : nodeIndexToRuleNameMap[index];
 		}
 		using lambdaType = wstring(*)(const ActionWrap&);
 		unordered_map<ActionType, lambdaType> InitActionTypeAndGrammarLogMap()
@@ -125,7 +94,7 @@ namespace ztl
 			{
 				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
 			};
-			vector<ActionType> ActionTypeList = { 
+			vector<ActionType> ActionTypeList = {
 				ActionType::Assign,
 				ActionType::Create,
 				ActionType::Epsilon,
@@ -134,7 +103,7 @@ namespace ztl
 				ActionType::Setter,
 				ActionType::Shift,
 				ActionType::Terminate,
-				ActionType::Using 
+				ActionType::Using
 			};
 			for(auto&& iter : ActionTypeList)
 			{
@@ -151,31 +120,22 @@ namespace ztl
 			});
 			return result;
 		}
-		void HelpLogJumpTable(wstring fileName, GeneralJumpTable& jumpTable)
-		{
-			jumpTable.InitNodeIndexMap();
-			jumpTable.CreateJumpTable();
-			LogJumpTable(fileName, jumpTable);
-			jumpTable.ClearJumpTable();
-			jumpTable.ClearNodeIndexMap();
-		}
-
 		void LogJumpTable(wstring fileName, GeneralJumpTable& jumpTable)
 		{
 			auto actionMap = InitActionTypeAndGrammarLogMap();
 			auto&& table = jumpTable.GetJumpTable();
-			auto&& manager = jumpTable.GetSymbolManager();
 			wofstream output(fileName);
-			for(auto&& rowsIter : table)
+			for(auto rowsIter : table)
 			{
+
 				auto&& nodeIndex = rowsIter.first;
-				auto ruleName = jumpTable.GetRuleNameOrEmptyByNodeIndex(nodeIndex);
-				if(!ruleName.empty())
+				auto&&  edges = rowsIter.second;
+				sort(edges.begin(), edges.end(), [](const JumpItem& left,const JumpItem& right)
 				{
-					output << L"RuleName: " << ruleName << endl;
-				}
+					return left.targetIndex < right.targetIndex;
+				});
 				output << L"NodeIndex:" + to_wstring(nodeIndex) << endl;
-				for(auto&& colsIter : rowsIter.second)
+				for(auto&& colsIter : edges)
 				{
 					auto&& targetNodeIndex = colsIter.targetIndex;
 					output << L" targetIndex: " << to_wstring(targetNodeIndex) << endl;
@@ -188,6 +148,20 @@ namespace ztl
 					}
 				}
 			}
+		}
+		void CreateJumpTable(GeneralJumpTable & jumpTable)
+		{
+			jumpTable.InitNodeIndexMap();
+			jumpTable.CreateJumpTable();
+		}
+		void HelpLogJumpTable(wstring fileName, GeneralJumpTable& jumpTable)
+		{
+			jumpTable.ClearNodeIndexMap();
+			jumpTable.ClearJumpTable();
+			CreateJumpTable(jumpTable);
+			LogJumpTable(fileName, jumpTable);
+			jumpTable.ClearNodeIndexMap();
+			jumpTable.ClearJumpTable();
 		}
 	}
 }
