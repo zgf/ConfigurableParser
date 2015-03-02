@@ -1,40 +1,513 @@
 RuleName: SetterGrammar
 NodeIndex:8
 NodeIndex:64
- targetIndex: 68
+ targetIndex: 34
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
 			action:Terminate : ASSIGN;
+ targetIndex: 35
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : SEMICOLON;
+ targetIndex: 36
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : AS;
+ targetIndex: 37
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
+ targetIndex: 39
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Assign : left;
+			action:Reduce : AlternativeGrammar;
+			action:Terminate : OR;
+ targetIndex: 34
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
+ targetIndex: 35
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : SEMICOLON;
+ targetIndex: 36
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : AS;
+ targetIndex: 37
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
+ targetIndex: 39
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Assign : left;
+			action:Reduce : AlternativeGrammar;
+			action:Terminate : OR;
+ targetIndex: 49
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 50
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
+ targetIndex: 51
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : USING;
+ targetIndex: 52
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : OPTOPEN;
+ targetIndex: 53
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : OPEN;
+ targetIndex: 54
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : PREOPEN;
+ targetIndex: 34
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
+ targetIndex: 35
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : SEMICOLON;
+ targetIndex: 36
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : AS;
+ targetIndex: 37
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
+ targetIndex: 39
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Assign : left;
+			action:Reduce : AlternativeGrammar;
+			action:Terminate : OR;
+ targetIndex: 34
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
+ targetIndex: 35
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : SEMICOLON;
+ targetIndex: 36
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : AS;
+ targetIndex: 37
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
+ targetIndex: 39
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Assign : left;
+			action:Reduce : AlternativeGrammar;
+			action:Terminate : OR;
+ targetIndex: 49
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 50
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
+ targetIndex: 51
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : USING;
+ targetIndex: 52
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : OPTOPEN;
+ targetIndex: 53
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : OPEN;
+ targetIndex: 54
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : PREOPEN;
+ targetIndex: 58
+			action:Create : GenGrammarAssignTypeDefine;
+			action:Assign : grammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Terminate : COLON;
 RuleName: SequenceGrammar
 NodeIndex:0
- targetIndex: 0
-			action:Shift : SequenceGrammar;
 RuleName: Type
 NodeIndex:1
- targetIndex: 1
-			action:Shift : Type;
 RuleName: AlternativeGrammar
 NodeIndex:2
- targetIndex: 2
-			action:Shift : AlternativeGrammar;
 RuleName: EnumMember
 NodeIndex:3
 RuleName: Enum
 NodeIndex:4
 RuleName: ClassMember
 NodeIndex:5
- targetIndex: 1
-			action:Shift : Type;
 RuleName: TypeDecl
 NodeIndex:6
 RuleName: Class
 NodeIndex:7
 RuleName: Grammar
 NodeIndex:9
- targetIndex: 9
-			action:Shift : Grammar;
 RuleName: PrimitiveGrammar
 NodeIndex:10
- targetIndex: 10
-			action:Shift : PrimitiveGrammar;
 RuleName: TokenDecl
 NodeIndex:11
 RuleName: RuleDecl
@@ -276,13 +749,25 @@ NodeIndex:26
 			action:Terminate : NAME;
 			action:Assign : name;
 NodeIndex:27
- targetIndex: 1
+ targetIndex: 24
 			action:Shift : Type;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 25
+			action:Shift : Type;
+			action:Terminate : TOKEN;
 NodeIndex:28
- targetIndex: 5
-			action:Shift : ClassMember;
  targetIndex: 43
 			action:Terminate : CLOSE;
+ targetIndex: 24
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 25
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : TOKEN;
  targetIndex: 15
 			action:Shift : TypeDecl;
 			action:Shift : Enum;
@@ -354,15 +839,67 @@ NodeIndex:34
 			action:Terminate : NAME;
 			action:Assign : name;
 NodeIndex:35
- targetIndex: 56
+ targetIndex: 14
 			action:Create : GenRuleDefine;
+			action:Assign : rules;
+			action:Reduce : RuleDecl;
+			action:Create : GenTableDefine;
+			action:Terminate : <$>;
+ targetIndex: 15
+			action:Create : GenRuleDefine;
+			action:Assign : rules;
+			action:Reduce : RuleDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Enum;
+			action:Terminate : ENUM;
+ targetIndex: 16
+			action:Create : GenRuleDefine;
+			action:Assign : rules;
+			action:Reduce : RuleDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Class;
+			action:Terminate : CLASS;
+ targetIndex: 17
+			action:Create : GenRuleDefine;
+			action:Assign : rules;
+			action:Reduce : RuleDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : TOKEN;
+ targetIndex: 18
+			action:Create : GenRuleDefine;
+			action:Assign : rules;
+			action:Reduce : RuleDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : DISCARDTOKEN;
+ targetIndex: 19
+			action:Create : GenRuleDefine;
+			action:Assign : rules;
+			action:Reduce : RuleDecl;
+			action:Shift : RuleDecl;
+			action:Terminate : RULE;
 NodeIndex:36
- targetIndex: 1
+ targetIndex: 24
 			action:Shift : Type;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 25
+			action:Shift : Type;
+			action:Terminate : TOKEN;
 NodeIndex:37
- targetIndex: 57
+ targetIndex: 56
 			action:Terminate : OPEN;
 NodeIndex:38
+ targetIndex: 34
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -396,6 +933,17 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -407,7 +955,18 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -416,6 +975,18 @@ NodeIndex:38
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 34
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -452,6 +1023,18 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -464,7 +1047,19 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -524,6 +1119,18 @@ NodeIndex:38
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
+ targetIndex: 34
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Assign : second;
@@ -560,6 +1167,18 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Assign : second;
@@ -572,7 +1191,19 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -582,6 +1213,19 @@ NodeIndex:38
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 34
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Assign : second;
@@ -621,6 +1265,19 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Assign : second;
@@ -634,7 +1291,20 @@ NodeIndex:38
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarOptionalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -701,60 +1371,23 @@ NodeIndex:38
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
- targetIndex: 59
+ targetIndex: 58
 			action:Create : GenGrammarOptionalTypeDefine;
 			action:Assign : grammar;
 			action:Reduce : PrimitiveGrammar;
 			action:Terminate : COLON;
- targetIndex: 34
-			action:Create : GenGrammarOptionalTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 34
-			action:Create : GenGrammarOptionalTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 34
-			action:Create : GenGrammarOptionalTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 34
-			action:Create : GenGrammarOptionalTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
 NodeIndex:39
+ targetIndex: 34
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -799,7 +1432,29 @@ NodeIndex:39
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -808,6 +1463,18 @@ NodeIndex:39
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 34
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -856,7 +1523,31 @@ NodeIndex:39
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -916,6 +1607,18 @@ NodeIndex:39
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
+ targetIndex: 34
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Assign : second;
@@ -964,7 +1667,31 @@ NodeIndex:39
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -974,6 +1701,19 @@ NodeIndex:39
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 34
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Assign : second;
@@ -1026,7 +1766,33 @@ NodeIndex:39
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Create : GenGrammarLoopTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -1093,60 +1859,22 @@ NodeIndex:39
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
- targetIndex: 59
+ targetIndex: 58
 			action:Create : GenGrammarLoopTypeDefine;
 			action:Assign : grammar;
 			action:Reduce : PrimitiveGrammar;
 			action:Terminate : COLON;
- targetIndex: 34
-			action:Create : GenGrammarLoopTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 34
-			action:Create : GenGrammarLoopTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 34
-			action:Create : GenGrammarLoopTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 34
-			action:Create : GenGrammarLoopTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
 NodeIndex:40
+ targetIndex: 34
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -1187,7 +1915,27 @@ NodeIndex:40
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
 			action:Using : SequenceGrammar;
@@ -1195,6 +1943,17 @@ NodeIndex:40
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 34
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -1239,7 +1998,29 @@ NodeIndex:40
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
 			action:Assign : right;
@@ -1292,6 +2073,17 @@ NodeIndex:40
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
+ targetIndex: 34
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -1336,7 +2128,29 @@ NodeIndex:40
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
 			action:Create : GenGrammarSequenceTypeDefine;
@@ -1345,6 +2159,18 @@ NodeIndex:40
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 34
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammars;
+			action:Reduce : Grammar;
+			action:Terminate : ASSIGN;
  targetIndex: 35
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -1393,7 +2219,31 @@ NodeIndex:40
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : OPTCLOSE;
- targetIndex: 58
+ targetIndex: 39
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : CLOSE;
+ targetIndex: 40
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
 			action:Create : GenGrammarSequenceTypeDefine;
@@ -1453,99 +2303,61 @@ NodeIndex:40
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
- targetIndex: 59
+ targetIndex: 58
 			action:Assign : grammar;
 			action:Reduce : PrimitiveGrammar;
 			action:Terminate : COLON;
- targetIndex: 34
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 39
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
- targetIndex: 34
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 39
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
- targetIndex: 34
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 39
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
- targetIndex: 34
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 39
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
 NodeIndex:41
+ targetIndex: 14
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Create : GenTableDefine;
+			action:Terminate : <$>;
+ targetIndex: 15
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Enum;
+			action:Terminate : ENUM;
+ targetIndex: 16
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Class;
+			action:Terminate : CLASS;
+ targetIndex: 17
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : TOKEN;
+ targetIndex: 18
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : DISCARDTOKEN;
+ targetIndex: 19
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : RuleDecl;
+			action:Terminate : RULE;
  targetIndex: 43
 			action:Create : GenEnumTypeDefine;
 			action:Using : Enum;
@@ -1553,6 +2365,25 @@ NodeIndex:41
 			action:Assign : subTypes;
 			action:Reduce : TypeDecl;
 			action:Terminate : CLOSE;
+ targetIndex: 24
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : subTypes;
+			action:Reduce : TypeDecl;
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 25
+			action:Create : GenEnumTypeDefine;
+			action:Using : Enum;
+			action:Reduce : Enum;
+			action:Assign : subTypes;
+			action:Reduce : TypeDecl;
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : TOKEN;
  targetIndex: 15
 			action:Create : GenEnumTypeDefine;
 			action:Using : Enum;
@@ -1572,9 +2403,85 @@ NodeIndex:41
 			action:Shift : Class;
 			action:Terminate : CLASS;
 NodeIndex:42
- targetIndex: 60
+ targetIndex: 59
 			action:Terminate : COMMA;
 NodeIndex:43
+ targetIndex: 14
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Create : GenTableDefine;
+			action:Terminate : <$>;
+ targetIndex: 15
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Enum;
+			action:Terminate : ENUM;
+ targetIndex: 16
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Class;
+			action:Terminate : CLASS;
+ targetIndex: 17
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : TOKEN;
+ targetIndex: 18
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : DISCARDTOKEN;
+ targetIndex: 19
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : types;
+			action:Reduce : TypeDecl;
+			action:Shift : RuleDecl;
+			action:Terminate : RULE;
+ targetIndex: 43
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : subTypes;
+			action:Reduce : TypeDecl;
+			action:Terminate : CLOSE;
+ targetIndex: 24
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : subTypes;
+			action:Reduce : TypeDecl;
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 25
+			action:Create : GenClassTypeDefine;
+			action:Using : Class;
+			action:Reduce : Class;
+			action:Assign : subTypes;
+			action:Reduce : TypeDecl;
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : TOKEN;
  targetIndex: 15
 			action:Create : GenClassTypeDefine;
 			action:Using : Class;
@@ -1652,6 +2559,14 @@ NodeIndex:44
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenSubTypeObject;
+			action:Assign : type;
+			action:Reduce : Type;
+			action:Create : GenGrammarCreateTypeDefine;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenSubTypeObject;
 			action:Assign : type;
@@ -1669,10 +2584,10 @@ NodeIndex:44
 			action:Reduce : Grammar;
 			action:Terminate : PRECLOSE;
 NodeIndex:45
- targetIndex: 61
+ targetIndex: 60
 			action:Terminate : SEMICOLON;
 NodeIndex:46
- targetIndex: 62
+ targetIndex: 61
 			action:Terminate : SEMICOLON;
 NodeIndex:47
  targetIndex: 27
@@ -1733,6 +2648,14 @@ NodeIndex:47
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenArrayTypeObject;
+			action:Assign : type;
+			action:Reduce : Type;
+			action:Create : GenGrammarCreateTypeDefine;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenArrayTypeObject;
 			action:Assign : type;
@@ -1755,6 +2678,21 @@ NodeIndex:48
 			action:Assign : members;
 			action:Reduce : ClassMember;
 			action:Terminate : CLOSE;
+ targetIndex: 24
+			action:Create : GenClassMemberTypeDefine;
+			action:Assign : members;
+			action:Reduce : ClassMember;
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : NAME;
+			action:Assign : name;
+ targetIndex: 25
+			action:Create : GenClassMemberTypeDefine;
+			action:Assign : members;
+			action:Reduce : ClassMember;
+			action:Shift : ClassMember;
+			action:Shift : Type;
+			action:Terminate : TOKEN;
  targetIndex: 15
 			action:Create : GenClassMemberTypeDefine;
 			action:Assign : members;
@@ -1814,6 +2752,17 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -1825,7 +2774,18 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -1882,6 +2842,18 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -1894,7 +2866,19 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -1904,6 +2888,15 @@ NodeIndex:49
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 49
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : NAME;
+			action:Assign : name;
  targetIndex: 50
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -1993,6 +2986,18 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Assign : second;
@@ -2005,7 +3010,19 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -2067,6 +3084,19 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Assign : second;
@@ -2080,7 +3110,20 @@ NodeIndex:49
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -2091,6 +3134,16 @@ NodeIndex:49
 			action:Assign : left;
 			action:Reduce : AlternativeGrammar;
 			action:Terminate : OR;
+ targetIndex: 49
+			action:Create : GenGrammarNormalTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : NAME;
+			action:Assign : name;
  targetIndex: 50
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Assign : second;
@@ -2137,7 +3190,7 @@ NodeIndex:49
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
- targetIndex: 59
+ targetIndex: 58
 			action:Create : GenGrammarNormalTypeDefine;
 			action:Assign : grammar;
 			action:Reduce : PrimitiveGrammar;
@@ -2187,6 +3240,17 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarTextTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarTextTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -2198,7 +3262,18 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarTextTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarTextTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -2255,6 +3330,18 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarTextTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarTextTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -2267,7 +3354,19 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarTextTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarTextTypeDefine;
 			action:Using : PrimitiveGrammar;
 			action:Reduce : PrimitiveGrammar;
@@ -2286,6 +3385,15 @@ NodeIndex:50
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
+ targetIndex: 50
+			action:Create : GenGrammarTextTypeDefine;
+			action:Using : PrimitiveGrammar;
+			action:Reduce : PrimitiveGrammar;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
  targetIndex: 51
 			action:Create : GenGrammarTextTypeDefine;
 			action:Using : PrimitiveGrammar;
@@ -2366,6 +3474,18 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarTextTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarTextTypeDefine;
 			action:Assign : second;
@@ -2378,7 +3498,19 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarTextTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Using : SequenceGrammar;
+			action:Reduce : SequenceGrammar;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarTextTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -2440,6 +3572,19 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarTextTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarTextTypeDefine;
 			action:Assign : second;
@@ -2453,7 +3598,20 @@ NodeIndex:50
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : CLOSE;
- targetIndex: 58
+ targetIndex: 40
+			action:Create : GenGrammarTextTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : right;
+			action:Reduce : SequenceGrammar;
+			action:Create : GenGrammarAlternationTypeDefine;
+			action:Using : AlternativeGrammar;
+			action:Reduce : AlternativeGrammar;
+			action:Using : Grammar;
+			action:Reduce : Grammar;
+			action:Terminate : PRECLOSE;
+ targetIndex: 57
 			action:Create : GenGrammarTextTypeDefine;
 			action:Assign : second;
 			action:Reduce : PrimitiveGrammar;
@@ -2474,6 +3632,16 @@ NodeIndex:50
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
+ targetIndex: 50
+			action:Create : GenGrammarTextTypeDefine;
+			action:Assign : second;
+			action:Reduce : PrimitiveGrammar;
+			action:Create : GenGrammarSequenceTypeDefine;
+			action:Assign : first;
+			action:Reduce : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
  targetIndex: 51
 			action:Create : GenGrammarTextTypeDefine;
 			action:Assign : second;
@@ -2510,7 +3678,7 @@ NodeIndex:50
 			action:Reduce : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
- targetIndex: 59
+ targetIndex: 58
 			action:Create : GenGrammarTextTypeDefine;
 			action:Assign : grammar;
 			action:Reduce : PrimitiveGrammar;
@@ -2520,6 +3688,13 @@ NodeIndex:51
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
+ targetIndex: 50
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
+ targetIndex: 51
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : USING;
  targetIndex: 52
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : OPTOPEN;
@@ -2529,10 +3704,6 @@ NodeIndex:51
  targetIndex: 54
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
- targetIndex: 50
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : STRING;
-			action:Assign : text;
 NodeIndex:52
  targetIndex: 49
 			action:Shift : Grammar;
@@ -2541,12 +3712,25 @@ NodeIndex:52
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
+ targetIndex: 50
+			action:Shift : Grammar;
+			action:Shift : AlternativeGrammar;
+			action:Shift : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
  targetIndex: 51
 			action:Shift : Grammar;
 			action:Shift : AlternativeGrammar;
 			action:Shift : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : USING;
+ targetIndex: 52
+			action:Shift : Grammar;
+			action:Shift : AlternativeGrammar;
+			action:Shift : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : OPTOPEN;
  targetIndex: 53
 			action:Shift : Grammar;
 			action:Shift : AlternativeGrammar;
@@ -2564,13 +3748,6 @@ NodeIndex:52
 			action:Shift : SetterGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
- targetIndex: 50
-			action:Shift : Grammar;
-			action:Shift : AlternativeGrammar;
-			action:Shift : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : STRING;
-			action:Assign : text;
 NodeIndex:53
  targetIndex: 49
 			action:Shift : Grammar;
@@ -2579,6 +3756,13 @@ NodeIndex:53
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
+ targetIndex: 50
+			action:Shift : Grammar;
+			action:Shift : AlternativeGrammar;
+			action:Shift : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
  targetIndex: 51
 			action:Shift : Grammar;
 			action:Shift : AlternativeGrammar;
@@ -2591,6 +3775,12 @@ NodeIndex:53
 			action:Shift : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : OPTOPEN;
+ targetIndex: 53
+			action:Shift : Grammar;
+			action:Shift : AlternativeGrammar;
+			action:Shift : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : OPEN;
  targetIndex: 54
 			action:Shift : Grammar;
 			action:Shift : AlternativeGrammar;
@@ -2602,13 +3792,6 @@ NodeIndex:53
 			action:Shift : SetterGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
- targetIndex: 50
-			action:Shift : Grammar;
-			action:Shift : AlternativeGrammar;
-			action:Shift : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : STRING;
-			action:Assign : text;
 NodeIndex:54
  targetIndex: 49
 			action:Shift : Grammar;
@@ -2617,6 +3800,13 @@ NodeIndex:54
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
+ targetIndex: 50
+			action:Shift : Grammar;
+			action:Shift : AlternativeGrammar;
+			action:Shift : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
  targetIndex: 51
 			action:Shift : Grammar;
 			action:Shift : AlternativeGrammar;
@@ -2635,35 +3825,35 @@ NodeIndex:54
 			action:Shift : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : OPEN;
+ targetIndex: 54
+			action:Shift : Grammar;
+			action:Shift : AlternativeGrammar;
+			action:Shift : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : PREOPEN;
  targetIndex: 55
 			action:Shift : Grammar;
 			action:Shift : SetterGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
- targetIndex: 50
-			action:Shift : Grammar;
-			action:Shift : AlternativeGrammar;
-			action:Shift : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : STRING;
-			action:Assign : text;
 NodeIndex:55
- targetIndex: 63
+ targetIndex: 62
 			action:Terminate : ASSIGN;
 NodeIndex:56
- targetIndex: 13
-			action:Assign : rules;
-			action:Reduce : RuleDecl;
-NodeIndex:57
- targetIndex: 64
+ targetIndex: 63
 			action:Terminate : NAME;
 			action:Assign : name;
-NodeIndex:58
+NodeIndex:57
  targetIndex: 49
 			action:Shift : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : NAME;
 			action:Assign : name;
+ targetIndex: 50
+			action:Shift : SequenceGrammar;
+			action:Shift : PrimitiveGrammar;
+			action:Terminate : STRING;
+			action:Assign : text;
  targetIndex: 51
 			action:Shift : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
@@ -2680,16 +3870,11 @@ NodeIndex:58
 			action:Shift : SequenceGrammar;
 			action:Shift : PrimitiveGrammar;
 			action:Terminate : PREOPEN;
- targetIndex: 50
-			action:Shift : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : STRING;
-			action:Assign : text;
-NodeIndex:59
- targetIndex: 65
+NodeIndex:58
+ targetIndex: 64
 			action:Terminate : NAME;
 			action:Assign : name;
-NodeIndex:60
+NodeIndex:59
  targetIndex: 41
 			action:Create : GenEnumMemberTypeDefine;
 			action:Assign : members;
@@ -2702,415 +3887,104 @@ NodeIndex:60
 			action:Shift : EnumMember;
 			action:Terminate : NAME;
 			action:Assign : name;
-NodeIndex:61
- targetIndex: 66
+NodeIndex:60
+ targetIndex: 14
 			action:Create : GenTokenDefine;
 			action:Setter : ignore;
-NodeIndex:62
- targetIndex: 66
-			action:Create : GenTokenDefine;
-			action:Setter : ignore;
-NodeIndex:63
- targetIndex: 67
-			action:Terminate : STRING;
-			action:Assign : value;
-NodeIndex:65
- targetIndex: 34
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 35
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : SEMICOLON;
- targetIndex: 36
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : AS;
- targetIndex: 37
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : WITH;
- targetIndex: 39
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
- targetIndex: 58
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Assign : left;
-			action:Reduce : AlternativeGrammar;
-			action:Terminate : OR;
- targetIndex: 34
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 35
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : SEMICOLON;
- targetIndex: 36
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : AS;
- targetIndex: 37
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : WITH;
- targetIndex: 39
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
- targetIndex: 58
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Assign : left;
-			action:Reduce : AlternativeGrammar;
-			action:Terminate : OR;
- targetIndex: 49
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : NAME;
-			action:Assign : name;
- targetIndex: 50
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : STRING;
-			action:Assign : text;
- targetIndex: 51
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : USING;
- targetIndex: 52
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : OPTOPEN;
- targetIndex: 53
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : OPEN;
- targetIndex: 54
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Using : PrimitiveGrammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : PREOPEN;
- targetIndex: 34
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 35
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : SEMICOLON;
- targetIndex: 36
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : AS;
- targetIndex: 37
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : WITH;
- targetIndex: 39
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
- targetIndex: 58
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Using : SequenceGrammar;
-			action:Reduce : SequenceGrammar;
-			action:Assign : left;
-			action:Reduce : AlternativeGrammar;
-			action:Terminate : OR;
- targetIndex: 34
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : ASSIGN;
- targetIndex: 35
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammars;
-			action:Reduce : Grammar;
-			action:Terminate : SEMICOLON;
- targetIndex: 36
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : AS;
- targetIndex: 37
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : WITH;
- targetIndex: 39
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Using : AlternativeGrammar;
-			action:Reduce : AlternativeGrammar;
-			action:Assign : grammar;
-			action:Reduce : Grammar;
-			action:Terminate : CLOSE;
- targetIndex: 58
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : right;
-			action:Reduce : SequenceGrammar;
-			action:Create : GenGrammarAlternationTypeDefine;
-			action:Assign : left;
-			action:Reduce : AlternativeGrammar;
-			action:Terminate : OR;
- targetIndex: 49
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : NAME;
-			action:Assign : name;
- targetIndex: 50
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : STRING;
-			action:Assign : text;
- targetIndex: 51
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : USING;
- targetIndex: 52
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : OPTOPEN;
- targetIndex: 53
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : OPEN;
- targetIndex: 54
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : second;
-			action:Reduce : PrimitiveGrammar;
-			action:Create : GenGrammarSequenceTypeDefine;
-			action:Assign : first;
-			action:Reduce : SequenceGrammar;
-			action:Shift : PrimitiveGrammar;
-			action:Terminate : PREOPEN;
- targetIndex: 59
-			action:Create : GenGrammarAssignTypeDefine;
-			action:Assign : grammar;
-			action:Reduce : PrimitiveGrammar;
-			action:Terminate : COLON;
-NodeIndex:66
- targetIndex: 13
 			action:Assign : tokens;
 			action:Reduce : TokenDecl;
-NodeIndex:67
+			action:Create : GenTableDefine;
+			action:Terminate : <$>;
+ targetIndex: 15
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Enum;
+			action:Terminate : ENUM;
+ targetIndex: 16
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Class;
+			action:Terminate : CLASS;
+ targetIndex: 17
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : TOKEN;
+ targetIndex: 18
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : DISCARDTOKEN;
+ targetIndex: 19
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : RuleDecl;
+			action:Terminate : RULE;
+NodeIndex:61
+ targetIndex: 14
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Create : GenTableDefine;
+			action:Terminate : <$>;
+ targetIndex: 15
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Enum;
+			action:Terminate : ENUM;
+ targetIndex: 16
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TypeDecl;
+			action:Shift : Class;
+			action:Terminate : CLASS;
+ targetIndex: 17
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : TOKEN;
+ targetIndex: 18
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : TokenDecl;
+			action:Terminate : DISCARDTOKEN;
+ targetIndex: 19
+			action:Create : GenTokenDefine;
+			action:Setter : ignore;
+			action:Assign : tokens;
+			action:Reduce : TokenDecl;
+			action:Shift : RuleDecl;
+			action:Terminate : RULE;
+NodeIndex:62
+ targetIndex: 65
+			action:Terminate : STRING;
+			action:Assign : value;
+NodeIndex:63
+ targetIndex: 66
+			action:Terminate : ASSIGN;
+NodeIndex:65
  targetIndex: 34
 			action:Create : GenGrammarSetterTypeDefine;
 			action:Using : SetterGrammar;
@@ -3139,6 +4013,13 @@ NodeIndex:67
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarSetterTypeDefine;
+			action:Using : SetterGrammar;
+			action:Reduce : SetterGrammar;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarSetterTypeDefine;
 			action:Using : SetterGrammar;
@@ -3153,14 +4034,14 @@ NodeIndex:67
 			action:Using : Grammar;
 			action:Reduce : Grammar;
 			action:Terminate : PRECLOSE;
-NodeIndex:68
- targetIndex: 69
+NodeIndex:66
+ targetIndex: 67
 			action:Terminate : STRING;
 			action:Assign : value;
-NodeIndex:69
- targetIndex: 70
+NodeIndex:67
+ targetIndex: 68
 			action:Terminate : CLOSE;
-NodeIndex:70
+NodeIndex:68
  targetIndex: 34
 			action:Create : GenGrammarSetterTypeDefine;
 			action:Assign : grammars;
@@ -3181,6 +4062,11 @@ NodeIndex:70
 			action:Assign : grammar;
 			action:Reduce : Grammar;
 			action:Terminate : WITH;
+ targetIndex: 38
+			action:Create : GenGrammarSetterTypeDefine;
+			action:Assign : grammar;
+			action:Reduce : Grammar;
+			action:Terminate : OPTCLOSE;
  targetIndex: 39
 			action:Create : GenGrammarSetterTypeDefine;
 			action:Assign : grammar;
