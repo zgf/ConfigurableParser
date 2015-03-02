@@ -168,7 +168,13 @@ namespace ztl
 			{
 				return isMerge;
 			}
+			int GetNumber() const
+			{
+				return number;
+			}
 		private:
+			int number;
+			
 			unique_ptr<vector<PDAEdge*>> nexts;
 			unique_ptr<vector<PDAEdge*>> fronts;
 			bool						 isMerge=false;
@@ -220,11 +226,10 @@ namespace ztl
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*,PDANode*>>						 PDAMap;
 			PDANode*															 root;
-		
-			
+		public:
+
 		};
 		void CreateDPDAGraph(PushDownAutoMachine& machine);
-		void LogPDAGraph(const wstring& fileName, PushDownAutoMachine& machine);
 		wstring ActionTypeToWString(ActionType type);
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine);

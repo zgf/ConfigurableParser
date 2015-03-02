@@ -125,10 +125,10 @@ namespace ztl
 			}
 			PDAMap[ruleName].emplace_back(make_pair(start, end));
 		}
-		
-		void CreateDPDAGraph(PushDownAutoMachine& machine)
+		unordered_map<wstring, vector<pair<PDANode*, PDANode*>>> CreateEpsilonPDA(PushDownAutoMachine& machine)
 		{
 			unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>  PDAMap;
+
 			for(auto&& ruleIter : machine.GetTable()->rules)
 			{
 				auto rulePointer = ruleIter.get();
@@ -142,26 +142,30 @@ namespace ztl
 				}
 			}
 			//HelpLogJumpTable(L"LogJumpTable_RawTable.txt", machine);
-			MergeStartAndEndNode(machine, PDAMap);
+			return PDAMap;
+		}
+		void AddPDAToPDAMachine(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap)
+		{
 			for(auto&& ruleIter : PDAMap)
 			{
 				assert(ruleIter.second.size() > 0);
 				machine.AddGeneratePDA(ruleIter.first, *ruleIter.second.begin());
 			}
 			//HelpLogJumpTable(L"LogJumpTable_MergeFactorTable.txt", machine);
+		}
+		void CreateDPDAGraph(PushDownAutoMachine& machine)
+		{
+			auto PDAMap = CreateEpsilonPDA(machine);
+			MergeStartAndEndNode(machine, PDAMap);
+			AddPDAToPDAMachine(machine, PDAMap);
 			machine.CreateRoot();
-
-			ztl::general_parser::MergeEpsilonPDAGraph(machine);
+			MergeEpsilonPDAGraph(machine);
 			MergeGrammarCommonFactor(machine);
-
 			//添加结束节点.
 			AddFinishNode(machine);
 		//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
-
 			MergePDAEpsilonSymbol(machine);
-
 			MergeGrammarCommonFactor(machine);
-
 			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
 		}
 	
@@ -349,17 +353,31 @@ namespace ztl
 			}
 		}
 		
-		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine)
+		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine, unordered_map<PDANode*, int>& edgeCountMap)
 		{
 			assert(!save.empty());
 			vector<ActionWrap> newActions;
 			auto source = save.front()->GetSource();
 			auto target = save.back()->GetTarget();
-			
 			auto nexts = source->GetNexts();
+			const vector<ActionWrap>* actionPointer = nullptr;
+			auto CheckAndAddEdge = [&nexts,&source,&target,&actionPointer,&edgeCountMap,&machine]()
+			{
+				if(find_if(nexts.begin() + edgeCountMap[source], nexts.end(), [&target, &actionPointer](PDAEdge* edge)
+				{
+					return edge->GetTarget() == target&&
+						edge->GetActions() == *actionPointer;
+
+				}) == nexts.end())
+				{
+					machine.AddEdge(source, target, *actionPointer);
+				}
+			};
 			if(save.size() == 1)
 			{
-				machine.AddEdge(source, target, save[0]->GetActions());
+				assert(edgeCountMap[source] != 0);
+				actionPointer = &save[0]->GetActions();
+				CheckAndAddEdge();
 			}
 			else
 			{
@@ -372,9 +390,10 @@ namespace ztl
 					return element->GetActions() == newActions;
 				}) == nexts.end())
 				{
-					
-					machine.AddEdge(source, target, newActions);
+					actionPointer = &newActions;
+					CheckAndAddEdge();
 				}
+				
 			}
 		}
 		struct Path
@@ -383,16 +402,10 @@ namespace ztl
 		};
 		bool IsTermRingPath(vector<PDAEdge*>& path)
 		{
-			//assert(path.size() > 1);
-			for (auto&& iter:path)
+			return find_if(path.begin(), path.end(), [](PDAEdge* iter)
 			{
-				auto actions = iter->GetActions();
-				if (iter->HasTermActionType())
-				{
-					return true;
-				}
-			}
-			return false;
+				return iter->HasTermActionType();
+			}) != path.end();
 		}
 		bool IsLeftreCursionRingPath(vector<PDAEdge*>& path)
 		{
@@ -456,7 +469,8 @@ namespace ztl
 						if(edgeIter->HasTermActionType())
 						{
 							//遇到Term了,当前路径可以终止搜索了.
-							MergePathSymbol(path, machine);
+							
+							MergePathSymbol(path, machine,edgeCountMap);
 							//记录需要删除的边
 							deleter.insert(path.begin(), path.end());
 							assert(!path.empty());
@@ -479,11 +493,8 @@ namespace ztl
 					}
 					else
 					{
-						//assert(false);
 						//这里是无法遇到Term的环,也就是,走进了左递归,是不正确的路线,丢弃.
 						deleter.insert(path.begin(), path.end());
-
-						//ringPathSaves.emplace_back(path);
 					}
 					path.pop_back();
 				}
@@ -492,7 +503,6 @@ namespace ztl
 			for(size_t i = 0; i < allNode.size(); ++i)
 			{
 				//这里用auto& auto&&会导致earse删除遇到0xddddddd,奇葩啊- -...
-			
 				auto nodeIter = allNode[i];
 				pathSign.insert(nodeIter);
 				DFS(nodeIter);
@@ -501,15 +511,6 @@ namespace ztl
 				assert(pathSign.empty());
 				assert(path.empty());
 			}
-			//vector<vector<ActionWrap>> actionList;
-			/*for (auto&& iter:ringPathSaves)
-			{
-				actionList.emplace_back();
-				for (auto&& pathIter:iter)
-				{
-					actionList.back().insert(actionList.back().end(), pathIter->GetActions().begin(), pathIter->GetActions().end());
-				}
-			}*/
 			for(auto iter : deleter)
 			{
 				machine.DeleteEdge(iter);

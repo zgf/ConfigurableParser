@@ -52,7 +52,6 @@ namespace ztl
 		{
 			unordered_set<PDANode*>sign;
 			deque<PDANode*> queue;
-			int count = 0;
 			queue.emplace_back(GetRoot());
 			while(!queue.empty())
 			{
@@ -61,8 +60,7 @@ namespace ztl
 				if(sign.find(front) == sign.end())
 				{
 					sign.insert(front);
-					nodeIndexMap.insert(make_pair(front, count));
-					++count;
+					nodeIndexMap.insert(make_pair(front, front->GetNumber()));
 					for(auto&& edgeIter : front->GetNexts())
 					{
 						queue.emplace_back(edgeIter->GetTarget());

@@ -76,7 +76,10 @@ namespace ztl
 
 		PDANode * PushDownAutoMachine::NewNode()
 		{
+			static int count = 0;
+			++count;
 			nodes.emplace_back(make_shared<PDANode>());
+			nodes.back()->number = count;
 			return nodes.back().get();
 		}
 
@@ -195,7 +198,6 @@ namespace ztl
 			return edges.back().get();
 		}
 
-		
 		wstring	 PushDownAutoMachine::GetRootRuleName()const
 		{
 			assert(!this->GetSymbolManager()->GetStartRuleList().empty());
