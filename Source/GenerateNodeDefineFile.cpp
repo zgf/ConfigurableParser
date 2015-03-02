@@ -137,7 +137,7 @@ namespace ztl
 				 });
 
 			 }
-
+			 return includeString;
 		 }
 		 wstring GetNodeDefineFileBody(GeneralTableDefine* table)
 		 {
@@ -148,7 +148,7 @@ namespace ztl
 				 return sum +L"\n\n"+ visitor.GetResult();
 			 });
 		 }
-		 wstring CreateNodeDefineFile(wstring fileName,SymbolManager* manager)
+		 void CreateNodeDefineFile(wstring fileName,SymbolManager* manager)
 		 {
 			 wofstream output(fileName);
 			 auto body = GetNodeDefineFileBody(manager->GetTable());
