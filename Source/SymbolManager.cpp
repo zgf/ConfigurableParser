@@ -30,6 +30,14 @@ namespace ztl
 			}
 			return result;
 		}
+		vector<wstring>& SymbolManager::GetStartRuleList()
+		{
+			return startRuleList;
+		}
+		void SymbolManager::SetStartRuleList(vector<wstring> val)
+		{
+			startRuleList = val;
+		}
 		GeneralTableDefine * SymbolManager::GetTable()
 		{
 			return table.get();

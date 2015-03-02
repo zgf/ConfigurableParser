@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "../Lib/ZTL/ztl_pair_builder.hpp"
 namespace ztl
 {
 	namespace general_parser
@@ -83,27 +82,26 @@ namespace ztl
 		class PDAEdge
 		{
 			friend PushDownAutoMachine;
-		public:
 			
 		public:
-			PDAEdge() noexcept = default;
-			~PDAEdge() noexcept = default;
-			PDAEdge(PDAEdge&&) noexcept = default;
-			PDAEdge(const PDAEdge&) noexcept = default;
-			PDAEdge& operator=(PDAEdge&&) noexcept = default;
-			PDAEdge& operator=(const PDAEdge&) noexcept = default;
-			PDAEdge(const ActionWrap& wrap, PDANode* _source,PDANode* _target)noexcept
-				:target(_target),source(_source),actions(make_unique<deque<ActionWrap>>())
+			PDAEdge() = default;
+			~PDAEdge()noexcept = default;
+			PDAEdge(PDAEdge&&)  = default;
+			PDAEdge(const PDAEdge&)  = default;
+			PDAEdge& operator=(PDAEdge&&)  = default;
+			PDAEdge& operator=(const PDAEdge&)  = default;
+			PDAEdge(const ActionWrap& wrap, PDANode* _source,PDANode* _target)
+				:target(_target),source(_source)
 			{
-				actions->emplace_back(wrap);
+				actions.emplace_back(wrap);
 			}
-			PDAEdge(PDANode* _source, PDANode* _target)noexcept
-				: target(_target), source(_source), actions(make_unique<deque<ActionWrap>>())
+			PDAEdge(PDANode* _source, PDANode* _target)
+				: target(_target), source(_source)
 			{
 			}
-			const deque<ActionWrap>& GetActions()const
+			const vector<ActionWrap>& GetActions()const
 			{
-				return *actions;
+				return actions;
 			}
 			PDANode* GetTarget()const
 			{
@@ -115,9 +113,18 @@ namespace ztl
 			}
 			int GetNonTermSymbolIndex()const
 			{
-				for(int i = 0; i < (int)actions->size();i++)
+				return GetSymbolIndex(ActionType::NonTerminate);
+			}
+			int GetTermSymbolIndex()const
+			{
+				return GetSymbolIndex(ActionType::Terminate);
+			}
+		private:
+			int GetSymbolIndex(ActionType type)const
+			{
+				for(int i = 0; i < (int) actions.size(); i++)
 				{
-					if (actions->at(i).GetActionType() == ActionType::NonTerminate)
+					if(actions.at(i).GetActionType() == type)
 					{
 						return i;
 					}
@@ -127,7 +134,7 @@ namespace ztl
 		private:
 			PDANode* target;
 			PDANode* source;
-			unique_ptr<deque<ActionWrap>> actions;
+			vector<ActionWrap> actions;
 			
 		};
 		class PDANode
@@ -171,7 +178,6 @@ namespace ztl
 			bool						 isMerge=false;
 		};
 	
-		PAIR_BUILDER(JumpItem, int, targetIndex, deque<ActionWrap>, actions);
 		class PushDownAutoMachine
 		{
 			
@@ -189,9 +195,10 @@ namespace ztl
 			unordered_map<wstring, pair<PDANode*,PDANode*>>& GetPDAMap();
 			pair<PDANode*, PDANode*>	NewNodePair();
 			PDANode*					NewNode();
-
+			PDANode*					GetRoot() const;
+			void						SetRoot(PDANode* val);
 			void						AddEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
-			void						AddEdge(PDANode* source, PDANode* target, const deque<ActionWrap>& wrapList);
+			void						AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList);
 			void						DeleteEdge(PDAEdge* target);
 
 			void						AddGeneratePDA(wstring ruleName, const pair<PDANode *, PDANode*>& pairNode);
@@ -201,49 +208,39 @@ namespace ztl
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
 			PDANode*					AddFinishNodeFollowTarget(PDANode* target);
 			void						FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap);
-			void						NextEdgesAdditionFrontAction(PDANode* targetNode, const ActionWrap& wrap);
+		//	void						NextEdgesAdditionFrontAction(PDANode* targetNode, const ActionWrap& wrap);
 
-			wstring						GetRuleNameOrEmptyByNodeIndex(int index) ;
 			wstring						GetRootRuleName()const;
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-			void													CreateJumpTable();
-			void													ClearJumpTable();
-				const unordered_map<int, vector<JumpItem>>& GetJumpTable()const;
-			vector<JumpItem> CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue);
+			//void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
+		
 
-			void InitNodeIndexToRuleNameMap();
-			void InitNodeIndexMap();
-			void ClearNodeIndexMap();
-			void ClearNodeIndexToRuleNameMap();
+			
+			void CreateRoot();
+
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
-			int  GetNodeIndex(PDANode* target);
 			
 		private:
 			vector<shared_ptr<PDAEdge>>											 edges;
 			vector<shared_ptr<PDANode>>											 nodes;
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*,PDANode*>>						 PDAMap;
-			//int 1 nodeIndex int 2 tagIndex  int targetNodeIndex
-			
-			unordered_map<int, vector<JumpItem>>								 jumpTable;
-			unordered_map<PDANode*, int>										 nodeIndexMap;
-			unordered_map<int, wstring>											 nodeIndexToRuleNameMap;
+			PDANode*															 root = nullptr;
+		
 			
 		};
-		void CreatePDAGraph(PushDownAutoMachine& machine);
+		void CreateDPDAGraph(PushDownAutoMachine& machine);
 		void LogPDAGraph(const wstring& fileName, PushDownAutoMachine& machine);
 		wstring ActionTypeToWString(ActionType type);
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
-		void MergeGraph(PushDownAutoMachine& machine);
-		void MergeNoTermSymbol(PushDownAutoMachine& machine);
+		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine);
+		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine);
 
-		void LogJumpTable(wstring fileName,PushDownAutoMachine& machine);
 		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
 		void AddFinishNode(PushDownAutoMachine& machine);
 	}

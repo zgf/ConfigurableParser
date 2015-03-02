@@ -75,14 +75,10 @@ namespace ztl
 
 		public:
 			
-			vector<wstring>& StartRuleList()
-			{
-				return startRuleList;
-			}
-			void StartRuleList(vector<wstring> val)
-			{
-				startRuleList = val;
-			}
+			vector<wstring>& GetStartRuleList();
+			
+			void SetStartRuleList(vector<wstring> val);
+		
 			GeneralTableDefine* GetTable();
 
 			ParserSymbol* GetGlobalSymbol();

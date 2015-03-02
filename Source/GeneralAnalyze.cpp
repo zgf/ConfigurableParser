@@ -1001,7 +1001,7 @@ namespace ztl
 					rules.find(symbol)->second == false)
 				{
 					rules[symbol] = true;
-					manager->StartRuleList().emplace_back(symbol->GetName());
+					manager->GetStartRuleList().emplace_back(symbol->GetName());
 					auto ruleNode = manager->GetCacheRuleDefineBySymbol(symbol);
 					assert(ruleNode != nullptr);
 					hitCount++;
@@ -1068,7 +1068,7 @@ namespace ztl
 			{
 				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(ruleIter->name);
 				rules[ruleSymbol] = true;
-				manager->StartRuleList().emplace_back(ruleSymbol->GetName());
+				manager->GetStartRuleList().emplace_back(ruleSymbol->GetName());
 				GetStartSymbolVisitor visitor(manager,rules,1);
 				rules[ruleSymbol] = false;
 				for (auto&& grammarIter:ruleIter->grammars)
@@ -1078,7 +1078,7 @@ namespace ztl
 
 				if(visitor.GetHitCount() != rules.size())
 				{
-					manager->StartRuleList().clear();
+					manager->GetStartRuleList().clear();
 				}
 			}
 		}

@@ -109,6 +109,9 @@
     <ClCompile Include="Source\GeneralPDAGraph.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GeneralJumpTable.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -172,6 +175,9 @@
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\ParserLog.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralJumpTable.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

@@ -40,10 +40,10 @@ namespace ztl
 			target->fronts->push_back(edge);
 		}
 
-		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const deque<ActionWrap>& wrapList)
+		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const vector<ActionWrap>& wrapList)
 		{
 			auto edge = NewEdge(source, target);
-			*edge->actions = wrapList;
+			edge->actions = wrapList;
 			source->nexts->push_back(edge);
 			target->fronts->push_back(edge);
 		}
@@ -78,6 +78,17 @@ namespace ztl
 		{
 			nodes.emplace_back(make_shared<PDANode>());
 			return nodes.back().get();
+		}
+
+		PDANode * PushDownAutoMachine::GetRoot() const
+		{
+			assert(root != nullptr);
+			return root;
+		}
+
+		void PushDownAutoMachine::SetRoot(PDANode * val)
+		{
+			root = val;
 		}
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
@@ -127,13 +138,7 @@ namespace ztl
 			}
 		}
 
-		void PushDownAutoMachine::NextEdgesAdditionFrontAction(PDANode * targetNode, const ActionWrap & wrap)
-		{
-			for(auto&& edgeIter : *targetNode->nexts)
-			{
-				this->FrontInsertAction(edgeIter, wrap);
-			}
-		}
+	
 
 
 		PDANode * PushDownAutoMachine::MergeIndependentNodes(PDANode * left, PDANode * right)
@@ -164,106 +169,18 @@ namespace ztl
 
 		void PushDownAutoMachine::BackInsertAction(PDAEdge* edge,const ActionWrap& wrap)
 		{
-			edge->actions->emplace_back(wrap);
+			edge->actions.emplace_back(wrap);
 		}
 
-		void PushDownAutoMachine::FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap)
+
+
+		void PushDownAutoMachine::CreateRoot()
 		{
-			edge->actions->emplace_front(wrap);
-		}
-
-		void PushDownAutoMachine::InitNodeIndexMap()
-		{
-			unordered_set<PDANode*>sign;
-			deque<PDANode*> queue;
-			int count = 0;
-
-			for(auto&&ruleIter : PDAMap)
-			{
-					auto&& grammarIter = ruleIter.second;
-					queue.emplace_back(grammarIter.first);
-					while(!queue.empty())
-					{
-						PDANode* front = queue.front();
-						queue.pop_front();
-						if (sign.find(front) == sign.end())
-						{
-							sign.insert(front);
-							nodeIndexMap.insert(make_pair(front, count));
-							++count;
-							for(auto&& edgeIter : front->GetNexts())
-							{
-								queue.emplace_back(edgeIter->GetTarget());
-							}
-						}
-					}
-				
-			}
-			InitNodeIndexToRuleNameMap();
-		}
-
-		void PushDownAutoMachine::ClearNodeIndexMap()
-		{
-			nodeIndexMap.clear();
-			ClearNodeIndexToRuleNameMap();
-		}
-
-		void PushDownAutoMachine::ClearNodeIndexToRuleNameMap()
-		{
-			nodeIndexToRuleNameMap.clear();
-		}
-
-		void PushDownAutoMachine::CreateJumpTable()
-		{
-			unordered_set<PDAEdge*> sign;
-			deque<PDANode*> queue;
-			for(auto&& ruleIter : GetPDAMap())
-			{
-				
-					auto&& grammarIter = ruleIter.second;
-					queue.emplace_back(grammarIter.first);
-					while(!queue.empty())
-					{
-						auto front = queue.front();
-						queue.pop_front();
-						jumpTable.insert(make_pair(GetNodeIndex(front), CreateJumpItem(front, sign, queue)));
-					}
-				
-			}
-		}
-
-		void PushDownAutoMachine::ClearJumpTable()
-		{
-			jumpTable.clear();
-		}
-
-		const unordered_map<int, vector<JumpItem>>& PushDownAutoMachine::GetJumpTable() const
-		{
-			return jumpTable;
-		}
-
-		int PushDownAutoMachine::GetNodeIndex(PDANode * target)
-		{
-			assert(nodeIndexMap.find(target) != nodeIndexMap.end());
-			return nodeIndexMap[target];
-		}
-
-		void PushDownAutoMachine::InitNodeIndexToRuleNameMap()
-		{
-			for (auto&& ruleIter:PDAMap)
-			{
-				auto&& ruleName = ruleIter.first;
-				auto&& grammarIter = ruleIter.second;
-				nodeIndexToRuleNameMap.insert(make_pair(GetNodeIndex(grammarIter.first), ruleName));
-			}
+			assert(GetPDAMap().size() != 0);
+			root = this->GetPDAMap()[this->GetRootRuleName()].first;
 		}
 
 
-		wstring PushDownAutoMachine::GetRuleNameOrEmptyByNodeIndex(int index) 
-		{
-			//assert(nodeIndexToRuleNameMap.find(index) == nodeIndexToRuleNameMap.end());
-			return nodeIndexToRuleNameMap.find(index) == nodeIndexToRuleNameMap.end() ? wstring() : nodeIndexToRuleNameMap[index];
-		}
 
 
 		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
@@ -278,25 +195,11 @@ namespace ztl
 			return edges.back().get();
 		}
 
-		vector<JumpItem> PushDownAutoMachine::CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue)
-		{
-			vector<JumpItem > result;
-			for(PDAEdge* edgeIter : source->GetNexts())
-			{
-				if(sign.find(edgeIter) == sign.end())
-				{
-					sign.insert(edgeIter);
-					assert(edgeIter->GetActions().size() >= 1);
-					result.emplace_back(GetNodeIndex(edgeIter->GetTarget()), *edgeIter->actions);
-					queue.emplace_back(edgeIter->GetTarget());
-				}
-			}
-			return result;
-		}
+		
 		wstring	 PushDownAutoMachine::GetRootRuleName()const
 		{
-			assert(!this->GetSymbolManager()->StartRuleList().empty());
-			return this->GetSymbolManager()->StartRuleList()[0];
+			assert(!this->GetSymbolManager()->GetStartRuleList().empty());
+			return this->GetSymbolManager()->GetStartRuleList()[0];
 		}
 	}
 
