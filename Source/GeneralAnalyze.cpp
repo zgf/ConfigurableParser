@@ -85,6 +85,15 @@ namespace ztl
 			return symbol;
 		}
 
+		void CollectHeadInfo(SymbolManager * manager)
+		{
+			auto table = manager->GetTable();
+			for (auto&& iter:table->heads)
+			{
+				manager->CachePropertyToValueMap(iter->property, iter->value);
+			}
+		}
+
 		class CollectTypeDefineVisitor:public GeneralTypeDefine::IVisitor
 		{
 			SymbolManager* manager;
@@ -958,6 +967,7 @@ namespace ztl
 		}
 		void ValidateGeneratorCoreSemantic(SymbolManager* manager)
 		{
+			CollectHeadInfo(manager);
 			CollectAndValidateTypeDefine(manager);
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);

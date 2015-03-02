@@ -208,7 +208,7 @@ namespace ztl
 			pair<PDANode*, PDANode*>	AddLoopLinkNode(PDANode* loopStart, PDANode* loopEnd);
 			pair<PDANode*, PDANode*>	AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>&right);
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
-			PDANode*					AddFinishNodeFollowTarget(PDANode* target);
+			void						AddFinishNodeFollowTarget(PDANode* target);
 			void						FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap);
 			wstring						GetRootRuleName()const;
 			//保留Left节点合并left right

@@ -175,7 +175,7 @@ namespace ztl
 			assert(!machine.GetSymbolManager()->GetStartRuleList().empty());
 			auto rootRuleName = machine.GetRootRuleName();
 			assert(machine.GetPDAMap().find(rootRuleName) != machine.GetPDAMap().end());
-			pdaMap[rootRuleName].second = machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second);
+			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second);
 		}
 	
 	
@@ -273,8 +273,9 @@ namespace ztl
 				return val + element->GetNexts().size() <= 1;
 			}) == 0);
 
-			for(auto&& iter : nodeList)
+			for(size_t i = 0; i < nodeList.size();++i)
 			{
+				auto&& iter = nodeList[i];
 				if(!iter->GetNexts().empty())
 				{
 					MergeCommonNode(iter, machine);

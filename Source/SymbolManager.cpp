@@ -385,6 +385,32 @@ namespace ztl
 			return findIter == grammarNodeDefSymbolMap.end() ? nullptr : findIter->second;
 		}
 
+		void SymbolManager::CachePropertyToValueMap(wstring property,const vector<wstring>& value)
+		{
+			propertyToValueMap.insert({ property,value });
+		}
+
+		void SymbolManager::CachePropertyToValueMap(wstring property, wstring value)
+		{
+			auto&& findIter = propertyToValueMap.find(property);
+			if (findIter == propertyToValueMap.end())
+			{
+				propertyToValueMap[property];
+			}
+			propertyToValueMap[property].emplace_back(value);
+		}
+
+		vector<wstring> SymbolManager::GetCacheValueByProperty(wstring property) const
+		{
+			auto&& findIter = propertyToValueMap.find(property);
+			return (findIter == propertyToValueMap.end()) ? vector<wstring>() : findIter->second;
+		}
+
+		unordered_map<wstring, vector<wstring>>& SymbolManager::GetPropertyToValueMap()
+		{
+			return propertyToValueMap;
+		}
+
 
 
 		void SymbolManager::CheckNameReDefineError(const wstring& name, ParserSymbol * parentSymbol)

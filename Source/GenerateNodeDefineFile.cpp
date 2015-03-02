@@ -8,443 +8,158 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		/*template<typename ReturnType,typename ParamType>
-		class ITypeDefineVisitor:public GeneralTypeDefine::IVisitor
-		{
-		private:
-			ReturnType returnValue;
-			ParamType argument;
-		public:
-			virtual ReturnType								Apply(shared_ptr<GeneralTypeDefine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralClassTypeDefine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralEnumTypeDefine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralClassMemberTypeDenfine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralEnumMemberTypeDefine> expression, ParamType param);
-
-		public:
-			ReturnType Invoke(shared_ptr<GeneralTypeDefine> expression, ParamType param)
-			{
-				argument = param;
-				expression->Accept(shared_from_this());
-				return returnValue;
-			}
-			virtual void								Visit(shared_ptr<GeneralTypeDefine> expression)override
-			{
-				assert(false);
-			}
-			virtual void								Visit(shared_ptr<GeneralClassTypeDefine> expression)override
-			{
-				returnValue = this->Apply(expression, argument);
-			}
-			virtual void								Visit(shared_ptr<GeneralEnumTypeDefine> expression)override
-			{
-				returnValue = this->Apply(expression, argument);
-			}
-			virtual void								Visit(shared_ptr<GeneralClassMemberTypeDenfine> expression) override
-			{
-				returnValue = this->Apply(expression, argument);
-
-			}
-			virtual void								Visit(shared_ptr<GeneralEnumMemberTypeDefine> expression) override
-			{
-				returnValue = this->Apply(expression, argument);
-			}
-		};
-		template<typename ParamType>
-		class ITypeDefineVisitor<void,ParamType>:public GeneralTypeDefine::IVisitor
-		{
-		private:
-			ParamType argument;
-			using ReturnType = void;
-		public:
-			virtual ReturnType								Apply(shared_ptr<GeneralTypeDefine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralClassTypeDefine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralEnumTypeDefine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralClassMemberTypeDenfine> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralEnumMemberTypeDefine> expression, ParamType param);
-
-		public:
-			ReturnType Invoke(shared_ptr<GeneralTypeDefine> expression, ParamType param)
-			{
-				argument = param;
-				expression->Accept(shared_from_this());
-			}
-			virtual void								Visit(shared_ptr<GeneralTypeDefine> expression)override
-			{
-				assert(false);
-			}
-			virtual void								Visit(shared_ptr<GeneralClassTypeDefine> expression)override
-			{
-				this->Apply(expression, argument);
-			}
-			virtual void								Visit(shared_ptr<GeneralEnumTypeDefine> expression)override
-			{
-				this->Apply(expression, argument);
-			}
-			virtual void								Visit(shared_ptr<GeneralClassMemberTypeDenfine> expression) override
-			{
-				this->Apply(expression, argument);
-
-			}
-			virtual void								Visit(shared_ptr<GeneralEnumMemberTypeDefine> expression) override
-			{
-				this->Apply(expression, argument);
-			}
-		};
-
-		
-
-		template<typename ReturnType, typename ParamType>
-		class ITypeObjectVisitor:public GeneralTypeObject::IVisitor
-		{
-		private:
-			ReturnType returnValue;
-			ParamType argument;
-		public:
-			virtual ReturnType								Apply(shared_ptr<GeneralTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralArrayTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralStringTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralNormalTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralSubTypeObject> expression, ParamType param);
-			
-
-		public:
-			ReturnType Invoke(shared_ptr<GeneralTypeObject> expression, ParamType param)
-			{
-				argument = param;
-				expression->Accept(shared_from_this());
-				return returnValue;
-			}
-			
-			virtual void								Visit(shared_ptr<GeneralTypeObject> expression) override
-			{
-				assert(false);
-			}
-			virtual void								Visit(shared_ptr<GeneralArrayTypeObject> expression) override
-			{
-				returnValue = this->Apply(expression, argument);
-			}
-			virtual void								Visit(shared_ptr<GeneralStringTypeObject> expression) override
-			{
-				returnValue = this->Apply(expression, argument);
-
-			}
-			virtual void								Visit(shared_ptr<GeneralNormalTypeObject> expression) override
-			{
-				returnValue = this->Apply(expression, argument);
-
-			}
-			virtual void								Visit(shared_ptr<GeneralSubTypeObject> expression) override
-			{
-				returnValue = this->Apply(expression, argument);
-
-			}
-		
-		};
-		template<typename ParamType>
-		class ITypeObjectVisitor<void, ParamType>:public GeneralTypeObject::IVisitor
-		{
-		private:
-			using ReturnType = void;
-			ParamType argument;
-		public:
-			virtual ReturnType								Apply(shared_ptr<GeneralTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralArrayTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralStringTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralNormalTypeObject> expression, ParamType param);
-			virtual ReturnType								Apply(shared_ptr<GeneralSubTypeObject> expression, ParamType param);
-			
-		public:
-			ReturnType Invoke(shared_ptr<GeneralTypeObject> expression, ParamType param)
-			{
-				argument = param;
-				expression->Accept(shared_from_this());
-			}
-
-			virtual void								Visit(shared_ptr<GeneralTypeObject> expression) override
-			{
-				assert(false);
-			}
-			virtual void								Visit(shared_ptr<GeneralArrayTypeObject> expression) override
-			{
-				this->Apply(expression, argument);
-			}
-			virtual void								Visit(shared_ptr<GeneralStringTypeObject> expression) override
-			{
-				this->Apply(expression, argument);
-
-			}
-			virtual void								Visit(shared_ptr<GeneralNormalTypeObject> expression) override
-			{
-				this->Apply(expression, argument);
-
-			}
-			virtual void								Visit(shared_ptr<GeneralSubTypeObject> expression) override
-			{
-				this->Apply(expression, argument);
-
-			}
-			
-		};
-
-		class NodeDefineFileGenrator
+		class GeneralTypeDefineVisitor;
+		class GeneralTypeObjectVisitor;
+		class GeneralTypeDefineVisitor:public GeneralTypeDefine::IVisitor
 		{
 		public:
-			class TypeDefineGenerator: public ITypeDefineVisitor<void, shared_ptr<wstring>>
-			{
-				using ParamType = shared_ptr<wstring>;
-				using ReturnType = void;
-			public:
-				virtual ReturnType							Apply(shared_ptr<GeneralTypeDefine> expression, ParamType param)override
-				{
-					assert(false);
-				}
-				virtual ReturnType							Apply(shared_ptr<GeneralClassTypeDefine> expression, ParamType param)override
-				{
-
-					auto& class_name = expression->name;
-
-					auto&& parent_name = make_shared<wstring>();
-					TypeObjectGenerator().Invoke(expression->parent, parent_name);
-
-					wstring class_field_list;
-					for (auto&&iter:expression->members)
-					{
-						auto&& filed = make_shared<wstring>();
-						TypeDefineGenerator().Invoke(iter, filed);
-						class_field_list.append(*filed);
-					}
-					
-					wstring subtype_define_list;
-					for (auto&&iter:expression->subType)
-					{
-						auto&& subtype = make_shared<wstring>();
-						Invoke(iter, subtype);
-						subtype_define_list.append(*subtype);
-					}
-					ztl::generator::MarcoGenerator class_define(LR"(
-					class CLASSNAME : public PARENTNAME
-					{
-						SUBTYPELIST
-						CLASSMEMBERLIST
-					};)", {L"CLASSNAME",L"PARENTNAME",L"SUBTYPELIST",L"CLASSMEMBERLIST"});
-					*param = class_define.GenerateText({ class_name,*parent_name,subtype_define_list,class_field_list }).GetMacroResult();
-				}
-				virtual ReturnType							Apply(shared_ptr<GeneralEnumTypeDefine> expression, ParamType param)override
-				{
-
-				}
-				virtual ReturnType								Apply(shared_ptr<GeneralClassMemberTypeDenfine> expression, ParamType param)override
-				{
-
-				}
-				virtual ReturnType								Apply(shared_ptr<GeneralEnumMemberTypeDefine> expression, ParamType param)override
-				{
-
-				}
-			};
+			GeneralTypeDefineVisitor() = default;
+			~GeneralTypeDefineVisitor() noexcept = default;
+			GeneralTypeDefineVisitor(GeneralTypeDefineVisitor&&) = default;
+			GeneralTypeDefineVisitor(const GeneralTypeDefineVisitor&) = default;
+			GeneralTypeDefineVisitor& operator=(GeneralTypeDefineVisitor&&) = default;
+			GeneralTypeDefineVisitor& operator=(const GeneralTypeDefineVisitor&) = default;
 		public:
-
-			class TypeObjectGenerator: public ITypeObjectVisitor<void, shared_ptr<wstring>>
+			virtual void								GeneralTypeDefineVisitor::Visit(GeneralClassTypeDefine* node) override;
+			virtual void								GeneralTypeDefineVisitor::Visit(GeneralEnumTypeDefine* node) override;
+			virtual void								GeneralTypeDefineVisitor::Visit(GeneralClassMemberTypeDenfine* node) override;
+			virtual void								GeneralTypeDefineVisitor::Visit(GeneralEnumMemberTypeDefine* node) override;
+			wstring GetResult()const
 			{
-				using ParamType = shared_ptr<wstring>;
-				using ReturnType = void;
-			public:
-				virtual ReturnType								Apply(shared_ptr<GeneralTypeObject> expression, ParamType param)override
-				{
-					assert(false);
-				}
-				virtual ReturnType								Apply(shared_ptr<GeneralArrayTypeObject> expression, ParamType param)override
-				{
-
-				}
-				virtual ReturnType								Apply(shared_ptr<GeneralStringTypeObject> expression, ParamType param)override
-				{
-
-				}
-				virtual ReturnType								Apply(shared_ptr<GeneralNormalTypeObject> expression, ParamType param)override
-				{
-
-				}
-				virtual ReturnType								Apply(shared_ptr<GeneralSubTypeObject> expression, ParamType param)override
-				{
-
-				}
-			
-			};
+				return content;
+			}
 		private:
-			shared_ptr<SymbolManager>		manager;
-			wstring							fileName;
-		public:
-			wstring CreatNodeDefineContent()
-			{
-				wstring result;
-				for (auto&& iter :manager->GetTypes())
-				{
-					auto&& type_define_string = make_shared<wstring>();
-					TypeDefineGenerator().Invoke(iter, type_define_string);
-					result.append(*type_define_string);
-				}
-				return result;
-			}
-			void CreatNodeDefineFile()
-			{
-				wofstream output(this->fileName);
-				ztl::contract::ThrowException(output.is_open(), "Can't open the file output!");
-				auto content = CreatNodeDefineContent();
-				output.write(content.c_str(), content.size());
-			}
+			wstring content;
 		};
-*/
+		class GeneralTypeObjectVisitor:public GeneralTypeObject::IVisitor
+		{
+		public:
+			GeneralTypeObjectVisitor() = default;
+			~GeneralTypeObjectVisitor() noexcept = default;
+			GeneralTypeObjectVisitor(GeneralTypeObjectVisitor&&) = default;
+			GeneralTypeObjectVisitor(const GeneralTypeObjectVisitor&) = default;
+			GeneralTypeObjectVisitor& operator=(GeneralTypeObjectVisitor&&) = default;
+			GeneralTypeObjectVisitor& operator=(const GeneralTypeObjectVisitor&) = default;
+		public:
+			virtual void								Visit(GeneralArrayTypeObject* node) override
+			{
+				GeneralTypeObjectVisitor visitor;
+				node->element->Accept(&visitor);
+				content = L"vector<" + visitor.GetResult() + L">";
+			}
+			virtual void								Visit(GeneralStringTypeObject*) override
+			{
+				content = L"wstring";
+			}
+			virtual void								Visit(GeneralNormalTypeObject* node) override
+			{
+				content = node->name;
+			}
+			virtual void								Visit(GeneralSubTypeObject* node) override
+			{
+				GeneralTypeObjectVisitor visitor;
+				node->parent->Accept(&visitor);
+				content = GetResult() + L"." + node->name;
+			}
+		public:
+			wstring GetResult()const
+			{
+				return content;
+			}
+		private:
+			wstring content;
+		};
+
+		 void								GeneralTypeDefineVisitor::Visit(GeneralClassTypeDefine* node) 
+		{
+			wstring parentString = L"";
+			if(node->parent != nullptr)
+			{
+				GeneralTypeObjectVisitor visitor;
+				node->parent->Accept(&visitor);
+				parentString = L": public " + visitor.GetResult() + L",\n";
+			}
+			auto membersString = accumulate(node->members.begin(), node->members.end(), wstring(),
+				[](const wstring& sum, const shared_ptr<GeneralClassMemberTypeDenfine>& element)
+			{
+				GeneralTypeDefineVisitor visitor;
+				element->Accept(&visitor);
+				return sum + visitor.GetResult();
+			});
+			auto subTypeString = accumulate(node->subType.begin(), node->subType.end(), wstring(),
+				[](const wstring& sum, const shared_ptr<GeneralTypeDefine>& element)
+			{
+				GeneralTypeDefineVisitor visitor;
+				element->Accept(&visitor);
+				return sum + visitor.GetResult();
+			});
+			content = L"class " + node->name + L" " + parentString + L"\n{\n" + membersString + subTypeString + L"\n};\n";
+		}
+		 void								GeneralTypeDefineVisitor::Visit(GeneralEnumTypeDefine* node) 
+		{
+			auto enumClassName = node->name;
+			auto bodyString = accumulate(node->members.begin(), node->members.end(), wstring(),
+				[](const wstring& sum, const shared_ptr<GeneralEnumMemberTypeDefine>& element)
+			{
+				GeneralTypeDefineVisitor visitor;
+				element->Accept(&visitor);
+				return sum + visitor.GetResult();
+			});
+			content = L"enum class\n{\n" + bodyString + L"\n};\n";
+		}
+		 void								GeneralTypeDefineVisitor::Visit(GeneralClassMemberTypeDenfine* node) 
+		{
+			GeneralTypeObjectVisitor visitor;
+			node->type->Accept(&visitor);
+			auto typeString = visitor.GetResult();
+			auto fieldNameString = node->name;
+			content = typeString + L" " + fieldNameString + L";\n";
+		}
+		 void								GeneralTypeDefineVisitor::Visit(GeneralEnumMemberTypeDefine* node) 
+		{
+			content = node->name + L",\n";
+		}
+		 wstring GetNodeDefineFileNamespace(SymbolManager* manager)
+		 {
+			 auto values = manager->GetCacheValueByProperty(L"namespace");
+			 assert(values.size() == 0 || values.size() == 1);
+			 return values.empty()?wstring() : values[0];
+		 }
+		 wstring GetNodeDefineFileInclude(SymbolManager* manager)
+		 {
+			 auto values = manager->GetCacheValueByProperty(L"include");
+			 wstring includeString = L"";
+			 if (!values.empty())
+			 {
+				 includeString = accumulate(values.begin(), values.end(), wstring(),[](const wstring& sum, const wstring value)
+				 {
+					 return sum + L"#include " + value + L"\n";
+				 });
+
+			 }
+
+		 }
+		 wstring GetNodeDefineFileBody(GeneralTableDefine* table)
+		 {
+			return  accumulate(table->types.begin(), table->types.end(), wstring(), [](const wstring& sum, const shared_ptr<GeneralTypeDefine>&target)
+			 {
+				 GeneralTypeDefineVisitor visitor;
+				 target->Accept(&visitor);
+				 return sum +L"\n\n"+ visitor.GetResult();
+			 });
+		 }
+		 wstring CreateNodeDefineFile(wstring fileName,SymbolManager* manager)
+		 {
+			 wofstream output(fileName);
+			 auto body = GetNodeDefineFileBody(manager->GetTable());
+			 auto includeString = GetNodeDefineFileInclude(manager);
+			 auto namespaceString = GetNodeDefineFileNamespace(manager);
+			 if (!namespaceString.empty())
+			 {
+				 body = namespaceString + L"\n{\n" + body + L"\n};\n";
+			 }
+			 auto content = includeString +L"\n\n"+ body;
+			 output.write(content.c_str(), content.size());
+		 }
 	}
 }
-
-
-/* Ä£°å
-template<typename ReturnType,typename ParamType>
-class ITypeDefineVisitor:public GeneralTypeDefine::IVisitor
-{
-private:
-ReturnType returnValue;
-ParamType argument;
-public:
-virtual ReturnType								Apply(shared_ptr<GeneralTypeDefine> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralClassTypeDefine> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralEnumTypeDefine> expression, ParamType param);
-public:
-ReturnType Invoke(shared_ptr<GeneralTypeDefine> expression, ParamType param)
-{
-argument = param;
-expression->Accept(shared_from_this());
-return returnValue;
-}
-virtual void								Visit(shared_ptr<GeneralTypeDefine> expression)override
-{
-assert(false);
-}
-virtual void								Visit(shared_ptr<GeneralClassTypeDefine> expression)override
-{
-returnValue = this->Apply(expression, argument);
-}
-virtual void								Visit(shared_ptr<GeneralEnumTypeDefine> expression)override
-{
-returnValue = this->Apply(expression, argument);
-}
-
-};
-
-class TypeDefineGenerator: public ITypeDefineVisitor<wstring,shared_ptr<SymbolManager>>
-{
-using ParamType = shared_ptr<SymbolManager>;
-using ReturnType = wstring;
-wstring defineString;
-public:
-virtual ReturnType							Apply(shared_ptr<GeneralTypeDefine> expression, ParamType manager)override
-{
-assert(false);
-}
-virtual ReturnType							Apply(shared_ptr<GeneralClassTypeDefine> expression, ParamType manager)override
-{
-
-}
-virtual ReturnType							Apply(shared_ptr<GeneralEnumTypeDefine> expression, ParamType manager)override
-{
-
-}
-};
-
-template<typename ReturnType, typename ParamType>
-class ITypeObjectVisitor:public GeneralTypeObject::IVisitor
-{
-private:
-ReturnType returnValue;
-ParamType argument;
-public:
-virtual ReturnType								Apply(shared_ptr<GeneralTypeObject> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralArrayTypeObject> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralStringTypeObject> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralNormalTypeObject> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralSubTypeObject> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralClassMemberTypeObject> expression, ParamType param);
-virtual ReturnType								Apply(shared_ptr<GeneralEnumMemberTypeObject> expression, ParamType param);
-
-public:
-ReturnType Invoke(shared_ptr<GeneralTypeObject> expression, ParamType param)
-{
-argument = param;
-expression->Accept(shared_from_this());
-return returnValue;
-}
-
-virtual void								Visit(shared_ptr<GeneralTypeObject> expression) override
-{
-assert(false);
-}
-virtual void								Visit(shared_ptr<GeneralArrayTypeObject> expression) override
-{
-returnValue = this->Apply(expression, argument);
-}
-virtual void								Visit(shared_ptr<GeneralStringTypeObject> expression) override
-{
-returnValue = this->Apply(expression, argument);
-
-}
-virtual void								Visit(shared_ptr<GeneralNormalTypeObject> expression) override
-{
-returnValue = this->Apply(expression, argument);
-
-}
-virtual void								Visit(shared_ptr<GeneralSubTypeObject> expression) override
-{
-returnValue = this->Apply(expression, argument);
-
-}
-virtual void								Visit(shared_ptr<GeneralClassMemberTypeObject> expression) override
-{
-returnValue = this->Apply(expression, argument);
-
-}
-virtual void								Visit(shared_ptr<GeneralEnumMemberTypeObject> expression) override
-{
-returnValue = this->Apply(expression, argument);
-}
-};
-
-
-class TypeObjectGenerator: public ITypeObjectVisitor<wstring,shared_ptr<SymbolManager>>
-{
-using ParamType = shared_ptr<SymbolManager>;
-using ReturnType = wstring;
-wstring objectString;
-public:
-virtual ReturnType								Apply(shared_ptr<GeneralTypeObject> expression, ParamType param)override
-{
-assert(false);
-}
-virtual ReturnType								Apply(shared_ptr<GeneralArrayTypeObject> expression, ParamType param)override
-{
-
-}
-virtual ReturnType								Apply(shared_ptr<GeneralStringTypeObject> expression, ParamType param)override
-{
-
-}
-virtual ReturnType								Apply(shared_ptr<GeneralNormalTypeObject> expression, ParamType param)override
-{
-
-}
-virtual ReturnType								Apply(shared_ptr<GeneralSubTypeObject> expression, ParamType param)override
-{
-
-}
-virtual ReturnType								Apply(shared_ptr<GeneralClassMemberTypeObject> expression, ParamType param)override
-{
-
-}
-virtual ReturnType								Apply(shared_ptr<GeneralEnumMemberTypeObject> expression, ParamType param)override
-{
-
-}
-};
-
-*/

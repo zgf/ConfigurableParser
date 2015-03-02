@@ -137,7 +137,7 @@
 		class GenRuleDefine
 		{
 			GenTypeObject						type;
-			wstring									name;
+			wstring								name;
 			GenGrammarTypeDefine[]				grammars;
 		};
 		class GenTableDefine

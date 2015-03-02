@@ -217,6 +217,7 @@
     <ClInclude Include="Source\Include\ParserSymbolDefine.h" />
     <ClInclude Include="Source\Include\stdafx.h" />
     <ClInclude Include="Source\Include\SymbolManager.h" />
+    <ClInclude Include="Source\Template\PDATemplate.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

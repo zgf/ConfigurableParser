@@ -37,7 +37,7 @@ namespace ztl
 		private:
 			PushDownAutoMachine*												machine;
 
-			//int 1 nodeIndex int 2 tagIndex  int targetNodeIndex
+			//int 1 nodeIndex 
 
 			unordered_map<int, vector<JumpItem>>								 jumpTable;
 			unordered_map<PDANode*, int>										 nodeIndexMap;

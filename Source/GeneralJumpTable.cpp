@@ -90,7 +90,7 @@ namespace ztl
 			unordered_map<ActionType, lambdaType> actionMap;
 			auto functor = [](const ActionWrap& wrap)->wstring
 			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName();
+				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue();
 			};
 			vector<ActionType> ActionTypeList = {
 				ActionType::Assign,
@@ -125,10 +125,9 @@ namespace ztl
 			wofstream output(fileName);
 			for(auto rowsIter : table)
 			{
-
 				auto&& nodeIndex = rowsIter.first;
 				auto&&  edges = rowsIter.second;
-				sort(edges.begin(), edges.end(), [](const JumpItem& left,const JumpItem& right)
+				sort(edges.begin(), edges.end(), [](const JumpItem& left, const JumpItem& right)
 				{
 					return left.targetIndex < right.targetIndex;
 				});

@@ -106,12 +106,18 @@ namespace ztl
 				return pair<PDANode*, PDANode*>(left.first, right.second);
 			}
 		}
-		PDANode*	PushDownAutoMachine::AddFinishNodeFollowTarget(PDANode* target)
+		void	PushDownAutoMachine::AddFinishNodeFollowTarget(PDANode* target)
 		{
-			auto newNode = NewNode();
-			ActionWrap wrap(ActionType::Terminate,L"<$>",L"");
-			this->AddEdge(target, newNode, wrap);
-			return newNode;
+			for (auto&& frontIter:target->GetFronts())
+			{
+				if(find_if(frontIter->GetActions().begin(), frontIter->GetActions().end(), [](const ActionWrap& wrap)
+				{
+					return wrap.GetActionType() == ActionType::Create;
+				}) != frontIter->GetActions().end())
+				{
+					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"<$>", L""));
+				}
+			}
 		}
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddLoopLinkNode(PDANode * loopStart, PDANode * loopEnd)
 		{

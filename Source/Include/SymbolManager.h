@@ -39,7 +39,6 @@ namespace ztl
 			vector<shared_ptr<ParserSymbol>> createdSymbolList;//符号的对象池
 			ParserSymbol*					 globalSymbol;//根符号
 			ParserSymbol*					 tokenTypeSymbol;//token类型符号 
-			
 			//作用域内类型到符号的映射.因为Symbol->type类型被擦除了,所以这样绑定后,下次不用使用visitor FindType去查看实际类型了.
 
 			//SymbolToClassDefineMapType		 symbolClassDefineMap;//从符号到类定义的绑定
@@ -56,6 +55,7 @@ namespace ztl
 			RegexStringToSymbolMapType			 regexSymbolMap;
 			unordered_map<wstring, int>			 nameToTagMap;
 			vector<wstring>						 tagToNameList;
+			unordered_map<wstring, vector<wstring>>propertyToValueMap;//headInfoMap property value;
 
 			
 		public:
@@ -115,7 +115,7 @@ namespace ztl
 			ParserSymbol* GetCacheDisTokenNameSymbol(const wstring& name)const;
 			void		  CacheNameAndTagMap(const wstring symbolName);
 			int			  GetCacheTagByName(const wstring symbolName);
-			wstring GetCacheNameByTag(size_t tag);
+			wstring		  GetCacheNameByTag(size_t tag);
 
 			//setter or assign
 			void		  CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine* grammar, ParserSymbol* fieldDefSymbol);
@@ -128,12 +128,15 @@ namespace ztl
 			//using rule
 			void		  CacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar, ParserSymbol* ruleDefSymbol);
 			void		  CacheNameAndTagMap();
-
 			ParserSymbol* GetCacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar);
 			ParserSymbol* GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar);
 			ParserSymbol* GetCacheNonTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* terminateGrammar);
 
+			void				  CachePropertyToValueMap(wstring property, const vector<wstring>& value);
+			void				  CachePropertyToValueMap(wstring property, wstring value);
 
+			vector<wstring>		  GetCacheValueByProperty(wstring property)const;
+			unordered_map<wstring, vector<wstring>>& GetPropertyToValueMap();
 		private:
 			void TryAddSubSymbol(ParserSymbol* subSymbol, ParserSymbol* parentSymbol);
 
@@ -142,14 +145,14 @@ namespace ztl
 			void CacheDisTokenNameSymbolMap(const wstring& name, ParserSymbol* symbol);
 			void CacheRegexStringToSymbolMap(const wstring& name, ParserSymbol* symbol);
 		};
-
-		ParserSymbol* FindType(SymbolManager* manager,ParserSymbol* scope,GeneralTypeObject* type);
-		void CollectAndValidateTypeDefine(SymbolManager* manager);
 		wstring LinearStringToRegex(const wstring&);
-		void ValidateGrammarNode(SymbolManager* manager);
-		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap);
-		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> CollectGeneratePath(SymbolManager* manager);
+		ParserSymbol* FindType(SymbolManager* manager, ParserSymbol* scope, GeneralTypeObject* type);
 		void ValidateGeneratorCoreSemantic(SymbolManager* manager);
+		void CollectHeadInfo(SymbolManager* manager);
+		void CollectAndValidateTypeDefine(SymbolManager* manager);
+		void ValidateGrammarNode(SymbolManager* manager);
+		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> CollectGeneratePath(SymbolManager* manager);
+		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap);
 		void GetStartSymbol(SymbolManager* manager);
 	}
 }
