@@ -32,9 +32,15 @@ namespace ztl
 		*/
 		struct GeneralTokenDefine
 		{
+			enum class TokenOptional
+			{
+				False,
+				True,
+			};
+
 			wstring name;
 			wstring regex;
-			bool	ignore;
+			TokenOptional	ignore;
 		};
 
 		/*类型对象前置声明*/

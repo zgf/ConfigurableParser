@@ -1,4 +1,8 @@
-		
+		struct GenHeadInfoDefine
+		{
+			wstring    property;
+			wstring    value;
+		};
 		/*
 		token和IgnoreToken的定义
 
@@ -142,6 +146,7 @@
 		};
 		class GenTableDefine
 		{
+			GenHeadInfoDefine[] heads;
 			GenTypeDefine[]   types;
 			GenTokenDefine[]  tokens;
 			GenRuleDefine[]   rules;
@@ -228,9 +233,10 @@ rule GenTokenDefine TokenDecl
         = "token" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "False" }
         = "ignoretoken" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "True" }
         ;
+rule GenHeadInfoDefine HeadDecl = NAME : property ":" STRING : value ";" as GenHeadInfoDefine;
 rule GenRuleDefine RuleDecl
         = "rule" Type : type NAME : name { "=" Grammar : grammars } ";" as GenRuleDefine
         ;
 rule GenTableDefine ParserDecl
-        =  { TypeDecl : definitions | TokenDecl : definitions | RuleDecl : definitions } as GenTableDefine
+        = {HeadDecl : heads}| { TypeDecl : definitions} |{ TokenDecl : definitions} |{ RuleDecl : definitions } as GenTableDefine
         ;

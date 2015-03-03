@@ -11,7 +11,9 @@ namespace ztl
 			GeneralTokenWriter& GeneralTokenWriter::Token(const wstring& name, const wstring& regex, bool ignore)
 			{
 				auto result = make_shared<GeneralTokenDefine>();
-				result->ignore = ignore;
+				result->ignore = (ignore == true)?
+					GeneralTokenDefine::TokenOptional::True :
+					GeneralTokenDefine::TokenOptional::False;
 				result->name = name;
 				result->regex = regex;
 				this->tokens.emplace_back(move(result));

@@ -5,6 +5,7 @@
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
 #include "Include\GeneralJumpTable.h"
+#include "Include\GeneralFile.h"
 int main()
 {
 	auto table = ztl::general_parser::BootStrapDefineTable();
@@ -15,7 +16,7 @@ int main()
 	ztl::general_parser::GeneralJumpTable jumpTable(&machine);
 	ztl::general_parser::CreateJumpTable(jumpTable);
 	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
-
+	CreateNodeDefineFile(L"Test.cpp", &manger);
 	return 0;
 }
 

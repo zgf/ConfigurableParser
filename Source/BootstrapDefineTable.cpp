@@ -25,7 +25,8 @@ namespace ztl
 						GeneralHeadInfoWriter()
 						.Info(L"namespace",L"XML")
 						.Info(L"classprefix",L"ZGF")
-						.Info(L"include",L"zgf_value.hpp")
+						.Info(L"namespace",L"test")
+						.Info(L"include",L"Include/stdafx.h")
 					)
 					.Token
 					(
@@ -59,6 +60,13 @@ namespace ztl
 					.Type
 					(
 						GeneralTypeListWriter()
+						.Class
+						(
+							GeneralClassTypeWriter()
+							.Name(L"GenHeadInfoDefine")
+							.Member(ClassMember(String(),L"property"))
+							.Member(ClassMember(String(),L"value"))
+						)
 						.Class
 						(
 							GeneralClassTypeWriter()
@@ -251,6 +259,7 @@ namespace ztl
 						(
 						GeneralClassTypeWriter()
 						.Name(L"GenTableDefine")
+						.Member(ClassMember(Array(Normal(L"GenHeadInfoDefine")), L"heads"))
 						.Member(ClassMember(Array(Normal(L"GenTypeDefine")), L"types"))
 						.Member(ClassMember(Array(Normal(L"GenTokenDefine")), L"tokens"))
 						.Member(ClassMember(Array(Normal(L"GenRuleDefine")), L"rules"))
@@ -375,7 +384,7 @@ namespace ztl
 							.Name(L"SetterGrammar")
 							.ReturnType(Normal(L"GenGrammarTypeDefine"))
 							| (
-							GrammarSymbol(L"NAME")[L"name"] +
+								GrammarSymbol(L"NAME")[L"name"] +
 								Text(L"=")+
 								GrammarSymbol(L"STRING")[L"value"]
 							)
@@ -445,6 +454,19 @@ namespace ztl
 						.Rule
 						(
 							GeneralRuleWriter()
+							.Name(L"HeadDecl")
+							.ReturnType(Normal(L"GenHeadInfoDefine"))
+							| (
+								GrammarSymbol(L"NAME")[L"property"] +
+								Text(L":")+
+								GrammarSymbol(L"STRING")[L"value"] +
+								Text(L";")
+							  )
+							.Create(Normal(L"GenHeadInfoDefine"))
+						)
+						.Rule
+						(
+							GeneralRuleWriter()
 							.Name(L"TokenDecl")
 							.ReturnType(Normal(L"GenTokenDefine"))
 							| (
@@ -489,6 +511,7 @@ namespace ztl
 							.Name(L"ParserDecl")
 							.ReturnType(Normal(L"GenTableDefine"))
 							| (
+								*(GrammarSymbol(L"HeadDecl")[L"heads"])	+
 								*(GrammarSymbol(L"TypeDecl")[L"types"])  +
 								*(GrammarSymbol(L"TokenDecl")[L"tokens"]) +
 								*(GrammarSymbol(L"RuleDecl")[L"rules"]) 

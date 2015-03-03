@@ -29,7 +29,6 @@ namespace ztl
 		{
 			return this->tokenTypeSymbol;
 		}
-		
 
 		void SymbolManager::TryAddSubSymbol(ParserSymbol * subSymbol, ParserSymbol * parentSymbol)
 		{
@@ -49,10 +48,10 @@ namespace ztl
 		ParserSymbol * SymbolManager::AddClass(const wstring & name, ParserSymbol * baseType, ParserSymbol * parentType)
 		{
 			assert(parentType->IsClassType() || parentType->IsGlobal());
-			CheckNameReDefineError(name,parentType);
-			auto classTypeSymbol = CreatASymbol(SymbolType::ClassType, name, parentType,baseType);
+			CheckNameReDefineError(name, parentType);
+			auto classTypeSymbol = CreatASymbol(SymbolType::ClassType, name, parentType, baseType);
 			TryAddSubSymbol(classTypeSymbol, parentType);
-			
+			CacheBaseSymbolToDeriveMap(baseType, classTypeSymbol);
 			return classTypeSymbol;
 		}
 		ParserSymbol * SymbolManager::AddField(const wstring & name, ParserSymbol * fieldType, ParserSymbol * parentType)
@@ -68,7 +67,7 @@ namespace ztl
 			globalSymbol = CreatASymbol(SymbolType::Global, L"", nullptr, nullptr);
 			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"token", nullptr, nullptr);
 		}
-		SymbolManager::SymbolManager(const shared_ptr<GeneralTableDefine>& _table) :table(_table)
+		SymbolManager::SymbolManager(const shared_ptr<GeneralTableDefine>& _table) : table(_table)
 		{
 			globalSymbol = CreatASymbol(SymbolType::Global, L"", nullptr, nullptr);
 			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"token", nullptr, nullptr);
@@ -86,7 +85,7 @@ namespace ztl
 		{
 			assert(parentType->IsClassType() || parentType->IsGlobal());
 			this->CheckNameReDefineError(name, parentType);
-			auto enumTypeSymbol = CreatASymbol(SymbolType::EnumType,name, parentType, nullptr);
+			auto enumTypeSymbol = CreatASymbol(SymbolType::EnumType, name, parentType, nullptr);
 			TryAddSubSymbol(enumTypeSymbol, parentType);
 			return enumTypeSymbol;
 		}
@@ -96,7 +95,7 @@ namespace ztl
 			assert(parentType->IsEnumType());
 			CheckNameReDefineError(name, parentType);
 
-			auto&& enumItemSymbol = CreatASymbol(SymbolType::EnumDef,name,parentType,parentType);
+			auto&& enumItemSymbol = CreatASymbol(SymbolType::EnumDef, name, parentType, parentType);
 			TryAddSubSymbol(enumItemSymbol, parentType);
 			return enumItemSymbol;
 		}
@@ -104,11 +103,11 @@ namespace ztl
 		ParserSymbol * SymbolManager::AddRuleDefine(const wstring & name, ParserSymbol * ruleType)
 		{
 			assert(ruleType->IsClassType());
-			CheckNameReDefineError(name,GetGlobalSymbol());
+			CheckNameReDefineError(name, GetGlobalSymbol());
 			auto ruleSymbol = CreatASymbol(SymbolType::RuleDef, name, GetGlobalSymbol(), ruleType);
 			TryAddSubSymbol(ruleSymbol, GetGlobalSymbol());
 			CacheRuleNameToSymbolMap(name, ruleSymbol);
-			
+
 			return ruleSymbol;
 		}
 		void CheckRegexError(const wstring& regex)
@@ -128,12 +127,12 @@ namespace ztl
 			{
 				throw ztl_exception(L"\ntoken name: " + name +
 					L"token regex: " + regex +
-					L"can't creat correct regex string! the regex error message is:"+ex.Message());
+					L"can't creat correct regex string! the regex error message is:" + ex.Message());
 			}
-			auto tokenSymbol = CreatASymbol(SymbolType::TokenDef, name, GetGlobalSymbol(),nullptr,ignore);
+			auto tokenSymbol = CreatASymbol(SymbolType::TokenDef, name, GetGlobalSymbol(), nullptr, ignore);
 
 			TryAddSubSymbol(tokenSymbol, GetGlobalSymbol());
-			if (tokenSymbol->IsIgnore())
+			if(tokenSymbol->IsIgnore())
 			{
 				CacheDisTokenNameSymbolMap(name, tokenSymbol);
 			}
@@ -142,7 +141,7 @@ namespace ztl
 				CacheTokenNameToSymbolMap(name, tokenSymbol);
 				CacheRegexStringToSymbolMap(regex, tokenSymbol);
 			}
-			
+
 			return tokenSymbol;
 		}
 
@@ -161,20 +160,46 @@ namespace ztl
 
 		ParserSymbol * SymbolManager::CreatASymbol(SymbolType type, const wstring & name, ParserSymbol * parent, ParserSymbol * descriptor, bool ignore)
 		{
-			createdSymbolList.emplace_back(make_shared<ParserSymbol>(this, type, name, parent, descriptor,ignore));
+			createdSymbolList.emplace_back(make_shared<ParserSymbol>(this, type, name, parent, descriptor, ignore));
 			return createdSymbolList.back().get();
 		}
 
-		void SymbolManager::CacheTypeObjectSymbolMap(ParserSymbol * , GeneralTypeObject * type, ParserSymbol * typeSymbol)
+		void SymbolManager::CacheTypeObjectSymbolMap(GeneralTypeObject * type, ParserSymbol * typeSymbol)
 		{
 			assert(typeSymbolMap.find(type) == typeSymbolMap.end());
 			typeSymbolMap.insert(make_pair(type, typeSymbol));
 		}
 
-		ParserSymbol * SymbolManager::GetCacheTypeObjectSymbol(ParserSymbol * , GeneralTypeObject * type)
+		ParserSymbol * SymbolManager::GetCacheTypeObjectSymbol(GeneralTypeObject * type)
 		{
 			auto findScope = typeSymbolMap.find(type);
-			return (findScope == typeSymbolMap.end()) ?nullptr : findScope->second;
+			return (findScope == typeSymbolMap.end()) ? nullptr : findScope->second;
+		}
+
+		void SymbolManager::CacheTypeDefineAndSymbolMap(GeneralTypeDefine * type, ParserSymbol * typeSymbol)
+		{
+			assert(dynamic_cast<GeneralClassTypeDefine*>(type) != nullptr || dynamic_cast<GeneralEnumTypeDefine*>(type) != nullptr);
+			assert(typeDefSymbolMap.find(type) == typeDefSymbolMap.end());
+			assert(typeSymbol->IsClassType() || typeSymbol->IsEnumType());
+			assert(symbolTypeDefMap.find(typeSymbol) == symbolTypeDefMap.end());
+			typeDefSymbolMap.insert(make_pair(type, typeSymbol));
+			symbolTypeDefMap.insert(make_pair( typeSymbol, type));
+		}
+
+		ParserSymbol * SymbolManager::GetCacheSymbolByTypeDefine(GeneralTypeDefine * type)
+		{
+			assert(!typeDefSymbolMap.empty());
+			assert(dynamic_cast<GeneralClassTypeDefine*>(type) != nullptr || dynamic_cast<GeneralEnumTypeDefine*>(type) != nullptr);
+			auto findIter = typeDefSymbolMap.find(type);
+			return (findIter == typeDefSymbolMap.end()) ? nullptr : findIter->second;
+		}
+
+		GeneralTypeDefine * SymbolManager::GetCacheTypeDefineBySymbol(ParserSymbol * type)
+		{
+			assert(!this->symbolTypeDefMap.empty());
+			assert(type->IsClassType()|| type->IsEnumType());
+			auto findIter = symbolTypeDefMap.find(type);
+			return (findIter == symbolTypeDefMap.end()) ? nullptr : findIter->second;
 		}
 
 		void SymbolManager::CacheRuleNameToSymbolMap(const wstring & name, ParserSymbol * symbol)
@@ -199,7 +224,6 @@ namespace ztl
 			this->disTokenNameSymbolMap.insert({ name, symbol });
 		}
 
-
 		void SymbolManager::CacheRegexStringToSymbolMap(const wstring & name, ParserSymbol * symbol)
 		{
 			if(regexSymbolMap.find(name) == regexSymbolMap.end())
@@ -210,22 +234,21 @@ namespace ztl
 			{
 				throw ztl_exception(L"token's regex need unique!");
 			}
-
 		}
 
 		ParserSymbol* SymbolManager::GetCacheRuleNameToSymbol(const wstring& name) const
 		{
 			auto findIter = ruleNameSymbolMap.find(name);
-			return (findIter == ruleNameSymbolMap.end()) ?  nullptr : findIter->second;
+			return (findIter == ruleNameSymbolMap.end()) ? nullptr : findIter->second;
 		}
-		
+
 		ParserSymbol* SymbolManager::GetCacheTokenNameToSymbol(const wstring& name) const
 		{
 			auto findIter = tokenNameSymbolMap.find(name);
 			return (findIter == tokenNameSymbolMap.end()) ? nullptr : findIter->second;
 		}
 
-		ParserSymbol* SymbolManager::GetCacheRegexStringToSymbol(const wstring& name) const 
+		ParserSymbol* SymbolManager::GetCacheRegexStringToSymbol(const wstring& name) const
 		{
 			auto findIter = regexSymbolMap.find(name);
 			return (findIter == regexSymbolMap.end()) ? nullptr : findIter->second;
@@ -236,9 +259,6 @@ namespace ztl
 			auto findIter = disTokenNameSymbolMap.find(name);
 			return (findIter == disTokenNameSymbolMap.end()) ? nullptr : findIter->second;
 		}
-
-	
-
 
 		void SymbolManager::CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine * grammar, ParserSymbol * fieldDefSymbol)
 		{
@@ -251,7 +271,7 @@ namespace ztl
 		{
 			assert(tokenDefSymbol->IsTokenDef());
 			assert(dynamic_cast<GeneralGrammarTextTypeDefine*>(textGrammar));
-			this->grammarNodeDefSymbolMap.insert({textGrammar,tokenDefSymbol});
+			this->grammarNodeDefSymbolMap.insert({ textGrammar,tokenDefSymbol });
 		}
 
 		void SymbolManager::CacheNormalGrammarToTokenDefSymbol(GeneralGrammarTypeDefine * normalGrammar, ParserSymbol * tokenDefSymbol)
@@ -266,7 +286,6 @@ namespace ztl
 			assert(ruleDefSymbol->IsRuleDef());
 			assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(normalGrammar));
 			this->grammarNodeDefSymbolMap.insert({ normalGrammar,ruleDefSymbol });
-
 		}
 		void SymbolManager::CacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine * usingGrammar, ParserSymbol * ruleDefSymbol)
 		{
@@ -282,35 +301,73 @@ namespace ztl
 		ParserSymbol* SymbolManager::GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar)
 		{
 			auto findIter = grammarNodeDefSymbolMap.find(normalGrammar);
-			return findIter == grammarNodeDefSymbolMap.end()?nullptr:findIter->second;
+			return findIter == grammarNodeDefSymbolMap.end() ? nullptr : findIter->second;
 		}
 
 		ParserSymbol * SymbolManager::GetCacheNonTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine * terminateGrammar)
 		{
-			assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(terminateGrammar)|| dynamic_cast<GeneralGrammarTextTypeDefine*>(terminateGrammar));
+			assert(dynamic_cast<GeneralGrammarNormalTypeDefine*>(terminateGrammar) || dynamic_cast<GeneralGrammarTextTypeDefine*>(terminateGrammar));
 			auto findIter = grammarNodeDefSymbolMap.find(terminateGrammar);
 			return findIter == grammarNodeDefSymbolMap.end() ? nullptr : findIter->second;
 		}
 
-		void SymbolManager::CachePropertyToValueMap(wstring property,const vector<wstring>& value)
+		void SymbolManager::CachePropertyToValueMap(const wstring& property, const vector<wstring>& value)
 		{
 			propertyToValueMap.insert({ property,value });
 		}
 
-		void SymbolManager::CachePropertyToValueMap(wstring property, wstring value)
+		void SymbolManager::CachePropertyToValueMap(const wstring& property, const wstring& value)
 		{
 			auto&& findIter = propertyToValueMap.find(property);
-			if (findIter == propertyToValueMap.end())
+			if(findIter == propertyToValueMap.end())
 			{
 				propertyToValueMap[property];
 			}
 			propertyToValueMap[property].emplace_back(value);
 		}
 
-		vector<wstring> SymbolManager::GetCacheValueByProperty(wstring property) const
+		vector<wstring> SymbolManager::GetCacheValueByProperty(const wstring& property) const
 		{
 			auto&& findIter = propertyToValueMap.find(property);
 			return (findIter == propertyToValueMap.end()) ? vector<wstring>() : findIter->second;
+		}
+
+		void SymbolManager::CacheBaseSymbolToDeriveMap(ParserSymbol * baseSymbol, ParserSymbol * deriveSymbol)
+		{
+			auto&& findIter = baseSymbolToDeriveMap.find(baseSymbol);
+			if(findIter == baseSymbolToDeriveMap.end())
+			{
+				baseSymbolToDeriveMap[baseSymbol];
+			}
+			baseSymbolToDeriveMap[baseSymbol].emplace_back(deriveSymbol);
+		}
+
+		vector<ParserSymbol*> SymbolManager::GetCacheDeriveByBaseSymbol(ParserSymbol * baseSymbol) const
+		{
+			auto&& findIter = baseSymbolToDeriveMap.find(baseSymbol);
+			return (findIter == baseSymbolToDeriveMap.end()) ? vector<ParserSymbol*>() : findIter->second;
+		}
+
+		vector<ParserSymbol*> SymbolManager::GetCacheAllDeriveByBaseSymbol(ParserSymbol * baseSymbol) const
+		{
+			vector<ParserSymbol*> result;
+			vector<ParserSymbol*> stack;
+			stack.emplace_back(baseSymbol);
+			while(!stack.empty())
+			{
+				auto back = stack.back();
+				stack.pop_back();
+				auto list = this->GetCacheDeriveByBaseSymbol(back);
+				if(list.empty())
+				{
+					result.emplace_back(back);
+				}
+				else
+				{
+					stack.insert(stack.end(), list.begin(), list.end());
+				}
+			}
+			return result;
 		}
 
 		unordered_map<wstring, vector<wstring>>& SymbolManager::GetPropertyToValueMap()
@@ -318,18 +375,15 @@ namespace ztl
 			return propertyToValueMap;
 		}
 
-
-
 		void SymbolManager::CheckNameReDefineError(const wstring& name, ParserSymbol * parentSymbol)
 		{
-			
 			auto result = parentSymbol->GetSubSymbolByName(name);
-			if (result)
+			if(result)
 			{
-					throw ztl::contract::ztl_exception(
-						L"Cannot Redefine samll name :" + name +
-						L"the parentSymbol type is:" + parentSymbol->GetTypeToWString() +
-						L"the same symbol type is" + result->GetTypeToWString());
+				throw ztl::contract::ztl_exception(
+					L"Cannot Redefine samll name :" + name +
+					L"the parentSymbol type is:" + parentSymbol->GetTypeToWString() +
+					L"the same symbol type is" + result->GetTypeToWString());
 			}
 		}
 
@@ -346,7 +400,7 @@ namespace ztl
 				{
 					result = scope->GetSubSymbolByName(name);
 				}
-				if (result)
+				if(result)
 				{
 					return result;
 				}
@@ -356,7 +410,6 @@ namespace ztl
 		}
 		wstring LinearStringToRegex(const wstring &regex)
 		{
-
 			return ztl::LinearStringToRegexString(regex);
 		}
 	}

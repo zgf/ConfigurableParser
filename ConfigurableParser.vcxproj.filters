@@ -115,6 +115,9 @@
     <ClCompile Include="Source\GeneralLexerFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -124,9 +127,6 @@
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\stdafx.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralLexer.hpp">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\SymbolManager.h">
@@ -179,6 +179,9 @@
     </ClInclude>
     <ClInclude Include="Source\Template\PDATemplate.hpp">
       <Filter>Source\Template</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralFile.h">
+      <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

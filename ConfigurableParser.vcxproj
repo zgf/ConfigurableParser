@@ -193,6 +193,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\SymbolManager.cpp" />
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib\Regex\forward.h" />
@@ -207,11 +208,11 @@
     <ClInclude Include="Lib\ZTL\ztl_generator.hpp" />
     <ClInclude Include="Lib\ZTL\ztl_hash.hpp" />
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
+    <ClInclude Include="Source\Include\GeneralFile.h" />
     <ClInclude Include="Source\Include\GeneralJumpTable.h" />
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
     <ClInclude Include="Source\Include\GeneralTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableWriter.h" />
-    <ClInclude Include="Source\Include\GeneralLexer.hpp" />
     <ClInclude Include="Source\Include\ParserSymbol.h" />
     <ClInclude Include="Source\Include\stdafx.h" />
     <ClInclude Include="Source\Include\SymbolManager.h" />

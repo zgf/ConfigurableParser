@@ -72,7 +72,7 @@ namespace ztl
 
 		ParserSymbol* FindType(SymbolManager* manager, ParserSymbol* scope, GeneralTypeObject* type)
 		{
-			ParserSymbol* symbol = manager->GetCacheTypeObjectSymbol(scope, type);
+			ParserSymbol* symbol = manager->GetCacheTypeObjectSymbol(type);
 			if(symbol == nullptr)
 			{
 				FindTypeVisitor visitor(manager, scope);
@@ -80,7 +80,7 @@ namespace ztl
 				symbol = visitor.GetResult();
 				assert(symbol != nullptr);
 				assert(symbol->IsType());
-				manager->CacheTypeObjectSymbolMap(scope, type, symbol);
+				manager->CacheTypeObjectSymbolMap(type, symbol);
 			}
 			return symbol;
 		}
@@ -88,12 +88,51 @@ namespace ztl
 		void CollectHeadInfo(SymbolManager * manager)
 		{
 			auto table = manager->GetTable();
-			for (auto&& iter:table->heads)
+			for(auto&& iter : table->heads)
 			{
 				manager->CachePropertyToValueMap(iter->property, iter->value);
 			}
 		}
+		//classprefix只能有一个
+		//namspace不能同名
+		//include不能重复
+		void CheckPropertyHaveSameValues(const wstring& property, SymbolManager* manager)
+		{
+			auto values = manager->GetCacheValueByProperty(property);
+			if(values.size() > 1)
+			{
+				sort(values.begin(), values.end());
+				auto last = values.begin();
+				auto result = find_if(values.begin() + 1, values.end(), [&last]( const wstring& value)
+				{
+					return *last++ == value;
+				});
+				if(result != values.end())
+				{
+					throw ztl_exception(property + L"can't have the same");
+				}
+			}
+		}
+		void ValidateHeadInfo(SymbolManager* manager)
+		{
+			using ValidateActionType = void(*)(const wstring&, SymbolManager*);
+			unordered_map<wstring, ValidateActionType> validateHeadMap;
+			validateHeadMap.insert(make_pair(L"classprefix", [](const wstring& property, SymbolManager* manager)
+			{
+				auto values = manager->GetCacheValueByProperty(property);
+				if(values.size() > 1)
+				{
+					throw ztl_exception(property + L"only has one or none");
+				}
+			}));
 
+			validateHeadMap.insert(make_pair(L"namespace", CheckPropertyHaveSameValues));
+			validateHeadMap.insert(make_pair(L"include", CheckPropertyHaveSameValues));
+			for(auto&& iter : manager->GetPropertyToValueMap())
+			{
+				validateHeadMap[iter.first](iter.first, manager);
+			}
+		}
 		class CollectTypeDefineVisitor:public GeneralTypeDefine::IVisitor
 		{
 			SymbolManager* manager;
@@ -108,7 +147,7 @@ namespace ztl
 			{
 				auto name = node->name;
 				auto classTypeSymbol = manager->AddClass(name, node->parent == nullptr ? nullptr : FindType(manager, scope, node->parent.get()), scope);
-				//	manager->CacheClassDefineAndSymbolMap(node, classTypeSymbol);
+				manager->CacheTypeDefineAndSymbolMap(node, classTypeSymbol);
 				swap(scope, classTypeSymbol);
 				for(auto&& iter : node->subType)
 				{
@@ -124,7 +163,7 @@ namespace ztl
 			{
 				auto name = node->name;
 				auto enumTypeSymbol = manager->AddEnum(name, scope);
-				//manager->CacheEnumTypeAndSymbolMap(node, enumTypeSymbol);
+				manager->CacheTypeDefineAndSymbolMap(node, enumTypeSymbol);
 				swap(scope, enumTypeSymbol);
 				for(auto&&iter : node->members)
 				{
@@ -164,7 +203,7 @@ namespace ztl
 		//  2.根据语法树节点,构造符号表的符号树型结构和符号缓存结构. ParserSymbol*组成了符号树形结构.
 
 		//  3.验证符号序列是否满足语义要求.语法树结构是否满足语义要求.
-
+		// 检测class自我继承的错误
 		void CollectAndValidateTypeDefine(SymbolManager * manager)
 		{
 			auto table = manager->GetTable();
@@ -176,7 +215,7 @@ namespace ztl
 
 			for(auto&& iter : table->tokens)
 			{
-				auto&& tokenSymbol = manager->AddTokenDefine(iter->name, iter->regex, iter->ignore);
+				auto&& tokenSymbol = manager->AddTokenDefine(iter->name, iter->regex, (iter->ignore == GeneralTokenDefine::TokenOptional::True) ? true : false);
 			}
 
 			for(auto&&iter : table->rules)
@@ -220,7 +259,7 @@ namespace ztl
 			void CheckGrammarUseDisTokenNameError(const wstring& name)
 			{
 				auto disTokensymbol = manager->GetCacheDisTokenNameSymbol(name);
-				if (!disTokensymbol)
+				if(!disTokensymbol)
 				{
 					ztl_exception(L"can' use the distoken name in grammar");
 				}
@@ -241,7 +280,7 @@ namespace ztl
 				auto tokenSymbol = manager->GetCacheRegexStringToSymbol(regex);
 				if(!tokenSymbol)
 				{
-					throw ztl_exception(L"This text"+node->text+L" not exist");
+					throw ztl_exception(L"This text" + node->text + L" not exist");
 				}
 				node->text = tokenSymbol->GetName();
 				manager->CacheTextGrammarToTokenDefSymbol(node, tokenSymbol);
@@ -284,7 +323,6 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
-				
 				auto findSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
 				if(!findSymbol->IsClassType())
 				{
@@ -302,7 +340,7 @@ namespace ztl
 			{
 				node->grammar->Accept(this);
 				auto normalTypeNodeDefine = dynamic_cast<GeneralGrammarNormalTypeDefine*>(node->grammar.get());
-				if (!normalTypeNodeDefine)
+				if(!normalTypeNodeDefine)
 				{
 					throw ztl_exception(L"assgin's sub node type only is GeneralGrammarNormalTypeDefine");
 				}
@@ -319,7 +357,6 @@ namespace ztl
 				}
 			}
 		}
-
 
 		//生成路径设计:
 		//
@@ -339,7 +376,6 @@ namespace ztl
 		};
 		class GeneratePathNode
 		{
-			
 			//节点对应的文法
 			//assgin只能是classtype和tokentype
 			//setter只能是tokentype和enumtype 对于set value可以是string. tokenType直接就可以获得值了.enumType可以从缓存拿到字段type然后搜索子符号得到enumDefType和name
@@ -356,15 +392,14 @@ namespace ztl
 			wstring						descriptor;
 
 		public:
-			GeneratePathNode()  = default;
-			~GeneratePathNode()  = default;
-			GeneratePathNode(GeneratePathNode&&)  = default;
-			GeneratePathNode(const GeneratePathNode&)  = default;
-			GeneratePathNode& operator=(GeneratePathNode&&)  = default;
-			GeneratePathNode& operator=(const GeneratePathNode&)   = default;
+			GeneratePathNode() = default;
+			~GeneratePathNode() = default;
+			GeneratePathNode(GeneratePathNode&&) = default;
+			GeneratePathNode(const GeneratePathNode&) = default;
+			GeneratePathNode& operator=(GeneratePathNode&&) = default;
+			GeneratePathNode& operator=(const GeneratePathNode&) = default;
 			GeneratePathNode(GeneralGrammarTypeDefine* _grammar, NodeType _type, const wstring& _descriptor) :grammar(_grammar), type(_type), descriptor(_descriptor)
 			{
-
 			}
 		public:
 			NodeType GetType() const
@@ -452,29 +487,28 @@ namespace ztl
 			{
 				return type == NodeType::Loop;
 			}*/
-		/*	bool IsSequence()const
-			{
-				return type == NodeType::Sequence;
-			}
-*/
+			/*	bool IsSequence()const
+				{
+					return type == NodeType::Sequence;
+				}
+	*/
 		};
 		class GeneratePath
 		{
 			vector<GeneratePathNode> pathNodeList;
 			ParserSymbol* createdTyepSymbol = nullptr;
 		public:
-			GeneratePath()  =default;
-			~GeneratePath()  = default;
-			GeneratePath(GeneratePath&&)  = default;
-			GeneratePath(const GeneratePath&)  = default;
-			GeneratePath& operator=(GeneratePath&&)  = default;
-			GeneratePath& operator=(const GeneratePath&)   = default;
+			GeneratePath() = default;
+			~GeneratePath() = default;
+			GeneratePath(GeneratePath&&) = default;
+			GeneratePath(const GeneratePath&) = default;
+			GeneratePath& operator=(GeneratePath&&) = default;
+			GeneratePath& operator=(const GeneratePath&) = default;
 		public:
-			
+
 			void AddNextNode(GeneralGrammarTypeDefine* grammar, NodeType type, const wstring& descriptor)
 			{
-				pathNodeList.emplace_back(GeneratePathNode( grammar,type,descriptor ));
-				
+				pathNodeList.emplace_back(GeneratePathNode(grammar, type, descriptor));
 			}
 			void SetCreatedTypeSymbol(ParserSymbol* _createdTypeSymbol)
 			{
@@ -495,20 +529,19 @@ namespace ztl
 		{
 			SymbolManager*							manager;//grammar->TypeSymbol
 			vector<unique_ptr<GeneratePath>>		paths;
-			
+
 		public:
-			CollectGeneratePathVisitor()  = default;
-			~CollectGeneratePathVisitor()  = default;
-			CollectGeneratePathVisitor(CollectGeneratePathVisitor&&)  = default;
-			CollectGeneratePathVisitor(CollectGeneratePathVisitor& target):manager(target.manager)
+			CollectGeneratePathVisitor() = default;
+			~CollectGeneratePathVisitor() = default;
+			CollectGeneratePathVisitor(CollectGeneratePathVisitor&&) = default;
+			CollectGeneratePathVisitor(CollectGeneratePathVisitor& target) :manager(target.manager)
 			{
-				for (auto& iter:target.paths)
+				for(auto& iter : target.paths)
 				{
 					paths.emplace_back(make_unique<GeneratePath>(*iter));
 				}
-				
 			}
-			CollectGeneratePathVisitor& operator=(CollectGeneratePathVisitor&&)  = default;
+			CollectGeneratePathVisitor& operator=(CollectGeneratePathVisitor&&) = default;
 			CollectGeneratePathVisitor& operator=(CollectGeneratePathVisitor&target)
 			{
 				manager = target.manager;
@@ -519,39 +552,35 @@ namespace ztl
 			}
 			CollectGeneratePathVisitor(SymbolManager* _manager) :manager(_manager)
 			{
-
 			}
 		public:
 			void AddNode(GeneralGrammarTypeDefine* grammar, NodeType type, const wstring& descriptor)
 			{
-				if (paths.empty())
+				if(paths.empty())
 				{
 					paths.emplace_back(make_unique<GeneratePath>());
 					paths.back()->AddNextNode(grammar, type, descriptor);
 				}
 				else
 				{
-					for (auto&& pathIter : paths)
+					for(auto&& pathIter : paths)
 					{
-						pathIter->AddNextNode(grammar,type,descriptor);
+						pathIter->AddNextNode(grammar, type, descriptor);
 					}
 				}
-				
 			}
 			void SetCreatSymbolNode(ParserSymbol* createdTypeSymbol)
 			{
 				assert(!paths.empty());
-				
+
 				for(auto&& pathIter : paths)
 				{
 					pathIter->SetCreatedTypeSymbol(createdTypeSymbol);
 				}
-				
-
 			}
 			void JoinPaths(CollectGeneratePathVisitor& target)
 			{
-				for (auto&& iter:target.paths)
+				for(auto&& iter : target.paths)
 				{
 					paths.emplace_back(std::move(iter));
 				}
@@ -567,11 +596,11 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarTextTypeDefine* node)
 			{
-				AddNode(node, NodeType::Text,node->text);
+				AddNode(node, NodeType::Text, node->text);
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
 			{
-				AddNode(node, NodeType::Normal,node->name);
+				AddNode(node, NodeType::Normal, node->name);
 			}
 			void								Visit(GeneralGrammarSequenceTypeDefine* node)
 			{
@@ -607,7 +636,7 @@ namespace ztl
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
 				auto createdTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
-				AddNode(node, NodeType::Create,createdTypeSymbol->GetName());
+				AddNode(node, NodeType::Create, createdTypeSymbol->GetName());
 				node->grammar->Accept(this);
 				SetCreatSymbolNode(createdTypeSymbol);
 			}
@@ -626,7 +655,7 @@ namespace ztl
 				AddNode(node, NodeType::Assign, ruleName);
 			}
 		};
-		
+
 		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>  CollectGeneratePath(SymbolManager* manager)
 		{
 			unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> pathMap;
@@ -638,11 +667,10 @@ namespace ztl
 				{
 					CollectGeneratePathVisitor visitor(manager);
 					grammarIter->Accept(&visitor);
-					for (auto&& visitorIter: visitor)
+					for(auto&& visitorIter : visitor)
 					{
 						pathMap[rulePointer].emplace_back(move(visitorIter));
 					}
-					
 				}
 			}
 			return pathMap;
@@ -838,7 +866,6 @@ namespace ztl
 				//在类型定义收集与验证中检测过了.
 				assert(fieldTypeSymbol);
 
-
 				if(!inLoop)
 				{
 					CheckSetFiledMoreTime(fieldSymbol);
@@ -894,7 +921,6 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
-
 				CheckCreatNodeMoreTimeError();
 				CheckCreatAndUsingInLoopError();
 
@@ -914,8 +940,7 @@ namespace ztl
 		private:
 		};
 
-
-		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*,vector<unique_ptr<GeneratePath>>>& pathMap)
+		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap)
 		{
 			for(auto&& mapIter : pathMap)
 			{
@@ -926,7 +951,7 @@ namespace ztl
 					ValidateGeneratePathIVisitor visitor(manager, ruleDef);
 					for(auto&& pathNodeIter : pathIter->GetPathNodeList())
 					{
-						if (pathNodeIter.IsLoopStart())
+						if(pathNodeIter.IsLoopStart())
 						{
 							visitor.SetLoopFlag();
 						}
@@ -943,7 +968,6 @@ namespace ztl
 			}
 		}
 
-
 		void LogGeneratePath(const wstring fileName, const unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap)
 		{
 			wofstream output(fileName);
@@ -952,22 +976,24 @@ namespace ztl
 			{
 				auto& ruleDef = mapIter.first;
 				auto& paths = mapIter.second;
-				output << L"RuleName: " << ruleDef->name  << endl;
+				output << L"RuleName: " << ruleDef->name << endl;
 				for(auto&& pathIter : paths)
 				{
-					output << L"		Grammar: " << ruleDef->name  << endl;
+					output << L"		Grammar: " << ruleDef->name << endl;
 					output << L"				";
 					for(auto&& pathNodeIter : pathIter->GetPathNodeList())
 					{
-						output << pathNodeIter.GetTypeToWString() << L" : "<<pathNodeIter.GetDescriptor()<<L" ";
+						output << pathNodeIter.GetTypeToWString() << L" : " << pathNodeIter.GetDescriptor() << L" ";
 					}
 					output << endl;
 				}
 			}
 		}
+
 		void ValidateGeneratorCoreSemantic(SymbolManager* manager)
 		{
 			CollectHeadInfo(manager);
+			ValidateHeadInfo(manager);
 			CollectAndValidateTypeDefine(manager);
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);
@@ -976,22 +1002,21 @@ namespace ztl
 			//manager->CacheNameAndTagMap();
 			//LogGeneratePath(L"test.txt", pathMap);
 		}
-		class GetStartSymbolVisitor :public GeneralGrammarTypeDefine::IVisitor
+		class GetStartSymbolVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
 		private:
 			SymbolManager*									manager;
 			unordered_map<ParserSymbol*, bool>				rules;
 			int												hitCount;
 		public:
-			GetStartSymbolVisitor()  = default;
+			GetStartSymbolVisitor() = default;
 			~GetStartSymbolVisitor() noexcept = default;
-			GetStartSymbolVisitor(GetStartSymbolVisitor&&)  = default;
-			GetStartSymbolVisitor(const GetStartSymbolVisitor&)  = default;
-			GetStartSymbolVisitor& operator=(GetStartSymbolVisitor&&)  = default;
-			GetStartSymbolVisitor& operator=(const GetStartSymbolVisitor&)   = default;
-			GetStartSymbolVisitor(SymbolManager* _manager, unordered_map<ParserSymbol*, bool> _rules,int count) :manager(_manager),rules(_rules),hitCount(count)
+			GetStartSymbolVisitor(GetStartSymbolVisitor&&) = default;
+			GetStartSymbolVisitor(const GetStartSymbolVisitor&) = default;
+			GetStartSymbolVisitor& operator=(GetStartSymbolVisitor&&) = default;
+			GetStartSymbolVisitor& operator=(const GetStartSymbolVisitor&) = default;
+			GetStartSymbolVisitor(SymbolManager* _manager, unordered_map<ParserSymbol*, bool> _rules, int count) :manager(_manager), rules(_rules), hitCount(count)
 			{
-				
 			}
 		public:
 			size_t GetHitCount()const
@@ -1006,8 +1031,8 @@ namespace ztl
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
 			{
 				auto symbol = manager->GetCacheNormalGrammarToRuleDefSymbol(node);
-				if(symbol !=nullptr && 
-					symbol->IsRuleDef()&&
+				if(symbol != nullptr &&
+					symbol->IsRuleDef() &&
 					rules.find(symbol)->second == false)
 				{
 					rules[symbol] = true;
@@ -1015,7 +1040,7 @@ namespace ztl
 					auto ruleNode = manager->GetCacheRuleDefineBySymbol(symbol);
 					assert(ruleNode != nullptr);
 					hitCount++;
-					for (auto&& grammarIter : ruleNode->grammars)
+					for(auto&& grammarIter : ruleNode->grammars)
 					{
 						grammarIter->Accept(this);
 					}
@@ -1038,32 +1063,24 @@ namespace ztl
 			void								Visit(GeneralGrammarSetterTypeDefine* node)
 			{
 				node->grammar->Accept(this);
-
 			}
 			void								Visit(GeneralGrammarAssignTypeDefine* node)
 			{
 				node->grammar->Accept(this);
-
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
 				node->grammar->Accept(this);
-
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
 				node->grammar->Accept(this);
-
-
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine*node)
 			{
 				node->left->Accept(this);
 				node->right->Accept(this);
-
 			}
-
-		
 		};
 		void GetStartSymbol(SymbolManager * manager)
 		{
@@ -1079,9 +1096,9 @@ namespace ztl
 				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(ruleIter->name);
 				rules[ruleSymbol] = true;
 				manager->GetStartRuleList().emplace_back(ruleSymbol->GetName());
-				GetStartSymbolVisitor visitor(manager,rules,1);
+				GetStartSymbolVisitor visitor(manager, rules, 1);
 				rules[ruleSymbol] = false;
-				for (auto&& grammarIter:ruleIter->grammars)
+				for(auto&& grammarIter : ruleIter->grammars)
 				{
 					grammarIter->Accept(&visitor);
 				}

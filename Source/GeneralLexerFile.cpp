@@ -4,6 +4,7 @@
 #include "Include/SymbolManager.h"
 #include "../Lib/Regex/ztl_regex_interpretor.h"
 #include "../Lib/ZTL/ztl_generator.hpp"
+#include "Include/GeneralFile.h"
 namespace ztl
 {
 	namespace general_parser
@@ -26,13 +27,12 @@ namespace ztl
 			wstring regex;
 			bool    ignore;
 			GeneralTokenInfo() = default;
-			GeneralTokenInfo(const wstring& _name, const wstring& _regex, const bool _ignore)
-				: name(_name), regex(_regex), ignore(_ignore)
+			GeneralTokenInfo(const wstring& _name, const wstring& _regex, GeneralTokenDefine::TokenOptional _ignore)
+				: name(_name), regex(_regex)
 			{
+				ignore = (_ignore == GeneralTokenDefine::TokenOptional::True) ? true : false;
 			}
 		};
-		extern void NodeDefineFileAddNamespace(wstring& content, SymbolManager* manager);
-		extern void CreateFile(const wstring& fileName, const wstring& content);
 	
 		wstring CreateInitialStatements(unordered_map<wstring, GeneralTokenInfo>& infos)
 		{
@@ -50,7 +50,7 @@ namespace ztl
 			auto table = manager->GetTable();
 			for(auto&& iter : table->tokens)
 			{
-				tokenInfos.insert({ iter->name,GeneralTokenInfo(iter->name, iter->regex, iter->ignore) });
+				tokenInfos.insert({ iter->name,GeneralTokenInfo(iter->name, iter->regex,iter->ignore) });
 			}
 			return tokenInfos;
 		}
