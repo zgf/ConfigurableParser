@@ -53,6 +53,7 @@ namespace ztl
 						.Token(L"PRECLOSE", LR"(\))")
 						.Token(L"NAME", LR"([a-zA-Z_]\w*)")
 						.Token(L"STRING", LR"(\"(\\"|[^"])*")")
+						.Token(L"FINISH",L"<\\$>")
 						.IgnoreToken(L"SPACE", LR"(\s+)")
 						.IgnoreToken(L"LINENOTE", L"(//[^\n]*\n)")
 						.IgnoreToken(L"BLOCKNOTE", L"/*.*?*/ //")
@@ -511,10 +512,10 @@ namespace ztl
 							.Name(L"ParserDecl")
 							.ReturnType(Normal(L"GenTableDefine"))
 							| (
-								*(GrammarSymbol(L"HeadDecl")[L"heads"])	+
+								*(GrammarSymbol(L"HeadDecl")[L"heads"]) +
 								*(GrammarSymbol(L"TypeDecl")[L"types"])  +
 								*(GrammarSymbol(L"TokenDecl")[L"tokens"]) +
-								*(GrammarSymbol(L"RuleDecl")[L"rules"]) 
+								*(GrammarSymbol(L"RuleDecl")[L"rules"]) +Text(L"<$>")
 							)
 							.Create(Normal(L"GenTableDefine"))
 						)

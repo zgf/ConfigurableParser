@@ -28,6 +28,7 @@ namespace ztl
 			ActionType action;
 			wstring name;//setter key using ruleNmae create className nonterm ruleName term tokenName assgin fieldName
 			wstring value;//setter value assgin ruleName
+			int grammarNumber;
 		public:
 			ActionWrap() = default;
 			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value)
@@ -118,6 +119,30 @@ namespace ztl
 			bool HasTermActionType()const
 			{
 				return HasThisActionType(ActionType::Terminate);
+			}
+			bool IsNullPropertyAction(ActionType type)
+			{
+				assert(type != ActionType::NonTerminate);
+				return
+					//type == ActionType::Reduce ||
+					type == ActionType::Shift  ||
+					type == ActionType::Using;
+			}
+			void DeleteNullPropertyAction()
+			{
+				for(size_t i = 0; i < actions.size();)
+				{
+					auto&& iter = actions[i];
+					if (IsNullPropertyAction(iter.GetActionType()))
+					{
+						actions.erase(actions.begin() + i);
+						
+					}
+					else
+					{
+						++i;
+					}
+				}
 			}
 		private:
 			bool HasThisActionType(ActionType type)const

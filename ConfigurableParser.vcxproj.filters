@@ -115,8 +115,8 @@
     <ClCompile Include="Source\GeneralLexerFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="GeneralReflectionNodeDefineFile.cpp">
+      <Filter>Source\Implement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +181,12 @@
       <Filter>Source\Template</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralFile.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralReflectionTableDefine.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralParser.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

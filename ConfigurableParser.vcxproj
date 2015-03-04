@@ -166,6 +166,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GeneralReflectionNodeDefineFile.cpp" />
     <ClCompile Include="Lib\Regex\forward.cpp" />
     <ClCompile Include="Lib\Regex\ztl_regex_automachine.cpp" />
     <ClCompile Include="Lib\Regex\ztl_regex_expression.cpp" />
@@ -193,7 +194,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\SymbolManager.cpp" />
-    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib\Regex\forward.h" />
@@ -210,7 +210,9 @@
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
     <ClInclude Include="Source\Include\GeneralFile.h" />
     <ClInclude Include="Source\Include\GeneralJumpTable.h" />
+    <ClInclude Include="Source\Include\GeneralParser.h" />
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
+    <ClInclude Include="Source\Include\GeneralReflectionTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableWriter.h" />
     <ClInclude Include="Source\Include\ParserSymbol.h" />

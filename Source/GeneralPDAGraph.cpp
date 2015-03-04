@@ -91,8 +91,8 @@ namespace ztl
 				auto newNode = machine->NewNode();
 				machine->AddEdge(newNode, result.first, move(wrap));
 				result.first = newNode;
-			/*	machine->AddEdge(result.second, newNode, move(wrap));
-				result.second = newNode;*/
+				/*	machine->AddEdge(result.second, newNode, move(wrap));
+					result.second = newNode;*/
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -115,7 +115,7 @@ namespace ztl
 			GeneralRuleDefine* rule;
 			pair<PDANode*, PDANode*> result;
 		};
-		
+
 		void AddGeneratePDA(unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap, wstring ruleName, PDANode * start, PDANode* end)
 		{
 			auto findIter = PDAMap.find(ruleName);
@@ -153,22 +153,7 @@ namespace ztl
 			}
 			//HelpLogJumpTable(L"LogJumpTable_MergeFactorTable.txt", machine);
 		}
-		void CreateDPDAGraph(PushDownAutoMachine& machine)
-		{
-			auto PDAMap = CreateEpsilonPDA(machine);
-			MergeStartAndEndNode(machine, PDAMap);
-			AddPDAToPDAMachine(machine, PDAMap);
-			machine.CreateRoot();
-			MergeEpsilonPDAGraph(machine);
-			MergeGrammarCommonFactor(machine);
-			//添加结束节点.
-			AddFinishNode(machine);
-		//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
-			MergePDAEpsilonSymbol(machine);
-			MergeGrammarCommonFactor(machine);
-			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
-		}
-	
+
 		void AddFinishNode(PushDownAutoMachine& machine)
 		{
 			auto& pdaMap = machine.GetPDAMap();
@@ -177,8 +162,6 @@ namespace ztl
 			assert(machine.GetPDAMap().find(rootRuleName) != machine.GetPDAMap().end());
 			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second);
 		}
-	
-	
 
 		//可合并节点含义
 
@@ -264,7 +247,7 @@ namespace ztl
 		{
 			unordered_set<PDANode*> sign;
 			vector<PDAEdge*> edges;
-			auto&& nodeList = CollectGraphNode(machine, [](auto&&element)
+			auto&& nodeList = CollectGraphNode(machine, [](PDANode* element)
 			{
 				return element->GetNexts().size() > 1;
 			});
@@ -273,7 +256,7 @@ namespace ztl
 				return val + element->GetNexts().size() <= 1;
 			}) == 0);
 
-			for(size_t i = 0; i < nodeList.size();++i)
+			for(size_t i = 0; i < nodeList.size(); ++i)
 			{
 				auto&& iter = nodeList[i];
 				if(!iter->GetNexts().empty())
@@ -282,7 +265,6 @@ namespace ztl
 				}
 			}
 		}
-
 		vector<PDAEdge*> CollectNontermiateEdge(PushDownAutoMachine& machine)
 		{
 			vector<PDAEdge*> result;
@@ -353,7 +335,7 @@ namespace ztl
 				machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, nonTerminateName, L""));
 			}
 		}
-		
+
 		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine, unordered_map<PDANode*, int>& edgeCountMap)
 		{
 			assert(!save.empty());
@@ -362,13 +344,12 @@ namespace ztl
 			auto target = save.back()->GetTarget();
 			auto nexts = source->GetNexts();
 			const vector<ActionWrap>* actionPointer = nullptr;
-			auto CheckAndAddEdge = [&nexts,&source,&target,&actionPointer,&edgeCountMap,&machine]()
+			auto CheckAndAddEdge = [&nexts, &source, &target, &actionPointer, &edgeCountMap, &machine]()
 			{
 				if(find_if(nexts.begin() + edgeCountMap[source], nexts.end(), [&target, &actionPointer](PDAEdge* edge)
 				{
 					return edge->GetTarget() == target&&
 						edge->GetActions() == *actionPointer;
-
 				}) == nexts.end())
 				{
 					machine.AddEdge(source, target, *actionPointer);
@@ -394,7 +375,6 @@ namespace ztl
 					actionPointer = &newActions;
 					CheckAndAddEdge();
 				}
-				
 			}
 		}
 		struct Path
@@ -411,10 +391,10 @@ namespace ztl
 		bool IsLeftreCursionRingPath(vector<PDAEdge*>& path)
 		{
 			//assert(path.size() > 1);
-			return accumulate(path.begin(), path.end(), (size_t)0, [](int val, PDAEdge* iter)
+			return accumulate(path.begin(), path.end(), (size_t) 0, [](int val, PDAEdge* iter)
 			{
 				auto actions = iter->GetActions();
-				if(actions.size() == 1 && 
+				if(actions.size() == 1 &&
 					actions.begin()->GetActionType() == ActionType::Shift)
 				{
 					return val + 1;
@@ -425,7 +405,7 @@ namespace ztl
 				}
 			}) == path.size();
 		}
-		void RecordNewNode(PDANode* target,vector<PDANode*>& allNode,const vector<PDANode*>& noNeed)
+		void RecordNewNode(PDANode* target, vector<PDANode*>& allNode, const vector<PDANode*>& noNeed)
 		{
 			if(find(noNeed.begin(), noNeed.end(), target) == noNeed.end())
 			{
@@ -452,7 +432,7 @@ namespace ztl
 			});
 			unordered_multimap<PDANode*, vector<int>> nodeEdgesMap;
 			auto root = machine.GetRoot();
-			function<void(PDANode*)> DFS = [&pathSign, &noNeed, &deleter, &ringPathSaves,&allNode, &DFS, &path, &edgeCountMap, &machine](PDANode* node)
+			function<void(PDANode*)> DFS = [&pathSign, &noNeed, &deleter, &ringPathSaves, &allNode, &DFS, &path, &edgeCountMap, &machine](PDANode* node)
 			{
 				auto nexts = node->GetNexts();
 				size_t length = edgeCountMap[node];
@@ -462,16 +442,16 @@ namespace ztl
 					auto target = edgeIter->GetTarget();
 					path.emplace_back(edgeIter);
 					assert(path.size() == pathSign.size());
-					
-					if(pathSign.find(target) == pathSign.end()||
+
+					if(pathSign.find(target) == pathSign.end() ||
 						//对于包含Term的环,构造新环.
 						IsTermRingPath(path))
 					{
 						if(edgeIter->HasTermActionType())
 						{
 							//遇到Term了,当前路径可以终止搜索了.
-							
-							MergePathSymbol(path, machine,edgeCountMap);
+
+							MergePathSymbol(path, machine, edgeCountMap);
 							//记录需要删除的边
 							deleter.insert(path.begin(), path.end());
 							assert(!path.empty());
@@ -516,6 +496,60 @@ namespace ztl
 			{
 				machine.DeleteEdge(iter);
 			}
+		}
+		vector<PDAEdge*> CollectNontermiateEdgeByRoot(PushDownAutoMachine& machine)
+		{
+			vector<PDAEdge*> result;
+			unordered_set<PDAEdge*> sign;
+			//从Root表达式开始
+			deque<PDANode*> queue;
+			queue.emplace_back(machine.GetRoot());
+			while(!queue.empty())
+			{
+				auto&& front = queue.front();
+				for(auto&& edgeIter : front->GetNexts())
+				{
+					if(sign.find(edgeIter) == sign.end())
+					{
+						sign.insert(edgeIter);
+						
+						result.emplace_back(edgeIter);
+						
+						queue.emplace_back(edgeIter->GetTarget());
+					}
+				}
+				queue.pop_front();
+			}
+
+			return result;
+		}
+		void DeleteNullPropertyEdge(PushDownAutoMachine& machine)
+		{
+			auto edges = CollectNontermiateEdgeByRoot(machine);
+			for(auto&& iter : edges)
+			{
+				iter->DeleteNullPropertyAction();
+			}
+		}
+		void CreateDPDAGraph(PushDownAutoMachine& machine)
+		{
+			auto PDAMap = CreateEpsilonPDA(machine);
+			MergeStartAndEndNode(machine, PDAMap);
+			AddPDAToPDAMachine(machine, PDAMap);
+			machine.CreateRoot();
+			MergeEpsilonPDAGraph(machine);
+			MergeGrammarCommonFactor(machine);
+			//添加结束节点.
+		
+			//应该直接在文法上添加finish
+		//	AddFinishNode(machine);
+			//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
+			MergePDAEpsilonSymbol(machine);
+			MergeGrammarCommonFactor(machine);
+		//	DeleteNullPropertyEdge(machine);
+		//	MergeGrammarCommonFactor(machine);
+
+			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{
