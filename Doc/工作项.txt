@@ -16,3 +16,30 @@
 //include不能重复
 2.缺少头信息相关文法 已添加
 3.根据头信息对语法树进行修改. classprefix要修改语法树上的className等等 等待解决.目前不想添加- -
+
+3.5工作:
+使生成的lexer文件正常,研究后面的反射怎么写- -....
+终于想通了,不用煞笔方法了.
+直接准备一个同构的通用语法树.
+自动机运行后生成的是通用语法树
+大概是 Name:类名
+FieldMap: Key:字段名 Value:赋值给它的节点在节点池的index
+TermMap: Key:字段名 Value:对应的终结符号在词法流的index.
+class TreeNode
+{
+	wstring Name;
+	unorder_map<wstring,int> FieldMap; 
+	unorder_map<wstirng,int> TermMap;
+};
+
+LALR运行后得到的是这样一个通用的Tree
+然后可以遍历Tree,用反射获得异构型Tree.
+之后遍历异构Tree.生成手写语法树的文本.到生成文件去.
+以XML解析为例
+这样在生成的解析器文件内,就获得了XML的EBNF的结构化表示
+然后丢进解析器,生成LALR,输入XML文件,生成通用的Tree
+生成的文件再编译时已经加载了XML的节点定义.
+并且还生成了遍历和反射异构型树的函数.
+对通用Tree遍历,生成异构树,就拿到了对XML解析的AST.
+Good Job:)
+

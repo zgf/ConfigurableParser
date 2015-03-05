@@ -564,7 +564,7 @@ namespace ztl
 			}
 			range = move(result);
 		}
-		void Apply(Ptr<NormalCharExpression>& expression)
+		void Apply(Ptr<NormalCharExpression>& )
 		{
 		}
 		void Apply(Ptr<LoopExpression>& expression)
@@ -581,10 +581,10 @@ namespace ztl
 			this->Invoke(expression->left, this->argument);
 			this->Invoke(expression->right, this->argument);
 		}
-		void Apply(Ptr<BeginExpression>& expression)
+		void Apply(Ptr<BeginExpression>& )
 		{
 		}
-		void Apply(Ptr<EndExpression>& expression)
+		void Apply(Ptr<EndExpression>& )
 		{
 		}
 		void Apply(Ptr<CaptureExpression>& expression)
@@ -599,10 +599,10 @@ namespace ztl
 		{
 			this->Invoke(expression->expression, this->argument);
 		}
-		void Apply(Ptr<BackReferenceExpression>& expression)
+		void Apply(Ptr<BackReferenceExpression>& )
 		{
 		}
-		void Apply(Ptr<AnonymityBackReferenceExpression>& expression)
+		void Apply(Ptr<AnonymityBackReferenceExpression>& )
 		{
 		}
 		void Apply(Ptr<NegativeLookbehindExpression>& expression)
@@ -625,7 +625,7 @@ namespace ztl
 		{
 			this->Invoke(expression->expression, this->argument);
 		}
-		void Apply(Ptr<MacroReferenceExpression>& expression)
+		void Apply(Ptr<MacroReferenceExpression>& )
 		{
 		}
 	};

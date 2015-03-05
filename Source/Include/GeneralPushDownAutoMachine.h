@@ -251,6 +251,7 @@ namespace ztl
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*,PDANode*>>						 PDAMap;
 			PDANode*															 root;
+
 		public:
 
 		};
