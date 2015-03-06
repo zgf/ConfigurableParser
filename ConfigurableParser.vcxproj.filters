@@ -115,7 +115,7 @@
     <ClCompile Include="Source\GeneralLexerFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="GeneralReflectionNodeDefineFile.cpp">
+    <ClCompile Include="Source\GeneralReflectionNodeDefineFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
   </ItemGroup>
@@ -180,13 +180,19 @@
     <ClInclude Include="Source\Template\PDATemplate.hpp">
       <Filter>Source\Template</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralFile.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Include\GeneralReflectionTableDefine.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralParser.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralFile.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralTreeNode.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralLexer.hpp">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

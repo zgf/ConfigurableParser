@@ -124,7 +124,7 @@ namespace ztl
 			{
 				assert(type != ActionType::NonTerminate);
 				return
-					//type == ActionType::Reduce ||
+				type == ActionType::Reduce ||
 					type == ActionType::Shift  ||
 					type == ActionType::Using;
 			}

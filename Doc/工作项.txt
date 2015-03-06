@@ -19,7 +19,7 @@
 
 3.5工作:
 使生成的lexer文件正常,研究后面的反射怎么写- -....
-终于想通了,不用煞笔方法了.
+终于想通了,不用煞笔的类型转来转去,分散在自动机内的方法了.
 直接准备一个同构的通用语法树.
 自动机运行后生成的是通用语法树
 大概是 Name:类名
@@ -28,8 +28,8 @@ TermMap: Key:字段名 Value:对应的终结符号在词法流的index.
 class TreeNode
 {
 	wstring Name;
-	unorder_map<wstring,int> FieldMap; 
-	unorder_map<wstirng,int> TermMap;
+	unordered_map<wstring, int> FieldMap;
+	unordered_map<wstring, int> TermMap;
 };
 
 LALR运行后得到的是这样一个通用的Tree
@@ -42,4 +42,5 @@ LALR运行后得到的是这样一个通用的Tree
 并且还生成了遍历和反射异构型树的函数.
 对通用Tree遍历,生成异构树,就拿到了对XML解析的AST.
 Good Job:)
-
+这两天复习资料准备面试...工程暂停
+需要LALR(2)文法的解析器..或者造个带回溯的解析器.不然无法解析这个扩展的EBNF

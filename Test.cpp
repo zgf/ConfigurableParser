@@ -15,11 +15,11 @@ namespace ztl
 			CreateEpsilonPDAVisitor() = default;
 			~CreateEpsilonPDAVisitor() noexcept = default;
 			CreateEpsilonPDAVisitor(CreateEpsilonPDAVisitor&&) noexcept = default;
-			CreateEpsilonPDAVisitor(const CreateEpsilonPDAVisitor&)  = default;
+			CreateEpsilonPDAVisitor(const CreateEpsilonPDAVisitor&) noexcept = default;
 			CreateEpsilonPDAVisitor& operator=(CreateEpsilonPDAVisitor&&) noexcept = default;
 			CreateEpsilonPDAVisitor& operator=(const CreateEpsilonPDAVisitor&) = default;
-			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine, GeneralRuleDefine* _rule,const wstring& _ruleName)noexcept
-				:machine(_machine), rule(_rule),ruleName(_ruleName)
+			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine, GeneralRuleDefine* _rule)noexcept
+				:machine(_machine), rule(_rule)
 			{
 			}
 		public:
@@ -79,20 +79,20 @@ namespace ztl
 				node->grammar->Accept(this);
 				assert(result.second->GetFronts().size() == 1);
 
-				ActionWrap wrap(ActionType::Using, machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node)->GetName(), ruleName);
+				ActionWrap wrap(ActionType::Using, machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node)->GetName(), L"");
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
 				node->grammar->Accept(this);
 				auto manager = machine->GetSymbolManager();
-				ActionWrap wrap(ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), ruleName);
+				ActionWrap wrap(ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), L"");
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
 				machine->AddEdge(newNode, result.first, move(wrap));
 				result.first = newNode;
 				/*	machine->AddEdge(result.second, newNode, move(wrap));
-					result.second = newNode;*/
+				result.second = newNode;*/
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -114,7 +114,6 @@ namespace ztl
 			PushDownAutoMachine* machine;
 			GeneralRuleDefine* rule;
 			pair<PDANode*, PDANode*> result;
-			wstring ruleName;
 		};
 
 		void AddGeneratePDA(unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap, wstring ruleName, PDANode * start, PDANode* end)
@@ -135,7 +134,7 @@ namespace ztl
 				auto rulePointer = ruleIter.get();
 				for(auto&& grammarIter : ruleIter->grammars)
 				{
-					CreateEpsilonPDAVisitor visitor(&machine, rulePointer,ruleIter->name);
+					CreateEpsilonPDAVisitor visitor(&machine, rulePointer);
 					grammarIter->Accept(&visitor);
 					assert(visitor.GetResult().first != visitor.GetResult().second);
 
@@ -154,6 +153,21 @@ namespace ztl
 			}
 			//HelpLogJumpTable(L"LogJumpTable_MergeFactorTable.txt", machine);
 		}
+		void CreateDPDAGraph(PushDownAutoMachine& machine)
+		{
+			auto PDAMap = CreateEpsilonPDA(machine);
+			MergeStartAndEndNode(machine, PDAMap);
+			AddPDAToPDAMachine(machine, PDAMap);
+			machine.CreateRoot();
+			MergeEpsilonPDAGraph(machine);
+			MergeGrammarCommonFactor(machine);
+			//添加结束节点.
+			AddFinishNode(machine);
+			//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
+			MergePDAEpsilonSymbol(machine);
+			MergeGrammarCommonFactor(machine);
+			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
+		}
 
 		void AddFinishNode(PushDownAutoMachine& machine)
 		{
@@ -161,8 +175,10 @@ namespace ztl
 			assert(!machine.GetSymbolManager()->GetStartRuleList().empty());
 			auto rootRuleName = machine.GetRootRuleName();
 			assert(machine.GetPDAMap().find(rootRuleName) != machine.GetPDAMap().end());
-			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second);
+			pdaMap[rootRuleName].second = machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second);
 		}
+
+
 
 		//可合并节点含义
 
@@ -248,7 +264,7 @@ namespace ztl
 		{
 			unordered_set<PDANode*> sign;
 			vector<PDAEdge*> edges;
-			auto&& nodeList = CollectGraphNode(machine, [](PDANode* element)
+			auto&& nodeList = CollectGraphNode(machine, [](auto&&element)
 			{
 				return element->GetNexts().size() > 1;
 			});
@@ -257,27 +273,23 @@ namespace ztl
 				return val + element->GetNexts().size() <= 1;
 			}) == 0);
 
-			for(size_t i = 0; i < nodeList.size(); ++i)
+			for(auto&& iter : nodeList)
 			{
-				auto&& iter = nodeList[i];
 				if(!iter->GetNexts().empty())
 				{
 					MergeCommonNode(iter, machine);
 				}
 			}
 		}
-		unordered_map<wstring,vector<PDAEdge*>> CollectNontermiateEdge(PushDownAutoMachine& machine)
+
+		vector<PDAEdge*> CollectNontermiateEdge(PushDownAutoMachine& machine)
 		{
-			unordered_map<wstring, vector<PDAEdge*>> result;
+			vector<PDAEdge*> result;
 			unordered_set<PDAEdge*> sign;
 			//从Root表达式开始
+
 			for(auto&& iter : machine.GetSymbolManager()->GetStartRuleList())
 			{
-				result[iter];
-			}
-			for(auto&& iter : machine.GetSymbolManager()->GetStartRuleList())
-			{
-			
 				auto&& ruleIter = machine.GetPDAMap()[iter];
 				deque<PDANode*> queue;
 				queue.emplace_back(ruleIter.first);
@@ -291,7 +303,7 @@ namespace ztl
 							sign.insert(edgeIter);
 							if(edgeIter->HasNonTermActionType())
 							{
-								result[iter].emplace_back(edgeIter);
+								result.emplace_back(edgeIter);
 							}
 							queue.emplace_back(edgeIter->GetTarget());
 						}
@@ -318,30 +330,26 @@ namespace ztl
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto&& edgeList = CollectNontermiateEdge(machine);
-
-			for(auto&& iter : edgeList)
+			for(auto&& edgeIter : edgeList)
 			{
-				auto&& ruleName = iter.first;
-				for (auto&& edgeIter: iter.second)
-				{
-					auto   index = 0;
-					assert(index != -1);
-					assert(edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
-					auto&& source = edgeIter->GetSource();
-					auto&& target = edgeIter->GetTarget();
-					auto actions = edgeIter->GetActions();
-					auto&& nonTermiateIter = actions.begin() + index;
-					auto nonTerminateName = nonTermiateIter->GetName();
+				auto   index = 0;
+				assert(index != -1);
+				assert(edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
+				auto&& source = edgeIter->GetSource();
+				auto&& target = edgeIter->GetTarget();
+				auto actions = edgeIter->GetActions();
+				auto&& nonTermiateIter = actions.begin() + index;
+				auto nonTerminateName = nonTermiateIter->GetName();
 
-					machine.DeleteEdge(edgeIter);
-					auto findIter = machine.GetPDAMap().find(nonTerminateName);
-					assert(findIter != machine.GetPDAMap().end());
-					//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
-					actions.erase(nonTermiateIter);
-					actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, ruleName);
-					machine.AddEdge(findIter->second.second, target, actions);
-					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName , nonTerminateName));
-				}
+				machine.DeleteEdge(edgeIter);
+				auto ruleName = nonTermiateIter->GetName();
+				auto findIter = machine.GetPDAMap().find(ruleName);
+				assert(findIter != machine.GetPDAMap().end());
+				//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
+				actions.erase(nonTermiateIter);
+				actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, L"");
+				machine.AddEdge(findIter->second.second, target, actions);
+				machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, nonTerminateName, L""));
 			}
 		}
 
@@ -359,6 +367,7 @@ namespace ztl
 				{
 					return edge->GetTarget() == target&&
 						edge->GetActions() == *actionPointer;
+
 				}) == nexts.end())
 				{
 					machine.AddEdge(source, target, *actionPointer);
@@ -384,6 +393,7 @@ namespace ztl
 					actionPointer = &newActions;
 					CheckAndAddEdge();
 				}
+
 			}
 		}
 		struct Path
@@ -505,60 +515,6 @@ namespace ztl
 			{
 				machine.DeleteEdge(iter);
 			}
-		}
-		vector<PDAEdge*> CollectNontermiateEdgeByRoot(PushDownAutoMachine& machine)
-		{
-			vector<PDAEdge*> result;
-			unordered_set<PDAEdge*> sign;
-			//从Root表达式开始
-			deque<PDANode*> queue;
-			queue.emplace_back(machine.GetRoot());
-			while(!queue.empty())
-			{
-				auto&& front = queue.front();
-				for(auto&& edgeIter : front->GetNexts())
-				{
-					if(sign.find(edgeIter) == sign.end())
-					{
-						sign.insert(edgeIter);
-						
-						result.emplace_back(edgeIter);
-						
-						queue.emplace_back(edgeIter->GetTarget());
-					}
-				}
-				queue.pop_front();
-			}
-
-			return result;
-		}
-		void DeleteNullPropertyEdge(PushDownAutoMachine& machine)
-		{
-			auto edges = CollectNontermiateEdgeByRoot(machine);
-			for(auto&& iter : edges)
-			{
-				iter->DeleteNullPropertyAction();
-			}
-		}
-		void CreateDPDAGraph(PushDownAutoMachine& machine)
-		{
-			auto PDAMap = CreateEpsilonPDA(machine);
-			MergeStartAndEndNode(machine, PDAMap);
-			AddPDAToPDAMachine(machine, PDAMap);
-			machine.CreateRoot();
-			MergeEpsilonPDAGraph(machine);
-			MergeGrammarCommonFactor(machine);
-			//添加结束节点.
-		
-			//应该直接在文法上添加finish fixed
-		//	AddFinishNode(machine);
-			//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
-			MergePDAEpsilonSymbol(machine);
-			MergeGrammarCommonFactor(machine);
-			DeleteNullPropertyEdge(machine);
-			MergeGrammarCommonFactor(machine);
-
-			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{

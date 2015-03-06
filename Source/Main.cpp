@@ -16,6 +16,8 @@ int main()
 	ztl::general_parser::GeneralJumpTable jumpTable(&machine);
 	ztl::general_parser::CreateJumpTable(jumpTable);
 	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
+	//auto i = Parse(L"ParserDefine.txt", &manger);
+	CreateLexerFile(L"testLex.cpp", &manger);
 	//CreateNodeDefineFile(L"Test.cpp", &manger);
 	return 0;
 }

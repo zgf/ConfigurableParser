@@ -9,18 +9,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		struct TokenInfo
-		{
-			wstring name;
-			wstring lex;
-			int position;
-			int length;
-			TokenInfo() = default;
-			TokenInfo(const wstring& _name, const wstring& _lex, const int _position, const int _length)
-				: name(_name), lex(_lex), position(_position), length(_length)
-			{
-			}
-		};
+	
 		struct GeneralTokenInfo
 		{
 			wstring name;
@@ -138,33 +127,7 @@ namespace ztl
 			return result;
 		}
 
-		vector<TokenInfo> Parse(const wstring& fileName, SymbolManager* manager)
-		{
-			auto infos = GetTokenInfoList(manager);
-			wifstream input(fileName);
-			if(!input.is_open())
-			{
-				throw ztl_exception(L"error:file" + fileName + L"not open!");
-			}
-			vector<TokenInfo> stream;
-			std::wstring content((std::istreambuf_iterator<wchar_t>(input)),
-				std::istreambuf_iterator<wchar_t>());
-			auto pattern = CreateRegexString(infos);
-			RegexInterpretor interpretor(pattern);
-			auto result = interpretor.Matches(content);
-			for(auto&& iter : result)
-			{
-				assert(iter.group.size() == 1);
-				auto groupIter = *iter.group.begin();
-				auto name = groupIter.first;
-				assert(infos.find(name) != infos.end());
-				if(!infos[name].ignore)
-				{
-					stream.emplace_back(name, groupIter.second.content, groupIter.second.position, groupIter.second.length);
-				}
-			}
-			return stream;
-		}
+	
 
 
 
