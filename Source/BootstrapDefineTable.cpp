@@ -26,7 +26,7 @@ namespace ztl
 						.Info(L"namespace",L"XML")
 						.Info(L"classprefix",L"ZGF")
 						.Info(L"namespace",L"test")
-						.Info(L"include",L"Include/stdafx.h")
+						.Info(L"include",L"Source/Include/stdafx.h")
 					)
 					.Token
 					(
@@ -52,10 +52,10 @@ namespace ztl
 						.Token(L"PREOPEN", LR"(\()")
 						.Token(L"PRECLOSE", LR"(\))")
 						.Token(L"NAME", LR"([a-zA-Z_]\w*)")
-						.Token(L"STRING", LR"(\"(\\"|[^"])*")")
+						.Token(L"STRING", LR"(\\\"(\\\\\"|[^\"])*\")")
 						.Token(L"FINISH",L"<\\$>")
 						.IgnoreToken(L"SPACE", LR"(\s+)")
-						.IgnoreToken(L"LINENOTE", L"(//[^\n]*\n)")
+						.IgnoreToken(L"LINENOTE", L"(//[^\\n]*\\n)")
 						.IgnoreToken(L"BLOCKNOTE", L"/*.*?*/ //")
 					)
 					.Type

@@ -25,11 +25,13 @@ namespace ztl
 	
 		wstring CreateInitialStatements(unordered_map<wstring, GeneralTokenInfo>& infos)
 		{
-			auto initialTemplate = L"infos.insert({$<Name>,GeneralTokenInfo($<Name>, $<Regex>, $<Ignore>)});\n";
+			auto initialTemplate = 
+				LR"(infos.insert({L"$<Name>",GeneralTokenInfo(L"$<Name>", L"$<Regex>", $<Ignore>)});
+				)";
 			return accumulate(infos.begin(), infos.end(), wstring(), [&initialTemplate](const wstring&sum, const pair<const wstring, GeneralTokenInfo>& iter)
 			{
 				generator::MarcoGenerator generator(initialTemplate, { L"$<Name>",L"$<Regex>",L"$<Ignore>" });
-				auto text = generator.GenerateText({ iter.second.name,iter.second.regex,to_wstring(iter.second.ignore) }).GetMacroResult();
+				auto text = generator.GenerateText({ iter.second.name,iter.second.regex,iter.second.ignore==true?L"true":L"false" }).GetMacroResult();
 				return sum + text;
 			});
 		}
@@ -60,17 +62,7 @@ namespace ztl
 			};
 			vector<TokenInfo> Parse(const wstring& fileName)
 			{
-				struct GeneralTokenInfo
-				{
-					wstring name;
-					wstring regex;
-					bool    ignore;
-					GeneralTokenInfo() = default;
-					GeneralTokenInfo(const wstring& _name, const wstring& _regex, const bool _ignore)
-						: name(_name), regex(_regex), ignore(_ignore)
-					{
-					}
-				};
+				
 				unordered_map<wstring, GeneralTokenInfo> infos;
 				$<InitialBody>
 				wifstream input(fileName);
