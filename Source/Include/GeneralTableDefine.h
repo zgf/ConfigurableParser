@@ -12,6 +12,22 @@ namespace ztl
 {
 	namespace general_parser
 	{
+		/*predefine*/
+		struct TokenInfo
+		{
+			wstring content;
+			wstring tag;
+			int     index;
+			int     length;
+			int     rows;
+			int     cols;
+			TokenInfo() = default;
+			TokenInfo(const wstring& _content,const wstring& _tag,int _index,int _length,int _rows,int _cols)
+				:content(_content),tag(_tag),index(_index),length(_length),rows(_rows),cols(_cols)
+			{
+			
+			}
+		};
 		/*
 		头信息定义
 		//include : name

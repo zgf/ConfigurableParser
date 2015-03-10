@@ -103,6 +103,8 @@ namespace ztl
 		{
 			auto body = CreateLexerFileBody(manager);
 			NodeDefineFileAddNamespace(body, manager);
+			auto include = GetNodeDefineFileInclude(manager);
+			body = include + body;
 			CreateFile(fileName, body);
 		}
 

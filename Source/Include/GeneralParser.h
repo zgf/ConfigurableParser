@@ -6,7 +6,7 @@ namespace ztl
 	{
 		class PDAEdge;
 		class GeneralTreeNode;
-		class GeneralTokenInfo;
+		struct GeneralTokenInfo;
 		class TokenInfo;
 		class SymbolManager;
 		class ActionWrap;

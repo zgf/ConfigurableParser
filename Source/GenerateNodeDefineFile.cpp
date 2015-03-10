@@ -327,9 +327,14 @@ namespace ztl
 				#include <memory>
 				#include <string>
 				#include <vector>
+				#include <unordered_map>
+				#include <iostream>
+				using std::pair;
 				using std::wstring;
 				using std::shared_ptr;
 				using std::vector;
+				using std::unordered_map;
+				using std::wifstream;
 )";
 		 }
 		 wstring GetNodeDefineFileInclude(SymbolManager* manager)
@@ -350,9 +355,29 @@ namespace ztl
 
 			 return includeString + GetNodeDefineFilePreDefineIncludeString();
 		 }
+		 wstring PreDefineTokenInfo()
+		 {
+			 return LR"(/*predefine*/
+						struct TokenInfo
+						{
+							wstring content;
+							wstring tag;
+							int     index;
+							int     rows;
+							int     cols;
+							TokenInfo() = default;
+							TokenInfo(const wstring& _content,const wstring& _tag,int _index,int _rows,int _cols)
+								:content(_content),tag(_tag),index(_index),rows(_rows),cols(_cols)
+							{
+			
+							}
+						};
+						)";
+		 }
 		 wstring GetNodeDefineFileBody(GeneralTableDefine* table,SymbolManager*manager)
 		 {
-			return  accumulate(table->types.begin(), table->types.end(), wstring(), [&manager](const wstring& sum, const shared_ptr<GeneralTypeDefine>&target)
+			return  PreDefineTokenInfo() + 
+				accumulate(table->types.begin(), table->types.end(), wstring(), [&manager](const wstring& sum, const shared_ptr<GeneralTypeDefine>&target)
 			 {
 				 GeneralTypeDefineVisitor visitor(manager);
 				 target->Accept(&visitor);
@@ -365,6 +390,7 @@ namespace ztl
 			 output.write(content.c_str(), content.size());
 
 		 }
+		
 		 void CreateNodeDefineFile(const wstring& fileName,SymbolManager* manager)
 		 {
 			 auto&& body = GetNodeDefineFileBody(manager->GetTable(),manager);

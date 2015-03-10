@@ -29,7 +29,7 @@ namespace ztl
 				GeneralTokenWriter& Token(const wstring& name, const wstring& regex);
 				GeneralTokenWriter& IgnoreToken(const wstring& name, const wstring& regex);
 			private:
-				GeneralTokenWriter& Token(const wstring& name, const wstring& regex, bool ignore);
+				GeneralTokenWriter& Token(const wstring& name, const wstring& regex, GeneralTokenDefine::TokenOptional ignore);
 			};
 			//TypeObject ÷–¥
 			shared_ptr<GeneralArrayTypeObject>			Array(const shared_ptr<GeneralTypeObject>& elementType);

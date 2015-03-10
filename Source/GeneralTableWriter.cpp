@@ -8,12 +8,10 @@ namespace ztl
 		namespace table_writer
 		{
 			//GeneralTokenWriter
-			GeneralTokenWriter& GeneralTokenWriter::Token(const wstring& name, const wstring& regex, bool ignore)
+			GeneralTokenWriter& GeneralTokenWriter::Token(const wstring& name, const wstring& regex, GeneralTokenDefine::TokenOptional ignore)
 			{
 				auto result = make_shared<GeneralTokenDefine>();
-				result->ignore = (ignore == true)?
-					GeneralTokenDefine::TokenOptional::True :
-					GeneralTokenDefine::TokenOptional::False;
+				result->ignore = ignore;
 				result->name = name;
 				result->regex = regex;
 				this->tokens.emplace_back(move(result));
@@ -21,11 +19,11 @@ namespace ztl
 			}
 			GeneralTokenWriter& GeneralTokenWriter::IgnoreToken(const wstring& name, const wstring& regex)
 			{
-				return Token(name, regex, true);
+				return Token(name, regex, GeneralTokenDefine::TokenOptional::True);
 			}
 			GeneralTokenWriter& GeneralTokenWriter::Token(const wstring& name, const wstring& regex)
 			{
-				return Token(name, regex, false);
+				return Token(name, regex, GeneralTokenDefine::TokenOptional::False);
 			}
 
 			// ÷–¥Object∂‘œÛ
