@@ -153,6 +153,7 @@
 		};
 		
 token CLASS = "class";
+token STRUCT = "struct";
 token ENUM = "enum";
 token TOKEN = "token";
 token DISCARDTOKEN = "ignoretoken";
@@ -198,7 +199,7 @@ rule GenTypeDefine TypeDecl
         ;
 
 rule GenClassTypeDefine Class
-        = "class" NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" as GenClassTypeDefine
+        = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" as GenClassTypeDefine
         ;
 		
 rule GenGrammarTypeDefine SequenceGrammar

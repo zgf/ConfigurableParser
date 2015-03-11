@@ -32,6 +32,7 @@ namespace ztl
 					(
 						GeneralTokenWriter()
 						.Token(L"CLASS", L"class")
+						.Token(L"STRUCT",L"struct")
 						.Token(L"ENUM", L"enum")
 						.Token(L"TOKEN", L"token")
 						.Token(L"DISCARDTOKEN", L"ignoretoken")
@@ -339,7 +340,7 @@ namespace ztl
 							.Name(L"Class")
 							.ReturnType(Normal(L"GenClassTypeDefine"))
 							| (
-								Text(L"class") +
+								(Text(L"class")|Text(L"struct")) +
 								GrammarSymbol(L"NAME")[L"name"] +
 								~(
 									Text(L":") + 

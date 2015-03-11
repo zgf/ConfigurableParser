@@ -19,7 +19,7 @@ int main()
 //	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
 //	CreateLexerFile(L"testLex.hpp", &manger);
 //	CreateNodeDefineFile(L"Test.cpp", &manger);
-	ztl::general_parser::Parse(L"ParserDefine.txt");
+	auto result  = ztl::general_parser::Parse(L"ParserDefine.txt");
 	return 0;
 }
 

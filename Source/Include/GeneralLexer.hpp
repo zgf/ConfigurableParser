@@ -11,6 +11,7 @@ namespace ztl
 		{
 			unordered_map<wstring, GeneralTokenDefine> infos;
 			infos.insert({ L"CLASS",GeneralTokenDefine(L"CLASS", LR"(class)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"STRUCT",GeneralTokenDefine(L"STRUCT", LR"(struct)", GeneralTokenDefine::TokenOptional::False) });
 			infos.insert({ L"ENUM",GeneralTokenDefine(L"ENUM", LR"(enum)", GeneralTokenDefine::TokenOptional::False) });
 			infos.insert({ L"TOKEN",GeneralTokenDefine(L"TOKEN", LR"(token)", GeneralTokenDefine::TokenOptional::False) });
 			infos.insert({ L"DISCARDTOKEN",GeneralTokenDefine(L"DISCARDTOKEN", LR"(ignoretoken)", GeneralTokenDefine::TokenOptional::False) });
