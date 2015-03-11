@@ -52,7 +52,7 @@ namespace ztl
 						.Token(L"PREOPEN", LR"(\()")
 						.Token(L"PRECLOSE", LR"(\))")
 						.Token(L"NAME", LR"([a-zA-Z_]\w*)")
-						.Token(L"STRING", LR"(\\\"(\\\\\"|[^\"])*\")")
+						.Token(L"STRING", LR"("(\\"|[^"])*")")
 						.Token(L"FINISH",L"<\\$>")
 						.IgnoreToken(L"SPACE", LR"(\s+)")
 						.IgnoreToken(L"LINENOTE", L"(//[^\\n]*\\n)")

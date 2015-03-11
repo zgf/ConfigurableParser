@@ -355,29 +355,10 @@ namespace ztl
 
 			 return includeString + GetNodeDefineFilePreDefineIncludeString();
 		 }
-		 wstring PreDefineTokenInfo()
-		 {
-			 return LR"(/*predefine*/
-						struct TokenInfo
-						{
-							wstring content;
-							wstring tag;
-							int     index;
-							int     rows;
-							int     cols;
-							TokenInfo() = default;
-							TokenInfo(const wstring& _content,const wstring& _tag,int _index,int _rows,int _cols)
-								:content(_content),tag(_tag),index(_index),rows(_rows),cols(_cols)
-							{
-			
-							}
-						};
-						)";
-		 }
+		
 		 wstring GetNodeDefineFileBody(GeneralTableDefine* table,SymbolManager*manager)
 		 {
-			return  PreDefineTokenInfo() + 
-				accumulate(table->types.begin(), table->types.end(), wstring(), [&manager](const wstring& sum, const shared_ptr<GeneralTypeDefine>&target)
+			return accumulate(table->types.begin(), table->types.end(), wstring(), [&manager](const wstring& sum, const shared_ptr<GeneralTypeDefine>&target)
 			 {
 				 GeneralTypeDefineVisitor visitor(manager);
 				 target->Accept(&visitor);

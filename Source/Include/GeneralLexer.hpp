@@ -1,51 +1,41 @@
 #pragma once
 #include "stdafx.h"
+#include "GeneralTableDefine.h"
+#include "../../Lib/Regex/ztl_regex_interpretor.h"
+
 namespace ztl
 {
 	namespace general_parser
 	{
-		struct GeneralTokenInfo
-		{
-			wstring name;
-			wstring regex;
-			bool    ignore;
-			GeneralTokenInfo() = default;
-			GeneralTokenInfo(const wstring& _name, const wstring& _regex, const bool _ignore)
-				: name(_name), regex(_regex), ignore(_ignore)
-			{
-			}
-		};
 		vector<TokenInfo> Parse(const wstring& fileName)
 		{
-		
-			unordered_map<wstring, GeneralTokenInfo> infos;
-			infos.insert({ L"CLOSE",GeneralTokenInfo(L"CLOSE", L"\}", false) });
-			infos.insert({ L"RULE",GeneralTokenInfo(L"RULE", L"rule", false) });
-			infos.insert({ L"CLASS",GeneralTokenInfo(L"CLASS", L"class", false) });
-			infos.insert({ L"TOKEN",GeneralTokenInfo(L"TOKEN", L"token", false) });
-			infos.insert({ L"ENUM",GeneralTokenInfo(L"ENUM", L"enum", false) });
-			infos.insert({ L"DISCARDTOKEN",GeneralTokenInfo(L"DISCARDTOKEN", L"ignoretoken", false) });
-			infos.insert({ L"WITH",GeneralTokenInfo(L"WITH", L"with", false) });
-			infos.insert({ L"AS",GeneralTokenInfo(L"AS", L"as", false) });
-			infos.insert({ L"SPACE",GeneralTokenInfo(L"SPACE", L"\s+", true) });
-			infos.insert({ L"OPEN",GeneralTokenInfo(L"OPEN", L"\{", false) });
-			infos.insert({ L"SEMICOLON",GeneralTokenInfo(L"SEMICOLON", L";", false) });
-			infos.insert({ L"ASSIGN",GeneralTokenInfo(L"ASSIGN", L"=", false) });
-			infos.insert({ L"COLON",GeneralTokenInfo(L"COLON", L":", false) });
-			infos.insert({ L"COMMA",GeneralTokenInfo(L"COMMA", L",", false) });
-			infos.insert({ L"DOT",GeneralTokenInfo(L"DOT", L"\.", false) });
-			infos.insert({ L"USING",GeneralTokenInfo(L"USING", L"!", false) });
-			infos.insert({ L"OR",GeneralTokenInfo(L"OR", L"\|", false) });
-			infos.insert({ L"OPTOPEN",GeneralTokenInfo(L"OPTOPEN", L"\[", false) });
-			infos.insert({ L"STRING",GeneralTokenInfo(L"STRING", L"\\\"(\\\\\"|[^\"])*\"", false) });
-			infos.insert({ L"OPTCLOSE",GeneralTokenInfo(L"OPTCLOSE", L"\]", false) });
-			infos.insert({ L"PREOPEN",GeneralTokenInfo(L"PREOPEN", L"\(", false) });
-			infos.insert({ L"PRECLOSE",GeneralTokenInfo(L"PRECLOSE", L"\)", false) });
-			infos.insert({ L"NAME",GeneralTokenInfo(L"NAME", L"[a-zA-Z_]\w*", false) });
-			infos.insert({ L"FINISH",GeneralTokenInfo(L"FINISH", L"<\$>", false) });
-			infos.insert({ L"LINENOTE",GeneralTokenInfo(L"LINENOTE", L"(//[^\n]*\n)", true) });
-			infos.insert({ L"BLOCKNOTE",GeneralTokenInfo(L"BLOCKNOTE", L"/*.*?*/ //", true) });
-
+			unordered_map<wstring, GeneralTokenDefine> infos;
+			infos.insert({ L"CLASS",GeneralTokenDefine(L"CLASS", LR"(class)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"ENUM",GeneralTokenDefine(L"ENUM", LR"(enum)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"TOKEN",GeneralTokenDefine(L"TOKEN", LR"(token)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"DISCARDTOKEN",GeneralTokenDefine(L"DISCARDTOKEN", LR"(ignoretoken)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"RULE",GeneralTokenDefine(L"RULE", LR"(rule)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"AS",GeneralTokenDefine(L"AS", LR"(as)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"WITH",GeneralTokenDefine(L"WITH", LR"(with)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"OPEN",GeneralTokenDefine(L"OPEN", LR"(\{)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"CLOSE",GeneralTokenDefine(L"CLOSE", LR"(\})", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"SEMICOLON",GeneralTokenDefine(L"SEMICOLON", LR"(;)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"COLON",GeneralTokenDefine(L"COLON", LR"(:)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"COMMA",GeneralTokenDefine(L"COMMA", LR"(,)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"DOT",GeneralTokenDefine(L"DOT", LR"(\.)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"ASSIGN",GeneralTokenDefine(L"ASSIGN", LR"(=)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"USING",GeneralTokenDefine(L"USING", LR"(!)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"OR",GeneralTokenDefine(L"OR", LR"(\|)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"OPTOPEN",GeneralTokenDefine(L"OPTOPEN", LR"(\[)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"OPTCLOSE",GeneralTokenDefine(L"OPTCLOSE", LR"(\])", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"PREOPEN",GeneralTokenDefine(L"PREOPEN", LR"(\()", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"PRECLOSE",GeneralTokenDefine(L"PRECLOSE", LR"(\))", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"NAME",GeneralTokenDefine(L"NAME", LR"([a-zA-Z_]\w*)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"STRING",GeneralTokenDefine(L"STRING",  LR"("(\\"|[^"])*")", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"FINISH",GeneralTokenDefine(L"FINISH", LR"(<\$>)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"SPACE",GeneralTokenDefine(L"SPACE", LR"(\s+)", GeneralTokenDefine::TokenOptional::True) });
+			infos.insert({ L"LINENOTE",GeneralTokenDefine(L"LINENOTE",LR"(\"(\\"|[^"])*")", GeneralTokenDefine::TokenOptional::True) });
+			infos.insert({ L"BLOCKNOTE",GeneralTokenDefine(L"BLOCKNOTE", LR"(/*.*?*/ //)", GeneralTokenDefine::TokenOptional::True) });
 			wifstream input(fileName);
 			if(!input.is_open())
 			{
@@ -54,10 +44,9 @@ namespace ztl
 			vector<TokenInfo> stream;
 			std::wstring content((std::istreambuf_iterator<wchar_t>(input)),
 				std::istreambuf_iterator<wchar_t>());
-			auto pattern = accumulate(infos.begin(), infos.end(), wstring(),
-				[](const wstring& sum, const pair<const wstring, GeneralTokenInfo>& token)
+			auto pattern = accumulate(infos.begin(), infos.end(), wstring(), [](const wstring& sum, const pair<const wstring, GeneralTokenDefine>& token)
 			{
-				return sum + L"(?<" + token.second.name + L">" + token.second.regex + L")|";
+				return sum + L"(<" + token.second.name + L">" + token.second.regex + L")|";
 			});
 			pattern.pop_back();
 			RegexInterpretor interpretor(pattern);
@@ -68,13 +57,12 @@ namespace ztl
 				auto groupIter = *iter.group.begin();
 				auto name = groupIter.first;
 				assert(infos.find(name) != infos.end());
-				if(!infos[name].ignore)
+				if(infos[name].ignore != GeneralTokenDefine::TokenOptional::True)
 				{
 					stream.emplace_back(name, groupIter.second.content, groupIter.second.position, groupIter.second.length);
 				}
 			}
 			return stream;
 		}
-	}
 	}
 }

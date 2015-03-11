@@ -17,13 +17,11 @@ namespace ztl
 		{
 			wstring content;
 			wstring tag;
-			int     index;
+			int     position;
 			int     length;
-			int     rows;
-			int     cols;
 			TokenInfo() = default;
-			TokenInfo(const wstring& _content,const wstring& _tag,int _index,int _length,int _rows,int _cols)
-				:content(_content),tag(_tag),index(_index),length(_length),rows(_rows),cols(_cols)
+			TokenInfo(const wstring& _content,const wstring& _tag,int _position,int _length)
+				:content(_content),tag(_tag), position(_position),length(_length)
 			{
 			
 			}
@@ -57,6 +55,18 @@ namespace ztl
 			wstring name;
 			wstring regex;
 			TokenOptional	ignore;
+			GeneralTokenDefine() = default;
+			~GeneralTokenDefine() = default;
+			GeneralTokenDefine(const wstring& name, const wstring& regex, const TokenOptional ignore)
+				:name(name),regex(regex),ignore(ignore)
+			{
+
+			}
+			GeneralTokenDefine(const wstring& name, const wstring& regex, const bool ignore)
+				:name(name), regex(regex), ignore(ignore?TokenOptional::True:TokenOptional::False)
+			{
+
+			}
 		};
 
 		/*类型对象前置声明*/

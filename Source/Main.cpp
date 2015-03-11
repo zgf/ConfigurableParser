@@ -6,6 +6,7 @@
 #include "Include\GeneralPushDownAutoMachine.h"
 #include "Include\GeneralJumpTable.h"
 #include "Include\GeneralFile.h"
+#include "Include\GeneralLexer.hpp"
 int main()
 {
 	auto table = ztl::general_parser::BootStrapDefineTable();
@@ -15,10 +16,10 @@ int main()
 	ztl::general_parser::CreateDPDAGraph(machine);
 	ztl::general_parser::GeneralJumpTable jumpTable(&machine);
 	ztl::general_parser::CreateJumpTable(jumpTable);
-	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
-	//auto i = Parse(L"ParserDefine.txt", &manger);
-	CreateLexerFile(L"testLex.cpp", &manger);
-	CreateNodeDefineFile(L"Test.cpp", &manger);
+//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
+//	CreateLexerFile(L"testLex.hpp", &manger);
+//	CreateNodeDefineFile(L"Test.cpp", &manger);
+	ztl::general_parser::Parse(L"ParserDefine.txt");
 	return 0;
 }
 
