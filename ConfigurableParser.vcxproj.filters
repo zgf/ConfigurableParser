@@ -118,6 +118,9 @@
     <ClCompile Include="Source\GeneralReflectionNodeDefineFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GeneralLexer.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -190,9 +193,6 @@
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralTreeNode.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralLexer.hpp">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

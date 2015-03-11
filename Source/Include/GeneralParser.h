@@ -6,8 +6,7 @@ namespace ztl
 	{
 		class PDAEdge;
 		class GeneralTreeNode;
-		struct GeneralTokenInfo;
-		class TokenInfo;
+		struct TokenInfo;
 		class SymbolManager;
 		class ActionWrap;
 		class GeneralParser
@@ -21,14 +20,14 @@ namespace ztl
 			GeneralParser& operator=(const GeneralParser&)   = default;
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
-			vector<shared_ptr<GeneralTokenInfo>> tokenPool;
+			vector<TokenInfo>					 tokenPool;
 			vector<GeneralTreeNode*>			 createdNodeStack;
 			vector<wstring>						 rulePathStack;
 			//某边过去后的向前看终结字符是神马LALR(2);每条边的最后一个action就是终结字符.
 			unordered_map<PDAEdge*, vector<ActionWrap>> lookaheadMap;
-			GeneralTreeNode* treeRoot;
+			GeneralTreeNode*					 treeRoot;
 		};
-		vector<TokenInfo> Parse(const wstring& fileName, SymbolManager* manager);
+		vector<TokenInfo> Parse(const wstring& fileName);
 
 	}
 }

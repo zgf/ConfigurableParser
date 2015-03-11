@@ -175,6 +175,7 @@
     <ClCompile Include="Source\BootstrapDefineTable.cpp" />
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
     <ClCompile Include="Source\GeneralJumpTable.cpp" />
+    <ClCompile Include="Source\GeneralLexer.cpp" />
     <ClCompile Include="Source\GeneralLexerFile.cpp" />
     <ClCompile Include="Source\GeneralPDAGraph.cpp" />
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
@@ -210,7 +211,6 @@
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
     <ClInclude Include="Source\Include\GeneralFile.h" />
     <ClInclude Include="Source\Include\GeneralJumpTable.h" />
-    <ClInclude Include="Source\Include\GeneralLexer.hpp" />
     <ClInclude Include="Source\Include\GeneralParser.h" />
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
     <ClInclude Include="Source\Include\GeneralReflectionTableDefine.h" />

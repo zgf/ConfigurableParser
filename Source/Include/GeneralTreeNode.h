@@ -16,8 +16,8 @@ namespace ztl
 			GeneralTreeNode& operator=(const GeneralTreeNode&) = default;
 		private:
 			wstring name;
-			unordered_map<wstring, int> fieldMap;
-			unordered_map<wstring, int> termMap;
+			unique_ptr<unordered_map<wstring, int>> fieldMap;
+			unique_ptr<unordered_map<wstring, int>> termMap;
 		};
 		
 	}

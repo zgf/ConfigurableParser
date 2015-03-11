@@ -1,7 +1,7 @@
 #pragma once
-#include "stdafx.h"
-#include "GeneralTableDefine.h"
-#include "../../Lib/Regex/ztl_regex_interpretor.h"
+#include "Include/stdafx.h"
+#include "Include/GeneralTableDefine.h"
+#include "../Lib/Regex/ztl_regex_interpretor.h"
 
 namespace ztl
 {
