@@ -16,7 +16,7 @@ int main()
 	ztl::general_parser::CreateDPDAGraph(machine);
 	ztl::general_parser::GeneralJumpTable jumpTable(&machine);
 	ztl::general_parser::CreateJumpTable(jumpTable);
-//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
+	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
 	return 0;
 }
 

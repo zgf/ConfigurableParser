@@ -23,8 +23,6 @@ namespace ztl
 			vector<TokenInfo>					 tokenPool;
 			vector<GeneralTreeNode*>			 createdNodeStack;
 			vector<wstring>						 rulePathStack;
-			//某边过去后的向前看终结字符是神马LALR(2);每条边的最后一个action就是终结字符.
-			unordered_map<PDAEdge*, vector<ActionWrap>> lookaheadMap;
 			GeneralTreeNode*					 treeRoot;
 		};
 		vector<TokenInfo> Parse(const wstring& fileName);

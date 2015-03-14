@@ -315,6 +315,20 @@ namespace ztl
 				grammars.erase(grammars.begin() + 1, grammars.end());
 			}
 		}
+		void DeleteNoTermAndUsingAction(vector<ActionWrap>::iterator nonTermiateIter,vector<ActionWrap>& actions)
+		{
+			assert(actions[0].GetActionType() == ActionType::NonTerminate);
+			if (actions.size() > 1&&actions[1].GetActionType() == ActionType::Using)
+			{
+				actions.erase(nonTermiateIter,nonTermiateIter + 2);
+			}
+			else
+			{
+				actions.erase(nonTermiateIter);
+			}
+			//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
+
+		}
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto&& edgeList = CollectNontermiateEdge(machine);
@@ -324,31 +338,88 @@ namespace ztl
 				auto&& ruleName = iter.first;
 				for (auto&& edgeIter: iter.second)
 				{
-					auto   index = 0;
-					assert(index != -1);
 					assert(edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
 					auto&& source = edgeIter->GetSource();
 					auto&& target = edgeIter->GetTarget();
 					auto actions = edgeIter->GetActions();
-					auto&& nonTermiateIter = actions.begin() + index;
+					auto&& nonTermiateIter = actions.begin();
 					auto nonTerminateName = nonTermiateIter->GetName();
 
 					machine.DeleteEdge(edgeIter);
 					auto findIter = machine.GetPDAMap().find(nonTerminateName);
 					assert(findIter != machine.GetPDAMap().end());
-					//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
-					actions.erase(nonTermiateIter);
+					DeleteNoTermAndUsingAction(nonTermiateIter, actions);
 					actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, ruleName);
+					//清除掉using
 					machine.AddEdge(findIter->second.second, target, actions);
 					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName , nonTerminateName));
 				}
 			}
 		}
+		void CheckAndDeleteReCursionRing(vector<ActionWrap>& newActions, ActionType type)
+		{
+			int lastIndex = newActions.size();
+			int firstIndex = newActions.size();
+			for(int i = newActions.size() - 1; i >= 0; --i)
+			{
+				if(newActions[i].GetActionType() == type)
+				{
+					lastIndex = i + 1;
+					break;
+				}
+			}
+			firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
+			{
+				return wrap.GetActionType() == type;
+			}) - newActions.begin();
+			if(firstIndex != lastIndex)
+			{
+				for(auto index = firstIndex; index != lastIndex; ++index)
+				{
+					auto end = index + 1;
+					for(auto i = firstIndex; i < end;++i)
+					{
+						if (newActions[i].GetName() == newActions[index].GetValue())
+						{
+							if(i != end)
+							{
 
+								newActions.erase(newActions.begin()+i, newActions.begin()+end);
+								auto num = end - i;
+								firstIndex = end - num;
+								lastIndex = lastIndex - num;
+								index = index - num;
+								break;
+							}
+						}
+					}
+					
+				}
+			}
+		}
+		void CheckAndDeleteLeftReCursionRing(vector<ActionWrap>& newActions)
+		{
+			CheckAndDeleteReCursionRing(newActions, ActionType::Shift);
+		}
+		void CheckAndDeleteRightReCursionRing(vector<ActionWrap>& newActions)
+		{
+			CheckAndDeleteReCursionRing(newActions, ActionType::Reduce);
+		}
+
+		vector<ActionWrap> GetNewAction(vector<PDAEdge*>& save)
+		{
+			vector<ActionWrap> newActions;
+			for_each(save.begin(), save.end(), [&newActions](PDAEdge* iter)
+			{
+				newActions.insert(newActions.end(), iter->GetActions().begin(), iter->GetActions().end());
+			});
+			CheckAndDeleteLeftReCursionRing(newActions);
+			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
+			return newActions;
+		}
 		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine, unordered_map<PDANode*, int>& edgeCountMap)
 		{
 			assert(!save.empty());
-			vector<ActionWrap> newActions;
 			auto source = save.front()->GetSource();
 			auto target = save.back()->GetTarget();
 			auto nexts = source->GetNexts();
@@ -372,16 +443,15 @@ namespace ztl
 			}
 			else
 			{
-				for_each(save.begin(), save.end(), [&newActions](PDAEdge* iter)
-				{
-					newActions.insert(newActions.end(), iter->GetActions().begin(), iter->GetActions().end());
-				});
+				vector<ActionWrap> newActions = GetNewAction(save);
+
 				if(find_if(nexts.begin(), nexts.end(), [&newActions](PDAEdge* element)
 				{
 					return element->GetActions() == newActions;
 				}) == nexts.end())
 				{
 					actionPointer = &newActions;
+
 					CheckAndAddEdge();
 				}
 			}
@@ -399,7 +469,6 @@ namespace ztl
 		}
 		bool IsLeftreCursionRingPath(vector<PDAEdge*>& path)
 		{
-			//assert(path.size() > 1);
 			return accumulate(path.begin(), path.end(), (size_t) 0, [](int val, PDAEdge* iter)
 			{
 				auto actions = iter->GetActions();
@@ -423,7 +492,6 @@ namespace ztl
 		}
 		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine)
 		{
-			//auto rootName = machine.GetSymbolManager()->StartRuleList()[0];
 			vector<PDAEdge*> path;
 			//第i号路径已经完结集合
 			unordered_set<int> save;
@@ -451,7 +519,7 @@ namespace ztl
 					auto target = edgeIter->GetTarget();
 					path.emplace_back(edgeIter);
 					assert(path.size() == pathSign.size());
-
+					
 					if(pathSign.find(target) == pathSign.end() ||
 						//对于包含Term的环,构造新环.
 						IsTermRingPath(path))
@@ -459,7 +527,7 @@ namespace ztl
 						if(edgeIter->HasTermActionType())
 						{
 							//遇到Term了,当前路径可以终止搜索了.
-
+							
 							MergePathSymbol(path, machine, edgeCountMap);
 							//记录需要删除的边
 							deleter.insert(path.begin(), path.end());
@@ -555,8 +623,8 @@ namespace ztl
 			//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
 			MergePDAEpsilonSymbol(machine);
 			MergeGrammarCommonFactor(machine);
-			DeleteNullPropertyEdge(machine);
-			MergeGrammarCommonFactor(machine);
+			//DeleteNullPropertyEdge(machine);
+			//MergeGrammarCommonFactor(machine);
 
 			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
 		}
