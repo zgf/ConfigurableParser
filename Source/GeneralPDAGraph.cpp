@@ -374,6 +374,7 @@ namespace ztl
 			}) - newActions.begin();
 			if(firstIndex != lastIndex)
 			{
+			
 				for(auto index = firstIndex; index != lastIndex; ++index)
 				{
 					auto end = index + 1;
@@ -383,13 +384,15 @@ namespace ztl
 						{
 							if(i != end)
 							{
-
-								newActions.erase(newActions.begin()+i, newActions.begin()+end);
+								newActions.clear();
+								return;
+								//break;
+							/*	newActions.erase(newActions.begin()+i, newActions.begin()+end);
 								auto num = end - i;
 								firstIndex = end - num;
 								lastIndex = lastIndex - num;
-								index = index - num;
-								break;
+								index = index - num;*/
+							
 							}
 						}
 					}
@@ -415,6 +418,7 @@ namespace ztl
 			});
 			CheckAndDeleteLeftReCursionRing(newActions);
 			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
+			CheckAndDeleteRightReCursionRing(newActions);
 			return newActions;
 		}
 		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine, unordered_map<PDANode*, int>& edgeCountMap)
@@ -444,15 +448,17 @@ namespace ztl
 			else
 			{
 				vector<ActionWrap> newActions = GetNewAction(save);
-
-				if(find_if(nexts.begin(), nexts.end(), [&newActions](PDAEdge* element)
+				if (!newActions.empty())
 				{
-					return element->GetActions() == newActions;
-				}) == nexts.end())
-				{
-					actionPointer = &newActions;
+					if(find_if(nexts.begin(), nexts.end(), [&newActions](PDAEdge* element)
+					{
+						return element->GetActions() == newActions;
+					}) == nexts.end())
+					{
+						actionPointer = &newActions;
 
-					CheckAndAddEdge();
+						CheckAndAddEdge();
+					}
 				}
 			}
 		}

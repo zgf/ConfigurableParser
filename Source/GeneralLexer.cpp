@@ -7,7 +7,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		vector<TokenInfo> Parse(const wstring& fileName)
+		vector<TokenInfo> ParseToken(const wstring& fileName)
 		{
 			unordered_map<wstring, GeneralTokenDefine> infos;
 			infos.insert({ L"CLASS",GeneralTokenDefine(L"CLASS", LR"(class)", GeneralTokenDefine::TokenOptional::False) });

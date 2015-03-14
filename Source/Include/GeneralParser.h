@@ -24,8 +24,10 @@ namespace ztl
 			vector<GeneralTreeNode*>			 createdNodeStack;
 			vector<wstring>						 rulePathStack;
 			GeneralTreeNode*					 treeRoot;
+
+
 		};
-		vector<TokenInfo> Parse(const wstring& fileName);
+		vector<TokenInfo> ParseToken(const wstring& fileName);
 
 	}
 }
