@@ -177,6 +177,7 @@
     <ClCompile Include="Source\GeneralJumpTable.cpp" />
     <ClCompile Include="Source\GeneralLexer.cpp" />
     <ClCompile Include="Source\GeneralLexerFile.cpp" />
+    <ClCompile Include="Source\GeneralParser.cpp" />
     <ClCompile Include="Source\GeneralPDAGraph.cpp" />
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
     <ClCompile Include="Source\GeneralReflectionNodeDefineFile.cpp" />

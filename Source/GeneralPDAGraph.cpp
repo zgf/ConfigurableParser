@@ -32,7 +32,7 @@ namespace ztl
 			void								Visit(GeneralGrammarTextTypeDefine* node)
 			{
 				result = machine->NewNodePair();
-				ActionWrap wrap(ActionType::Terminate, node->text, L"");
+				ActionWrap wrap(ActionType::Terminate, node->text, ruleName);
 				machine->AddEdge(result.first, result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
@@ -46,7 +46,7 @@ namespace ztl
 				}
 				else
 				{
-					ActionWrap wrap(ActionType::Terminate, node->name, L"");
+					ActionWrap wrap(ActionType::Terminate, node->name, ruleName);
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 			}
@@ -84,15 +84,15 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
-				node->grammar->Accept(this);
 				auto manager = machine->GetSymbolManager();
-				ActionWrap wrap(ActionType::Create, FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName(), ruleName);
+				this->createTypeName = FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName();
+				node->grammar->Accept(this);
+				ActionWrap wrap(ActionType::Create, createTypeName, ruleName);
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
 				machine->AddEdge(newNode, result.first, move(wrap));
 				result.first = newNode;
-				/*	machine->AddEdge(result.second, newNode, move(wrap));
-					result.second = newNode;*/
+
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -105,8 +105,8 @@ namespace ztl
 			void								Visit(GeneralGrammarAssignTypeDefine* node)
 			{
 				auto ruleSymbol = machine->GetSymbolManager()->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get());
-				ActionWrap wrap(ActionType::Assign, node->name, ruleSymbol->GetName());
-
+				auto name = (ruleSymbol->IsTokenDef()) ? ruleSymbol->GetName() : createTypeName;
+				ActionWrap wrap(ActionType::Assign, node->name, name);
 				node->grammar->Accept(this);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
@@ -115,6 +115,7 @@ namespace ztl
 			GeneralRuleDefine* rule;
 			pair<PDANode*, PDANode*> result;
 			wstring ruleName;
+			wstring createTypeName;
 		};
 
 		void AddGeneratePDA(unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap, wstring ruleName, PDANode * start, PDANode* end)

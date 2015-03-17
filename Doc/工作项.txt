@@ -47,7 +47,7 @@ Good Job:)
 
 token类问题已解决.
 lexer 添加成功.
-调整jumptable
+调整jumptable 解决
 编写通用解析器
 构造通用语法树
 构造反射用函数

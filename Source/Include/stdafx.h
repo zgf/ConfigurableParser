@@ -61,7 +61,8 @@ namespace ztl
 	using std::unordered_multimap;
 	using std::swap;
 	using std::make_pair;
-	
+	using std::find_if_not;
+	using std::find_if;
 	using std::wfstream;
 	using std::wifstream;
 	using std::istreambuf_iterator;

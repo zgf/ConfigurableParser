@@ -10,11 +10,15 @@ namespace ztl
 		class PDANode;
 		class ActionWrap;
 		class PDAEdge;
-		PAIR_BUILDER(JumpItem, int, targetIndex, vector<ActionWrap>, actions);
+	
+		PAIR_BUILDER(JumpItem, int, targetIndex, PDAEdge*, edges);
+		PAIR_BUILDER(CreateInfo, wstring, createType, wstring, fieldName);
+
+		
 		class GeneralJumpTable
 		{
 		public:
-			GeneralJumpTable()  = default;
+			GeneralJumpTable()  = delete;
 			GeneralJumpTable(PushDownAutoMachine* _machine);
 			~GeneralJumpTable() noexcept = default;
 			GeneralJumpTable(GeneralJumpTable&&)  = default;
@@ -22,25 +26,24 @@ namespace ztl
 			GeneralJumpTable& operator=(GeneralJumpTable&&)  = default;
 			GeneralJumpTable& operator=(const GeneralJumpTable&)   = default;
 		public:
-			SymbolManager* GetSymbolManager()const;
-			PDANode* GetRoot()const;
-			int  GetNodeIndex(PDANode* target);
+			SymbolManager*  GetSymbolManager()const;
+			PDANode*		GetRoot()const;
 
 			void													CreateJumpTable();
 			void													ClearJumpTable();
 			const unordered_map<int, vector<JumpItem>>&				GetJumpTable()const;
 			vector<JumpItem>										CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, 
 				deque<PDANode*>& queue);
-			void													InitNodeIndexMap();
-			void													ClearNodeIndexMap();
-
+			void												    CacheEdgeInfo(PDAEdge* edge);
+			void													CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos);
+			void CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos);
 		private:
-			PushDownAutoMachine*												machine;
-
-			//int 1 nodeIndex 
-
-			unordered_map<int, vector<JumpItem>>								 jumpTable;
-			unordered_map<PDANode*, int>										 nodeIndexMap;
+			PushDownAutoMachine*															 machine;
+			shared_ptr<unordered_map<int, vector<JumpItem>>>								 jumpTable;
+			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 ruleRequiresMap;
+			shared_ptr<unordered_map<PDAEdge*, wstring>>									 terminateMap;
+			shared_ptr<unordered_map<PDAEdge*, vector<CreateInfo>>>							 createdNodeRequiresMap;
+			
 		};
 		void CreateJumpTable(GeneralJumpTable& jumpTable);
 		void HelpLogJumpTable(wstring fileName, GeneralJumpTable& jumpTable);

@@ -1,9 +1,9 @@
 NodeIndex:176
  targetIndex: 178
-			action:Terminate : ASSIGN:;
+			action:Terminate : ASSIGN:TokenDecl;
 NodeIndex:48
  targetIndex: 52
-			action:Terminate : NAME:;
+			action:Terminate : NAME:Class;
 			action:Assign : name:NAME;
 NodeIndex:208
  targetIndex: 26
@@ -11,446 +11,282 @@ NodeIndex:208
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Enum;
 			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
+			action:Terminate : ENUM:Enum;
  targetIndex: 48
 			action:Create : GenTableDefine:ParserDecl;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Class;
 			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : CLASS:;
+			action:Terminate : CLASS:Class;
  targetIndex: 48
 			action:Create : GenTableDefine:ParserDecl;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Class;
 			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : STRUCT:;
+			action:Terminate : STRUCT:Class;
  targetIndex: 154
 			action:Create : GenTableDefine:ParserDecl;
 			action:Shift : ParserDecl:HeadDecl;
 			action:Create : GenHeadInfoDefine:HeadDecl;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:HeadDecl;
 			action:Assign : property:NAME;
  targetIndex: 163
 			action:Create : GenTableDefine:ParserDecl;
 			action:Shift : ParserDecl:TokenDecl;
 			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : TOKEN:;
+			action:Terminate : TOKEN:TokenDecl;
  targetIndex: 174
 			action:Create : GenTableDefine:ParserDecl;
 			action:Shift : ParserDecl:TokenDecl;
 			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : DISCARDTOKEN:;
+			action:Terminate : DISCARDTOKEN:TokenDecl;
  targetIndex: 185
 			action:Create : GenTableDefine:ParserDecl;
 			action:Shift : ParserDecl:RuleDecl;
 			action:Create : GenRuleDefine:RuleDecl;
-			action:Terminate : RULE:;
+			action:Terminate : RULE:RuleDecl;
  targetIndex: 206
 			action:Create : GenTableDefine:ParserDecl;
-			action:Terminate : FINISH:;
+			action:Terminate : FINISH:ParserDecl;
 NodeIndex:174
  targetIndex: 176
-			action:Terminate : NAME:;
+			action:Terminate : NAME:TokenDecl;
 			action:Assign : name:NAME;
 NodeIndex:206
 NodeIndex:154
  targetIndex: 156
-			action:Terminate : COLON:;
+			action:Terminate : COLON:HeadDecl;
 NodeIndex:26
  targetIndex: 28
-			action:Terminate : NAME:;
+			action:Terminate : NAME:Enum;
 			action:Assign : name:NAME;
 NodeIndex:163
  targetIndex: 165
-			action:Terminate : NAME:;
+			action:Terminate : NAME:TokenDecl;
 			action:Assign : name:NAME;
 NodeIndex:185
  targetIndex: 1
 			action:Shift : RuleDecl:Type;
 			action:Create : GenNormalTypeObject:Type;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:Type;
 			action:Assign : name:NAME;
  targetIndex: 1
 			action:Shift : RuleDecl:Type;
 			action:Create : GenStringTypeObject:Type;
-			action:Terminate : TOKEN:;
+			action:Terminate : TOKEN:Type;
 NodeIndex:28
  targetIndex: 30
-			action:Terminate : OPEN:;
+			action:Terminate : OPEN:Enum;
 NodeIndex:156
  targetIndex: 158
-			action:Terminate : STRING:;
+			action:Terminate : STRING:HeadDecl;
 			action:Assign : value:STRING;
 NodeIndex:180
  targetIndex: 171
-			action:Terminate : SEMICOLON:;
+			action:Terminate : SEMICOLON:TokenDecl;
 			action:Setter : ignore:True;
-NodeIndex:52
- targetIndex: 54
-			action:Terminate : COLON:;
- targetIndex: 58
-			action:Terminate : OPEN:;
-NodeIndex:165
- targetIndex: 167
-			action:Terminate : ASSIGN:;
-NodeIndex:129
-NodeIndex:1
- targetIndex: 39
-			action:Reduce : Type:ClassMember;
-			action:Assign : type:Type;
-			action:Terminate : NAME:;
-			action:Assign : name:NAME;
- targetIndex: 54
-			action:Reduce : Type:Class;
-			action:Assign : parent:Type;
-			action:Terminate : COLON:;
- targetIndex: 58
-			action:Reduce : Type:Class;
-			action:Assign : parent:Type;
-			action:Terminate : OPEN:;
- targetIndex: 189
-			action:Reduce : Type:RuleDecl;
-			action:Assign : type:Type;
-			action:Terminate : NAME:;
-			action:Assign : name:NAME;
-NodeIndex:30
- targetIndex: 21
-			action:Shift : Enum:EnumMember;
-			action:Create : GenEnumMemberTypeDefine:EnumMember;
-			action:Terminate : NAME:;
-			action:Assign : name:NAME;
- targetIndex: 34
-			action:Terminate : CLOSE:;
-NodeIndex:158
- targetIndex: 160
-			action:Terminate : SEMICOLON:;
-NodeIndex:54
- targetIndex: 1
-			action:Shift : Class:Type;
-			action:Create : GenNormalTypeObject:Type;
-			action:Terminate : NAME:;
-			action:Assign : name:NAME;
- targetIndex: 1
-			action:Shift : Class:Type;
-			action:Create : GenStringTypeObject:Type;
-			action:Terminate : TOKEN:;
-NodeIndex:122
- targetIndex: 124
-			action:Terminate : COLON:;
+NodeIndex:116
  targetIndex: 191
 			action:Reduce : PrimitiveGrammar:SequenceGrammar;
 			action:Reduce : SequenceGrammar:AlternativeGrammar;
 			action:Reduce : AlternativeGrammar:Grammar;
 			action:Reduce : Grammar:RuleDecl;
-			action:Assign : grammars:Grammar;
-			action:Terminate : ASSIGN:;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : ASSIGN:RuleDecl;
+ targetIndex: 191
+			action:Reduce : PrimitiveGrammar:SequenceGrammar;
+			action:Reduce : SequenceGrammar:AlternativeGrammar;
+			action:Assign : right:GenGrammarAlternationTypeDefine;
+			action:Reduce : AlternativeGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : ASSIGN:RuleDecl;
+ targetIndex: 191
+			action:Reduce : PrimitiveGrammar:SequenceGrammar;
+			action:Assign : second:GenGrammarSequenceTypeDefine;
+			action:Reduce : SequenceGrammar:AlternativeGrammar;
+			action:Reduce : AlternativeGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : ASSIGN:RuleDecl;
+ targetIndex: 191
+			action:Reduce : PrimitiveGrammar:SequenceGrammar;
+			action:Assign : second:GenGrammarSequenceTypeDefine;
+			action:Reduce : SequenceGrammar:AlternativeGrammar;
+			action:Assign : right:GenGrammarAlternationTypeDefine;
+			action:Reduce : AlternativeGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : ASSIGN:RuleDecl;
  targetIndex: 195
 			action:Reduce : PrimitiveGrammar:SequenceGrammar;
 			action:Reduce : SequenceGrammar:AlternativeGrammar;
 			action:Reduce : AlternativeGrammar:Grammar;
 			action:Reduce : Grammar:RuleDecl;
-			action:Assign : grammars:Grammar;
-			action:Terminate : SEMICOLON:;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : SEMICOLON:RuleDecl;
+ targetIndex: 195
+			action:Reduce : PrimitiveGrammar:SequenceGrammar;
+			action:Reduce : SequenceGrammar:AlternativeGrammar;
+			action:Assign : right:GenGrammarAlternationTypeDefine;
+			action:Reduce : AlternativeGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : SEMICOLON:RuleDecl;
+ targetIndex: 195
+			action:Reduce : PrimitiveGrammar:SequenceGrammar;
+			action:Assign : second:GenGrammarSequenceTypeDefine;
+			action:Reduce : SequenceGrammar:AlternativeGrammar;
+			action:Reduce : AlternativeGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : SEMICOLON:RuleDecl;
+ targetIndex: 195
+			action:Reduce : PrimitiveGrammar:SequenceGrammar;
+			action:Assign : second:GenGrammarSequenceTypeDefine;
+			action:Reduce : SequenceGrammar:AlternativeGrammar;
+			action:Assign : right:GenGrammarAlternationTypeDefine;
+			action:Reduce : AlternativeGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : SEMICOLON:RuleDecl;
+NodeIndex:52
+ targetIndex: 54
+			action:Terminate : COLON:Class;
+ targetIndex: 58
+			action:Terminate : OPEN:Class;
+NodeIndex:165
+ targetIndex: 167
+			action:Terminate : ASSIGN:TokenDecl;
+NodeIndex:129
+NodeIndex:1
+ targetIndex: 39
+			action:Reduce : Type:ClassMember;
+			action:Assign : type:GenClassMemberTypeDefine;
+			action:Terminate : NAME:ClassMember;
+			action:Assign : name:NAME;
+ targetIndex: 54
+			action:Reduce : Type:Class;
+			action:Assign : parent:GenClassTypeDefine;
+			action:Terminate : COLON:Class;
+ targetIndex: 58
+			action:Reduce : Type:Class;
+			action:Assign : parent:GenClassTypeDefine;
+			action:Terminate : OPEN:Class;
+ targetIndex: 116
+			action:Reduce : Type:Grammar;
+			action:Assign : type:GenGrammarCreateTypeDefine;
+			action:Reduce : Grammar:PrimitiveGrammar;
+			action:Terminate : PRECLOSE:PrimitiveGrammar;
+ targetIndex: 116
+			action:Reduce : Type:Grammar;
+			action:Assign : type:GenGrammarCreateTypeDefine;
+			action:Reduce : Grammar:PrimitiveGrammar;
+			action:Assign : grammar:GenGrammarOptionalTypeDefine;
+			action:Terminate : OPTCLOSE:PrimitiveGrammar;
+ targetIndex: 116
+			action:Reduce : Type:Grammar;
+			action:Assign : type:GenGrammarCreateTypeDefine;
+			action:Reduce : Grammar:PrimitiveGrammar;
+			action:Assign : grammar:GenGrammarLoopTypeDefine;
+			action:Terminate : CLOSE:PrimitiveGrammar;
+ targetIndex: 189
+			action:Reduce : Type:RuleDecl;
+			action:Assign : type:GenRuleDefine;
+			action:Terminate : NAME:RuleDecl;
+			action:Assign : name:NAME;
+ targetIndex: 191
+			action:Reduce : Type:Grammar;
+			action:Assign : type:GenGrammarCreateTypeDefine;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : ASSIGN:RuleDecl;
+ targetIndex: 195
+			action:Reduce : Type:Grammar;
+			action:Assign : type:GenGrammarCreateTypeDefine;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : SEMICOLON:RuleDecl;
+NodeIndex:30
+ targetIndex: 21
+			action:Shift : Enum:EnumMember;
+			action:Create : GenEnumMemberTypeDefine:EnumMember;
+			action:Terminate : NAME:EnumMember;
+			action:Assign : name:NAME;
+ targetIndex: 34
+			action:Terminate : CLOSE:Enum;
+NodeIndex:158
+ targetIndex: 160
+			action:Terminate : SEMICOLON:HeadDecl;
+NodeIndex:54
+ targetIndex: 1
+			action:Shift : Class:Type;
+			action:Create : GenNormalTypeObject:Type;
+			action:Terminate : NAME:Type;
+			action:Assign : name:NAME;
+ targetIndex: 1
+			action:Shift : Class:Type;
+			action:Create : GenStringTypeObject:Type;
+			action:Terminate : TOKEN:Type;
 NodeIndex:58
  targetIndex: 1
 			action:Shift : Class:ClassMember;
 			action:Create : GenClassMemberTypeDefine:ClassMember;
 			action:Shift : ClassMember:Type;
 			action:Create : GenNormalTypeObject:Type;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:Type;
 			action:Assign : name:NAME;
  targetIndex: 1
 			action:Shift : Class:ClassMember;
 			action:Create : GenClassMemberTypeDefine:ClassMember;
 			action:Shift : ClassMember:Type;
 			action:Create : GenStringTypeObject:Type;
-			action:Terminate : TOKEN:;
+			action:Terminate : TOKEN:Type;
  targetIndex: 26
 			action:Shift : Class:TypeDecl;
 			action:Shift : TypeDecl:Enum;
 			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
+			action:Terminate : ENUM:Enum;
  targetIndex: 64
-			action:Terminate : CLOSE:;
+			action:Terminate : CLOSE:Class;
 NodeIndex:39
  targetIndex: 41
-			action:Terminate : SEMICOLON:;
+			action:Terminate : SEMICOLON:ClassMember;
 NodeIndex:167
  targetIndex: 169
-			action:Terminate : STRING:;
+			action:Terminate : STRING:TokenDecl;
 			action:Assign : regex:STRING;
 NodeIndex:178
  targetIndex: 180
-			action:Terminate : STRING:;
+			action:Terminate : STRING:TokenDecl;
 			action:Assign : regex:STRING;
 NodeIndex:189
  targetIndex: 191
-			action:Terminate : ASSIGN:;
+			action:Terminate : ASSIGN:RuleDecl;
  targetIndex: 195
-			action:Terminate : SEMICOLON:;
-NodeIndex:160
- targetIndex: 26
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Enum;
-			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
- targetIndex: 48
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Class;
-			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : CLASS:;
- targetIndex: 48
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Class;
-			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : STRUCT:;
- targetIndex: 154
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Shift : ParserDecl:HeadDecl;
-			action:Create : GenHeadInfoDefine:HeadDecl;
-			action:Terminate : NAME:;
-			action:Assign : property:NAME;
- targetIndex: 163
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Shift : ParserDecl:TokenDecl;
-			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : TOKEN:;
- targetIndex: 174
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Shift : ParserDecl:TokenDecl;
-			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : DISCARDTOKEN:;
- targetIndex: 185
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Shift : ParserDecl:RuleDecl;
-			action:Create : GenRuleDefine:RuleDecl;
-			action:Terminate : RULE:;
- targetIndex: 206
-			action:Reduce : HeadDecl:ParserDecl;
-			action:Assign : heads:HeadDecl;
-			action:Terminate : FINISH:;
-NodeIndex:34
- targetIndex: 1
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:Class;
-			action:Assign : subTypes:TypeDecl;
-			action:Shift : Class:ClassMember;
-			action:Create : GenClassMemberTypeDefine:ClassMember;
-			action:Shift : ClassMember:Type;
-			action:Create : GenNormalTypeObject:Type;
-			action:Terminate : NAME:;
-			action:Assign : name:NAME;
- targetIndex: 1
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:Class;
-			action:Assign : subTypes:TypeDecl;
-			action:Shift : Class:ClassMember;
-			action:Create : GenClassMemberTypeDefine:ClassMember;
-			action:Shift : ClassMember:Type;
-			action:Create : GenStringTypeObject:Type;
-			action:Terminate : TOKEN:;
- targetIndex: 26
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Enum;
-			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
- targetIndex: 26
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:Class;
-			action:Assign : subTypes:TypeDecl;
-			action:Shift : Class:TypeDecl;
-			action:Shift : TypeDecl:Enum;
-			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
- targetIndex: 48
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Class;
-			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : CLASS:;
- targetIndex: 48
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Class;
-			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : STRUCT:;
- targetIndex: 64
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:Class;
-			action:Assign : subTypes:TypeDecl;
-			action:Terminate : CLOSE:;
- targetIndex: 154
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:HeadDecl;
-			action:Create : GenHeadInfoDefine:HeadDecl;
-			action:Terminate : NAME:;
-			action:Assign : property:NAME;
- targetIndex: 163
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TokenDecl;
-			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : TOKEN:;
- targetIndex: 174
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TokenDecl;
-			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : DISCARDTOKEN:;
- targetIndex: 185
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:RuleDecl;
-			action:Create : GenRuleDefine:RuleDecl;
-			action:Terminate : RULE:;
- targetIndex: 206
-			action:Reduce : Enum:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Terminate : FINISH:;
-NodeIndex:85
- targetIndex: 87
-			action:Terminate : STRING:;
-			action:Assign : value:STRING;
-NodeIndex:21
- targetIndex: 23
-			action:Terminate : COMMA:;
-NodeIndex:64
- targetIndex: 26
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Enum;
-			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
- targetIndex: 48
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Class;
-			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : CLASS:;
- targetIndex: 48
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TypeDecl;
-			action:Shift : TypeDecl:Class;
-			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : STRUCT:;
- targetIndex: 154
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:HeadDecl;
-			action:Create : GenHeadInfoDefine:HeadDecl;
-			action:Terminate : NAME:;
-			action:Assign : property:NAME;
- targetIndex: 163
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TokenDecl;
-			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : TOKEN:;
- targetIndex: 174
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:TokenDecl;
-			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : DISCARDTOKEN:;
- targetIndex: 185
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Shift : ParserDecl:RuleDecl;
-			action:Create : GenRuleDefine:RuleDecl;
-			action:Terminate : RULE:;
- targetIndex: 206
-			action:Reduce : Class:TypeDecl;
-			action:Reduce : TypeDecl:ParserDecl;
-			action:Assign : types:TypeDecl;
-			action:Terminate : FINISH:;
-NodeIndex:41
- targetIndex: 1
-			action:Reduce : ClassMember:Class;
-			action:Assign : members:ClassMember;
-			action:Shift : Class:ClassMember;
-			action:Create : GenClassMemberTypeDefine:ClassMember;
-			action:Shift : ClassMember:Type;
-			action:Create : GenNormalTypeObject:Type;
-			action:Terminate : NAME:;
-			action:Assign : name:NAME;
- targetIndex: 1
-			action:Reduce : ClassMember:Class;
-			action:Assign : members:ClassMember;
-			action:Shift : Class:ClassMember;
-			action:Create : GenClassMemberTypeDefine:ClassMember;
-			action:Shift : ClassMember:Type;
-			action:Create : GenStringTypeObject:Type;
-			action:Terminate : TOKEN:;
- targetIndex: 26
-			action:Reduce : ClassMember:Class;
-			action:Assign : members:ClassMember;
-			action:Shift : Class:TypeDecl;
-			action:Shift : TypeDecl:Enum;
-			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
- targetIndex: 64
-			action:Reduce : ClassMember:Class;
-			action:Assign : members:ClassMember;
-			action:Terminate : CLOSE:;
-NodeIndex:169
- targetIndex: 171
-			action:Terminate : SEMICOLON:;
-			action:Setter : ignore:False;
+			action:Terminate : SEMICOLON:RuleDecl;
 NodeIndex:191
  targetIndex: 83
 			action:Shift : RuleDecl:Grammar;
 			action:Shift : Grammar:SetterGrammar;
 			action:Create : GenGrammarSetterTypeDefine:SetterGrammar;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:SetterGrammar;
 			action:Assign : name:NAME;
- targetIndex: 122
+ targetIndex: 116
 			action:Shift : RuleDecl:Grammar;
 			action:Shift : Grammar:AlternativeGrammar;
 			action:Shift : AlternativeGrammar:SequenceGrammar;
 			action:Shift : SequenceGrammar:PrimitiveGrammar;
 			action:Create : GenGrammarNormalTypeDefine:PrimitiveGrammar;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:PrimitiveGrammar;
 			action:Assign : name:NAME;
- targetIndex: 122
+ targetIndex: 116
 			action:Shift : RuleDecl:Grammar;
 			action:Shift : Grammar:AlternativeGrammar;
 			action:Shift : AlternativeGrammar:SequenceGrammar;
 			action:Shift : SequenceGrammar:PrimitiveGrammar;
 			action:Create : GenGrammarTextTypeDefine:PrimitiveGrammar;
-			action:Terminate : STRING:;
+			action:Terminate : STRING:PrimitiveGrammar;
 			action:Assign : text:STRING;
  targetIndex: 129
 			action:Shift : RuleDecl:Grammar;
@@ -458,191 +294,428 @@ NodeIndex:191
 			action:Shift : AlternativeGrammar:SequenceGrammar;
 			action:Shift : SequenceGrammar:PrimitiveGrammar;
 			action:Create : GenGrammarUsingTypeDefine:PrimitiveGrammar;
-			action:Terminate : USING:;
+			action:Terminate : USING:PrimitiveGrammar;
  targetIndex: 134
 			action:Shift : RuleDecl:Grammar;
 			action:Shift : Grammar:AlternativeGrammar;
 			action:Shift : AlternativeGrammar:SequenceGrammar;
 			action:Shift : SequenceGrammar:PrimitiveGrammar;
 			action:Create : GenGrammarOptionalTypeDefine:PrimitiveGrammar;
-			action:Terminate : OPTOPEN:;
+			action:Terminate : OPTOPEN:PrimitiveGrammar;
  targetIndex: 141
 			action:Shift : RuleDecl:Grammar;
 			action:Shift : Grammar:AlternativeGrammar;
 			action:Shift : AlternativeGrammar:SequenceGrammar;
 			action:Shift : SequenceGrammar:PrimitiveGrammar;
 			action:Create : GenGrammarLoopTypeDefine:PrimitiveGrammar;
-			action:Terminate : OPEN:;
+			action:Terminate : OPEN:PrimitiveGrammar;
  targetIndex: 148
 			action:Shift : RuleDecl:Grammar;
 			action:Shift : Grammar:AlternativeGrammar;
 			action:Shift : AlternativeGrammar:SequenceGrammar;
 			action:Shift : SequenceGrammar:PrimitiveGrammar;
-			action:Terminate : PREOPEN:;
+			action:Terminate : PREOPEN:PrimitiveGrammar;
 NodeIndex:195
  targetIndex: 26
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
+			action:Assign : rules:GenTableDefine;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Enum;
 			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
+			action:Terminate : ENUM:Enum;
  targetIndex: 48
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
+			action:Assign : rules:GenTableDefine;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Class;
 			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : CLASS:;
+			action:Terminate : CLASS:Class;
  targetIndex: 48
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
+			action:Assign : rules:GenTableDefine;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Class;
 			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : STRUCT:;
+			action:Terminate : STRUCT:Class;
  targetIndex: 154
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
+			action:Assign : rules:GenTableDefine;
 			action:Shift : ParserDecl:HeadDecl;
 			action:Create : GenHeadInfoDefine:HeadDecl;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:HeadDecl;
 			action:Assign : property:NAME;
  targetIndex: 163
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
+			action:Assign : rules:GenTableDefine;
 			action:Shift : ParserDecl:TokenDecl;
 			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : TOKEN:;
+			action:Terminate : TOKEN:TokenDecl;
  targetIndex: 174
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
+			action:Assign : rules:GenTableDefine;
 			action:Shift : ParserDecl:TokenDecl;
 			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : DISCARDTOKEN:;
+			action:Terminate : DISCARDTOKEN:TokenDecl;
  targetIndex: 185
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
+			action:Assign : rules:GenTableDefine;
 			action:Shift : ParserDecl:RuleDecl;
 			action:Create : GenRuleDefine:RuleDecl;
-			action:Terminate : RULE:;
+			action:Terminate : RULE:RuleDecl;
  targetIndex: 206
 			action:Reduce : RuleDecl:ParserDecl;
-			action:Assign : rules:RuleDecl;
-			action:Terminate : FINISH:;
-NodeIndex:87
- targetIndex: 122
-			action:Reduce : SetterGrammar:Grammar;
-			action:Reduce : Grammar:PrimitiveGrammar;
-			action:Terminate : PRECLOSE:;
- targetIndex: 122
-			action:Reduce : SetterGrammar:Grammar;
-			action:Reduce : Grammar:PrimitiveGrammar;
-			action:Assign : grammar:Grammar;
-			action:Terminate : OPTCLOSE:;
- targetIndex: 122
-			action:Reduce : SetterGrammar:Grammar;
-			action:Reduce : Grammar:PrimitiveGrammar;
-			action:Assign : grammar:Grammar;
-			action:Terminate : CLOSE:;
- targetIndex: 191
-			action:Reduce : SetterGrammar:Grammar;
-			action:Reduce : Grammar:RuleDecl;
-			action:Assign : grammars:Grammar;
-			action:Terminate : ASSIGN:;
- targetIndex: 195
-			action:Reduce : SetterGrammar:Grammar;
-			action:Reduce : Grammar:RuleDecl;
-			action:Assign : grammars:Grammar;
-			action:Terminate : SEMICOLON:;
-NodeIndex:23
- targetIndex: 21
-			action:Reduce : EnumMember:Enum;
-			action:Assign : members:EnumMember;
-			action:Shift : Enum:EnumMember;
-			action:Create : GenEnumMemberTypeDefine:EnumMember;
-			action:Terminate : NAME:;
-			action:Assign : name:NAME;
- targetIndex: 34
-			action:Reduce : EnumMember:Enum;
-			action:Assign : members:EnumMember;
-			action:Terminate : CLOSE:;
-NodeIndex:171
+			action:Assign : rules:GenTableDefine;
+			action:Terminate : FINISH:ParserDecl;
+NodeIndex:160
  targetIndex: 26
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Enum;
 			action:Create : GenEnumTypeDefine:Enum;
-			action:Terminate : ENUM:;
+			action:Terminate : ENUM:Enum;
  targetIndex: 48
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Class;
 			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : CLASS:;
+			action:Terminate : CLASS:Class;
  targetIndex: 48
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
 			action:Shift : ParserDecl:TypeDecl;
 			action:Shift : TypeDecl:Class;
 			action:Create : GenClassTypeDefine:Class;
-			action:Terminate : STRUCT:;
+			action:Terminate : STRUCT:Class;
  targetIndex: 154
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
 			action:Shift : ParserDecl:HeadDecl;
 			action:Create : GenHeadInfoDefine:HeadDecl;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:HeadDecl;
 			action:Assign : property:NAME;
  targetIndex: 163
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
 			action:Shift : ParserDecl:TokenDecl;
 			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : TOKEN:;
+			action:Terminate : TOKEN:TokenDecl;
  targetIndex: 174
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
 			action:Shift : ParserDecl:TokenDecl;
 			action:Create : GenTokenDefine:TokenDecl;
-			action:Terminate : DISCARDTOKEN:;
+			action:Terminate : DISCARDTOKEN:TokenDecl;
  targetIndex: 185
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
 			action:Shift : ParserDecl:RuleDecl;
 			action:Create : GenRuleDefine:RuleDecl;
-			action:Terminate : RULE:;
+			action:Terminate : RULE:RuleDecl;
  targetIndex: 206
-			action:Reduce : TokenDecl:ParserDecl;
-			action:Assign : tokens:TokenDecl;
-			action:Terminate : FINISH:;
+			action:Reduce : HeadDecl:ParserDecl;
+			action:Assign : heads:GenTableDefine;
+			action:Terminate : FINISH:ParserDecl;
+NodeIndex:34
+ targetIndex: 1
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:Class;
+			action:Assign : subTypes:GenClassTypeDefine;
+			action:Shift : Class:ClassMember;
+			action:Create : GenClassMemberTypeDefine:ClassMember;
+			action:Shift : ClassMember:Type;
+			action:Create : GenNormalTypeObject:Type;
+			action:Terminate : NAME:Type;
+			action:Assign : name:NAME;
+ targetIndex: 1
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:Class;
+			action:Assign : subTypes:GenClassTypeDefine;
+			action:Shift : Class:ClassMember;
+			action:Create : GenClassMemberTypeDefine:ClassMember;
+			action:Shift : ClassMember:Type;
+			action:Create : GenStringTypeObject:Type;
+			action:Terminate : TOKEN:Type;
+ targetIndex: 26
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Enum;
+			action:Create : GenEnumTypeDefine:Enum;
+			action:Terminate : ENUM:Enum;
+ targetIndex: 26
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:Class;
+			action:Assign : subTypes:GenClassTypeDefine;
+			action:Shift : Class:TypeDecl;
+			action:Shift : TypeDecl:Enum;
+			action:Create : GenEnumTypeDefine:Enum;
+			action:Terminate : ENUM:Enum;
+ targetIndex: 48
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Class;
+			action:Create : GenClassTypeDefine:Class;
+			action:Terminate : CLASS:Class;
+ targetIndex: 48
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Class;
+			action:Create : GenClassTypeDefine:Class;
+			action:Terminate : STRUCT:Class;
+ targetIndex: 64
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:Class;
+			action:Assign : subTypes:GenClassTypeDefine;
+			action:Terminate : CLOSE:Class;
+ targetIndex: 154
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:HeadDecl;
+			action:Create : GenHeadInfoDefine:HeadDecl;
+			action:Terminate : NAME:HeadDecl;
+			action:Assign : property:NAME;
+ targetIndex: 163
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TokenDecl;
+			action:Create : GenTokenDefine:TokenDecl;
+			action:Terminate : TOKEN:TokenDecl;
+ targetIndex: 174
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TokenDecl;
+			action:Create : GenTokenDefine:TokenDecl;
+			action:Terminate : DISCARDTOKEN:TokenDecl;
+ targetIndex: 185
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:RuleDecl;
+			action:Create : GenRuleDefine:RuleDecl;
+			action:Terminate : RULE:RuleDecl;
+ targetIndex: 206
+			action:Reduce : Enum:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Terminate : FINISH:ParserDecl;
+NodeIndex:85
+ targetIndex: 87
+			action:Terminate : STRING:SetterGrammar;
+			action:Assign : value:STRING;
+NodeIndex:21
+ targetIndex: 23
+			action:Terminate : COMMA:EnumMember;
+NodeIndex:64
+ targetIndex: 26
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Enum;
+			action:Create : GenEnumTypeDefine:Enum;
+			action:Terminate : ENUM:Enum;
+ targetIndex: 48
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Class;
+			action:Create : GenClassTypeDefine:Class;
+			action:Terminate : CLASS:Class;
+ targetIndex: 48
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Class;
+			action:Create : GenClassTypeDefine:Class;
+			action:Terminate : STRUCT:Class;
+ targetIndex: 154
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:HeadDecl;
+			action:Create : GenHeadInfoDefine:HeadDecl;
+			action:Terminate : NAME:HeadDecl;
+			action:Assign : property:NAME;
+ targetIndex: 163
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TokenDecl;
+			action:Create : GenTokenDefine:TokenDecl;
+			action:Terminate : TOKEN:TokenDecl;
+ targetIndex: 174
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:TokenDecl;
+			action:Create : GenTokenDefine:TokenDecl;
+			action:Terminate : DISCARDTOKEN:TokenDecl;
+ targetIndex: 185
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Shift : ParserDecl:RuleDecl;
+			action:Create : GenRuleDefine:RuleDecl;
+			action:Terminate : RULE:RuleDecl;
+ targetIndex: 206
+			action:Reduce : Class:TypeDecl;
+			action:Reduce : TypeDecl:ParserDecl;
+			action:Assign : types:GenTableDefine;
+			action:Terminate : FINISH:ParserDecl;
+NodeIndex:41
+ targetIndex: 1
+			action:Reduce : ClassMember:Class;
+			action:Assign : members:GenClassTypeDefine;
+			action:Shift : Class:ClassMember;
+			action:Create : GenClassMemberTypeDefine:ClassMember;
+			action:Shift : ClassMember:Type;
+			action:Create : GenNormalTypeObject:Type;
+			action:Terminate : NAME:Type;
+			action:Assign : name:NAME;
+ targetIndex: 1
+			action:Reduce : ClassMember:Class;
+			action:Assign : members:GenClassTypeDefine;
+			action:Shift : Class:ClassMember;
+			action:Create : GenClassMemberTypeDefine:ClassMember;
+			action:Shift : ClassMember:Type;
+			action:Create : GenStringTypeObject:Type;
+			action:Terminate : TOKEN:Type;
+ targetIndex: 26
+			action:Reduce : ClassMember:Class;
+			action:Assign : members:GenClassTypeDefine;
+			action:Shift : Class:TypeDecl;
+			action:Shift : TypeDecl:Enum;
+			action:Create : GenEnumTypeDefine:Enum;
+			action:Terminate : ENUM:Enum;
+ targetIndex: 64
+			action:Reduce : ClassMember:Class;
+			action:Assign : members:GenClassTypeDefine;
+			action:Terminate : CLOSE:Class;
+NodeIndex:169
+ targetIndex: 171
+			action:Terminate : SEMICOLON:TokenDecl;
+			action:Setter : ignore:False;
 NodeIndex:134
  targetIndex: 83
 			action:Shift : PrimitiveGrammar:Grammar;
 			action:Shift : Grammar:SetterGrammar;
 			action:Create : GenGrammarSetterTypeDefine:SetterGrammar;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:SetterGrammar;
 			action:Assign : name:NAME;
 NodeIndex:141
  targetIndex: 83
 			action:Shift : PrimitiveGrammar:Grammar;
 			action:Shift : Grammar:SetterGrammar;
 			action:Create : GenGrammarSetterTypeDefine:SetterGrammar;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:SetterGrammar;
 			action:Assign : name:NAME;
 NodeIndex:148
  targetIndex: 83
 			action:Shift : PrimitiveGrammar:Grammar;
 			action:Shift : Grammar:SetterGrammar;
 			action:Create : GenGrammarSetterTypeDefine:SetterGrammar;
-			action:Terminate : NAME:;
+			action:Terminate : NAME:SetterGrammar;
 			action:Assign : name:NAME;
 NodeIndex:83
  targetIndex: 85
-			action:Terminate : ASSIGN:;
-NodeIndex:124
- targetIndex: 122
-			action:Terminate : NAME:;
+			action:Terminate : ASSIGN:SetterGrammar;
+NodeIndex:87
+ targetIndex: 116
+			action:Reduce : SetterGrammar:Grammar;
+			action:Reduce : Grammar:PrimitiveGrammar;
+			action:Terminate : PRECLOSE:PrimitiveGrammar;
+ targetIndex: 116
+			action:Reduce : SetterGrammar:Grammar;
+			action:Reduce : Grammar:PrimitiveGrammar;
+			action:Assign : grammar:GenGrammarOptionalTypeDefine;
+			action:Terminate : OPTCLOSE:PrimitiveGrammar;
+ targetIndex: 116
+			action:Reduce : SetterGrammar:Grammar;
+			action:Reduce : Grammar:PrimitiveGrammar;
+			action:Assign : grammar:GenGrammarLoopTypeDefine;
+			action:Terminate : CLOSE:PrimitiveGrammar;
+ targetIndex: 191
+			action:Reduce : SetterGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : ASSIGN:RuleDecl;
+ targetIndex: 195
+			action:Reduce : SetterGrammar:Grammar;
+			action:Reduce : Grammar:RuleDecl;
+			action:Assign : grammars:GenRuleDefine;
+			action:Terminate : SEMICOLON:RuleDecl;
+NodeIndex:23
+ targetIndex: 21
+			action:Reduce : EnumMember:Enum;
+			action:Assign : members:GenEnumTypeDefine;
+			action:Shift : Enum:EnumMember;
+			action:Create : GenEnumMemberTypeDefine:EnumMember;
+			action:Terminate : NAME:EnumMember;
 			action:Assign : name:NAME;
+ targetIndex: 34
+			action:Reduce : EnumMember:Enum;
+			action:Assign : members:GenEnumTypeDefine;
+			action:Terminate : CLOSE:Enum;
+NodeIndex:171
+ targetIndex: 26
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Enum;
+			action:Create : GenEnumTypeDefine:Enum;
+			action:Terminate : ENUM:Enum;
+ targetIndex: 48
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Class;
+			action:Create : GenClassTypeDefine:Class;
+			action:Terminate : CLASS:Class;
+ targetIndex: 48
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Shift : ParserDecl:TypeDecl;
+			action:Shift : TypeDecl:Class;
+			action:Create : GenClassTypeDefine:Class;
+			action:Terminate : STRUCT:Class;
+ targetIndex: 154
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Shift : ParserDecl:HeadDecl;
+			action:Create : GenHeadInfoDefine:HeadDecl;
+			action:Terminate : NAME:HeadDecl;
+			action:Assign : property:NAME;
+ targetIndex: 163
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Shift : ParserDecl:TokenDecl;
+			action:Create : GenTokenDefine:TokenDecl;
+			action:Terminate : TOKEN:TokenDecl;
+ targetIndex: 174
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Shift : ParserDecl:TokenDecl;
+			action:Create : GenTokenDefine:TokenDecl;
+			action:Terminate : DISCARDTOKEN:TokenDecl;
+ targetIndex: 185
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Shift : ParserDecl:RuleDecl;
+			action:Create : GenRuleDefine:RuleDecl;
+			action:Terminate : RULE:RuleDecl;
+ targetIndex: 206
+			action:Reduce : TokenDecl:ParserDecl;
+			action:Assign : tokens:GenTableDefine;
+			action:Terminate : FINISH:ParserDecl;

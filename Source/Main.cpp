@@ -9,14 +9,10 @@
 #include "Include\GeneralParser.h"
 int main()
 {
-	auto table = ztl::general_parser::BootStrapDefineTable();
-	ztl::general_parser::SymbolManager manger(table);
-	ztl::general_parser::ValidateGeneratorCoreSemantic(&manger);
-	ztl::general_parser::PushDownAutoMachine machine(&manger);
-	ztl::general_parser::CreateDPDAGraph(machine);
-	ztl::general_parser::GeneralJumpTable jumpTable(&machine);
-	ztl::general_parser::CreateJumpTable(jumpTable);
-	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", jumpTable);
+	ztl::general_parser::GeneralParser parser(
+		ztl::general_parser::ParseToken(L"ParserDefine.txt"),
+		ztl::general_parser::BootStrapDefineTable());
+	parser.BuildParser();
 	return 0;
 }
 
