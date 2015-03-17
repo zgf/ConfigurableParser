@@ -11,6 +11,7 @@ namespace ztl
 		class ActionWrap;
 		class GeneralJumpTable;
 		struct GeneralTableDefine;
+		class PushDownAutoMachine;
 		class GeneralParser
 		{
 		public:
@@ -23,14 +24,17 @@ namespace ztl
 			GeneralParser& operator=(const GeneralParser&)   = default;
 		public:
 			void BuildParser();
-			GeneralTreeNode* Run();
+			GeneralTreeNode* GenerateIsomorphismParserTree();
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<TokenInfo>					 tokenPool;
 			vector<GeneralTreeNode*>			 createdNodeStack;
 			vector<wstring>						 rulePathStack;
 			GeneralTreeNode*					 treeRoot;
-			shared_ptr<GeneralJumpTable>		 table;
+
+			shared_ptr<PushDownAutoMachine>		 machine;
+			shared_ptr<GeneralJumpTable>		 jumpTable;
+			shared_ptr<SymbolManager>			 manager;
 			shared_ptr<GeneralTableDefine>		 tableDefine;
 
 		};

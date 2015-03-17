@@ -10,7 +10,8 @@ namespace ztl
 			createdNodeRequiresMap(make_shared<unordered_map<PDAEdge*, vector<CreateInfo>>>()),
 			jumpTable(make_shared<unordered_map<int, vector<JumpItem>>>()),
 			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
-			terminateMap(make_shared<unordered_map<PDAEdge*, wstring>>())
+			terminateMap(make_shared<unordered_map<PDAEdge*, wstring>>()),
+			enterRuleMap(make_shared<unordered_map<PDAEdge*, wstring>>())
 		{
 		}
 		SymbolManager* GeneralJumpTable::GetSymbolManager()const
@@ -86,6 +87,44 @@ namespace ztl
 				return false;
 			});
 			this->ruleRequiresMap->insert({ edge,ruleInfos });
+		}
+		void GeneralJumpTable::CacheEnterRuleMap(PDAEdge* edge)
+		{
+			assert(!edge->GetActions().empty());
+			auto actions = edge->GetActions();
+			auto first = actions.front();
+			assert(first.GetActionType() != ActionType::Setter);
+			assert(first.GetActionType() != ActionType::Assign);
+
+			ActionType type = first.GetActionType();
+			wstring name;
+			switch(type)
+			{
+				
+				case ztl::general_parser::ActionType::Shift:
+					name = first.GetName();
+					break;
+				case ztl::general_parser::ActionType::Reduce:
+					name = first.GetName();
+
+					break;
+				case ztl::general_parser::ActionType::Terminate:
+					name = first.GetValue();
+					break;
+				case ztl::general_parser::ActionType::Create:
+					name = first.GetValue();
+					break;
+				case ztl::general_parser::ActionType::Assign:
+				case ztl::general_parser::ActionType::NonTerminate:
+				case ztl::general_parser::ActionType::Epsilon:
+				case ztl::general_parser::ActionType::Setter:
+				case ztl::general_parser::ActionType::Using:
+				default:
+					assert(false);
+					break;
+			}
+			this->enterRuleMap->insert({ edge,name });
+
 		}
 		void GeneralJumpTable::CacheEdgeInfo(PDAEdge * edge)
 		{
@@ -171,8 +210,8 @@ namespace ztl
 				}
 			}
 			CacheCreatedNodeRequiresMap(edge, nodeStack, createInfos);
-
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
+			CacheEnterRuleMap(edge);
 		}
 
 		void GeneralJumpTable::ClearJumpTable()

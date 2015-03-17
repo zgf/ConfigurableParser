@@ -36,13 +36,15 @@ namespace ztl
 				deque<PDANode*>& queue);
 			void												    CacheEdgeInfo(PDAEdge* edge);
 			void													CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos);
-			void CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos);
+			void													CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos);
+			void													CacheEnterRuleMap(PDAEdge* edge);
 		private:
 			PushDownAutoMachine*															 machine;
 			shared_ptr<unordered_map<int, vector<JumpItem>>>								 jumpTable;
 			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 ruleRequiresMap;
 			shared_ptr<unordered_map<PDAEdge*, wstring>>									 terminateMap;
 			shared_ptr<unordered_map<PDAEdge*, vector<CreateInfo>>>							 createdNodeRequiresMap;
+			shared_ptr<unordered_map<PDAEdge*, wstring>>									 enterRuleMap;
 			
 		};
 		void CreateJumpTable(GeneralJumpTable& jumpTable);

@@ -10,24 +10,29 @@ namespace ztl
 	namespace general_parser
 	{
 		GeneralParser::GeneralParser(const vector<TokenInfo>& tokens, const shared_ptr<GeneralTableDefine>& _tableDefine)
-			: tokenPool(tokens), treeRoot(nullptr),tableDefine(_tableDefine), table(make_shared<GeneralJumpTable>(nullptr))
+			: tokenPool(tokens), 
+			treeRoot(nullptr),
+			tableDefine(_tableDefine),
+			jumpTable(nullptr),
+			machine(nullptr),
+			manager(nullptr)
+
 		{
 		}
 		
 		void GeneralParser::BuildParser()
 		{
-			SymbolManager manger(this->tableDefine);
-			ValidateGeneratorCoreSemantic(&manger);
-			PushDownAutoMachine machine(&manger);
-			CreateDPDAGraph(machine);
-			GeneralJumpTable jumpTable(&machine);
-			CreateJumpTable(jumpTable);
-			*this->table = move(jumpTable);
+			manager = make_shared<SymbolManager>(this->tableDefine);
+			ValidateGeneratorCoreSemantic(manager.get());
+			machine = make_shared<PushDownAutoMachine >(manager.get());
+			CreateDPDAGraph(*machine.get());
+			jumpTable = make_shared<GeneralJumpTable>(machine.get());
+			CreateJumpTable(*jumpTable.get());
 		}
 		GeneralTreeNode* GeneralParser::GenerateIsomorphismParserTree()
 		{
 
-			return NULL;
+			return nullptr;
 		}
 	}
 }
