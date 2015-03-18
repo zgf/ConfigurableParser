@@ -29,7 +29,7 @@ namespace ztl
 			wstring message;
 		};
 		template<typename exception_type>
-		void ThrowException(bool result, const exception_type exception)
+		void ThrowException(bool result, const exception_type& exception)
 		{
 			if(!result)
 			{

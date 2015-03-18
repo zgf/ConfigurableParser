@@ -1,6 +1,7 @@
 #include "Include/stdafx.h"
 #include "Include/GeneralJumpTable.h"
 #include "Include/GeneralPushDownAutoMachine.h"
+
 namespace ztl
 {
 	namespace general_parser
@@ -9,10 +10,12 @@ namespace ztl
 			:machine(_machine),
 			createdNodeRequiresMap(make_shared<unordered_map<PDAEdge*, vector<CreateInfo>>>()),
 			jumpTable(make_shared<unordered_map<int, vector<JumpItem>>>()),
-			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
-			terminateMap(make_shared<unordered_map<PDAEdge*, wstring>>()),
-			enterRuleMap(make_shared<unordered_map<PDAEdge*, wstring>>())
+			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, unique_ptr<vector<wstring>>>>()),
+			terminateMap(make_shared<TerminateMapType>()),
+			rootNumber(-1)
 		{
+			assert(machine->GetRoot() != nullptr);
+			rootNumber = machine->GetRoot()->GetNumber();
 		}
 		SymbolManager* GeneralJumpTable::GetSymbolManager()const
 		{
@@ -65,7 +68,10 @@ namespace ztl
 					return false;
 				}
 			});
-			this->createdNodeRequiresMap->insert(make_pair(edge, createInfos));
+			if (!createInfos.empty())
+			{
+				this->createdNodeRequiresMap->insert(make_pair(edge, createInfos));
+			}
 		}
 		void GeneralJumpTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
@@ -86,9 +92,16 @@ namespace ztl
 				}
 				return false;
 			});
-			this->ruleRequiresMap->insert({ edge,ruleInfos });
+			if (!ruleInfos.empty())
+			{
+				this->ruleRequiresMap->insert({ edge,make_unique<vector<wstring>>(ruleInfos) });
+			}
+			else
+			{
+				CacheEnterRule(edge);
+			}
 		}
-		void GeneralJumpTable::CacheEnterRuleMap(PDAEdge* edge)
+		void GeneralJumpTable::CacheEnterRule(PDAEdge* edge)
 		{
 			assert(!edge->GetActions().empty());
 			auto actions = edge->GetActions();
@@ -123,8 +136,48 @@ namespace ztl
 					assert(false);
 					break;
 			}
-			this->enterRuleMap->insert({ edge,name });
-
+			assert(!name.empty());
+			assert(ruleRequiresMap->find(edge) == ruleRequiresMap->end());
+			this->ruleRequiresMap->insert({ edge, make_unique<vector<wstring>>() });
+			(*ruleRequiresMap)[edge]->emplace_back(name);
+		}
+		void GeneralJumpTable::CacheTerminateMap(PDAEdge * edge, const wstring & terminate)
+		{
+			auto number = edge->GetSource()->GetNumber();
+			auto findIter = terminateMap->find(number);
+			if(findIter == terminateMap->end())
+			{
+				terminateMap->insert({ number,TerminateToEdgesMapType() });
+			}
+			else if(findIter->second.termnateToEdgesMap.find(terminate) == findIter->second.termnateToEdgesMap.end())
+			{
+				findIter->second.termnateToEdgesMap.insert({ terminate, vector<PDAEdge*>() });
+			}
+			(*terminateMap)[number].termnateToEdgesMap[terminate].emplace_back(edge);
+		}
+		const vector<PDAEdge*>* GeneralJumpTable::GetCachePDAEdgeByTerminate(const int number, const wstring & terminate)const
+		{
+			auto findIter =  terminateMap->find(number);
+			assert(findIter != terminateMap->end());
+			auto findTerminateIter = findIter->second.termnateToEdgesMap.find(terminate);
+			return (findTerminateIter == findIter->second.termnateToEdgesMap.end()) ? nullptr : std::addressof(findTerminateIter->second);
+		}
+		
+		int GeneralJumpTable::GetRootNumber()const
+		{
+			assert(rootNumber != -1);
+			return rootNumber;
+		}
+		
+		const vector<wstring>* GeneralJumpTable::GetRuleRequires(PDAEdge * edge) const
+		{
+			auto findIter = ruleRequiresMap ->find(edge);
+			return (findIter != ruleRequiresMap->end())? std::addressof(*findIter->second) :nullptr;
+		}
+		const vector<CreateInfo>* GeneralJumpTable::GetCreateNodeRequires(PDAEdge * edge) const
+		{
+			auto findIter = createdNodeRequiresMap->find(edge);
+			return (findIter != createdNodeRequiresMap->end()) ? std::addressof(findIter->second) : nullptr;
 		}
 		void GeneralJumpTable::CacheEdgeInfo(PDAEdge * edge)
 		{
@@ -159,6 +212,7 @@ namespace ztl
 			vector<wstring> ruleInfos;
 			vector<ActionWrap> nodeStack;
 			vector<ActionWrap> ruleStack;
+		
 			for(size_t i = 0; i < actions.size(); ++i)
 			{
 				auto&&iter = actions[i];
@@ -185,7 +239,7 @@ namespace ztl
 						break;
 
 					case ztl::general_parser::ActionType::Terminate:
-						this->terminateMap->insert({ edge,iter.GetName() });
+						CacheTerminateMap(edge, iter.GetName());
 						break;
 
 					case ztl::general_parser::ActionType::Create:
@@ -211,7 +265,7 @@ namespace ztl
 			}
 			CacheCreatedNodeRequiresMap(edge, nodeStack, createInfos);
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
-			CacheEnterRuleMap(edge);
+			//CacheEnterRuleMap(edge);
 		}
 
 		void GeneralJumpTable::ClearJumpTable()
