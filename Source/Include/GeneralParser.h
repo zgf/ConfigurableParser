@@ -26,6 +26,12 @@ namespace ztl
 			void BuildParser();
 			GeneralTreeNode* GenerateIsomorphismParserTree();
 		private:
+			PDAEdge*			EdgeResolve(int number, const TokenInfo& token);
+			PDAEdge *			TerminateResolve(int number, const TokenInfo& token);
+			PDAEdge *			RuleResolve(vector<PDAEdge*>* edges);
+			PDAEdge*			CreateNodeResolve(const vector<PDAEdge*>& edges);
+			void				ExecuteEdgeActions(PDAEdge* edge);
+		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<TokenInfo>					 tokenPool;
 			vector<GeneralTreeNode*>			 createdNodeStack;

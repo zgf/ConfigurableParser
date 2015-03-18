@@ -155,7 +155,7 @@ namespace ztl
 			}
 			(*terminateMap)[number].termnateToEdgesMap[terminate].emplace_back(edge);
 		}
-		const vector<PDAEdge*>* GeneralJumpTable::GetCachePDAEdgeByTerminate(const int number, const wstring & terminate)const
+		vector<PDAEdge*>* GeneralJumpTable::GetCachePDAEdgeByTerminate(const int number, const wstring & terminate)const
 		{
 			auto findIter =  terminateMap->find(number);
 			assert(findIter != terminateMap->end());
@@ -169,7 +169,7 @@ namespace ztl
 			return rootNumber;
 		}
 		
-		const vector<wstring>* GeneralJumpTable::GetRuleRequires(PDAEdge * edge) const
+		 vector<wstring>* GeneralJumpTable::GetRuleRequires(PDAEdge * edge) const
 		{
 			auto findIter = ruleRequiresMap ->find(edge);
 			return (findIter != ruleRequiresMap->end())? std::addressof(*findIter->second) :nullptr;

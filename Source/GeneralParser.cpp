@@ -10,7 +10,7 @@ namespace ztl
 	namespace general_parser
 	{
 		GeneralParser::GeneralParser(const vector<TokenInfo>& tokens, const shared_ptr<GeneralTableDefine>& _tableDefine)
-			: tokenPool(tokens), 
+			: tokenPool(tokens),
 			treeRoot(nullptr),
 			tableDefine(_tableDefine),
 			jumpTable(nullptr),
@@ -19,7 +19,7 @@ namespace ztl
 
 		{
 		}
-		
+
 		void GeneralParser::BuildParser()
 		{
 			manager = make_shared<SymbolManager>(this->tableDefine);
@@ -29,6 +29,7 @@ namespace ztl
 			jumpTable = make_shared<GeneralJumpTable>(machine.get());
 			CreateJumpTable(*jumpTable.get());
 		}
+
 		GeneralTreeNode* GeneralParser::GenerateIsomorphismParserTree()
 		{
 			assert(!this->tokenPool.empty());
@@ -37,29 +38,41 @@ namespace ztl
 			this->rulePathStack.emplace_back(rootRule);
 			auto currentNodeIndex = jumpTable->GetRootNumber();
 			auto tokenIndex = 0;
-			while(true)
+			GeneralTreeNode* node = nullptr;
+			while(tokenIndex != tokenPool.size())
 			{
-				auto& currentToken = this->tokenPool[tokenIndex];
-				
-				auto candidateEdges = jumpTable->GetCachePDAEdgeByTerminate(currentNodeIndex, currentToken.tag);
-				if (candidateEdges == nullptr||candidateEdges->empty())
-				{
-					ztl_exception(L"run error!can't match "+currentToken.tag+L" lex is "+currentToken.content);
-				}
-				else if(candidateEdges->size()==1)
-				{
-
-				}
-				else
-				{
-					assert(candidateEdges->size() > 1);
-					vector<PDAEdge*> result;
-					for (auto&&iter : *candidateEdges)
-					{
-						
-					}
-				}
+				auto&& currentToken = this->tokenPool[tokenIndex];
+				auto edge = EdgeResolve(currentNodeIndex, currentToken);
+				node = ExecuteEdgeActions(edge, node);
+				++tokenIndex;
+				currentNodeIndex = edge->GetTarget()->GetNumber();
 			}
+			return node;
+		}
+		PDAEdge* GeneralParser::EdgeResolve(int number, const TokenInfo& token)
+		{
+			return TerminateResolve(number,token);
+		}
+		PDAEdge * GeneralParser::TerminateResolve(int number, const TokenInfo& token)
+		{
+			auto edges = jumpTable->GetCachePDAEdgeByTerminate(number, token.tag);
+			return RuleResolve(edges);
+		}
+		PDAEdge * GeneralParser::RuleResolve(vector<PDAEdge*>* edges)
+		{
+			vector<PDAEdge*> result;
+			
+			
+		
+			return CreateNodeResolve(result);
+		}
+		PDAEdge * GeneralParser::CreateNodeResolve(const vector<PDAEdge*>& edges)
+		{
+
+			return nullptr;
+		}
+		GeneralTreeNode* GeneralParser::ExecuteEdgeActions(PDAEdge* edge, GeneralTreeNode* node)
+		{
 			return nullptr;
 		}
 	}
