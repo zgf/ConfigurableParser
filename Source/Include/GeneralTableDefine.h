@@ -25,6 +25,13 @@ namespace ztl
 			{
 			
 			}
+			wstring GetTokenInfo()
+			{
+				return L" tag : " + tag + 
+					L" content : " + content +
+					L" position : " + to_wstring(position) + 
+					L" length : " + to_wstring(length)+L"\n";
+			}
 		};
 		/*
 		头信息定义

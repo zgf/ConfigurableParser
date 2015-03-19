@@ -12,28 +12,37 @@ namespace ztl
 		class GeneralJumpTable;
 		struct GeneralTableDefine;
 		class PushDownAutoMachine;
+		struct CreateInfo;
 		class GeneralParser
 		{
 		public:
 			GeneralParser() = delete;
-			GeneralParser(const vector<TokenInfo>& tokens,const shared_ptr<GeneralTableDefine>& _tableDefine);
+			GeneralParser(const vector<shared_ptr<TokenInfo>>& tokens,const shared_ptr<GeneralTableDefine>& _tableDefine);
 			~GeneralParser() noexcept = default;
 			GeneralParser(GeneralParser&&)  = default;
 			GeneralParser(const GeneralParser&)  = default;
 			GeneralParser& operator=(GeneralParser&&)  = default;
 			GeneralParser& operator=(const GeneralParser&)   = default;
 		public:
-			void BuildParser();
-			GeneralTreeNode* GenerateIsomorphismParserTree();
+			void				BuildParser();
+			void				GenerateIsomorphismParserTree();
+			shared_ptr<void>	GeneralHeterogeneousParserTree();
+			shared_ptr<void>	GeneralParserTree();
 		private:
-			PDAEdge*			EdgeResolve(int number, const TokenInfo& token);
-			PDAEdge *			TerminateResolve(int number, const TokenInfo& token);
-			PDAEdge *			RuleResolve(vector<PDAEdge*>* edges);
-			PDAEdge*			CreateNodeResolve(const vector<PDAEdge*>& edges);
-			void				ExecuteEdgeActions(PDAEdge* edge);
+			PDAEdge*			EdgeResolve(int number, int tokenIndex);
+			PDAEdge *			TerminateResolve(int number, int tokenIndex);
+			PDAEdge *			RuleResolve(vector<PDAEdge*>* edges, int tokenIndex);
+			PDAEdge*			CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex);
+			void				ExecuteEdgeActions(PDAEdge* edge, int tokenIndex);
+			wstring				GetRulePathInfo()const;
+			wstring				GetCreatNodeStackInfo()const;
+			bool				CheckCreateNodeRequires(const vector<CreateInfo>&);
+			GeneralTreeNode*	MakeTreeNode(const wstring& nodeName);
+			wstring				GetParserInfo(int tokenIndex)const;
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
-			vector<TokenInfo>					 tokenPool;
+			vector<shared_ptr<TokenInfo>>		 tokenPool;
+			vector<shared_ptr<TokenInfo>>		 terminatePool;//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
 			vector<GeneralTreeNode*>			 createdNodeStack;
 			vector<wstring>						 rulePathStack;
 			GeneralTreeNode*					 treeRoot;
@@ -44,7 +53,6 @@ namespace ztl
 			shared_ptr<GeneralTableDefine>		 tableDefine;
 
 		};
-		vector<TokenInfo> ParseToken(const wstring& fileName);
-
+		vector<shared_ptr<TokenInfo>>	 ParseToken(const wstring& fileName);
 	}
 }

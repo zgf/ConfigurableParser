@@ -155,7 +155,7 @@ namespace ztl
 			}
 			(*terminateMap)[number].termnateToEdgesMap[terminate].emplace_back(edge);
 		}
-		vector<PDAEdge*>* GeneralJumpTable::GetCachePDAEdgeByTerminate(const int number, const wstring & terminate)const
+		vector<PDAEdge*>* GeneralJumpTable::GetPDAEdgeByTerminate(const int number, const wstring & terminate)const
 		{
 			auto findIter =  terminateMap->find(number);
 			assert(findIter != terminateMap->end());

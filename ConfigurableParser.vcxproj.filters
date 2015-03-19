@@ -124,6 +124,9 @@
     <ClCompile Include="Source\GeneralParser.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GeneralTreeNode.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -185,9 +188,6 @@
     </ClInclude>
     <ClInclude Include="Source\Template\PDATemplate.hpp">
       <Filter>Source\Template</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralReflectionTableDefine.h">
-      <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralParser.h">
       <Filter>Source\AInclude</Filter>

@@ -483,15 +483,6 @@ namespace ztl
 			{
 				return type == NodeType::LoopEnd;
 			}
-			/*bool IsLoop()const
-			{
-				return type == NodeType::Loop;
-			}*/
-			/*	bool IsSequence()const
-				{
-					return type == NodeType::Sequence;
-				}
-	*/
 		};
 		class GeneratePath
 		{

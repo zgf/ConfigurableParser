@@ -7,7 +7,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		vector<TokenInfo> ParseToken(const wstring& fileName)
+		vector<shared_ptr<TokenInfo>>	 ParseToken(const wstring& fileName)
 		{
 			unordered_map<wstring, GeneralTokenDefine> infos;
 			infos.insert({ L"CLASS",GeneralTokenDefine(L"CLASS", LR"(class)", GeneralTokenDefine::TokenOptional::False) });
@@ -42,7 +42,7 @@ namespace ztl
 			{
 				throw ztl_exception(L"error:file" + fileName + L"not open!");
 			}
-			vector<TokenInfo> stream;
+			vector<shared_ptr<TokenInfo>>	 stream;
 			std::wstring content((std::istreambuf_iterator<wchar_t>(input)),
 				std::istreambuf_iterator<wchar_t>());
 			auto pattern = accumulate(infos.begin(), infos.end(), wstring(), [](const wstring& sum, const pair<const wstring, GeneralTokenDefine>& token)
@@ -60,7 +60,7 @@ namespace ztl
 				assert(infos.find(name) != infos.end());
 				if(infos[name].ignore != GeneralTokenDefine::TokenOptional::True)
 				{
-					stream.emplace_back(name, groupIter.second.content, groupIter.second.position, groupIter.second.length);
+					stream.emplace_back(make_shared<TokenInfo>(name, groupIter.second.content, groupIter.second.position, groupIter.second.length));
 				}
 			}
 			return stream;

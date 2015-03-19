@@ -181,6 +181,7 @@
     <ClCompile Include="Source\GeneralPDAGraph.cpp" />
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
     <ClCompile Include="Source\GeneralReflectionNodeDefineFile.cpp" />
+    <ClCompile Include="Source\GeneralTreeNode.cpp" />
     <ClCompile Include="Source\GenerateNodeDefineFile.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -214,7 +215,6 @@
     <ClInclude Include="Source\Include\GeneralJumpTable.h" />
     <ClInclude Include="Source\Include\GeneralParser.h" />
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
-    <ClInclude Include="Source\Include\GeneralReflectionTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTreeNode.h" />
     <ClInclude Include="Source\Include\GeneralTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableWriter.h" />

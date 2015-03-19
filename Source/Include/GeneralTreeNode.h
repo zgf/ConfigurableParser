@@ -14,11 +14,23 @@ namespace ztl
 			GeneralTreeNode(const GeneralTreeNode&) = default;
 			GeneralTreeNode& operator=(GeneralTreeNode&&) = default;
 			GeneralTreeNode& operator=(const GeneralTreeNode&) = default;
+			GeneralTreeNode(const int number,const wstring& name);
+
+			void SetField(const wstring& fieldName, const int nodeIndex);
+			void InitTermMap(const wstring& fieldName);
+			void InitTermMap(const vector<wstring>& fieldName);
+			void InitFieldMap(const wstring& fieldName);
+			void InitFieldMap(const vector<wstring>&  fieldName);
+			bool HaveThisField(const wstring& fieldName);
+			const wstring& GetName()const;
+			const int GetNumber()const;
+			void	  SetNumber(int number);
+			wstring GetNodeInfo() const;
 		private:
+			int nodeNumber;//nodeÔÚnodePoolµÄindex
 			wstring name;
-			unique_ptr<unordered_map<wstring, int>> fieldMap;
-			unique_ptr<unordered_map<wstring, int>> termMap;
+			unordered_map<wstring, vector<int>> fieldMap;
+			unordered_map<wstring, vector<int>> termMap;
 		};
-		
 	}
 }
