@@ -75,7 +75,7 @@ namespace ztl
 		}
 		void GeneralJumpTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
-			find_if(ruleStack.begin(), ruleStack.end(), [flag = true, &ruleInfos](const ActionWrap& wrap)mutable
+			find_if(ruleStack.begin(), ruleStack.end(), [flag = false, &ruleInfos](const ActionWrap& wrap)mutable
 			{
 				if(wrap.GetActionType() == ActionType::Shift)
 				{
@@ -84,11 +84,13 @@ namespace ztl
 				else if(flag == false)
 				{
 					flag = true;
-					ruleInfos.emplace_back(wrap.GetName());
+					ruleInfos.emplace_back(wrap.GetFrom());
+					ruleInfos.emplace_back(wrap.GetTo());
+
 				}
 				else
 				{
-					ruleInfos.emplace_back(wrap.GetValue());
+					ruleInfos.emplace_back(wrap.GetTo());
 				}
 				return false;
 			});
@@ -105,29 +107,31 @@ namespace ztl
 		{
 			assert(!edge->GetActions().empty());
 			auto actions = edge->GetActions();
-			auto first = actions.front();
-			assert(first.GetActionType() != ActionType::Setter);
-			assert(first.GetActionType() != ActionType::Assign);
-
-			ActionType type = first.GetActionType();
+			auto first = actions.begin();
+			assert(first->GetActionType() != ActionType::Setter);
+			//assert(first.GetActionType() != ActionType::Assign);
+		
+			ActionType type = first->GetActionType();
 			wstring name;
 			switch(type)
 			{
 				
 				case ztl::general_parser::ActionType::Shift:
-					name = first.GetName();
+					name = first->GetFrom();
 					break;
 				case ztl::general_parser::ActionType::Reduce:
-					name = first.GetName();
+					name = first->GetFrom();
 
 					break;
 				case ztl::general_parser::ActionType::Terminate:
-					name = first.GetValue();
+					name = first->GetFrom();
 					break;
 				case ztl::general_parser::ActionType::Create:
-					name = first.GetValue();
+					name = first->GetFrom();
 					break;
 				case ztl::general_parser::ActionType::Assign:
+					name = first->GetFrom();
+					break;
 				case ztl::general_parser::ActionType::NonTerminate:
 				case ztl::general_parser::ActionType::Epsilon:
 				case ztl::general_parser::ActionType::Setter:
@@ -195,7 +199,7 @@ namespace ztl
 					wrap.GetActionType() == ActionType::Using;
 			}) == actions.end());
 			//assgin 前面必定是reduce或者terminate
-			assert(find_if_not(actions.begin() + 1, actions.end(), [last = actions.begin()](const ActionWrap& wrap)mutable
+		/*	assert(find_if_not(actions.begin() + 1, actions.end(), [last = actions.begin()](const ActionWrap& wrap)mutable
 			{
 				bool result = true;
 				if(wrap.GetActionType() == ActionType::Assign)
@@ -206,7 +210,7 @@ namespace ztl
 				++last;
 				return result;
 
-			}) == actions.end());
+			}) == actions.end());*/
 
 			vector<CreateInfo> createInfos;
 			vector<wstring> ruleInfos;
@@ -252,7 +256,7 @@ namespace ztl
 						{
 							nodeStack.pop_back();
 						}
-						else if(actions[i - 1].GetActionType() != ActionType::Terminate)
+						else if(!nodeStack.empty() && actions[i - 1].GetActionType() != ActionType::Terminate)
 						{
 							nodeStack.emplace_back(iter);
 						}
@@ -263,9 +267,11 @@ namespace ztl
 						break;
 				}
 			}
-			CacheCreatedNodeRequiresMap(edge, nodeStack, createInfos);
+			if (!nodeStack.empty())
+			{
+				CacheCreatedNodeRequiresMap(edge, nodeStack, createInfos);
+			}
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
-			//CacheEnterRuleMap(edge);
 		}
 
 		void GeneralJumpTable::ClearJumpTable()
@@ -284,7 +290,8 @@ namespace ztl
 			unordered_map<ActionType, lambdaType> actionMap;
 			auto functor = [](const ActionWrap& wrap)->wstring
 			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue();
+				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue() +
+					L" : " + wrap.GetFrom() + L":" + wrap.GetTo();
 			};
 			vector<ActionType> ActionTypeList = {
 				ActionType::Assign,
@@ -326,6 +333,7 @@ namespace ztl
 					return left.targetIndex < right.targetIndex;
 				});
 				output << L"NodeIndex:" + to_wstring(nodeIndex) << endl;
+				
 				for(auto&& colsIter : edges)
 				{
 					auto&& targetNodeIndex = colsIter.targetIndex;
@@ -346,10 +354,7 @@ namespace ztl
 		}
 		void HelpLogJumpTable(wstring fileName, GeneralJumpTable& jumpTable)
 		{
-			jumpTable.ClearJumpTable();
-			CreateJumpTable(jumpTable);
 			LogJumpTable(fileName, jumpTable);
-			jumpTable.ClearJumpTable();
 		}
 	}
 }

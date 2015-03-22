@@ -106,7 +106,7 @@ namespace ztl
 				return pair<PDANode*, PDANode*>(left.first, right.second);
 			}
 		}
-		void	PushDownAutoMachine::AddFinishNodeFollowTarget(PDANode* target)
+		void	PushDownAutoMachine::AddFinishNodeFollowTarget(PDANode* target, const wstring&ruleName)
 		{
 			for (auto&& frontIter:target->GetFronts())
 			{
@@ -115,7 +115,7 @@ namespace ztl
 					return wrap.GetActionType() == ActionType::Create;
 				}) != frontIter->GetActions().end())
 				{
-					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"<$>", L""));
+					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName,L""));
 				}
 			}
 		}

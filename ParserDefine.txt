@@ -3,10 +3,7 @@
 			wstring    property;
 			wstring    value;
 		};
-		/*
-		token和IgnoreToken的定义
-
-		*/
+		
 		class GenTokenDefine
 		{
 			enum TokenOptional
@@ -19,7 +16,7 @@
 			TokenOptional	ignore;
 		};
 
-		/*类型对象定义*/
+	
 		class GenTypeObject
 		{
 
@@ -29,26 +26,21 @@
 		{
 			GenTypeObject			element;
 		};
-		//对string类型的使用
+	
 		class GenStringTypeObject :  GenTypeObject
 		{
 
 		};
-		//对自定义类型的使用
 		class GenNormalTypeObject :  GenTypeObject
 		{
 			wstring									name;
 		};
-		//对嵌套定义类型的使用 例如 类型A下定义了类型B     A.B cc;
 		class GenSubTypeObject :  GenTypeObject
 		{
 			GenTypeObject						parent;
 			wstring									name;
 		};
 		
-		/*
-		类型的声明的定义
-		*/
 		class GenTypeDefine
 		{
 
@@ -91,42 +83,35 @@
 			GenGrammarTypeDefine				first;
 			GenGrammarTypeDefine				second;
 		};
-		//循环
 		class GenGrammarLoopTypeDefine :  GenGrammarTypeDefine
 		{
 			GenGrammarTypeDefine				grammar;
 		};
-		//可选
 		class GenGrammarOptionalTypeDefine :  GenGrammarTypeDefine
 		{
 			GenGrammarTypeDefine				grammar;
 		};
-		//赋值
 		class GenGrammarAssignTypeDefine :  GenGrammarTypeDefine
 		{
 			wstring									name;
 			GenGrammarTypeDefine				grammar;
 		};
 		
-		//附加的key-value对
 		class GenGrammarSetterTypeDefine :  GenGrammarTypeDefine
 		{
 			GrammarDef grammar;
 			wstring												name;
 			wstring												value;
 		};
-		//附加赋值 with{}
 		class GenGrammarAdditionTypeDefine :  GenGrammarTypeDefine
 		{
 			GenGrammarTypeDefine				grammar;
 			GenGrammarSetterTypeDefine[]		setters;
 		};
-		//Using操作. 隐式类型转换
 		class GenGrammarUsingTypeDefine :  GenGrammarTypeDefine
 		{
 			GenGrammarTypeDefine				grammar;
 		};
-		//创建节点 区别返回类型
 		class GenGrammarCreateTypeDefine :  GenGrammarTypeDefine
 		{
 			GenTypeObject						type;
@@ -153,6 +138,7 @@
 		};
 		
 token CLASS = "class";
+token STRUCT = "struct";
 token ENUM = "enum";
 token TOKEN = "token";
 token DISCARDTOKEN = "ignoretoken";
@@ -198,7 +184,7 @@ rule GenTypeDefine TypeDecl
         ;
 
 rule GenClassTypeDefine Class
-        = "class" NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" as GenClassTypeDefine
+        = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GenClassTypeDefine
         ;
 		
 rule GenGrammarTypeDefine SequenceGrammar

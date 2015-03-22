@@ -68,5 +68,6 @@ namespace ztl
 	using std::istreambuf_iterator;
 	using std::accumulate;
 	using std::ifstream;
+	using std::back_inserter;
 	using ztl::contract::ztl_exception;
 }

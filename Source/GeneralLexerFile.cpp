@@ -52,11 +52,11 @@ namespace ztl
 				{
 					assert(iter.group.size() == 1);
 					auto groupIter = *iter.group.begin();
-					auto name = groupIter.first;
-					assert(infos.find(name) != infos.end());
-					if(infos[name].ignore != GeneralTokenDefine::TokenOptional::True)
+					auto tag = groupIter.first;
+					assert(infos.find(tag) != infos.end());
+					if(infos[tag].ignore != GeneralTokenDefine::TokenOptional::True)
 					{
-						stream.emplace_back(name, groupIter.second.content, groupIter.second.position, groupIter.second.length);
+						stream.emplace_back(groupIter.second.content,tag, groupIter.second.position, groupIter.second.length);
 					}
 				}
 				return stream;

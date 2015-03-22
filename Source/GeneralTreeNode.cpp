@@ -8,6 +8,11 @@ namespace ztl
 		{
 		}
 
+		GeneralTreeNode::GeneralTreeNode(const wstring & _name):name(_name)
+		{
+
+		}
+
 		void GeneralTreeNode::SetField(const wstring& fieldName, const int nodeIndex)
 		{
 			auto findIter = fieldMap.find(fieldName);

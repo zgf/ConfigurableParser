@@ -33,7 +33,7 @@ namespace ztl
 			return this->type;
 		}
 
-		wstring ParserSymbol::GetName()const
+		const wstring& ParserSymbol::GetName()const
 		{
 			return this->name;
 		}
@@ -181,6 +181,19 @@ namespace ztl
 				scope = scope->GetDescriptorSymbol();
 			}
 			return nullptr;
+		}
+
+		vector<wstring>	ParserSymbol::GetClassAllFieldName()const
+		{
+			vector<wstring> result;
+			for (auto&& iter:*subSymbolMap)
+			{
+				if (iter.second->IsFieldDef())
+				{
+					result.emplace_back(iter.first);
+				}
+			}
+			return result;
 		}
 
 		wstring			ParserSymbol::GetTypeToWString()	 const

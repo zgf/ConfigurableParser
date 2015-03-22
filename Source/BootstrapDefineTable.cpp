@@ -312,7 +312,8 @@ namespace ztl
 								*(
 									GrammarSymbol(L"EnumMember")[L"members"]
 								  ) +
-									Text(L"}"))
+									Text(L"}") + Text(L";")
+							   )
 							.Create(Normal(L"GenEnumTypeDefine"))
 						)
 						.Rule
@@ -323,7 +324,8 @@ namespace ztl
 							| (
 								GrammarSymbol(L"Type")[L"type"] + 
 								GrammarSymbol(L"NAME")[L"name"] +
-								Text(L";"))
+								Text(L";")
+							   )
 							.Create(Normal(L"GenClassMemberTypeDefine"))
 						)
 						.Rule
@@ -351,7 +353,7 @@ namespace ztl
 									GrammarSymbol(L"ClassMember")[L"members"] 
 									| GrammarSymbol(L"TypeDecl")[L"subTypes"]
 								 ) +
-								Text(L"}")
+								Text(L"}")+Text(L";")
 							  )
 							  .Create(Normal(L"GenClassTypeDefine"))
 						)

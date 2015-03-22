@@ -15,7 +15,7 @@ namespace ztl
 			GeneralTreeNode& operator=(GeneralTreeNode&&) = default;
 			GeneralTreeNode& operator=(const GeneralTreeNode&) = default;
 			GeneralTreeNode(const int number,const wstring& name);
-
+			GeneralTreeNode(const wstring& _name);
 			void SetField(const wstring& fieldName, const int nodeIndex);
 			void InitTermMap(const wstring& fieldName);
 			void InitTermMap(const vector<wstring>& fieldName);

@@ -375,6 +375,17 @@ namespace ztl
 			return propertyToValueMap;
 		}
 
+		const SymbolManager::TypeDefineToSymbolMapType & SymbolManager::GetTypeDefSymbolMap()const
+		{
+			return typeDefSymbolMap;
+			// TODO: insert return statement here
+		}
+
+		const SymbolManager::BaseSymbolToDeriveSymbolMapType & SymbolManager::GetbaseSymbolToDeriveMap() const
+		{
+			return baseSymbolToDeriveMap;
+		}
+
 		void SymbolManager::CheckNameReDefineError(const wstring& name, ParserSymbol * parentSymbol)
 		{
 			auto result = parentSymbol->GetSubSymbolByName(name);

@@ -36,7 +36,7 @@ namespace ztl
 			infos.insert({ L"FINISH",GeneralTokenDefine(L"FINISH", LR"(<\$>)", GeneralTokenDefine::TokenOptional::False) });
 			infos.insert({ L"SPACE",GeneralTokenDefine(L"SPACE", LR"(\s+)", GeneralTokenDefine::TokenOptional::True) });
 			infos.insert({ L"LINENOTE",GeneralTokenDefine(L"LINENOTE",LR"(\"(\\"|[^"])*")", GeneralTokenDefine::TokenOptional::True) });
-			infos.insert({ L"BLOCKNOTE",GeneralTokenDefine(L"BLOCKNOTE", LR"(/*.*?*/ //)", GeneralTokenDefine::TokenOptional::True) });
+			infos.insert({ L"BLOCKNOTE",GeneralTokenDefine(L"BLOCKNOTE", LR"(/*.*?*/)", GeneralTokenDefine::TokenOptional::True) });
 			wifstream input(fileName);
 			if(!input.is_open())
 			{
@@ -56,11 +56,11 @@ namespace ztl
 			{
 				assert(iter.group.size() == 1);
 				auto groupIter = *iter.group.begin();
-				auto name = groupIter.first;
-				assert(infos.find(name) != infos.end());
-				if(infos[name].ignore != GeneralTokenDefine::TokenOptional::True)
+				auto tag = groupIter.first;
+				assert(infos.find(tag) != infos.end());
+				if(infos[tag].ignore != GeneralTokenDefine::TokenOptional::True)
 				{
-					stream.emplace_back(make_shared<TokenInfo>(name, groupIter.second.content, groupIter.second.position, groupIter.second.length));
+					stream.emplace_back(make_shared<TokenInfo>(groupIter.second.content, tag, groupIter.second.position, groupIter.second.length));
 				}
 			}
 			return stream;

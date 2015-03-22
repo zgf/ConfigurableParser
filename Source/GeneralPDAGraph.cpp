@@ -15,11 +15,11 @@ namespace ztl
 			CreateEpsilonPDAVisitor() = default;
 			~CreateEpsilonPDAVisitor() noexcept = default;
 			CreateEpsilonPDAVisitor(CreateEpsilonPDAVisitor&&) noexcept = default;
-			CreateEpsilonPDAVisitor(const CreateEpsilonPDAVisitor&)  = default;
+			CreateEpsilonPDAVisitor(const CreateEpsilonPDAVisitor&) = default;
 			CreateEpsilonPDAVisitor& operator=(CreateEpsilonPDAVisitor&&) noexcept = default;
 			CreateEpsilonPDAVisitor& operator=(const CreateEpsilonPDAVisitor&) = default;
-			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine, GeneralRuleDefine* _rule,const wstring& _ruleName)noexcept
-				:machine(_machine), rule(_rule),ruleName(_ruleName)
+			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine, GeneralRuleDefine* _rule, const wstring& _ruleName)noexcept
+				:machine(_machine), rule(_rule), ruleName(_ruleName)
 			{
 			}
 		public:
@@ -32,7 +32,7 @@ namespace ztl
 			void								Visit(GeneralGrammarTextTypeDefine* node)
 			{
 				result = machine->NewNodePair();
-				ActionWrap wrap(ActionType::Terminate, node->text, ruleName);
+				ActionWrap wrap(ActionType::Terminate, node->text, ruleName, ruleName, L"");
 				machine->AddEdge(result.first, result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
@@ -40,13 +40,13 @@ namespace ztl
 				result = machine->NewNodePair();
 				if(machine->GetSymbolManager()->GetCacheRuleNameToSymbol(node->name))
 				{
-					ActionWrap wrap(ActionType::NonTerminate, node->name, L"");
+					ActionWrap wrap(ActionType::NonTerminate, node->name, L"", L"", L"");
 
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 				else
 				{
-					ActionWrap wrap(ActionType::Terminate, node->name, ruleName);
+					ActionWrap wrap(ActionType::Terminate, node->name, ruleName, ruleName, L"");
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 			}
@@ -71,28 +71,27 @@ namespace ztl
 			void								Visit(GeneralGrammarSetterTypeDefine* node)
 			{
 				node->grammar->Accept(this);
-				ActionWrap wrap(ActionType::Setter, node->name, node->value);
+				ActionWrap wrap(ActionType::Setter, node->name, node->value, ruleName, L"");
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
 				node->grammar->Accept(this);
 				assert(result.second->GetFronts().size() == 1);
-
-				ActionWrap wrap(ActionType::Using, machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node)->GetName(), ruleName);
+				//TODO delete?
+				ActionWrap wrap(ActionType::Using, machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node)->GetName(), L"", ruleName, L"");
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
 			{
 				auto manager = machine->GetSymbolManager();
-				this->createTypeName = FindType(manager, manager->GetGlobalSymbol(), node->type.get())->GetName();
+				createTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
 				node->grammar->Accept(this);
-				ActionWrap wrap(ActionType::Create, createTypeName, ruleName);
+				ActionWrap wrap(ActionType::Create, createTypeSymbol->GetName(), ruleName, ruleName, L"");
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
 				machine->AddEdge(newNode, result.first, move(wrap));
 				result.first = newNode;
-
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -105,8 +104,16 @@ namespace ztl
 			void								Visit(GeneralGrammarAssignTypeDefine* node)
 			{
 				auto ruleSymbol = machine->GetSymbolManager()->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get());
-				auto name = (ruleSymbol->IsTokenDef()) ? ruleSymbol->GetName() : createTypeName;
-				ActionWrap wrap(ActionType::Assign, node->name, name);
+				auto fieldSymbol = createTypeSymbol->SearchClassFieldSymbol(node->name);
+				assert(fieldSymbol != nullptr&&fieldSymbol->IsFieldDef());
+				auto fieldTypeSymbol = fieldSymbol->GetDescriptorSymbol();
+				if(fieldTypeSymbol->IsArrayType())
+				{
+					fieldTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
+				}
+				assert(fieldTypeSymbol->IsType() && !fieldTypeSymbol->IsArrayType());
+				auto name = (ruleSymbol->IsTokenDef()) ? ruleSymbol->GetName() : fieldTypeSymbol->GetName();
+				ActionWrap wrap(ActionType::Assign, node->name, name, ruleSymbol->GetName(), ruleName);
 				node->grammar->Accept(this);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
@@ -115,7 +122,7 @@ namespace ztl
 			GeneralRuleDefine* rule;
 			pair<PDANode*, PDANode*> result;
 			wstring ruleName;
-			wstring createTypeName;
+			ParserSymbol* createTypeSymbol = nullptr;
 		};
 
 		void AddGeneratePDA(unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap, wstring ruleName, PDANode * start, PDANode* end)
@@ -136,7 +143,7 @@ namespace ztl
 				auto rulePointer = ruleIter.get();
 				for(auto&& grammarIter : ruleIter->grammars)
 				{
-					CreateEpsilonPDAVisitor visitor(&machine, rulePointer,ruleIter->name);
+					CreateEpsilonPDAVisitor visitor(&machine, rulePointer, ruleIter->name);
 					grammarIter->Accept(&visitor);
 					assert(visitor.GetResult().first != visitor.GetResult().second);
 
@@ -162,7 +169,7 @@ namespace ztl
 			assert(!machine.GetSymbolManager()->GetStartRuleList().empty());
 			auto rootRuleName = machine.GetRootRuleName();
 			assert(machine.GetPDAMap().find(rootRuleName) != machine.GetPDAMap().end());
-			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second);
+			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second, rootRuleName);
 		}
 
 		//可合并节点含义
@@ -267,7 +274,7 @@ namespace ztl
 				}
 			}
 		}
-		unordered_map<wstring,vector<PDAEdge*>> CollectNontermiateEdge(PushDownAutoMachine& machine)
+		unordered_map<wstring, vector<PDAEdge*>> CollectNontermiateEdge(PushDownAutoMachine& machine)
 		{
 			unordered_map<wstring, vector<PDAEdge*>> result;
 			unordered_set<PDAEdge*> sign;
@@ -278,7 +285,6 @@ namespace ztl
 			}
 			for(auto&& iter : machine.GetSymbolManager()->GetStartRuleList())
 			{
-			
 				auto&& ruleIter = machine.GetPDAMap()[iter];
 				deque<PDANode*> queue;
 				queue.emplace_back(ruleIter.first);
@@ -316,19 +322,18 @@ namespace ztl
 				grammars.erase(grammars.begin() + 1, grammars.end());
 			}
 		}
-		void DeleteNoTermAndUsingAction(vector<ActionWrap>::iterator nonTermiateIter,vector<ActionWrap>& actions)
+		void DeleteNoTermAndUsingAction(vector<ActionWrap>::iterator nonTermiateIter, vector<ActionWrap>& actions)
 		{
 			assert(actions[0].GetActionType() == ActionType::NonTerminate);
-			if (actions.size() > 1&&actions[1].GetActionType() == ActionType::Using)
+			if(actions.size() > 1 && actions[1].GetActionType() == ActionType::Using)
 			{
-				actions.erase(nonTermiateIter,nonTermiateIter + 2);
+				actions.erase(nonTermiateIter, nonTermiateIter + 2);
 			}
 			else
 			{
 				actions.erase(nonTermiateIter);
 			}
 			//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
-
 		}
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine)
 		{
@@ -337,7 +342,7 @@ namespace ztl
 			for(auto&& iter : edgeList)
 			{
 				auto&& ruleName = iter.first;
-				for (auto&& edgeIter: iter.second)
+				for(auto&& edgeIter : iter.second)
 				{
 					assert(edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
 					auto&& source = edgeIter->GetSource();
@@ -349,55 +354,57 @@ namespace ztl
 					machine.DeleteEdge(edgeIter);
 					auto findIter = machine.GetPDAMap().find(nonTerminateName);
 					assert(findIter != machine.GetPDAMap().end());
-					DeleteNoTermAndUsingAction(nonTermiateIter, actions);
-					actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, ruleName);
 					//清除掉using
+					DeleteNoTermAndUsingAction(nonTermiateIter, actions);
+					actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, ruleName, nonTerminateName, ruleName);
 					machine.AddEdge(findIter->second.second, target, actions);
-					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName , nonTerminateName));
+					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName, nonTerminateName, ruleName, nonTerminateName));
 				}
 			}
 		}
 		void CheckAndDeleteReCursionRing(vector<ActionWrap>& newActions, ActionType type)
 		{
-			int lastIndex = newActions.size();
-			int firstIndex = newActions.size();
-			for(int i = newActions.size() - 1; i >= 0; --i)
+			int lastIndex = find_if(make_reverse_iterator(newActions.end()), make_reverse_iterator(newActions.begin()), [type](const ActionWrap& wrap)
 			{
-				if(newActions[i].GetActionType() == type)
-				{
-					lastIndex = i + 1;
-					break;
-				}
-			}
-			firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
+				return wrap.GetActionType() == type;
+			}).base() - newActions.begin();
+			int firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
 			{
 				return wrap.GetActionType() == type;
 			}) - newActions.begin();
+			firstIndex = (firstIndex == (int) newActions.size()) ? 0 : firstIndex;
+			vector<int> deleter;
 			if(firstIndex != lastIndex)
 			{
-			
 				for(auto index = firstIndex; index != lastIndex; ++index)
 				{
-					auto end = index + 1;
-					for(auto i = firstIndex; i < end;++i)
+					auto begin = newActions.begin() + firstIndex;
+					auto end = newActions.begin() + index + 1;
+					for(auto i = begin; i < end; ++i)
 					{
-						if (newActions[i].GetName() == newActions[index].GetValue())
+						if(i->GetName() == newActions[index].GetValue() && i != end)
 						{
-							if(i != end)
+							/*newActions.clear();
+							return;*/
+							auto count = 0;
+							for_each(i, end, [&count, type](const ActionWrap& wrap)
 							{
-								newActions.clear();
-								return;
-								//break;
-							/*	newActions.erase(newActions.begin()+i, newActions.begin()+end);
-								auto num = end - i;
-								firstIndex = end - num;
-								lastIndex = lastIndex - num;
-								index = index - num;*/
-							
+								if(wrap.GetActionType() != type)
+								{
+									++count;
+								}
+							});
+							if (count ==0)
+							{
+								auto number = end - i;
+								newActions.erase(i, end);
+								lastIndex = lastIndex - number;
+								index = index - number;
+								firstIndex = index + 1;
+								break;
 							}
 						}
 					}
-					
 				}
 			}
 		}
@@ -407,6 +414,48 @@ namespace ztl
 		}
 		void CheckAndDeleteRightReCursionRing(vector<ActionWrap>& newActions)
 		{
+			/*ActionType type = ActionType::Reduce;
+			int lastIndex = find_if(make_reverse_iterator(newActions.end()), make_reverse_iterator(newActions.begin()), [type](const ActionWrap& wrap)
+			{
+				return wrap.GetActionType() == type;
+			}).base() - newActions.begin();
+			int firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
+			{
+				return wrap.GetActionType() == type;
+			}) - newActions.begin();
+			firstIndex = (firstIndex == (int) newActions.size()) ? 0 : firstIndex;
+			vector<int> deleter;
+			if(firstIndex != lastIndex)
+			{
+				for(auto index = firstIndex; index != lastIndex; ++index)
+				{
+					auto begin = newActions.begin() + firstIndex;
+					auto end = newActions.begin() + index + 1;
+					for(auto i = begin; i < end; ++i)
+					{
+						if(i->GetName() == newActions[index].GetValue() && i != end)
+						{
+							auto count = 0;
+							for_each(i, end, [&count, type](const ActionWrap& wrap)
+							{
+								if(wrap.GetActionType() != type)
+								{
+									++count;
+								}
+							});
+							if(count == 0)
+							{
+								auto number = end - i;
+								newActions.erase(i, end);
+								lastIndex = lastIndex - number;
+								index = index - number;
+								firstIndex = index + 1;
+								break;
+							}
+						}
+					}
+				}
+			}*/
 			CheckAndDeleteReCursionRing(newActions, ActionType::Reduce);
 		}
 
@@ -417,16 +466,19 @@ namespace ztl
 			{
 				newActions.insert(newActions.end(), iter->GetActions().begin(), iter->GetActions().end());
 			});
+
 			CheckAndDeleteLeftReCursionRing(newActions);
-			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
 			CheckAndDeleteRightReCursionRing(newActions);
+			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
 			return newActions;
 		}
 		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine, unordered_map<PDANode*, int>& edgeCountMap)
 		{
 			assert(!save.empty());
+
 			auto source = save.front()->GetSource();
 			auto target = save.back()->GetTarget();
+
 			auto nexts = source->GetNexts();
 			const vector<ActionWrap>* actionPointer = nullptr;
 			auto CheckAndAddEdge = [&nexts, &source, &target, &actionPointer, &edgeCountMap, &machine]()
@@ -449,7 +501,7 @@ namespace ztl
 			else
 			{
 				vector<ActionWrap> newActions = GetNewAction(save);
-				if (!newActions.empty())
+				if(!newActions.empty())
 				{
 					if(find_if(nexts.begin(), nexts.end(), [&newActions](PDAEdge* element)
 					{
@@ -490,51 +542,55 @@ namespace ztl
 				}
 			}) == path.size();
 		}
-		void RecordNewNode(PDANode* target, vector<PDANode*>& allNode, const vector<PDANode*>& noNeed)
+		void RecordNewNode(PDANode* target, vector<PDANode*>& allNode, unordered_set<PDANode*>& noNeed)
 		{
-			if(find(noNeed.begin(), noNeed.end(), target) == noNeed.end())
+			if(noNeed.find(target) == noNeed.end())
 			{
+				noNeed.insert(target);
 				allNode.emplace_back(target);
 			}
 		}
 		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine)
 		{
+			//当前路径上遇到的边
 			vector<PDAEdge*> path;
-			//第i号路径已经完结集合
-			unordered_set<int> save;
+			//当前路径上遇到的边的hash
+			unordered_set<PDAEdge*> sign;
+			//待处理的点队列
 			vector<PDANode*> allNode;
-			vector<PDANode*> noNeed;
+			//已进队列或者处理结束的点
+			unordered_set<PDANode*> noNeed;
+			//待删除的边
 			unordered_set<PDAEdge*> deleter;
-			//路径上遇到的节点
-			unordered_set<PDANode*> pathSign;
+			//每个节点上旧边的数量
 			unordered_map<PDANode*, int> edgeCountMap;
-			vector<vector<PDAEdge*>> ringPathSaves;
-			auto nodes = CollectGraphNode(machine, [&edgeCountMap](PDANode* element)
+			//edgeCountMap收集完毕
+			CollectGraphNode(machine, [&edgeCountMap](PDANode* element)
 			{
 				edgeCountMap.insert({ element,element->GetNexts().size() });
 				return true;
 			});
-			unordered_multimap<PDANode*, vector<int>> nodeEdgesMap;
 			auto root = machine.GetRoot();
-			function<void(PDANode*)> DFS = [&pathSign, &noNeed, &deleter, &ringPathSaves, &allNode, &DFS, &path, &edgeCountMap, &machine](PDANode* node)
+			allNode.emplace_back(root);
+			noNeed.insert(root);
+
+			function<void(PDANode*)> DFS = [&noNeed, &deleter, &allNode, &DFS, &sign, &path, &edgeCountMap, &machine](PDANode* node)
 			{
 				auto nexts = node->GetNexts();
+
 				size_t length = edgeCountMap[node];
 				for(size_t i = 0; i < length; ++i)
 				{
 					auto&& edgeIter = nexts[i];
 					auto target = edgeIter->GetTarget();
-					path.emplace_back(edgeIter);
-					assert(path.size() == pathSign.size());
-					
-					if(pathSign.find(target) == pathSign.end() ||
-						//对于包含Term的环,构造新环.
-						IsTermRingPath(path))
+					if(sign.find(edgeIter) == sign.end())
 					{
+						path.emplace_back(edgeIter);
+						sign.insert(edgeIter);
 						if(edgeIter->HasTermActionType())
 						{
 							//遇到Term了,当前路径可以终止搜索了.
-							
+
 							MergePathSymbol(path, machine, edgeCountMap);
 							//记录需要删除的边
 							deleter.insert(path.begin(), path.end());
@@ -545,42 +601,111 @@ namespace ztl
 						}
 						else
 						{
-							pathSign.insert(target);
 							DFS(target);
-							pathSign.erase(target);
 						}
-					}
-					else if(IsLeftreCursionRingPath(path))
-					{
-						//遇到环了,对于全部由shift构造的环,也就是左递归,直接丢弃环就OK.
-						deleter.insert(path.begin(), path.end());
-						//deleter.insert(path.begin(), path.end());
+						sign.erase(edgeIter);
+						assert(path.back() == edgeIter);
+						path.pop_back();
 					}
 					else
 					{
-						//这里是无法遇到Term的环,也就是,走进了左递归,是不正确的路线,丢弃.
+						//遇到环了
 						deleter.insert(path.begin(), path.end());
 					}
-					path.pop_back();
 				}
 			};
-			allNode.emplace_back(root);
 			for(size_t i = 0; i < allNode.size(); ++i)
 			{
-				//这里用auto& auto&&会导致earse删除遇到0xddddddd,奇葩啊- -...
 				auto nodeIter = allNode[i];
-				pathSign.insert(nodeIter);
 				DFS(nodeIter);
-				noNeed.emplace_back(nodeIter);
-				pathSign.erase(nodeIter);
-				assert(pathSign.empty());
-				assert(path.empty());
 			}
 			for(auto iter : deleter)
 			{
 				machine.DeleteEdge(iter);
 			}
 		}
+		//vector<PDAEdge*> path;
+		////第i号路径已经完结集合
+		//unordered_set<int> save;
+		//vector<PDANode*> allNode;
+		//vector<PDANode*> noNeed;
+		//unordered_set<PDAEdge*> deleter;
+		////路径上遇到的节点
+		//unordered_set<PDANode*> pathSign;
+		//unordered_map<PDANode*, int> edgeCountMap;
+		//vector<vector<PDAEdge*>> ringPathSaves;
+		//auto nodes = CollectGraphNode(machine, [&edgeCountMap](PDANode* element)
+		//{
+		//	edgeCountMap.insert({ element,element->GetNexts().size() });
+		//	return true;
+		//});
+		//unordered_multimap<PDANode*, vector<int>> nodeEdgesMap;
+		//auto root = machine.GetRoot();
+		//function<void(PDANode*)> DFS = [&pathSign, &noNeed, &deleter, &ringPathSaves, &allNode, &DFS, &path, &edgeCountMap, &machine](PDANode* node)
+		//{
+		//	auto nexts = node->GetNexts();
+		//	size_t length = edgeCountMap[node];
+		//	for(size_t i = 0; i < length; ++i)
+		//	{
+		//		auto&& edgeIter = nexts[i];
+		//		auto target = edgeIter->GetTarget();
+		//		path.emplace_back(edgeIter);
+		//		assert(path.size() == pathSign.size());
+		//
+		//		if(pathSign.find(target) == pathSign.end() ||
+		//			//对于包含Term的环,构造新环.
+		//			IsTermRingPath(path))
+		//		{
+		//			if(edgeIter->HasTermActionType())
+		//			{
+		//				//遇到Term了,当前路径可以终止搜索了.
+		//
+		//				MergePathSymbol(path, machine, edgeCountMap);
+		//				//记录需要删除的边
+		//				deleter.insert(path.begin(), path.end());
+		//				assert(!path.empty());
+		//				//记录待处理的节点
+		//				assert(edgeIter->HasTermActionType());
+		//				RecordNewNode(target, allNode, noNeed);
+		//			}
+		//			else
+		//			{
+		//				pathSign.insert(target);
+		//				DFS(target);
+		//				pathSign.erase(target);
+		//			}
+		//		}
+		//		else if(IsLeftreCursionRingPath(path))
+		//		{
+		//			//遇到环了,对于全部由shift构造的环,也就是左递归,直接丢弃环就OK.
+		//			deleter.insert(path.begin(), path.end());
+		//			//deleter.insert(path.begin(), path.end());
+		//		}
+		//		else
+		//		{
+		//			//这里是无法遇到Term的环,也就是,走进了左递归,是不正确的路线,丢弃.
+		//			deleter.insert(path.begin(), path.end());
+		//		}
+		//		path.pop_back();
+		//	}
+		//};
+		//allNode.emplace_back(root);
+		//for(size_t i = 0; i < allNode.size(); ++i)
+		//{
+		//	//这里用auto& auto&&会导致earse删除遇到0xddddddd,奇葩啊- -...
+		//	auto nodeIter = allNode[i];
+		//	pathSign.insert(nodeIter);
+		//	DFS(nodeIter);
+		//	noNeed.emplace_back(nodeIter);
+		//	pathSign.erase(nodeIter);
+		//	assert(pathSign.empty());
+		//	assert(path.empty());
+		//}
+		//for(auto iter : deleter)
+		//{
+		//	machine.DeleteEdge(iter);
+		//}
+
 		vector<PDAEdge*> CollectNontermiateEdgeByRoot(PushDownAutoMachine& machine)
 		{
 			vector<PDAEdge*> result;
@@ -596,9 +721,9 @@ namespace ztl
 					if(sign.find(edgeIter) == sign.end())
 					{
 						sign.insert(edgeIter);
-						
+
 						result.emplace_back(edgeIter);
-						
+
 						queue.emplace_back(edgeIter->GetTarget());
 					}
 				}
@@ -624,9 +749,8 @@ namespace ztl
 			MergeEpsilonPDAGraph(machine);
 			MergeGrammarCommonFactor(machine);
 			//添加结束节点.
-		
-			//应该直接在文法上添加finish fixed
-		//	AddFinishNode(machine);
+
+			//AddFinishNode(machine);
 			//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
 			MergePDAEpsilonSymbol(machine);
 			MergeGrammarCommonFactor(machine);

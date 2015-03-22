@@ -48,7 +48,7 @@ namespace ztl
 			SymbolManager*							GetManager()							 const;
 			SymbolType								GetType()								 const;
 			wstring									GetTypeToWString()						 const;
-			wstring									GetName()								 const;
+			const wstring&							GetName()								 const;
 			ParserSymbol*							GetParentSymbol()						 const;
 			ParserSymbol*							GetDescriptorSymbol()					 const;
 			void									AddSubSymbol(ParserSymbol* subSymbol);
@@ -57,6 +57,7 @@ namespace ztl
 			ParserSymbol*							GetSubSymbolByName(const wstring& _name)	 const;
 			size_t									SubSymbolCount()						 const;
 			ParserSymbol*							SearchClassSubSymbol(const wstring& _name)const;
+			vector<wstring>							GetClassAllFieldName()const;
 		public:
 			bool									IsType()     const;
 			bool									IsDefine()   const;

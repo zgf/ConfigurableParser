@@ -39,10 +39,14 @@ namespace ztl
 			bool				CheckCreateNodeRequires(const vector<CreateInfo>&);
 			GeneralTreeNode*	MakeTreeNode(const wstring& nodeName);
 			wstring				GetParserInfo(int tokenIndex)const;
+			unordered_map<wstring, GeneralTreeNode> InitTreeNodeMap();
+			unordered_map<wstring, wstring> InitDeriveToBaseMap();
+			bool				IsDeriveRelateion(const wstring& base, const wstring& derive);
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
-			vector<shared_ptr<TokenInfo>>		 terminatePool;//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
+			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
+			vector<shared_ptr<TokenInfo>>		 terminatePool;
 			vector<GeneralTreeNode*>			 createdNodeStack;
 			vector<wstring>						 rulePathStack;
 			GeneralTreeNode*					 treeRoot;

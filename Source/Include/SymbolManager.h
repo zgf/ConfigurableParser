@@ -119,6 +119,8 @@ namespace ztl
 			vector<ParserSymbol*>		  GetCacheAllDeriveByBaseSymbol(ParserSymbol* baseSymbol)const;
 
 			unordered_map<wstring, vector<wstring>>& GetPropertyToValueMap();
+			const TypeDefineToSymbolMapType& GetTypeDefSymbolMap()const;
+			const BaseSymbolToDeriveSymbolMapType&	GetbaseSymbolToDeriveMap()const;
 		private:
 			void TryAddSubSymbol(ParserSymbol* subSymbol, ParserSymbol* parentSymbol);
 			void CacheRuleNameToSymbolMap(const wstring& name, ParserSymbol* symbol);

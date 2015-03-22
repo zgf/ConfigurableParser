@@ -28,11 +28,12 @@ namespace ztl
 			ActionType action;
 			wstring name;//setter key using ruleNmae create className nonterm ruleName term tokenName assgin fieldName
 			wstring value;//setter value assgin ruleName
-			int grammarNumber;
+			wstring current;//当前文法
+			wstring next;//下一个文法
 		public:
 			ActionWrap() = default;
-			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value)
-				: action(_action), name(_name), value(_value)
+			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value,const wstring& _current,const wstring& _next)
+				: action(_action), name(_name), value(_value),current(_current),next(_next)
 			{
 			}
 		
@@ -49,6 +50,14 @@ namespace ztl
 			wstring GetValue()const
 			{
 				return value;
+			}
+			wstring GetFrom()const
+			{
+				return current;
+			}
+			wstring GetTo()const
+			{
+				return next;
 			}
 			bool operator==(const ActionWrap& target)const
 			{
@@ -233,7 +242,7 @@ namespace ztl
 			pair<PDANode*, PDANode*>	AddLoopLinkNode(PDANode* loopStart, PDANode* loopEnd);
 			pair<PDANode*, PDANode*>	AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>&right);
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
-			void						AddFinishNodeFollowTarget(PDANode* target);
+			void						AddFinishNodeFollowTarget(PDANode* target,const wstring& ruleName);
 			void						FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap);
 			wstring						GetRootRuleName()const;
 			//保留Left节点合并left right

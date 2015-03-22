@@ -199,7 +199,7 @@ rule GenTypeDefine TypeDecl
         ;
 
 rule GenClassTypeDefine Class
-        = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" as GenClassTypeDefine
+        = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GenClassTypeDefine
         ;
 		
 rule GenGrammarTypeDefine SequenceGrammar
