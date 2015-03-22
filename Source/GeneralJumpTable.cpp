@@ -115,27 +115,17 @@ namespace ztl
 			wstring name;
 			switch(type)
 			{
-				
+				case ztl::general_parser::ActionType::Using:
 				case ztl::general_parser::ActionType::Shift:
-					name = first->GetFrom();
-					break;
 				case ztl::general_parser::ActionType::Reduce:
-					name = first->GetFrom();
-
-					break;
 				case ztl::general_parser::ActionType::Terminate:
-					name = first->GetFrom();
-					break;
 				case ztl::general_parser::ActionType::Create:
-					name = first->GetFrom();
-					break;
 				case ztl::general_parser::ActionType::Assign:
 					name = first->GetFrom();
 					break;
 				case ztl::general_parser::ActionType::NonTerminate:
 				case ztl::general_parser::ActionType::Epsilon:
 				case ztl::general_parser::ActionType::Setter:
-				case ztl::general_parser::ActionType::Using:
 				default:
 					assert(false);
 					break;
@@ -192,12 +182,12 @@ namespace ztl
 			{
 				return sum + (wrap.GetActionType() == ActionType::Terminate);
 			}) == 1);
-			assert(find_if(actions.begin(), actions.end(), [](const ActionWrap& wrap)
+			/*assert(find_if(actions.begin(), actions.end(), [](const ActionWrap& wrap)
 			{
 				return wrap.GetActionType() == ActionType::Epsilon ||
 					wrap.GetActionType() == ActionType::NonTerminate ||
 					wrap.GetActionType() == ActionType::Using;
-			}) == actions.end());
+			}) == actions.end());*/
 			//assgin 前面必定是reduce或者terminate
 		/*	assert(find_if_not(actions.begin() + 1, actions.end(), [last = actions.begin()](const ActionWrap& wrap)mutable
 			{
@@ -223,11 +213,9 @@ namespace ztl
 				switch(iter.GetActionType())
 				{
 					case ztl::general_parser::ActionType::Epsilon:
-					case ztl::general_parser::ActionType::Using:
 					case ztl::general_parser::ActionType::NonTerminate:
 						assert(false);
 						break;
-
 					case ztl::general_parser::ActionType::Shift:
 						ruleStack.emplace_back(iter);
 						break;
@@ -261,7 +249,7 @@ namespace ztl
 							nodeStack.emplace_back(iter);
 						}
 						break;
-
+					case ztl::general_parser::ActionType::Using:
 					case ztl::general_parser::ActionType::Setter:
 					default:
 						break;

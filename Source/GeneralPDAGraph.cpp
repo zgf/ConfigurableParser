@@ -78,8 +78,8 @@ namespace ztl
 			{
 				node->grammar->Accept(this);
 				assert(result.second->GetFronts().size() == 1);
-				//TODO delete?
-				ActionWrap wrap(ActionType::Using, machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node)->GetName(), L"", ruleName, L"");
+				auto name = machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node->grammar.get())->GetName();
+				ActionWrap wrap(ActionType::Using, name, ruleName, name, ruleName);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
@@ -90,8 +90,8 @@ namespace ztl
 				ActionWrap wrap(ActionType::Create, createTypeSymbol->GetName(), ruleName, ruleName, L"");
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
-				machine->AddEdge(newNode, result.first, move(wrap));
-				result.first = newNode;
+				machine->AddEdge(result.second, newNode, move(wrap));
+				result.second = newNode;
 			}
 			void								Visit(GeneralGrammarAlterationTypeDefine* node)
 			{
@@ -325,14 +325,14 @@ namespace ztl
 		void DeleteNoTermAndUsingAction(vector<ActionWrap>::iterator nonTermiateIter, vector<ActionWrap>& actions)
 		{
 			assert(actions[0].GetActionType() == ActionType::NonTerminate);
-			if(actions.size() > 1 && actions[1].GetActionType() == ActionType::Using)
+			/*if(actions.size() > 1 && actions[1].GetActionType() == ActionType::Using)
 			{
 				actions.erase(nonTermiateIter, nonTermiateIter + 2);
 			}
 			else
-			{
+			{*/
 				actions.erase(nonTermiateIter);
-			}
+			//}
 			//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
 		}
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine)
@@ -356,7 +356,8 @@ namespace ztl
 					assert(findIter != machine.GetPDAMap().end());
 					//清除掉using
 					DeleteNoTermAndUsingAction(nonTermiateIter, actions);
-					actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, ruleName, nonTerminateName, ruleName);
+					//actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, ruleName, nonTerminateName, ruleName);
+					//清除直接右递归
 					machine.AddEdge(findIter->second.second, target, actions);
 					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName, nonTerminateName, ruleName, nonTerminateName));
 				}
@@ -384,9 +385,9 @@ namespace ztl
 					{
 						if(i->GetName() == newActions[index].GetValue() && i != end)
 						{
-							/*newActions.clear();
-							return;*/
-							auto count = 0;
+							newActions.clear();
+							return;
+							/*auto count = 0;
 							for_each(i, end, [&count, type](const ActionWrap& wrap)
 							{
 								if(wrap.GetActionType() != type)
@@ -402,7 +403,7 @@ namespace ztl
 								index = index - number;
 								firstIndex = index + 1;
 								break;
-							}
+							}*/
 						}
 					}
 				}
@@ -414,7 +415,7 @@ namespace ztl
 		}
 		void CheckAndDeleteRightReCursionRing(vector<ActionWrap>& newActions)
 		{
-			/*ActionType type = ActionType::Reduce;
+			ActionType type = ActionType::Reduce;
 			int lastIndex = find_if(make_reverse_iterator(newActions.end()), make_reverse_iterator(newActions.begin()), [type](const ActionWrap& wrap)
 			{
 				return wrap.GetActionType() == type;
@@ -455,20 +456,26 @@ namespace ztl
 						}
 					}
 				}
-			}*/
-			CheckAndDeleteReCursionRing(newActions, ActionType::Reduce);
+			}
+			//CheckAndDeleteReCursionRing(newActions, ActionType::Reduce);
 		}
 
 		vector<ActionWrap> GetNewAction(vector<PDAEdge*>& save)
 		{
 			vector<ActionWrap> newActions;
-			for_each(save.begin(), save.end(), [&newActions](PDAEdge* iter)
+			for_each(save.begin(), save.end(), [&newActions](PDAEdge* edge)
 			{
-				newActions.insert(newActions.end(), iter->GetActions().begin(), iter->GetActions().end());
+				for(auto&& iter: edge->GetActions())
+				{
+					if(iter.GetActionType() != ActionType::Epsilon)
+					{
+						newActions.emplace_back(iter);
+					}
+				}
 			});
 
 			CheckAndDeleteLeftReCursionRing(newActions);
-			CheckAndDeleteRightReCursionRing(newActions);
+			//CheckAndDeleteRightReCursionRing(newActions);
 			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
 			return newActions;
 		}
@@ -750,7 +757,7 @@ namespace ztl
 			MergeGrammarCommonFactor(machine);
 			//添加结束节点.
 
-			//AddFinishNode(machine);
+			AddFinishNode(machine);
 			//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
 			MergePDAEpsilonSymbol(machine);
 			MergeGrammarCommonFactor(machine);

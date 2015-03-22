@@ -74,7 +74,7 @@ namespace ztl
 			return RuleResolve(edges, tokenIndex);
 		}
 		PDAEdge * GeneralParser::RuleResolve(vector<PDAEdge*>* edges, int tokenIndex)
-		{
+		{/*
 			assert(edges != nullptr && !edges->empty());
 			vector<PDAEdge*> result;
 			for (auto&& iter : *edges)
@@ -90,8 +90,11 @@ namespace ztl
 			if(result.empty())
 			{
 				throw ztl_exception(L"error!can't find match token'rule.\n"+ GetParserInfo(tokenIndex));
-			}
-			return CreateNodeResolve(result, tokenIndex);
+			}*/
+			
+			return CreateNodeResolve(*edges, tokenIndex);
+
+			//return CreateNodeResolve(result, tokenIndex);
 		}
 		PDAEdge* GeneralParser::CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex)
 		{

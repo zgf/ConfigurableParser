@@ -518,7 +518,7 @@ namespace ztl
 								*(GrammarSymbol(L"HeadDecl")[L"heads"]) +
 								*(GrammarSymbol(L"TypeDecl")[L"types"])  +
 								*(GrammarSymbol(L"TokenDecl")[L"tokens"]) +
-								*(GrammarSymbol(L"RuleDecl")[L"rules"]) +Text(L"<$>")
+								*(GrammarSymbol(L"RuleDecl")[L"rules"]) 
 							)
 							.Create(Normal(L"GenTableDefine"))
 						)
