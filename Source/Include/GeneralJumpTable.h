@@ -42,7 +42,7 @@ namespace ztl
 			void													CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos);
 			void													CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos);
 			void													CacheEnterRule(PDAEdge* edge);
-			void													CacheTerminateMap(PDAEdge* edge,const wstring& terminate);
+			void CacheTerminateMap(PDAEdge* edge);
 			vector<PDAEdge*>*										GetPDAEdgeByTerminate(const int number, const wstring& terminate)const;
 			int														GetRootNumber()const;
 			vector<wstring>*										GetRuleRequires(PDAEdge* edge)const;

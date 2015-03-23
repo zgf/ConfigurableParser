@@ -235,7 +235,6 @@ namespace ztl
 				throw ztl_exception(L"token's regex need unique!");
 			}
 		}
-
 		ParserSymbol* SymbolManager::GetCacheRuleNameToSymbol(const wstring& name) const
 		{
 			auto findIter = ruleNameSymbolMap.find(name);

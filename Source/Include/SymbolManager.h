@@ -114,7 +114,7 @@ namespace ztl
 			void				  CachePropertyToValueMap(const wstring& property, const vector<wstring>& value);
 			void				  CachePropertyToValueMap(const wstring& property, const wstring& value);
 			vector<wstring>		  GetCacheValueByProperty(const wstring& property)const;
-			void CacheBaseSymbolToDeriveMap( ParserSymbol* baseSymbol,  ParserSymbol* deriveSymbol);
+			void				  CacheBaseSymbolToDeriveMap( ParserSymbol* baseSymbol,  ParserSymbol* deriveSymbol);
 			vector<ParserSymbol*>		  GetCacheDeriveByBaseSymbol( ParserSymbol* baseSymbol)const;
 			vector<ParserSymbol*>		  GetCacheAllDeriveByBaseSymbol(ParserSymbol* baseSymbol)const;
 

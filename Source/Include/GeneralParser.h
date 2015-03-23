@@ -36,8 +36,10 @@ namespace ztl
 			void				ExecuteEdgeActions(PDAEdge* edge, int tokenIndex);
 			wstring				GetRulePathInfo()const;
 			wstring				GetCreatNodeStackInfo()const;
+			pair<bool, int>		CheckCreateNodeRequire(int createStackIndex, const GeneralTreeNode& node);
 			bool				CheckCreateNodeRequires(const vector<CreateInfo>&);
 			GeneralTreeNode*	MakeTreeNode(const wstring& nodeName);
+			GeneralTreeNode*	MakeEmptyTreeNode();
 			wstring				GetParserInfo(int tokenIndex)const;
 			unordered_map<wstring, GeneralTreeNode> InitTreeNodeMap();
 			unordered_map<wstring, wstring> InitDeriveToBaseMap();

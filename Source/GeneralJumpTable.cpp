@@ -54,47 +54,33 @@ namespace ztl
 			}
 			return result;
 		}
-		void GeneralJumpTable::CacheCreatedNodeRequiresMap(PDAEdge * edge,const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos)
+		void GeneralJumpTable::CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos)
 		{
-			find_if(nodeStack.begin(), nodeStack.end(), [&createInfos](const ActionWrap& wrap)
+			for_each(nodeStack.begin(), nodeStack.end(), [&createInfos](const ActionWrap& wrap)
 			{
-				if(wrap.GetActionType() == ActionType::Create)
-				{
-					return true;
-				}
-				else
-				{
-					createInfos.emplace_back(wrap.GetValue(), wrap.GetName());
-					return false;
-				}
+				createInfos.emplace_back(wrap.GetValue(), wrap.GetName());
 			});
-			if (!createInfos.empty())
+			if(!createInfos.empty())
 			{
 				this->createdNodeRequiresMap->insert(make_pair(edge, createInfos));
 			}
 		}
 		void GeneralJumpTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
-			find_if(ruleStack.begin(), ruleStack.end(), [flag = false, &ruleInfos](const ActionWrap& wrap)mutable
+			for_each(ruleStack.begin(), ruleStack.end(), [flag = false, &ruleInfos](const ActionWrap& wrap)mutable
 			{
-				if(wrap.GetActionType() == ActionType::Shift)
-				{
-					return true;
-				}
-				else if(flag == false)
+				if(flag == false)
 				{
 					flag = true;
 					ruleInfos.emplace_back(wrap.GetFrom());
 					ruleInfos.emplace_back(wrap.GetTo());
-
 				}
 				else
 				{
 					ruleInfos.emplace_back(wrap.GetTo());
 				}
-				return false;
 			});
-			if (!ruleInfos.empty())
+			if(!ruleInfos.empty())
 			{
 				this->ruleRequiresMap->insert({ edge,make_unique<vector<wstring>>(ruleInfos) });
 			}
@@ -109,20 +95,19 @@ namespace ztl
 			auto actions = edge->GetActions();
 			auto first = actions.begin();
 			assert(first->GetActionType() != ActionType::Setter);
-			//assert(first.GetActionType() != ActionType::Assign);
-		
+
 			ActionType type = first->GetActionType();
 			wstring name;
 			switch(type)
 			{
 				case ztl::general_parser::ActionType::Using:
 				case ztl::general_parser::ActionType::Shift:
-				case ztl::general_parser::ActionType::Reduce:
 				case ztl::general_parser::ActionType::Terminate:
 				case ztl::general_parser::ActionType::Create:
 				case ztl::general_parser::ActionType::Assign:
 					name = first->GetFrom();
 					break;
+				case ztl::general_parser::ActionType::Reduce:
 				case ztl::general_parser::ActionType::NonTerminate:
 				case ztl::general_parser::ActionType::Epsilon:
 				case ztl::general_parser::ActionType::Setter:
@@ -135,8 +120,15 @@ namespace ztl
 			this->ruleRequiresMap->insert({ edge, make_unique<vector<wstring>>() });
 			(*ruleRequiresMap)[edge]->emplace_back(name);
 		}
-		void GeneralJumpTable::CacheTerminateMap(PDAEdge * edge, const wstring & terminate)
+		void GeneralJumpTable::CacheTerminateMap(PDAEdge* edge)
 		{
+			auto findTermIter = find_if(make_reverse_iterator(edge->GetActions().end()), make_reverse_iterator(edge->GetActions().begin()), [](const ActionWrap& wrap)
+			{
+				return wrap.GetActionType() == ActionType::Terminate;
+			}).base();
+			assert(findTermIter != edge->GetActions().begin());
+			findTermIter -= 1;
+			auto terminate = findTermIter->GetName();
 			auto number = edge->GetSource()->GetNumber();
 			auto findIter = terminateMap->find(number);
 			if(findIter == terminateMap->end())
@@ -151,22 +143,22 @@ namespace ztl
 		}
 		vector<PDAEdge*>* GeneralJumpTable::GetPDAEdgeByTerminate(const int number, const wstring & terminate)const
 		{
-			auto findIter =  terminateMap->find(number);
+			auto findIter = terminateMap->find(number);
 			assert(findIter != terminateMap->end());
 			auto findTerminateIter = findIter->second.termnateToEdgesMap.find(terminate);
 			return (findTerminateIter == findIter->second.termnateToEdgesMap.end()) ? nullptr : std::addressof(findTerminateIter->second);
 		}
-		
+
 		int GeneralJumpTable::GetRootNumber()const
 		{
 			assert(rootNumber != -1);
 			return rootNumber;
 		}
-		
-		 vector<wstring>* GeneralJumpTable::GetRuleRequires(PDAEdge * edge) const
+
+		vector<wstring>* GeneralJumpTable::GetRuleRequires(PDAEdge * edge) const
 		{
-			auto findIter = ruleRequiresMap ->find(edge);
-			return (findIter != ruleRequiresMap->end())? std::addressof(*findIter->second) :nullptr;
+			auto findIter = ruleRequiresMap->find(edge);
+			return (findIter != ruleRequiresMap->end()) ? std::addressof(*findIter->second) : nullptr;
 		}
 		const vector<CreateInfo>* GeneralJumpTable::GetCreateNodeRequires(PDAEdge * edge) const
 		{
@@ -182,83 +174,48 @@ namespace ztl
 			{
 				return sum + (wrap.GetActionType() == ActionType::Terminate);
 			}) == 1);
-			/*assert(find_if(actions.begin(), actions.end(), [](const ActionWrap& wrap)
+			assert(find_if(actions.begin(), actions.end(), [](const ActionWrap& wrap)
 			{
 				return wrap.GetActionType() == ActionType::Epsilon ||
 					wrap.GetActionType() == ActionType::NonTerminate ||
-					wrap.GetActionType() == ActionType::Using;
-			}) == actions.end());*/
-			//assgin 前面必定是reduce或者terminate
-		/*	assert(find_if_not(actions.begin() + 1, actions.end(), [last = actions.begin()](const ActionWrap& wrap)mutable
-			{
-				bool result = true;
-				if(wrap.GetActionType() == ActionType::Assign)
-				{
-					result = last->GetActionType() == ActionType::Terminate ||
-								  last->GetActionType() == ActionType::Reduce;
-				}
-				++last;
-				return result;
-
-			}) == actions.end());*/
+					wrap.GetActionType() == ActionType::Reduce;
+			}) == actions.end());
 
 			vector<CreateInfo> createInfos;
 			vector<wstring> ruleInfos;
 			vector<ActionWrap> nodeStack;
 			vector<ActionWrap> ruleStack;
-		
-			for(size_t i = 0; i < actions.size(); ++i)
+
+			for(size_t i = 0; i < actions.size() && actions[i].GetActionType() != ActionType::Shift; ++i)
 			{
 				auto&&iter = actions[i];
 				switch(iter.GetActionType())
 				{
 					case ztl::general_parser::ActionType::Epsilon:
 					case ztl::general_parser::ActionType::NonTerminate:
+					case ztl::general_parser::ActionType::Reduce:
+					case ztl::general_parser::ActionType::Shift:
 						assert(false);
 						break;
-					case ztl::general_parser::ActionType::Shift:
-						ruleStack.emplace_back(iter);
-						break;
-					case ztl::general_parser::ActionType::Reduce:
-						if(!ruleStack.empty() && ruleStack.back().GetActionType() == ActionType::Shift)
-						{
-							ruleStack.pop_back();
-						}
-						else
-						{
-							ruleStack.emplace_back(iter);
-						}
-						break;
-
-					case ztl::general_parser::ActionType::Terminate:
-						CacheTerminateMap(edge, iter.GetName());
-						break;
-
 					case ztl::general_parser::ActionType::Create:
 						nodeStack.emplace_back(iter);
 						break;
 					case ztl::general_parser::ActionType::Assign:
-						if(!nodeStack.empty() &&
-							actions[i - 1].GetActionType() != ActionType::Terminate&&
-							nodeStack.back().GetActionType() == ActionType::Create)
-						{
-							nodeStack.pop_back();
-						}
-						else if(!nodeStack.empty() && actions[i - 1].GetActionType() != ActionType::Terminate)
-						{
-							nodeStack.emplace_back(iter);
-						}
+						ruleStack.emplace_back(iter);
 						break;
 					case ztl::general_parser::ActionType::Using:
+						ruleStack.emplace_back(iter);
+						break;
 					case ztl::general_parser::ActionType::Setter:
 					default:
 						break;
 				}
 			}
-			if (!nodeStack.empty())
+			if(!nodeStack.empty())
 			{
 				CacheCreatedNodeRequiresMap(edge, nodeStack, createInfos);
 			}
+			CacheTerminateMap(edge);
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
 		}
 
@@ -321,7 +278,7 @@ namespace ztl
 					return left.targetIndex < right.targetIndex;
 				});
 				output << L"NodeIndex:" + to_wstring(nodeIndex) << endl;
-				
+
 				for(auto&& colsIter : edges)
 				{
 					auto&& targetNodeIndex = colsIter.targetIndex;

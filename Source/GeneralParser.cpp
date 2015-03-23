@@ -74,30 +74,29 @@ namespace ztl
 			return RuleResolve(edges, tokenIndex);
 		}
 		PDAEdge * GeneralParser::RuleResolve(vector<PDAEdge*>* edges, int tokenIndex)
-		{/*
+		{
 			assert(edges != nullptr && !edges->empty());
 			vector<PDAEdge*> result;
-			for (auto&& iter : *edges)
+			for(auto&& iter : *edges)
 			{
 				auto ruleRequire = jumpTable->GetRuleRequires(iter);
 				auto rbegin = make_reverse_iterator(rulePathStack.end());
 				auto rend = make_reverse_iterator(rulePathStack.end() - ruleRequire->size());
-				if (std::equal(ruleRequire->begin(), ruleRequire->end(), rbegin , rend))
+				if(std::equal(ruleRequire->begin(), ruleRequire->end(), rbegin, rend))
 				{
 					result.emplace_back(iter);
 				}
 			}
 			if(result.empty())
 			{
-				throw ztl_exception(L"error!can't find match token'rule.\n"+ GetParserInfo(tokenIndex));
-			}*/
-			
-			return CreateNodeResolve(*edges, tokenIndex);
-
-			//return CreateNodeResolve(result, tokenIndex);
+				throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(tokenIndex));
+			}
+		
+			return CreateNodeResolve(result, tokenIndex);
 		}
 		PDAEdge* GeneralParser::CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex)
 		{
+			
 			assert(!edges.empty());
 			vector<PDAEdge*> result;
 			for (auto&& iter:edges)
@@ -108,7 +107,7 @@ namespace ztl
 				{
 					result.emplace_back(iter);
 				}
-				else if(requires->size() < createdNodeStack.size())
+				else if(requires->size() <= createdNodeStack.size())
 				{
 					if (CheckCreateNodeRequires(*requires))
 					{
@@ -116,14 +115,13 @@ namespace ztl
 					}
 				}
 			}
-
-			if (result.empty())
+			if(result.empty())
 			{
-				throw ztl_exception(L"error!can't find match edge.\n "+ GetParserInfo(tokenIndex));
+				throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(tokenIndex));
 			}
-			if (result.size() > 1)
+			if(result.size() > 1)
 			{
-				throw ztl_exception(L"error ambiguous parse! find more match edge.\n"+GetParserInfo(tokenIndex));
+				throw ztl_exception(L"error ambiguous parse! find more match edge.\n" + GetParserInfo(tokenIndex));
 			}
 			assert(result.size() == 1);
 			return result[0];
@@ -141,12 +139,17 @@ namespace ztl
 					case ztl::general_parser::ActionType::Shift:
 						assert(rulePathStack.back() == actionIter.GetName());
 						rulePathStack.emplace_back(actionIter.GetValue());
+						createdNodeStack.emplace_back(MakeEmptyTreeNode());
 						break;
-					case ztl::general_parser::ActionType::Reduce:
+					case ztl::general_parser::ActionType::Using:
 						assert(rulePathStack.size() > 1);
 						assert(rulePathStack.back() == actionIter.GetName()&&
-							rulePathStack[rulePathStack.size()-2] == actionIter.GetValue());
+						rulePathStack[rulePathStack.size()-2] == actionIter.GetValue());
 						rulePathStack.pop_back();
+						assert(createdNodeStack.size() > 1);
+						assert(createdNodeStack[createdNodeStack.size() - 2]->IsEmpty());
+						swap(createdNodeStack[createdNodeStack.size() - 2], createdNodeStack[createdNodeStack.size() - 1]);
+						createdNodeStack.pop_back();
 						IsTerminate = false;
 						break;
 					case ztl::general_parser::ActionType::Terminate:
@@ -157,7 +160,7 @@ namespace ztl
 					
 					case ztl::general_parser::ActionType::Create:
 						assert(actionIter.GetValue() == rulePathStack.back());
-						createdNodeStack.emplace_back(MakeTreeNode(actionIter.GetName()));
+						createdNodeStack.back()->SetName(actionIter.GetName());
 						break;
 					case ztl::general_parser::ActionType::Assign:
 						if (IsTerminate)
@@ -178,7 +181,7 @@ namespace ztl
 						createdNodeStack.back()->SetField(actionIter.GetName(), terminatePool.size() - 1);
 						break;
 					case ztl::general_parser::ActionType::Epsilon:
-					case ztl::general_parser::ActionType::Using:
+					case ztl::general_parser::ActionType::Reduce:
 					case ztl::general_parser::ActionType::NonTerminate:
 					default:
 						assert(false);
@@ -200,19 +203,50 @@ namespace ztl
 				return	sum + node->GetNodeInfo();
 			});
 		}
+		pair<bool,int> GeneralParser::CheckCreateNodeRequire(int createStackIndex,const GeneralTreeNode& node)
+		{
+			assert(createStackIndex >= 0);
+			
+			for(; createStackIndex >= 0;--createStackIndex)
+			{
+				
+				auto current = createdNodeStack[createStackIndex];
+				if (!current->IsEmpty())
+				{
+					if(!current->IsEqualType(node))
+					{
+						return {false, 0};
+					}
+					else
+					{
+						return{ true,createStackIndex };
+					}
+				}
+			}
+
+		}
 		bool GeneralParser::CheckCreateNodeRequires(const vector<CreateInfo>& requires)
 		{
-			assert(requires.size() < createdNodeStack.size());
-			auto rbegin = make_reverse_iterator(requires.end());
-			auto rend = make_reverse_iterator(requires.begin());
-			return find_if(rbegin, rend, [i = createdNodeStack.size() - 1, this](const CreateInfo& current)mutable
+			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
+			auto createStackIndex = createdNodeStack.size() - 1;
+			for(int i = requires.size() - 1; i >= 0;--i,--createStackIndex)
 			{
+				auto&& current = requires[i];
 				auto&& createTypeName = current.createType;
 				auto&& fieldName = current.fieldName;
-				auto&& result = createTypeName != createdNodeStack[i]->GetName()&& !IsDeriveRelateion(createTypeName, createdNodeStack[i]->GetName());
-				--i;
-				return result;
-			}) == rend;
+				assert(signMap.find(createTypeName) != signMap.end());
+				
+				auto result = CheckCreateNodeRequire(createStackIndex,signMap[createTypeName]);
+				if (result.first == false)
+				{
+					return false;
+				}
+				else
+				{
+					createStackIndex = result.second;
+				}
+			}
+			return true;
 		}
 		wstring GeneralParser::GetParserInfo(int tokenIndex) const
 		{
@@ -291,6 +325,12 @@ namespace ztl
 				throw ztl_exception(L"error!" + nodeName + L" isn't a vaild TreeNode's name");
 			}
 			this->nodePool.emplace_back(make_shared<GeneralTreeNode>(findIter->second));
+			nodePool.back()->SetNumber(nodePool.size() - 1);
+			return nodePool.back().get();
+		}
+		GeneralTreeNode*	GeneralParser::MakeEmptyTreeNode()
+		{
+			this->nodePool.emplace_back(new GeneralTreeNode());
 			nodePool.back()->SetNumber(nodePool.size() - 1);
 			return nodePool.back().get();
 		}

@@ -69,5 +69,6 @@ namespace ztl
 	using std::accumulate;
 	using std::ifstream;
 	using std::back_inserter;
+	using std::for_each;
 	using ztl::contract::ztl_exception;
 }

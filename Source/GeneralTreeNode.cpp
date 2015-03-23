@@ -8,9 +8,8 @@ namespace ztl
 		{
 		}
 
-		GeneralTreeNode::GeneralTreeNode(const wstring & _name):name(_name)
+		GeneralTreeNode::GeneralTreeNode(const wstring & _name) : name(_name)
 		{
-
 		}
 
 		void GeneralTreeNode::SetField(const wstring& fieldName, const int nodeIndex)
@@ -103,10 +102,29 @@ namespace ztl
 		{
 			return nodeNumber;
 		}
-
+		void GeneralTreeNode::SetName(const wstring& _name)
+		{
+			assert(name.empty());
+			name = _name;
+		}
 		void GeneralTreeNode::SetNumber(int number)
 		{
 			nodeNumber = number;
+		}
+		bool	GeneralTreeNode::IsEmpty()const
+		{
+			return name.empty() && this->fieldMap.empty() && this->termMap.empty();
+		}
+		bool HasSameField(const unordered_map<wstring, vector< int>>& left, const unordered_map<wstring, vector<int>>& right)
+		{
+			return find_if(left.begin(), left.end(), [&right](const pair<const wstring, vector< int>>& element)
+			{
+				return right.find(element.first) == right.end();
+			}) == left.end();
+		}
+		bool GeneralTreeNode::IsEqualType(const GeneralTreeNode& node) const
+		{
+			return	HasSameField(termMap, node.termMap) && HasSameField(fieldMap, node.fieldMap);
 		}
 	}
 }

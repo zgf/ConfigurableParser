@@ -322,19 +322,6 @@ namespace ztl
 				grammars.erase(grammars.begin() + 1, grammars.end());
 			}
 		}
-		void DeleteNoTermAndUsingAction(vector<ActionWrap>::iterator nonTermiateIter, vector<ActionWrap>& actions)
-		{
-			assert(actions[0].GetActionType() == ActionType::NonTerminate);
-			/*if(actions.size() > 1 && actions[1].GetActionType() == ActionType::Using)
-			{
-				actions.erase(nonTermiateIter, nonTermiateIter + 2);
-			}
-			else
-			{*/
-				actions.erase(nonTermiateIter);
-			//}
-			//nonTerm清除后,nonTerm位置替换为reduce,noterm边上附带的信息放到reduce后面
-		}
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto&& edgeList = CollectNontermiateEdge(machine);
@@ -354,10 +341,8 @@ namespace ztl
 					machine.DeleteEdge(edgeIter);
 					auto findIter = machine.GetPDAMap().find(nonTerminateName);
 					assert(findIter != machine.GetPDAMap().end());
-					//清除掉using
-					DeleteNoTermAndUsingAction(nonTermiateIter, actions);
-					//actions.emplace(actions.begin(), ActionType::Reduce, nonTerminateName, ruleName, nonTerminateName, ruleName);
-					//清除直接右递归
+					assert(actions[0].GetActionType() == ActionType::NonTerminate);
+					actions.erase(nonTermiateIter);
 					machine.AddEdge(findIter->second.second, target, actions);
 					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName, nonTerminateName, ruleName, nonTerminateName));
 				}
@@ -415,49 +400,7 @@ namespace ztl
 		}
 		void CheckAndDeleteRightReCursionRing(vector<ActionWrap>& newActions)
 		{
-			ActionType type = ActionType::Reduce;
-			int lastIndex = find_if(make_reverse_iterator(newActions.end()), make_reverse_iterator(newActions.begin()), [type](const ActionWrap& wrap)
-			{
-				return wrap.GetActionType() == type;
-			}).base() - newActions.begin();
-			int firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
-			{
-				return wrap.GetActionType() == type;
-			}) - newActions.begin();
-			firstIndex = (firstIndex == (int) newActions.size()) ? 0 : firstIndex;
-			vector<int> deleter;
-			if(firstIndex != lastIndex)
-			{
-				for(auto index = firstIndex; index != lastIndex; ++index)
-				{
-					auto begin = newActions.begin() + firstIndex;
-					auto end = newActions.begin() + index + 1;
-					for(auto i = begin; i < end; ++i)
-					{
-						if(i->GetName() == newActions[index].GetValue() && i != end)
-						{
-							auto count = 0;
-							for_each(i, end, [&count, type](const ActionWrap& wrap)
-							{
-								if(wrap.GetActionType() != type)
-								{
-									++count;
-								}
-							});
-							if(count == 0)
-							{
-								auto number = end - i;
-								newActions.erase(i, end);
-								lastIndex = lastIndex - number;
-								index = index - number;
-								firstIndex = index + 1;
-								break;
-							}
-						}
-					}
-				}
-			}
-			//CheckAndDeleteReCursionRing(newActions, ActionType::Reduce);
+			CheckAndDeleteReCursionRing(newActions, ActionType::Reduce);
 		}
 
 		vector<ActionWrap> GetNewAction(vector<PDAEdge*>& save)
@@ -475,7 +418,6 @@ namespace ztl
 			});
 
 			CheckAndDeleteLeftReCursionRing(newActions);
-			//CheckAndDeleteRightReCursionRing(newActions);
 			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
 			return newActions;
 		}
@@ -631,87 +573,6 @@ namespace ztl
 				machine.DeleteEdge(iter);
 			}
 		}
-		//vector<PDAEdge*> path;
-		////第i号路径已经完结集合
-		//unordered_set<int> save;
-		//vector<PDANode*> allNode;
-		//vector<PDANode*> noNeed;
-		//unordered_set<PDAEdge*> deleter;
-		////路径上遇到的节点
-		//unordered_set<PDANode*> pathSign;
-		//unordered_map<PDANode*, int> edgeCountMap;
-		//vector<vector<PDAEdge*>> ringPathSaves;
-		//auto nodes = CollectGraphNode(machine, [&edgeCountMap](PDANode* element)
-		//{
-		//	edgeCountMap.insert({ element,element->GetNexts().size() });
-		//	return true;
-		//});
-		//unordered_multimap<PDANode*, vector<int>> nodeEdgesMap;
-		//auto root = machine.GetRoot();
-		//function<void(PDANode*)> DFS = [&pathSign, &noNeed, &deleter, &ringPathSaves, &allNode, &DFS, &path, &edgeCountMap, &machine](PDANode* node)
-		//{
-		//	auto nexts = node->GetNexts();
-		//	size_t length = edgeCountMap[node];
-		//	for(size_t i = 0; i < length; ++i)
-		//	{
-		//		auto&& edgeIter = nexts[i];
-		//		auto target = edgeIter->GetTarget();
-		//		path.emplace_back(edgeIter);
-		//		assert(path.size() == pathSign.size());
-		//
-		//		if(pathSign.find(target) == pathSign.end() ||
-		//			//对于包含Term的环,构造新环.
-		//			IsTermRingPath(path))
-		//		{
-		//			if(edgeIter->HasTermActionType())
-		//			{
-		//				//遇到Term了,当前路径可以终止搜索了.
-		//
-		//				MergePathSymbol(path, machine, edgeCountMap);
-		//				//记录需要删除的边
-		//				deleter.insert(path.begin(), path.end());
-		//				assert(!path.empty());
-		//				//记录待处理的节点
-		//				assert(edgeIter->HasTermActionType());
-		//				RecordNewNode(target, allNode, noNeed);
-		//			}
-		//			else
-		//			{
-		//				pathSign.insert(target);
-		//				DFS(target);
-		//				pathSign.erase(target);
-		//			}
-		//		}
-		//		else if(IsLeftreCursionRingPath(path))
-		//		{
-		//			//遇到环了,对于全部由shift构造的环,也就是左递归,直接丢弃环就OK.
-		//			deleter.insert(path.begin(), path.end());
-		//			//deleter.insert(path.begin(), path.end());
-		//		}
-		//		else
-		//		{
-		//			//这里是无法遇到Term的环,也就是,走进了左递归,是不正确的路线,丢弃.
-		//			deleter.insert(path.begin(), path.end());
-		//		}
-		//		path.pop_back();
-		//	}
-		//};
-		//allNode.emplace_back(root);
-		//for(size_t i = 0; i < allNode.size(); ++i)
-		//{
-		//	//这里用auto& auto&&会导致earse删除遇到0xddddddd,奇葩啊- -...
-		//	auto nodeIter = allNode[i];
-		//	pathSign.insert(nodeIter);
-		//	DFS(nodeIter);
-		//	noNeed.emplace_back(nodeIter);
-		//	pathSign.erase(nodeIter);
-		//	assert(pathSign.empty());
-		//	assert(path.empty());
-		//}
-		//for(auto iter : deleter)
-		//{
-		//	machine.DeleteEdge(iter);
-		//}
 
 		vector<PDAEdge*> CollectNontermiateEdgeByRoot(PushDownAutoMachine& machine)
 		{
@@ -758,13 +619,8 @@ namespace ztl
 			//添加结束节点.
 
 			AddFinishNode(machine);
-			//	HelpLogJumpTable(L"LogJumpTable_MergeGraphTable.txt", machine);
 			MergePDAEpsilonSymbol(machine);
 			MergeGrammarCommonFactor(machine);
-			//DeleteNullPropertyEdge(machine);
-			//MergeGrammarCommonFactor(machine);
-
-			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", machine);
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{

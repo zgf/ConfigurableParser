@@ -23,9 +23,12 @@ namespace ztl
 			void InitFieldMap(const vector<wstring>&  fieldName);
 			bool HaveThisField(const wstring& fieldName);
 			const wstring& GetName()const;
+			void	  SetName(const wstring& _name);
 			const int GetNumber()const;
 			void	  SetNumber(int number);
 			wstring GetNodeInfo() const;
+			bool	IsEmpty()const;
+			bool IsEqualType(const GeneralTreeNode& node)const;
 		private:
 			int nodeNumber;//nodeÔÚnodePoolµÄindex
 			wstring name;
