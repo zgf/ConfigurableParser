@@ -11,6 +11,7 @@ namespace ztl
 			createdNodeRequiresMap(make_shared<unordered_map<PDAEdge*, vector<CreateInfo>>>()),
 			jumpTable(make_shared<unordered_map<int, vector<JumpItem>>>()),
 			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, unique_ptr<vector<wstring>>>>()),
+			setterRequiresMap(make_shared<unordered_map<PDAEdge*, unique_ptr<vector<wstring>>>>()),
 			terminateMap(make_shared<TerminateMapType>()),
 			rootNumber(-1)
 		{
@@ -69,9 +70,10 @@ namespace ztl
 		{
 			for_each(ruleStack.begin(), ruleStack.end(), [flag = false, &ruleInfos](const ActionWrap& wrap)mutable
 			{
-				if(flag == false)
+				if(flag == false&&wrap.GetFrom()!=wrap.GetTo())
 				{
 					flag = true;
+
 					ruleInfos.emplace_back(wrap.GetFrom());
 					ruleInfos.emplace_back(wrap.GetTo());
 				}
@@ -104,13 +106,13 @@ namespace ztl
 				case ztl::general_parser::ActionType::Shift:
 				case ztl::general_parser::ActionType::Terminate:
 				case ztl::general_parser::ActionType::Create:
+				case ztl::general_parser::ActionType::Setter:
 				case ztl::general_parser::ActionType::Assign:
 					name = first->GetFrom();
 					break;
 				case ztl::general_parser::ActionType::Reduce:
 				case ztl::general_parser::ActionType::NonTerminate:
 				case ztl::general_parser::ActionType::Epsilon:
-				case ztl::general_parser::ActionType::Setter:
 				default:
 					assert(false);
 					break;
@@ -197,16 +199,21 @@ namespace ztl
 					case ztl::general_parser::ActionType::Shift:
 						assert(false);
 						break;
-					case ztl::general_parser::ActionType::Create:
-						nodeStack.emplace_back(iter);
-						break;
 					case ztl::general_parser::ActionType::Assign:
-						ruleStack.emplace_back(iter);
+						if (!iter.GetTo().empty())
+						{
+							ruleStack.emplace_back(iter);
+							nodeStack.emplace_back(iter);
+
+						}
 						break;
 					case ztl::general_parser::ActionType::Using:
 						ruleStack.emplace_back(iter);
 						break;
 					case ztl::general_parser::ActionType::Setter:
+						CacheSetterRequiresMap(edge, iter.GetName());
+						break;
+					case ztl::general_parser::ActionType::Create:
 					default:
 						break;
 				}
@@ -217,6 +224,19 @@ namespace ztl
 			}
 			CacheTerminateMap(edge);
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
+		}
+		void GeneralJumpTable::CacheSetterRequiresMap(PDAEdge* edge, const wstring& fieldName)
+		{
+			if(this->setterRequiresMap->find(edge) == setterRequiresMap->end())
+			{
+				setterRequiresMap->insert({ edge,make_unique<vector<wstring>>() });
+			}
+			(*setterRequiresMap)[edge]->emplace_back(fieldName);
+		}
+		vector<wstring>*		GeneralJumpTable::GetSetterRequires(PDAEdge* edge)const
+		{
+			auto&& findIter = setterRequiresMap->find(edge);
+			return (findIter == setterRequiresMap->end()) ? nullptr: std::addressof(*findIter->second);
 		}
 
 		void GeneralJumpTable::ClearJumpTable()

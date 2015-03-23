@@ -43,19 +43,19 @@ namespace ztl
 			{
 				return action;
 			}
-			wstring GetName()const
+			const wstring& GetName()const
 			{
 				return name;
 			}
-			wstring GetValue()const
+			const wstring& GetValue()const
 			{
 				return value;
 			}
-			wstring GetFrom()const
+			const wstring& GetFrom()const
 			{
 				return current;
 			}
-			wstring GetTo()const
+			const wstring& GetTo()const
 			{
 				return next;
 			}
@@ -244,6 +244,8 @@ namespace ztl
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
 			void						AddFinishNodeFollowTarget(PDANode* target,const wstring& ruleName);
 			void						FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap);
+			void						FrontEdgesAdditionSetterAction(PDANode* targetNode, const ActionWrap& wrap);
+
 			wstring						GetRootRuleName()const;
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);

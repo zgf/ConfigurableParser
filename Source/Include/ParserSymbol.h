@@ -57,7 +57,7 @@ namespace ztl
 			ParserSymbol*							GetSubSymbolByName(const wstring& _name)	 const;
 			size_t									SubSymbolCount()						 const;
 			ParserSymbol*							SearchClassSubSymbol(const wstring& _name)const;
-			vector<wstring>							GetClassAllFieldName()const;
+			vector<ParserSymbol*> GetClassAllFieldDefSymbol()const;
 		public:
 			bool									IsType()     const;
 			bool									IsDefine()   const;

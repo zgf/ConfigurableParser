@@ -146,6 +146,15 @@ namespace ztl
 				this->BackInsertAction(edgeIter, wrap);
 			}
 		}
+		void PushDownAutoMachine::FrontEdgesAdditionSetterAction(PDANode* targetNode, const ActionWrap& wrap)
+		{
+			FrontEdgesAdditionBackAction(targetNode, wrap);
+			for(auto&& edgeIter : *targetNode->fronts)
+			{
+				swap(edgeIter->actions.back(), edgeIter->actions[edgeIter->actions.size() - 2]);
+			}
+
+		}
 
 	
 

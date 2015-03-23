@@ -17,6 +17,10 @@ namespace ztl
 			GeneralTreeNode(const int number,const wstring& name);
 			GeneralTreeNode(const wstring& _name);
 			void SetField(const wstring& fieldName, const int nodeIndex);
+			void SetFieldMap(const wstring& fieldName, const int nodeIndex);
+
+			void SetTermMap(const wstring& fieldName, const int nodeIndex);
+
 			void InitTermMap(const wstring& fieldName);
 			void InitTermMap(const vector<wstring>& fieldName);
 			void InitFieldMap(const wstring& fieldName);
@@ -28,7 +32,9 @@ namespace ztl
 			void	  SetNumber(int number);
 			wstring GetNodeInfo() const;
 			bool	IsEmpty()const;
-			bool IsEqualType(const GeneralTreeNode& node)const;
+			bool IsMayDeriveType(const GeneralTreeNode& node)const;
+			bool IsMayDeriveType(const GeneralTreeNode & node, const vector<wstring>& exclude) const;
+
 		private:
 			int nodeNumber;//nodeÔÚnodePoolµÄindex
 			wstring name;

@@ -70,9 +70,15 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarSetterTypeDefine* node)
 			{
+				
 				node->grammar->Accept(this);
+				//Setter前一条边是Create
+				assert(find_if(result.second->GetFronts().begin(), result.second->GetFronts().end(), [](PDAEdge*edge)
+				{
+					return edge->GetActions().back().GetActionType() != ActionType::Create;
+				}) == result.second->GetFronts().end());
 				ActionWrap wrap(ActionType::Setter, node->name, node->value, ruleName, L"");
-				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
+				machine->FrontEdgesAdditionSetterAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
@@ -104,16 +110,23 @@ namespace ztl
 			void								Visit(GeneralGrammarAssignTypeDefine* node)
 			{
 				auto ruleSymbol = machine->GetSymbolManager()->GetCacheNormalGrammarToRuleDefSymbol(node->grammar.get());
-				auto fieldSymbol = createTypeSymbol->SearchClassFieldSymbol(node->name);
-				assert(fieldSymbol != nullptr&&fieldSymbol->IsFieldDef());
-				auto fieldTypeSymbol = fieldSymbol->GetDescriptorSymbol();
-				if(fieldTypeSymbol->IsArrayType())
+				ActionWrap wrap;
+				if(ruleSymbol->IsTokenDef())
 				{
-					fieldTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
+					wrap = ActionWrap(ActionType::Assign, node->name, ruleSymbol->GetName(), ruleName,L"" );
 				}
-				assert(fieldTypeSymbol->IsType() && !fieldTypeSymbol->IsArrayType());
-				auto name = (ruleSymbol->IsTokenDef()) ? ruleSymbol->GetName() : fieldTypeSymbol->GetName();
-				ActionWrap wrap(ActionType::Assign, node->name, name, ruleSymbol->GetName(), ruleName);
+				else
+				{
+					auto fieldSymbol = createTypeSymbol->SearchClassFieldSymbol(node->name);
+					assert(fieldSymbol != nullptr&&fieldSymbol->IsFieldDef());
+					auto fieldTypeSymbol = fieldSymbol->GetDescriptorSymbol();
+					if(fieldTypeSymbol->IsArrayType())
+					{
+						fieldTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
+					}
+					assert(fieldTypeSymbol->IsType() && !fieldTypeSymbol->IsArrayType());
+					wrap = ActionWrap(ActionType::Assign, node->name, fieldTypeSymbol->GetName(), ruleSymbol->GetName(), ruleName);
+				}
 				node->grammar->Accept(this);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
@@ -370,9 +383,9 @@ namespace ztl
 					{
 						if(i->GetName() == newActions[index].GetValue() && i != end)
 						{
-							newActions.clear();
-							return;
-							/*auto count = 0;
+							//newActions.clear();
+							//return;
+							auto count = 0;
 							for_each(i, end, [&count, type](const ActionWrap& wrap)
 							{
 								if(wrap.GetActionType() != type)
@@ -388,7 +401,7 @@ namespace ztl
 								index = index - number;
 								firstIndex = index + 1;
 								break;
-							}*/
+							}
 						}
 					}
 				}
@@ -410,10 +423,8 @@ namespace ztl
 			{
 				for(auto&& iter: edge->GetActions())
 				{
-					if(iter.GetActionType() != ActionType::Epsilon)
-					{
-						newActions.emplace_back(iter);
-					}
+					assert(iter.GetActionType() != ActionType::Epsilon);
+					newActions.emplace_back(iter);
 				}
 			});
 
@@ -464,33 +475,7 @@ namespace ztl
 				}
 			}
 		}
-		struct Path
-		{
-			vector<PDAEdge*> edges;
-		};
-		bool IsTermRingPath(vector<PDAEdge*>& path)
-		{
-			return find_if(path.begin(), path.end(), [](PDAEdge* iter)
-			{
-				return iter->HasTermActionType();
-			}) != path.end();
-		}
-		bool IsLeftreCursionRingPath(vector<PDAEdge*>& path)
-		{
-			return accumulate(path.begin(), path.end(), (size_t) 0, [](int val, PDAEdge* iter)
-			{
-				auto actions = iter->GetActions();
-				if(actions.size() == 1 &&
-					actions.begin()->GetActionType() == ActionType::Shift)
-				{
-					return val + 1;
-				}
-				else
-				{
-					return val;
-				}
-			}) == path.size();
-		}
+
 		void RecordNewNode(PDANode* target, vector<PDANode*>& allNode, unordered_set<PDANode*>& noNeed)
 		{
 			if(noNeed.find(target) == noNeed.end())
@@ -499,6 +484,24 @@ namespace ztl
 				allNode.emplace_back(target);
 			}
 		}
+		bool IsCorrectEdge(const vector<PDAEdge*>& path,const PDAEdge* edge)
+		{
+			if (path.empty())
+			{
+				return true;
+			}
+			else
+			{
+				assert(!path.empty());
+				auto grammr = path.back()->GetActions().back().GetTo();
+				if(grammr.empty())
+				{
+					grammr = path.back()->GetActions().back().GetFrom();
+				}
+				return grammr == edge->GetActions().front().GetFrom();
+			}
+		}
+	
 		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine)
 		{
 			//当前路径上遇到的边
@@ -526,13 +529,12 @@ namespace ztl
 			function<void(PDANode*)> DFS = [&noNeed, &deleter, &allNode, &DFS, &sign, &path, &edgeCountMap, &machine](PDANode* node)
 			{
 				auto nexts = node->GetNexts();
-
 				size_t length = edgeCountMap[node];
 				for(size_t i = 0; i < length; ++i)
 				{
 					auto&& edgeIter = nexts[i];
 					auto target = edgeIter->GetTarget();
-					if(sign.find(edgeIter) == sign.end())
+					if(sign.find(edgeIter) == sign.end()&& IsCorrectEdge(path,edgeIter))
 					{
 						path.emplace_back(edgeIter);
 						sign.insert(edgeIter);
@@ -548,7 +550,7 @@ namespace ztl
 							assert(edgeIter->HasTermActionType());
 							RecordNewNode(target, allNode, noNeed);
 						}
-						else
+						else 
 						{
 							DFS(target);
 						}
@@ -558,6 +560,11 @@ namespace ztl
 					}
 					else
 					{
+						if(!IsCorrectEdge(path, edgeIter))
+						{
+							int a = 0;
+							IsCorrectEdge(path, edgeIter);
+						}
 						//遇到环了
 						deleter.insert(path.begin(), path.end());
 					}
@@ -615,12 +622,12 @@ namespace ztl
 			AddPDAToPDAMachine(machine, PDAMap);
 			machine.CreateRoot();
 			MergeEpsilonPDAGraph(machine);
-			MergeGrammarCommonFactor(machine);
+		//	MergeGrammarCommonFactor(machine);
 			//添加结束节点.
 
 			AddFinishNode(machine);
 			MergePDAEpsilonSymbol(machine);
-			MergeGrammarCommonFactor(machine);
+		//	MergeGrammarCommonFactor(machine);
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{

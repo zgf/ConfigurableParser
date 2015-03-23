@@ -30,7 +30,7 @@ namespace ztl
 			CreateDPDAGraph(*machine.get());
 			jumpTable = make_shared<GeneralJumpTable>(machine.get());
 			CreateJumpTable(*jumpTable.get());
-			HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
+			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 
 		void GeneralParser::GenerateIsomorphismParserTree()
@@ -39,11 +39,13 @@ namespace ztl
 			auto rootRule = machine->GetRootRuleName();
 			assert(!rootRule.empty());
 			this->rulePathStack.emplace_back(rootRule);
+			this->createdNodeStack.emplace_back(MakeEmptyTreeNode());
 			auto currentNodeIndex = jumpTable->GetRootNumber();
 			size_t tokenIndex = 0;
 			while(tokenIndex != tokenPool.size())
 			{
-				wcout << currentNodeIndex<<endl;
+			
+				wcout << currentNodeIndex << endl;
 				auto edge = EdgeResolve(currentNodeIndex, tokenIndex);
 				ExecuteEdgeActions(edge, tokenIndex);
 				++tokenIndex;
@@ -52,7 +54,7 @@ namespace ztl
 			assert(createdNodeStack.size() == 1);
 			treeRoot = createdNodeStack.front();
 		}
-		
+
 		shared_ptr<void> GeneralParser::GeneralParserTree()
 		{
 			GenerateIsomorphismParserTree();
@@ -60,7 +62,7 @@ namespace ztl
 		}
 		PDAEdge* GeneralParser::EdgeResolve(int number, int tokenIndex)
 		{
-			return TerminateResolve(number,tokenIndex);
+			return TerminateResolve(number, tokenIndex);
 		}
 		PDAEdge * GeneralParser::TerminateResolve(int number, int tokenIndex)
 		{
@@ -91,25 +93,26 @@ namespace ztl
 			{
 				throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(tokenIndex));
 			}
-		
+
 			return CreateNodeResolve(result, tokenIndex);
 		}
 		PDAEdge* GeneralParser::CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex)
 		{
-			
 			assert(!edges.empty());
 			vector<PDAEdge*> result;
-			for (auto&& iter:edges)
+			for(auto&& iter : edges)
 			{
 				auto requires = jumpTable->GetCreateNodeRequires(iter);
-				assert(requires == nullptr||(requires != nullptr&&!requires->empty()));
-				if (requires==nullptr)
+				auto&& setterRequires = jumpTable->GetSetterRequires(iter);
+
+				assert(requires == nullptr || (requires != nullptr&&!requires->empty()));
+				if(requires == nullptr)
 				{
 					result.emplace_back(iter);
 				}
 				else if(requires->size() <= createdNodeStack.size())
 				{
-					if (CheckCreateNodeRequires(*requires))
+					if(CheckCreateNodeRequires(*requires,setterRequires))
 					{
 						result.emplace_back(iter);
 					}
@@ -131,7 +134,7 @@ namespace ztl
 			auto actions = edge->GetActions();
 			assert(!actions.empty());
 			bool IsTerminate = false;
-			for (auto&& actionIter : actions)
+			for(auto&& actionIter : actions)
 			{
 				auto type = actionIter.GetActionType();
 				switch(type)
@@ -143,8 +146,8 @@ namespace ztl
 						break;
 					case ztl::general_parser::ActionType::Using:
 						assert(rulePathStack.size() > 1);
-						assert(rulePathStack.back() == actionIter.GetName()&&
-						rulePathStack[rulePathStack.size()-2] == actionIter.GetValue());
+						assert(rulePathStack.back() == actionIter.GetName() &&
+							rulePathStack[rulePathStack.size() - 2] == actionIter.GetValue());
 						rulePathStack.pop_back();
 						assert(createdNodeStack.size() > 1);
 						assert(createdNodeStack[createdNodeStack.size() - 2]->IsEmpty());
@@ -157,28 +160,47 @@ namespace ztl
 						assert(actionIter.GetName() == tokenPool[tokenIndex]->tag);
 						IsTerminate = true;
 						break;
-					
+
 					case ztl::general_parser::ActionType::Create:
 						assert(actionIter.GetValue() == rulePathStack.back());
 						createdNodeStack.back()->SetName(actionIter.GetName());
 						break;
 					case ztl::general_parser::ActionType::Assign:
-						if (IsTerminate)
+						if(IsTerminate)
 						{
 							terminatePool.emplace_back(tokenPool[tokenIndex]);
-							createdNodeStack.back()->SetField(actionIter.GetName(), terminatePool.size() - 1);
+							createdNodeStack.back()->SetTermMap(actionIter.GetName(), terminatePool.size() - 1);
 						}
 						else
 						{
-							assert(createdNodeStack.size() > 1);
-							assert(createdNodeStack[createdNodeStack.size() - 2]->HaveThisField(actionIter.GetName()));
-							createdNodeStack[createdNodeStack.size()-2]->SetField(actionIter.GetName(), createdNodeStack.back()->GetNumber());
-							createdNodeStack.pop_back();
+							if (actionIter.GetFrom() != actionIter.GetTo())
+							{
+								//非右递归的assgin
+								assert(actionIter.GetFrom() != actionIter.GetTo());
+								assert(actionIter.GetFrom() == rulePathStack.back());
+								assert(createdNodeStack.size() > 1);
+								createdNodeStack[createdNodeStack.size() - 2]->SetFieldMap(actionIter.GetName(), createdNodeStack.back()->GetNumber());
+								createdNodeStack.pop_back();
+								rulePathStack.pop_back();
+								assert(actionIter.GetTo() == rulePathStack.back());
+							}
+							else
+							{
+								//右递归生成的assgin.也就是shift应该有一个左递归,但实际无左递归的shift,所以要"插入"一个节点.文法不变
+								assert(actionIter.GetFrom() == actionIter.GetTo());
+								assert(actionIter.GetFrom() == rulePathStack.back());
+								createdNodeStack.emplace_back(MakeEmptyTreeNode());
+								swap(createdNodeStack[createdNodeStack.size() - 2], createdNodeStack[createdNodeStack.size() - 1]);
+								createdNodeStack[createdNodeStack.size() - 2]->SetFieldMap(actionIter.GetName(), createdNodeStack.back()->GetNumber());
+								createdNodeStack.pop_back();
+								assert(actionIter.GetTo() == rulePathStack.back());
+							}
+
 						}
 						break;
 					case ztl::general_parser::ActionType::Setter:
 						terminatePool.emplace_back(make_shared<TokenInfo>(actionIter.GetValue(), L"Setter", -1, -1));
-						createdNodeStack.back()->SetField(actionIter.GetName(), terminatePool.size() - 1);
+						createdNodeStack.back()->SetTermMap(actionIter.GetName(), terminatePool.size() - 1);
 						break;
 					case ztl::general_parser::ActionType::Epsilon:
 					case ztl::general_parser::ActionType::Reduce:
@@ -194,60 +216,66 @@ namespace ztl
 			return accumulate(rulePathStack.begin(), rulePathStack.end(), wstring(), [](const wstring& sum, const wstring& value)
 			{
 				return sum + L" " + value;
-			})+L"\n";
+			}) + L"\n";
 		}
 		wstring GeneralParser::GetCreatNodeStackInfo() const
 		{
-			return accumulate(createdNodeStack.begin(), createdNodeStack.end(), wstring(), [this](const wstring& sum,GeneralTreeNode* node)
+			return accumulate(createdNodeStack.begin(), createdNodeStack.end(), wstring(), [this](const wstring& sum, GeneralTreeNode* node)
 			{
 				return	sum + node->GetNodeInfo();
 			});
 		}
-		pair<bool,int> GeneralParser::CheckCreateNodeRequire(int createStackIndex,const GeneralTreeNode& node)
+		
+		pair<bool, int>	GeneralParser::CheckCreateNodeRequire(int createStackIndex, const GeneralTreeNode& node, vector<wstring>* exclude)
 		{
 			assert(createStackIndex >= 0);
-			
-			for(; createStackIndex >= 0;--createStackIndex)
+
+			for(; createStackIndex >= 0; --createStackIndex)
 			{
-				
 				auto current = createdNodeStack[createStackIndex];
-				if (!current->IsEmpty())
+				if(!current->IsEmpty())
 				{
-					if(!current->IsEqualType(node))
-					{
-						return {false, 0};
-					}
-					else
+					if (
+							(exclude == nullptr&&
+							node.IsMayDeriveType(*current))||
+							(exclude != nullptr&& 
+							node.IsMayDeriveType(*current, *exclude))
+						
+						)
 					{
 						return{ true,createStackIndex };
 					}
+					return{ false, 0 };
 				}
 			}
-
+			return{ false, 0 };
 		}
-		bool GeneralParser::CheckCreateNodeRequires(const vector<CreateInfo>& requires)
+		bool GeneralParser::CheckCreateNodeRequires(const vector<CreateInfo>& requires, vector<wstring>* exclude)
 		{
-			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
-			auto createStackIndex = createdNodeStack.size() - 1;
-			for(int i = requires.size() - 1; i >= 0;--i,--createStackIndex)
-			{
-				auto&& current = requires[i];
-				auto&& createTypeName = current.createType;
-				auto&& fieldName = current.fieldName;
-				assert(signMap.find(createTypeName) != signMap.end());
+		
+				static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
+				auto createStackIndex = createdNodeStack.size() - 1;
+				for(int i = requires.size() - 1; i >= 0; --i, --createStackIndex)
+				{
+					auto&& current = requires[i];
+					auto&& createTypeName = current.createType;
+					auto&& fieldName = current.fieldName;
+					assert(signMap.find(createTypeName) != signMap.end());
+					auto&& result = CheckCreateNodeRequire(createStackIndex, signMap[createTypeName], exclude);
 				
-				auto result = CheckCreateNodeRequire(createStackIndex,signMap[createTypeName]);
-				if (result.first == false)
-				{
-					return false;
+					if(result.first == false)
+					{
+						return false;
+					}
+					else
+					{
+						createStackIndex = result.second;
+					}
 				}
-				else
-				{
-					createStackIndex = result.second;
-				}
-			}
-			return true;
+				return true;
+			
 		}
+
 		wstring GeneralParser::GetParserInfo(int tokenIndex) const
 		{
 			return L" current rule Path" + GetRulePathInfo() +
@@ -257,18 +285,27 @@ namespace ztl
 		unordered_map<wstring, GeneralTreeNode> GeneralParser::InitTreeNodeMap()
 		{
 			unordered_map<wstring, GeneralTreeNode> result;
-			for (auto&& iter: manager->GetTypeDefSymbolMap())
+			for(auto&& iter : manager->GetTypeDefSymbolMap())
 			{
 				ParserSymbol* typeDefSymbol = iter.second;
-				
+
 				result.emplace(typeDefSymbol->GetName(), GeneralTreeNode(typeDefSymbol->GetName()));
-				
-				if (typeDefSymbol->IsClassType())
+
+				if(typeDefSymbol->IsClassType())
 				{
-					auto fieldNames = typeDefSymbol->GetClassAllFieldName();
-					for (auto&& name:fieldNames)
+					auto fieldSymbol = typeDefSymbol->GetClassAllFieldDefSymbol();
+					for(auto&& symbol : fieldSymbol)
 					{
-						result[typeDefSymbol->GetName()].InitFieldMap(name);
+						auto&& name = symbol->GetName();
+						if (symbol->GetDescriptorSymbol()->IsTokenType()||
+							symbol->GetDescriptorSymbol()->IsEnumType())
+						{
+							result[typeDefSymbol->GetName()].InitTermMap(name);
+						}
+						else
+						{
+							result[typeDefSymbol->GetName()].InitFieldMap(name);
+						}
 					}
 				}
 				assert(typeDefSymbol->IsClassType() || typeDefSymbol->IsEnumType());
@@ -279,10 +316,10 @@ namespace ztl
 		{
 			unordered_map<wstring, wstring> result;
 			auto&& symbolMap = manager->GetbaseSymbolToDeriveMap();
-			for (auto&&iter:symbolMap)
+			for(auto&&iter : symbolMap)
 			{
 				auto baseSymbol = iter.first;
-				if (baseSymbol!=nullptr)
+				if(baseSymbol != nullptr)
 				{
 					//baseSymbol == nullptr是global
 					auto&& deriveSymbols = iter.second;
@@ -294,20 +331,19 @@ namespace ztl
 						}
 					}
 				}
-				
 			}
 			return result;
 		}
-		
+
 		bool GeneralParser::IsDeriveRelateion(const wstring& base, const wstring& derive)
 		{
 			static unordered_map<wstring, wstring> deriveToBaseMap = InitDeriveToBaseMap();
 
 			auto work = derive;
-			while(work!=base)
+			while(work != base)
 			{
 				auto findIter = deriveToBaseMap.find(work);
-				if (findIter == deriveToBaseMap.end())
+				if(findIter == deriveToBaseMap.end())
 				{
 					return false;
 				}

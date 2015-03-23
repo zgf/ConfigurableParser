@@ -183,14 +183,14 @@ namespace ztl
 			return nullptr;
 		}
 
-		vector<wstring>	ParserSymbol::GetClassAllFieldName()const
+		vector<ParserSymbol*> ParserSymbol::GetClassAllFieldDefSymbol() const
 		{
-			vector<wstring> result;
+			vector<ParserSymbol*> result;
 			for (auto&& iter:*subSymbolMap)
 			{
 				if (iter.second->IsFieldDef())
 				{
-					result.emplace_back(iter.first);
+					result.emplace_back(iter.second);
 				}
 			}
 			return result;

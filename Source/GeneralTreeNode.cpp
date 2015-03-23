@@ -11,7 +11,25 @@ namespace ztl
 		GeneralTreeNode::GeneralTreeNode(const wstring & _name) : name(_name)
 		{
 		}
+		void GeneralTreeNode::SetFieldMap(const wstring& fieldName, const int nodeIndex)
+		{
+			auto findIter = fieldMap.find(fieldName);
+			if(findIter == fieldMap.end())
+			{
+				fieldMap[fieldName];
+			}
+			fieldMap[fieldName].emplace_back(nodeIndex);
+		}
 
+		void GeneralTreeNode::SetTermMap(const wstring& fieldName, const int nodeIndex)
+		{
+			auto findIter = termMap.find(fieldName);
+			if(findIter == termMap.end())
+			{
+				termMap[fieldName];
+			}
+			termMap[fieldName].emplace_back(nodeIndex);
+		}
 		void GeneralTreeNode::SetField(const wstring& fieldName, const int nodeIndex)
 		{
 			auto findIter = fieldMap.find(fieldName);
@@ -122,9 +140,28 @@ namespace ztl
 				return right.find(element.first) == right.end();
 			}) == left.end();
 		}
-		bool GeneralTreeNode::IsEqualType(const GeneralTreeNode& node) const
+		bool HasSameField(const unordered_map<wstring, vector< int>>& left, const unordered_map<wstring, vector<int>>& right,const vector<wstring>& exclude)
 		{
-			return	HasSameField(termMap, node.termMap) && HasSameField(fieldMap, node.fieldMap);
+			for (auto&& element:left)
+			{
+				if(right.find(element.first) == right.end())
+				{
+					auto findResult = find(exclude.begin(), exclude.end(), element.first);
+					if(findResult == exclude.end())
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		bool GeneralTreeNode::IsMayDeriveType(const GeneralTreeNode & node) const
+		{
+			return HasSameField(termMap, node.termMap) && HasSameField(fieldMap, node.fieldMap);
+		}
+		bool GeneralTreeNode::IsMayDeriveType(const GeneralTreeNode & node, const vector<wstring>& exclude) const
+		{
+			return HasSameField(termMap, node.termMap, exclude) && HasSameField(fieldMap, node.fieldMap);
 		}
 	}
 }
