@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "..\..\Lib\ZTL\ztl_pair_builder.hpp"
 namespace ztl
 {
 	namespace general_parser
@@ -13,6 +14,53 @@ namespace ztl
 		struct GeneralTableDefine;
 		class PushDownAutoMachine;
 		struct CreateInfo;
+		PAIR_BUILDER(EdgeInfo, PDAEdge*, edge, bool, rightRecursion);
+
+		struct ParserState
+		{
+		public:
+			ParserState()  = default;
+			~ParserState() noexcept = default;
+			ParserState(ParserState&&)  = default;
+			ParserState(const ParserState&)  = default;
+			ParserState& operator=(ParserState&&)  = default;
+			ParserState& operator=(const ParserState&)   = default;
+			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule, GeneralTreeNode* initCreateNode,const EdgeInfo& _edgeInfo) :
+				tokenIndex(_tokenIndex), currentNodeIndex(_currentNodeIndex),edgeInfo(_edgeInfo)
+			{
+				createdNodeStack.emplace_back(initCreateNode);
+				rulePathStack.emplace_back(initRule);
+			}
+			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule, GeneralTreeNode* initCreateNode)
+				:tokenIndex(_tokenIndex), currentNodeIndex(_currentNodeIndex)
+			{
+				createdNodeStack.emplace_back(initCreateNode);
+				rulePathStack.emplace_back(initRule);
+			}
+			void SaveEdgeInfo(const EdgeInfo& _edgeInfo)
+			{
+				this->edgeInfo = _edgeInfo;
+			}
+			void SaveNodeStackInFo(const vector<GeneralTreeNode*>& info)
+			{
+				createdNodeStack = info;
+			}
+			PDAEdge* GetEdge()const
+			{
+				return edgeInfo.edge;
+			}
+			bool	IsRightRecursion()const
+			{
+				return edgeInfo.rightRecursion;
+			}
+		
+		public:
+			vector<GeneralTreeNode*>			 createdNodeStack;
+			vector<wstring>						 rulePathStack;
+			int									 tokenIndex;
+			int									 currentNodeIndex;
+			EdgeInfo							 edgeInfo;
+		};
 		class GeneralParser
 		{
 		public:
@@ -29,33 +77,34 @@ namespace ztl
 			shared_ptr<void>	GeneralHeterogeneousParserTree();
 			shared_ptr<void>	GeneralParserTree();
 		private:
-			PDAEdge*			EdgeResolve(int number, int tokenIndex, bool& isRightRecursionEdge);
-			PDAEdge *			TerminateResolve(int number, int tokenIndex, bool& isRightRecursionEdge);
-			PDAEdge *			RuleResolve(vector<PDAEdge*>* edges, int tokenIndex, bool&isRightRecursionEdge);
-			void				HandleRightRecursionEdge(PDAEdge*edge,bool isRightRecursionEdge);
-			PDAEdge*			CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex);
-			void				ExecuteEdgeActions(PDAEdge* edge, int tokenIndex);
-			wstring				GetRulePathInfo()const;
-			wstring				GetCreatNodeStackInfo()const;
+			vector<EdgeInfo> EdgeResolve(ParserState& state);
+			vector<EdgeInfo> TerminateResolve(ParserState& state);
+			vector<EdgeInfo>RuleResolve(vector<PDAEdge*>* edges, ParserState& state);
+			void HandleRightRecursionEdge(ParserState& state);
+			vector<EdgeInfo> CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state);
+			void ExecuteEdgeActions(ParserState& state);
+			wstring GetRulePathInfo(ParserState& state)const;
+			wstring GetCreatNodeStackInfo(ParserState& state)const;
 			pair<bool, int>		CheckCreateNodeRequire(int createStackIndex, const GeneralTreeNode& node,vector<wstring>* exclude);
 
 			bool				CheckCreateNodeRequires(const vector<CreateInfo>& requires,vector<wstring>* exclude);
-
 			GeneralTreeNode*	MakeTreeNode(const wstring& nodeName);
 			GeneralTreeNode*	MakeEmptyTreeNode();
-			wstring				GetParserInfo(int tokenIndex)const;
+			GeneralTreeNode*	CopyTreeNode(GeneralTreeNode*);
+			void	SaveEdge(deque<ParserState>& states, const vector<EdgeInfo>& edges);
+			wstring GetParserInfo(ParserState& state)const;
 			unordered_map<wstring, GeneralTreeNode> InitTreeNodeMap();
 			unordered_map<wstring,vector<wstring>> InintChoiceFiledMap();
-			unordered_map<wstring, wstring> InitDeriveToBaseMap();
-			bool				IsDeriveRelateion(const wstring& base, const wstring& derive);
+			vector<GeneralTreeNode*> SaveCurrentStack(const vector<GeneralTreeNode*>& current);
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
 			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
 			vector<shared_ptr<TokenInfo>>		 terminatePool;
-			vector<GeneralTreeNode*>			 createdNodeStack;
-			vector<wstring>						 rulePathStack;
+
 			GeneralTreeNode*					 treeRoot;
+			deque<ParserState>					 parserStates;
+
 
 			shared_ptr<PushDownAutoMachine>		 machine;
 			shared_ptr<GeneralJumpTable>		 jumpTable;

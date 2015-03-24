@@ -41,19 +41,16 @@ namespace ztl
 			void												    CacheEdgeInfo(PDAEdge* edge);
 			void													CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos);
 			void													CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos);
-			void													CacheSetterRequiresMap(PDAEdge* edge, const wstring& fieldName);
-			vector<wstring>*										GetSetterRequires(PDAEdge* edge)const;
 			void													CacheEnterRule(PDAEdge* edge);
 			void													CacheTerminateMap(PDAEdge* edge);
 			vector<PDAEdge*>*										GetPDAEdgeByTerminate(const int number, const wstring& terminate)const;
 			int														GetRootNumber()const;
-			const vector<wstring>& GetRuleRequires(PDAEdge* edge)const;
+			const vector<wstring>&									GetRuleRequires(PDAEdge* edge)const;
 			const vector<CreateInfo>*								GetCreateNodeRequires(PDAEdge* edge)const;
 		private:
 			PushDownAutoMachine*															 machine;
 			shared_ptr<unordered_map<int, vector<JumpItem>>>								 jumpTable;
-			shared_ptr<unordered_map<PDAEdge*, unique_ptr<vector<wstring>>>>				 ruleRequiresMap;
-			shared_ptr<unordered_map<PDAEdge*, unique_ptr<vector<wstring>>>>				 setterRequiresMap;
+			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 ruleRequiresMap;
 			shared_ptr<unordered_map<PDAEdge*, vector<CreateInfo>>>							 createdNodeRequiresMap;
 			shared_ptr<TerminateMapType>													 terminateMap;
 			int																				 rootNumber;

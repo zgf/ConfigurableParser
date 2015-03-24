@@ -10,8 +10,7 @@ namespace ztl
 			:machine(_machine),
 			createdNodeRequiresMap(make_shared<unordered_map<PDAEdge*, vector<CreateInfo>>>()),
 			jumpTable(make_shared<unordered_map<int, vector<JumpItem>>>()),
-			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, unique_ptr<vector<wstring>>>>()),
-			setterRequiresMap(make_shared<unordered_map<PDAEdge*, unique_ptr<vector<wstring>>>>()),
+			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
 			terminateMap(make_shared<TerminateMapType>()),
 			rootNumber(-1)
 		{
@@ -80,7 +79,7 @@ namespace ztl
 			}
 			if(!ruleInfos.empty())
 			{
-				this->ruleRequiresMap->insert({ edge,make_unique<vector<wstring>>(ruleInfos) });
+				this->ruleRequiresMap->insert({ edge,ruleInfos });
 			}
 			else
 			{
@@ -115,8 +114,8 @@ namespace ztl
 			}
 			assert(!name.empty());
 			assert(ruleRequiresMap->find(edge) == ruleRequiresMap->end());
-			this->ruleRequiresMap->insert({ edge, make_unique<vector<wstring>>() });
-			(*ruleRequiresMap)[edge]->emplace_back(name);
+			this->ruleRequiresMap->insert({ edge,vector<wstring>() });
+			(*ruleRequiresMap)[edge].emplace_back(name);
 		}
 		void GeneralJumpTable::CacheTerminateMap(PDAEdge* edge)
 		{
@@ -156,7 +155,7 @@ namespace ztl
 		const vector<wstring>& GeneralJumpTable::GetRuleRequires(PDAEdge* edge) const
 		{
 			assert(ruleRequiresMap->find(edge) != ruleRequiresMap->end());
-			return *(*ruleRequiresMap)[edge];
+			return (*ruleRequiresMap)[edge];
 		}
 		const vector<CreateInfo>* GeneralJumpTable::GetCreateNodeRequires(PDAEdge * edge) const
 		{
@@ -207,7 +206,6 @@ namespace ztl
 						ruleStack.emplace_back(iter);
 						break;
 					case ztl::general_parser::ActionType::Setter:
-						CacheSetterRequiresMap(edge, iter.GetName());
 						break;
 					case ztl::general_parser::ActionType::Create:
 					default:
@@ -221,20 +219,7 @@ namespace ztl
 			CacheTerminateMap(edge);
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
 		}
-		void GeneralJumpTable::CacheSetterRequiresMap(PDAEdge* edge, const wstring& fieldName)
-		{
-			if(this->setterRequiresMap->find(edge) == setterRequiresMap->end())
-			{
-				setterRequiresMap->insert({ edge,make_unique<vector<wstring>>() });
-			}
-			(*setterRequiresMap)[edge]->emplace_back(fieldName);
-		}
-		vector<wstring>*		GeneralJumpTable::GetSetterRequires(PDAEdge* edge)const
-		{
-			auto&& findIter = setterRequiresMap->find(edge);
-			return (findIter == setterRequiresMap->end()) ? nullptr: std::addressof(*findIter->second);
-		}
-
+	
 		void GeneralJumpTable::ClearJumpTable()
 		{
 			jumpTable->clear();
