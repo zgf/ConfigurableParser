@@ -32,7 +32,7 @@ namespace ztl
 		public:
 			SymbolManager*  GetSymbolManager()const;
 			PDANode*		GetRoot()const;
-
+			
 			void													CreateJumpTable();
 			void													ClearJumpTable();
 			const unordered_map<int, vector<JumpItem>>&				GetJumpTable()const;
@@ -47,7 +47,7 @@ namespace ztl
 			void													CacheTerminateMap(PDAEdge* edge);
 			vector<PDAEdge*>*										GetPDAEdgeByTerminate(const int number, const wstring& terminate)const;
 			int														GetRootNumber()const;
-			vector<wstring>*										GetRuleRequires(PDAEdge* edge)const;
+			const vector<wstring>& GetRuleRequires(PDAEdge* edge)const;
 			const vector<CreateInfo>*								GetCreateNodeRequires(PDAEdge* edge)const;
 		private:
 			PushDownAutoMachine*															 machine;

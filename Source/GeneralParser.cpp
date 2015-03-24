@@ -44,9 +44,14 @@ namespace ztl
 			size_t tokenIndex = 0;
 			while(tokenIndex != tokenPool.size())
 			{
-			
+				bool isRightRecursionEdge = false;
+				if (tokenIndex == 90)
+				{
+					int a = 0;
+				}
 				wcout << currentNodeIndex << endl;
-				auto edge = EdgeResolve(currentNodeIndex, tokenIndex);
+				auto edge = EdgeResolve(currentNodeIndex, tokenIndex, isRightRecursionEdge);
+				HandleRightRecursionEdge(edge, isRightRecursionEdge);
 				ExecuteEdgeActions(edge, tokenIndex);
 				++tokenIndex;
 				currentNodeIndex = edge->GetTarget()->GetNumber();
@@ -60,11 +65,11 @@ namespace ztl
 			GenerateIsomorphismParserTree();
 			return GeneralHeterogeneousParserTree();
 		}
-		PDAEdge* GeneralParser::EdgeResolve(int number, int tokenIndex)
+		PDAEdge* GeneralParser::EdgeResolve(int number, int tokenIndex, bool& isRightRecursionEdge)
 		{
-			return TerminateResolve(number, tokenIndex);
+			return TerminateResolve(number, tokenIndex, isRightRecursionEdge);
 		}
-		PDAEdge * GeneralParser::TerminateResolve(int number, int tokenIndex)
+		PDAEdge * GeneralParser::TerminateResolve(int number, int tokenIndex, bool& isRightRecursionEdge)
 		{
 			auto&& token = this->tokenPool[tokenIndex];
 
@@ -73,50 +78,150 @@ namespace ztl
 			{
 				throw ztl_exception(L"error!can't find match token,tokenInfo.\n" + GetParserInfo(tokenIndex));
 			}
-			return RuleResolve(edges, tokenIndex);
+			return RuleResolve(edges, tokenIndex, isRightRecursionEdge);
 		}
-		PDAEdge * GeneralParser::RuleResolve(vector<PDAEdge*>* edges, int tokenIndex)
+		bool IsRightRecursionGrammar(const vector<wstring>&ruleInfos)
+		{
+			unordered_set<wstring> sign;
+			auto end = find_if(ruleInfos.begin(), ruleInfos.end(), [&sign](const wstring& value)
+			{
+				if(sign.find(value) == sign.end())
+				{
+					sign.insert(value);
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			});
+			return end != ruleInfos.end();
+		}
+		PDAEdge * GeneralParser::RuleResolve(vector<PDAEdge*>* edges, int tokenIndex, bool& isRightRecursionEdge)
 		{
 			assert(edges != nullptr && !edges->empty());
 			vector<PDAEdge*> result;
 			for(auto&& iter : *edges)
 			{
-				auto ruleRequire = jumpTable->GetRuleRequires(iter);
+				auto&& ruleRequire = jumpTable->GetRuleRequires(iter);
 				auto rbegin = make_reverse_iterator(rulePathStack.end());
-				auto rend = make_reverse_iterator(rulePathStack.end() - ruleRequire->size());
-				if(std::equal(ruleRequire->begin(), ruleRequire->end(), rbegin, rend))
+				auto rend = make_reverse_iterator(rulePathStack.end() - ruleRequire.size());
+				if(std::equal(ruleRequire.begin(), ruleRequire.end(), rbegin, rend))
 				{
 					result.emplace_back(iter);
 				}
 			}
 			if(result.empty())
 			{
-				throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(tokenIndex));
-			}
-
-			return CreateNodeResolve(result, tokenIndex);
-		}
-		PDAEdge* GeneralParser::CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex)
-		{
-			assert(!edges.empty());
-			vector<PDAEdge*> result;
-			for(auto&& iter : edges)
-			{
-				auto requires = jumpTable->GetCreateNodeRequires(iter);
-				auto&& setterRequires = jumpTable->GetSetterRequires(iter);
-
-				assert(requires == nullptr || (requires != nullptr&&!requires->empty()));
-				if(requires == nullptr)
+				for(auto&& iter : *edges)
 				{
-					result.emplace_back(iter);
-				}
-				else if(requires->size() <= createdNodeStack.size())
-				{
-					if(CheckCreateNodeRequires(*requires,setterRequires))
+					auto&& ruleRequire = jumpTable->GetRuleRequires(iter);
+					if (IsRightRecursionGrammar(ruleRequire))
 					{
+						isRightRecursionEdge = true;
 						result.emplace_back(iter);
 					}
 				}
+			}
+			if(result.empty())
+			{
+				throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(tokenIndex));
+			}
+			return CreateNodeResolve(result, tokenIndex);
+		}
+		void GeneralParser::HandleRightRecursionEdge(PDAEdge * edge, bool isRightRecursionEdge)
+		{
+			if (isRightRecursionEdge)
+			{
+				auto&& ruleRequire = jumpTable->GetRuleRequires(edge);
+				auto rulePathIndex = rulePathStack.size() - 1;
+				auto iter = find_if_not(ruleRequire.begin(),ruleRequire.end(),[this,&rulePathIndex](const wstring& value)
+				{
+					return value == rulePathStack[rulePathIndex--];
+				});
+				auto position = rulePathIndex + 2;
+				rulePathStack.insert(rulePathStack.begin()+ position, *iter);
+				createdNodeStack.insert(createdNodeStack.begin() + position, MakeEmptyTreeNode());
+			}
+		}
+		PDAEdge* GeneralParser::CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex)
+		{
+			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
+			static auto chioceFiledMap = InintChoiceFiledMap();
+
+			assert(!edges.empty());
+			vector<PDAEdge*> result;
+			
+			for(auto&& iter : edges)
+			{
+				auto actions = iter->GetActions();
+
+				GeneralTreeNode current = *createdNodeStack.back();
+				auto currentIndex = createdNodeStack.size() - 1;
+				for(size_t i = 0; i < actions.size()&&actions[i].GetActionType() != ActionType::Shift;++i)
+				{
+					auto&& actionIter = actions[i];
+					ActionType type = actionIter.GetActionType();
+					bool isTerminate = false;
+					switch(type)
+					{
+						case ztl::general_parser::ActionType::Using:
+							if(!createdNodeStack[currentIndex - 1]->IsEmpty())
+							{
+								goto TestNextEdge;
+							}
+							--currentIndex;
+							break;
+						case ztl::general_parser::ActionType::Create:
+							isTerminate = false;
+							current.SetName(actionIter.GetName());
+							if (chioceFiledMap.find(actionIter.GetName()) == chioceFiledMap.end() )
+							{
+								if(!current.IsTheSameType(signMap[actionIter.GetName()]))
+								{
+									goto TestNextEdge;
+								}
+							}
+							else
+							{
+								if(!current.IsTheSameType(signMap[actionIter.GetName()], chioceFiledMap[actionIter.GetName()]))
+								{
+									goto TestNextEdge;
+								}
+							}
+							
+							break;
+						case ztl::general_parser::ActionType::Assign:
+							--currentIndex;
+							current = *createdNodeStack[currentIndex];
+							if (isTerminate)
+							{
+								current.SetTermMap(actionIter.GetName(), -1);
+							}
+							else
+							{
+								current.SetFieldMap(actionIter.GetName(), -1);
+							}
+							break;
+						case ztl::general_parser::ActionType::Setter:
+							current.SetTermMap(actionIter.GetName(),-1);
+							break;
+						case ztl::general_parser::ActionType::Terminate:
+							isTerminate = true;
+							break;
+						case ztl::general_parser::ActionType::Shift:
+						case ztl::general_parser::ActionType::NonTerminate:
+						case ztl::general_parser::ActionType::Epsilon:
+						case ztl::general_parser::ActionType::Reduce:
+						default:
+							assert(false);
+							break;
+					}
+				}
+				result.emplace_back(iter);
+
+
+			TestNextEdge:;
 			}
 			if(result.empty())
 			{
@@ -164,6 +269,7 @@ namespace ztl
 					case ztl::general_parser::ActionType::Create:
 						assert(actionIter.GetValue() == rulePathStack.back());
 						createdNodeStack.back()->SetName(actionIter.GetName());
+						
 						break;
 					case ztl::general_parser::ActionType::Assign:
 						if(IsTerminate)
@@ -173,28 +279,28 @@ namespace ztl
 						}
 						else
 						{
-							if (actionIter.GetFrom() != actionIter.GetTo())
-							{
+							/*if (actionIter.GetFrom() != actionIter.GetTo())
+							{*/
 								//非右递归的assgin
-								assert(actionIter.GetFrom() != actionIter.GetTo());
+							//	assert(actionIter.GetFrom() != actionIter.GetTo());
 								assert(actionIter.GetFrom() == rulePathStack.back());
 								assert(createdNodeStack.size() > 1);
 								createdNodeStack[createdNodeStack.size() - 2]->SetFieldMap(actionIter.GetName(), createdNodeStack.back()->GetNumber());
 								createdNodeStack.pop_back();
 								rulePathStack.pop_back();
 								assert(actionIter.GetTo() == rulePathStack.back());
-							}
-							else
-							{
-								//右递归生成的assgin.也就是shift应该有一个左递归,但实际无左递归的shift,所以要"插入"一个节点.文法不变
-								assert(actionIter.GetFrom() == actionIter.GetTo());
-								assert(actionIter.GetFrom() == rulePathStack.back());
-								createdNodeStack.emplace_back(MakeEmptyTreeNode());
-								swap(createdNodeStack[createdNodeStack.size() - 2], createdNodeStack[createdNodeStack.size() - 1]);
-								createdNodeStack[createdNodeStack.size() - 2]->SetFieldMap(actionIter.GetName(), createdNodeStack.back()->GetNumber());
-								createdNodeStack.pop_back();
-								assert(actionIter.GetTo() == rulePathStack.back());
-							}
+							//}
+							//else
+							//{
+							//	//右递归生成的assgin.也就是shift应该有一个左递归,但实际无左递归的shift,所以要"插入"一个节点.文法不变
+							//	assert(actionIter.GetFrom() == actionIter.GetTo());
+							//	assert(actionIter.GetFrom() == rulePathStack.back());
+							//	createdNodeStack.emplace_back(MakeEmptyTreeNode());
+							//	swap(createdNodeStack[createdNodeStack.size() - 2], createdNodeStack[createdNodeStack.size() - 1]);
+							//	createdNodeStack[createdNodeStack.size() - 2]->SetFieldMap(actionIter.GetName(), createdNodeStack.back()->GetNumber());
+							//	createdNodeStack.pop_back();
+							//	assert(actionIter.GetTo() == rulePathStack.back());
+							//}
 
 						}
 						break;
@@ -309,6 +415,34 @@ namespace ztl
 					}
 				}
 				assert(typeDefSymbol->IsClassType() || typeDefSymbol->IsEnumType());
+			}
+			return result;
+		}
+		unordered_map<wstring,vector<wstring>> GeneralParser::InintChoiceFiledMap()
+		{
+			vector<wstring> temp;
+			unordered_map<wstring, vector<wstring>> result;
+			for(auto&& iter : manager->GetTypeDefSymbolMap())
+			{
+				ParserSymbol* typeDefSymbol = iter.second;
+
+
+				if(typeDefSymbol->IsClassType())
+				{
+					auto fieldSymbol = typeDefSymbol->GetClassAllFieldDefSymbol();
+					for(auto&& symbol : fieldSymbol)
+					{
+						if(symbol->IsChoiceFieldDef())
+						{
+							temp.emplace_back(symbol->GetName());
+						}
+					}
+				}
+				assert(typeDefSymbol->IsClassType() || typeDefSymbol->IsEnumType());
+				if (!temp.empty())
+				{
+					result.emplace(typeDefSymbol->GetName(), move(temp));
+				}
 			}
 			return result;
 		}

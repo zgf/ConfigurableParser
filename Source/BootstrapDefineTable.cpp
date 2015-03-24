@@ -385,18 +385,6 @@ namespace ztl
 						.Rule
 						(
 							GeneralRuleWriter()
-							.Name(L"SetterGrammar")
-							.ReturnType(Normal(L"GenGrammarTypeDefine"))
-							| (
-								GrammarSymbol(L"NAME")[L"name"] +
-								Text(L"=")+
-								GrammarSymbol(L"STRING")[L"value"]
-							)
-							.Create(Normal(L"GenGrammarSetterTypeDefine"))
-						)
-						.Rule
-						(
-							GeneralRuleWriter()
 							.Name(L"Grammar")
 							.ReturnType(Normal(L"GenGrammarTypeDefine"))
 							| (
@@ -407,10 +395,9 @@ namespace ztl
 							.Create(Normal(L"GenGrammarCreateTypeDefine"))
 							| (
 								GrammarSymbol(L"Grammar")[L"grammar"] + 
-								Text(L"with")+
-								Text(L"{")+
+								Text(L"with") +
+								Text(L"{") +
 								(
-									//NAME : memberName "=" STRING : value
 									GrammarSymbol(L"NAME")[L"name"] +
 									Text(L"=") + 
 									GrammarSymbol(L"STRING")[L"value"]
@@ -418,7 +405,6 @@ namespace ztl
 								Text(L"}")
 							).Create(Normal(L"GenGrammarSetterTypeDefine"))
 							|!GrammarSymbol(L"AlternativeGrammar")
-							| !GrammarSymbol(L"SetterGrammar")
 						)
 						.Rule
 						(

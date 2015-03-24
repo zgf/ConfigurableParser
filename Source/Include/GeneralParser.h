@@ -29,9 +29,10 @@ namespace ztl
 			shared_ptr<void>	GeneralHeterogeneousParserTree();
 			shared_ptr<void>	GeneralParserTree();
 		private:
-			PDAEdge*			EdgeResolve(int number, int tokenIndex);
-			PDAEdge *			TerminateResolve(int number, int tokenIndex);
-			PDAEdge *			RuleResolve(vector<PDAEdge*>* edges, int tokenIndex);
+			PDAEdge*			EdgeResolve(int number, int tokenIndex, bool& isRightRecursionEdge);
+			PDAEdge *			TerminateResolve(int number, int tokenIndex, bool& isRightRecursionEdge);
+			PDAEdge *			RuleResolve(vector<PDAEdge*>* edges, int tokenIndex, bool&isRightRecursionEdge);
+			void				HandleRightRecursionEdge(PDAEdge*edge,bool isRightRecursionEdge);
 			PDAEdge*			CreateNodeResolve(const vector<PDAEdge*>& edges, int tokenIndex);
 			void				ExecuteEdgeActions(PDAEdge* edge, int tokenIndex);
 			wstring				GetRulePathInfo()const;
@@ -44,6 +45,7 @@ namespace ztl
 			GeneralTreeNode*	MakeEmptyTreeNode();
 			wstring				GetParserInfo(int tokenIndex)const;
 			unordered_map<wstring, GeneralTreeNode> InitTreeNodeMap();
+			unordered_map<wstring,vector<wstring>> InintChoiceFiledMap();
 			unordered_map<wstring, wstring> InitDeriveToBaseMap();
 			bool				IsDeriveRelateion(const wstring& base, const wstring& derive);
 		private:

@@ -10,14 +10,14 @@ namespace ztl
 		vector<shared_ptr<TokenInfo>>	 ParseToken(const wstring& fileName)
 		{
 			unordered_map<wstring, GeneralTokenDefine> infos;
-			infos.insert({ L"CLASS",GeneralTokenDefine(L"CLASS", LR"(class)", GeneralTokenDefine::TokenOptional::False) });
-			infos.insert({ L"STRUCT",GeneralTokenDefine(L"STRUCT", LR"(struct)", GeneralTokenDefine::TokenOptional::False) });
-			infos.insert({ L"ENUM",GeneralTokenDefine(L"ENUM", LR"(enum)", GeneralTokenDefine::TokenOptional::False) });
-			infos.insert({ L"TOKEN",GeneralTokenDefine(L"TOKEN", LR"(token)", GeneralTokenDefine::TokenOptional::False) });
-			infos.insert({ L"DISCARDTOKEN",GeneralTokenDefine(L"DISCARDTOKEN", LR"(ignoretoken)", GeneralTokenDefine::TokenOptional::False) });
-			infos.insert({ L"RULE",GeneralTokenDefine(L"RULE", LR"(rule)", GeneralTokenDefine::TokenOptional::False) });
-			infos.insert({ L"AS",GeneralTokenDefine(L"AS", LR"(as)", GeneralTokenDefine::TokenOptional::False) });
-			infos.insert({ L"WITH",GeneralTokenDefine(L"WITH", LR"(with)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"CLASS",GeneralTokenDefine(L"CLASS", LR"(\bclass\b)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"STRUCT",GeneralTokenDefine(L"STRUCT", LR"(\bstruct\b)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"ENUM",GeneralTokenDefine(L"ENUM", LR"(\benum\b)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"TOKEN",GeneralTokenDefine(L"TOKEN", LR"(\btoken\b)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"DISCARDTOKEN",GeneralTokenDefine(L"DISCARDTOKEN", LR"(\bignoretoken\b)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"RULE",GeneralTokenDefine(L"RULE", LR"(\brule\b)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"AS",GeneralTokenDefine(L"AS", LR"(\bas\b)", GeneralTokenDefine::TokenOptional::False) });
+			infos.insert({ L"WITH",GeneralTokenDefine(L"WITH", LR"(\bwith\b)", GeneralTokenDefine::TokenOptional::False) });
 			infos.insert({ L"OPEN",GeneralTokenDefine(L"OPEN", LR"(\{)", GeneralTokenDefine::TokenOptional::False) });
 			infos.insert({ L"CLOSE",GeneralTokenDefine(L"CLOSE", LR"(\})", GeneralTokenDefine::TokenOptional::False) });
 			infos.insert({ L"SEMICOLON",GeneralTokenDefine(L"SEMICOLON", LR"(;)", GeneralTokenDefine::TokenOptional::False) });

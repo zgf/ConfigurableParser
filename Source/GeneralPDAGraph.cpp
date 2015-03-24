@@ -399,7 +399,6 @@ namespace ztl
 								newActions.erase(i, end);
 								lastIndex = lastIndex - number;
 								index = index - number;
-								firstIndex = index + 1;
 								break;
 							}
 						}
@@ -560,11 +559,6 @@ namespace ztl
 					}
 					else
 					{
-						if(!IsCorrectEdge(path, edgeIter))
-						{
-							int a = 0;
-							IsCorrectEdge(path, edgeIter);
-						}
 						//Óöµ½»·ÁË
 						deleter.insert(path.begin(), path.end());
 					}

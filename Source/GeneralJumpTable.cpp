@@ -68,20 +68,16 @@ namespace ztl
 		}
 		void GeneralJumpTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
-			for_each(ruleStack.begin(), ruleStack.end(), [flag = false, &ruleInfos](const ActionWrap& wrap)mutable
+			for(size_t i = 0; i < ruleStack.size();++i)
 			{
-				if(flag == false&&wrap.GetFrom()!=wrap.GetTo())
-				{
-					flag = true;
-
-					ruleInfos.emplace_back(wrap.GetFrom());
-					ruleInfos.emplace_back(wrap.GetTo());
-				}
-				else
+				auto&& wrap = ruleStack[i];
+				assert(wrap.GetActionType() == ActionType::Assign || wrap.GetActionType() == ActionType::Using);
+				ruleInfos.emplace_back(wrap.GetFrom());
+				if (i == ruleStack.size() - 1)
 				{
 					ruleInfos.emplace_back(wrap.GetTo());
 				}
-			});
+			}
 			if(!ruleInfos.empty())
 			{
 				this->ruleRequiresMap->insert({ edge,make_unique<vector<wstring>>(ruleInfos) });
@@ -157,10 +153,10 @@ namespace ztl
 			return rootNumber;
 		}
 
-		vector<wstring>* GeneralJumpTable::GetRuleRequires(PDAEdge * edge) const
+		const vector<wstring>& GeneralJumpTable::GetRuleRequires(PDAEdge* edge) const
 		{
-			auto findIter = ruleRequiresMap->find(edge);
-			return (findIter != ruleRequiresMap->end()) ? std::addressof(*findIter->second) : nullptr;
+			assert(ruleRequiresMap->find(edge) != ruleRequiresMap->end());
+			return *(*ruleRequiresMap)[edge];
 		}
 		const vector<CreateInfo>* GeneralJumpTable::GetCreateNodeRequires(PDAEdge * edge) const
 		{

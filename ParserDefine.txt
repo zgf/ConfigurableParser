@@ -158,11 +158,6 @@ token OPTOPEN = "/[";
 token OPTCLOSE = "/]";
 token PREOPEN = "/(";
 token PRECLOSE = "/)";
-token NAME = "[a-zA-Z_]/w*";
-token STRING = "\"(\\\"|[^"])*\""
-ignoretoken SPACE = "/s+";
-ignoretoken LINENOTE = "//[^\n]*\n";
-ignoretoken BLOCKNOTE = "/*.*?*/";
 
 rule GenTypeObject Type
         = NAME : name as GenNormalTypeObject

@@ -34,6 +34,8 @@ namespace ztl
 			bool	IsEmpty()const;
 			bool IsMayDeriveType(const GeneralTreeNode& node)const;
 			bool IsMayDeriveType(const GeneralTreeNode & node, const vector<wstring>& exclude) const;
+			bool IsTheSameType(const GeneralTreeNode&node)const;
+			bool IsTheSameType(const GeneralTreeNode&node, const vector<wstring>& exclude) const;
 
 		private:
 			int nodeNumber;//nodeÔÚnodePoolµÄindex

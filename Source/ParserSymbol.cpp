@@ -60,6 +60,18 @@ namespace ztl
 			this->descriptor = _descriptor;
 		}
 
+		void ParserSymbol::SetFieldEssential()
+{
+			assert(this->IsFieldDef());
+			ignore = false;
+		}
+
+		bool ParserSymbol::IsChoiceFieldDef() const
+		{
+			assert(IsFieldDef());
+			return ignore;
+		}
+
 		ParserSymbol * ParserSymbol::GetSubSymbolByName(const wstring & _name) const
 		{
 			assert(subSymbolMap != nullptr);

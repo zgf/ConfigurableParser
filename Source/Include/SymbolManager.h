@@ -110,7 +110,7 @@ namespace ztl
 			ParserSymbol* GetCacheUsingGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* usingGrammar);
 			ParserSymbol* GetCacheNormalGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* normalGrammar);
 			ParserSymbol* GetCacheNonTerminateGrammarToRuleDefSymbol(GeneralGrammarTypeDefine* terminateGrammar);
-
+			ParserSymbol* GetCacheFieldDefSymbolByGrammar(GeneralGrammarTypeDefine* grammar);
 			void				  CachePropertyToValueMap(const wstring& property, const vector<wstring>& value);
 			void				  CachePropertyToValueMap(const wstring& property, const wstring& value);
 			vector<wstring>		  GetCacheValueByProperty(const wstring& property)const;
@@ -137,6 +137,7 @@ namespace ztl
 		void ValidateGrammarNode(SymbolManager* manager);
 		unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>> CollectGeneratePath(SymbolManager* manager);
 		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap);
+		void AnalyzeClassChoiceField(SymbolManager* manager);
 		void GetStartSymbol(SymbolManager* manager);
 	}
 }

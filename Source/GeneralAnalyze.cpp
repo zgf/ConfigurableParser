@@ -928,7 +928,6 @@ namespace ztl
 				assert(false);
 			}
 
-		private:
 		};
 
 		void ValidateGeneratePathStructure(SymbolManager * manager, unordered_map<GeneralRuleDefine*, vector<unique_ptr<GeneratePath>>>& pathMap)
@@ -989,6 +988,7 @@ namespace ztl
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);
 			ValidateGeneratePathStructure(manager, pathMap);
+			AnalyzeClassChoiceField(manager);
 			GetStartSymbol(manager);
 			//manager->CacheNameAndTagMap();
 			//LogGeneratePath(L"test.txt", pathMap);
@@ -1073,6 +1073,102 @@ namespace ztl
 				node->right->Accept(this);
 			}
 		};
+		//处在循环范围内的也是可选的
+		class AnalyzeClassChoiceFieldVisitor:public GeneralGrammarTypeDefine::IVisitor
+		{
+		private:
+			SymbolManager*										manager;
+			bool												inOptional=false;
+			
+		public:
+			AnalyzeClassChoiceFieldVisitor(SymbolManager*_manager) :manager(_manager)
+			{
+
+			}
+			AnalyzeClassChoiceFieldVisitor() = default;
+			~AnalyzeClassChoiceFieldVisitor() noexcept = default;
+			AnalyzeClassChoiceFieldVisitor(AnalyzeClassChoiceFieldVisitor&&) = default;
+			AnalyzeClassChoiceFieldVisitor(const AnalyzeClassChoiceFieldVisitor&) = default;
+			AnalyzeClassChoiceFieldVisitor& operator=(AnalyzeClassChoiceFieldVisitor&&) = default;
+			AnalyzeClassChoiceFieldVisitor& operator=(const AnalyzeClassChoiceFieldVisitor&) = default;
+		public:
+			bool InOptional() const
+			{
+				return inOptional;
+			}
+			void InOptional(bool val)
+			{
+				inOptional = val;
+			}
+		public:
+			void								Visit(GeneralGrammarTextTypeDefine*)
+			{
+			}
+			void								Visit(GeneralGrammarNormalTypeDefine* )
+			{
+	
+			}
+			void								Visit(GeneralGrammarSequenceTypeDefine* node)
+			{
+				node->first->Accept(this);
+				node->second->Accept(this);
+			}
+			void								Visit(GeneralGrammarLoopTypeDefine*node)
+			{
+				this->InOptional(true);
+				node->grammar->Accept(this);
+				this->InOptional(false);
+			}
+			void								Visit(GeneralGrammarOptionalTypeDefine*node)
+			{
+				this->InOptional(true);
+				node->grammar->Accept(this);
+				this->InOptional(false);
+			}
+
+			void								Visit(GeneralGrammarSetterTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarAssignTypeDefine* node)
+			{
+				auto fieldDefSymbol = manager->GetCacheFieldDefSymbolByGrammar(node);
+				assert(fieldDefSymbol != nullptr&&fieldDefSymbol->IsFieldDef());
+				if(!InOptional())
+				{
+					fieldDefSymbol->SetFieldEssential();
+				}
+				node->grammar->Accept(this);
+				
+
+			}
+			void								Visit(GeneralGrammarUsingTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarCreateTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarAlterationTypeDefine*node)
+			{
+				node->left->Accept(this);
+				node->right->Accept(this);
+			}
+		};
+		void AnalyzeClassChoiceField(SymbolManager* manager)
+		{
+			auto&& table = manager->GetTable();
+			for (auto&& ruleIter:table->rules)
+			{
+				for(auto&& grammarIter : ruleIter->grammars)
+				{
+					AnalyzeClassChoiceFieldVisitor visitor(manager);
+					grammarIter->Accept(&visitor);
+				}
+			}
+		}
+
 		void GetStartSymbol(SymbolManager * manager)
 		{
 			auto&& table = manager->GetTable();

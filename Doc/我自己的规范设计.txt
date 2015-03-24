@@ -169,10 +169,10 @@ token DOT = ".";
 token ASSIGN = "=";
 token USING = "!";
 token OR = "|";
-token OPTOPEN = "/[";
-token OPTCLOSE = "/]";
-token PREOPEN = "/(";
-token PRECLOSE = "/)";
+token OPTOPEN = "\[";
+token OPTCLOSE = "\]";
+token PREOPEN = "\(";
+token PRECLOSE = "\)";
 token NAME = "[a-zA-Z_]/w*";
 token STRING = "\"(\\\"|[^"])*\""
 ignoretoken SPACE = "/s+";
@@ -210,14 +210,11 @@ rule GenGrammarTypeDefine AlternativeGrammar
         = !SequenceGrammar
         = AlternativeGrammar : left "|" SequenceGrammar : right as GenGrammarAlternationTypeDefine
         ;
-		
-rule GenGrammarTypeDefine SetterGrammar
-        = NAME : name "=" STRING : value  as GenGrammarSetterTypeDefine
+
 rule GenGrammarTypeDefine Grammar
         = !AlternativeGrammar
         = Grammar : grammar "as" Type : type as GenGrammarCreateTypeDefine
-        =!SetterGrammar
-        ;
+        = Grammar : grammar "with" "{" NAME : name "=" STRING : value  "}"  as GenGrammarSetterTypeDefine
 
 
 rule GenGrammarTypeDefine PrimitiveGrammar

@@ -29,7 +29,7 @@ namespace ztl
 			wstring												name;
 			ParserSymbol*										parent;
 			ParserSymbol*										descriptor;
-			bool												ignore;//token ignore.
+			bool												ignore;//token ignore.对于classDef的filedDef,ignore表名该字段是否必要
 			unique_ptr<unordered_map<wstring, ParserSymbol*>>	subSymbolMap;
 		public:
 			ParserSymbol() = delete;
@@ -53,8 +53,9 @@ namespace ztl
 			ParserSymbol*							GetDescriptorSymbol()					 const;
 			void									AddSubSymbol(ParserSymbol* subSymbol);
 			void									SetDescriptor(ParserSymbol* _descriptor);
-
-			ParserSymbol*							GetSubSymbolByName(const wstring& _name)	 const;
+			void SetFieldEssential();
+			bool									IsChoiceFieldDef()						 const;
+			ParserSymbol*							GetSubSymbolByName(const wstring& _name) const;
 			size_t									SubSymbolCount()						 const;
 			ParserSymbol*							SearchClassSubSymbol(const wstring& _name)const;
 			vector<ParserSymbol*> GetClassAllFieldDefSymbol()const;

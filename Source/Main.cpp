@@ -9,6 +9,7 @@
 #include "Include\GeneralParser.h"
 int main()
 {
+	
 	ztl::general_parser::GeneralParser parser(
 		ztl::general_parser::ParseToken(L"ParserDefine.txt"),
 		ztl::general_parser::BootStrapDefineTable());
@@ -16,4 +17,3 @@ int main()
 	parser.GenerateIsomorphismParserTree();
 	return 0;
 }
-

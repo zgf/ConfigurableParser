@@ -161,7 +161,17 @@ namespace ztl
 		}
 		bool GeneralTreeNode::IsMayDeriveType(const GeneralTreeNode & node, const vector<wstring>& exclude) const
 		{
-			return HasSameField(termMap, node.termMap, exclude) && HasSameField(fieldMap, node.fieldMap);
+			return HasSameField(termMap, node.termMap, exclude) && HasSameField(fieldMap, node.fieldMap, exclude);
 		}
+		bool GeneralTreeNode::IsTheSameType(const GeneralTreeNode&node)const
+		{
+			return name == node.GetName()&&IsMayDeriveType(node) && node.IsMayDeriveType(*this);
+		}
+		bool GeneralTreeNode::IsTheSameType(const GeneralTreeNode & node, const vector<wstring>& exclude) const
+		{
+			return name == node.GetName() && IsMayDeriveType(node,exclude) && node.IsMayDeriveType(*this,exclude);
+
+		}
+
 	}
 }

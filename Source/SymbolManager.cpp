@@ -310,6 +310,13 @@ namespace ztl
 			return findIter == grammarNodeDefSymbolMap.end() ? nullptr : findIter->second;
 		}
 
+		ParserSymbol * SymbolManager::GetCacheFieldDefSymbolByGrammar(GeneralGrammarTypeDefine * grammar)
+		{
+			assert(dynamic_cast<GeneralGrammarAssignTypeDefine*>(grammar) || dynamic_cast<GeneralGrammarSetterTypeDefine*>(grammar));
+			auto findIter = grammarNodeDefSymbolMap.find(grammar);
+			return findIter == grammarNodeDefSymbolMap.end() ? nullptr : findIter->second;
+		}
+
 		void SymbolManager::CachePropertyToValueMap(const wstring& property, const vector<wstring>& value)
 		{
 			propertyToValueMap.insert({ property,value });
