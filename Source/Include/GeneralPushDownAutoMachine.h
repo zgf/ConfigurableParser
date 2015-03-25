@@ -153,6 +153,14 @@ namespace ztl
 					}
 				}
 			}
+			int GetGrammarNumber() const
+			{
+				return grammarNumber;
+			}
+			void SetGrammarNumber(int val)
+			{
+				grammarNumber = val;
+			}
 		private:
 			bool HasThisActionType(ActionType type)const
 			{
@@ -162,6 +170,7 @@ namespace ztl
 				}) != actions.end();
 			}
 		private:
+			int grammarNumber = -1;//该边所属的文法编号
 			PDANode* target;
 			PDANode* source;
 			vector<ActionWrap> actions;

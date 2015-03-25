@@ -81,13 +81,13 @@ namespace ztl
 			vector<EdgeInfo> TerminateResolve(ParserState& state);
 			vector<EdgeInfo>RuleResolve(vector<PDAEdge*>* edges, ParserState& state);
 			void HandleRightRecursionEdge(ParserState& state);
+			void HandleRightRecursionEdge(PDAEdge* edge, vector<wstring>& rulePathStack, vector<GeneralTreeNode*>& createdNodeStack, bool isRightRecursionEdge);
 			vector<EdgeInfo> CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state);
+			pair<bool, EdgeInfo> CreateNodeResolve(const EdgeInfo& iter,const vector<GeneralTreeNode*>& createdNodeStack);
+
 			void ExecuteEdgeActions(ParserState& state);
 			wstring GetRulePathInfo(ParserState& state)const;
 			wstring GetCreatNodeStackInfo(ParserState& state)const;
-			pair<bool, int>		CheckCreateNodeRequire(int createStackIndex, const GeneralTreeNode& node,vector<wstring>* exclude);
-
-			bool				CheckCreateNodeRequires(const vector<CreateInfo>& requires,vector<wstring>* exclude);
 			GeneralTreeNode*	MakeTreeNode(const wstring& nodeName);
 			GeneralTreeNode*	MakeEmptyTreeNode();
 			GeneralTreeNode*	CopyTreeNode(GeneralTreeNode*);

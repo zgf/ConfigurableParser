@@ -154,10 +154,10 @@ token DOT = ".";
 token ASSIGN = "=";
 token USING = "!";
 token OR = "|";
-token OPTOPEN = "/[";
-token OPTCLOSE = "/]";
-token PREOPEN = "/(";
-token PRECLOSE = "/)";
+token OPTOPEN = "\[";
+token OPTCLOSE = "\]";
+token PREOPEN = "\(";
+token PRECLOSE = "\)";
 
 rule GenTypeObject Type
         = NAME : name as GenNormalTypeObject
@@ -190,13 +190,11 @@ rule GenGrammarTypeDefine AlternativeGrammar
         = !SequenceGrammar
         = AlternativeGrammar : left "|" SequenceGrammar : right as GenGrammarAlternationTypeDefine
         ;
-		
-rule GenGrammarTypeDefine SetterGrammar
-        = NAME : name "=" STRING : value  as GenGrammarSetterTypeDefine
+
 rule GenGrammarTypeDefine Grammar
         = !AlternativeGrammar
         = Grammar : grammar "as" Type : type as GenGrammarCreateTypeDefine
-        =!SetterGrammar
+        = Grammar : grammar "with" "{" NAME : name "=" STRING : value  "}"  as GenGrammarSetterTypeDefine
         ;
 
 
@@ -214,7 +212,8 @@ rule GenTokenDefine TokenDecl
         = "token" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "False" }
         = "ignoretoken" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "True" }
         ;
-rule GenHeadInfoDefine HeadDecl = NAME : property ":" STRING : value ";" as GenHeadInfoDefine;
+rule GenHeadInfoDefine HeadDecl = NAME : property ":" STRING : value ";" as GenHeadInfoDefine
+		;
 rule GenRuleDefine RuleDecl
         = "rule" Type : type NAME : name { "=" Grammar : grammars } ";" as GenRuleDefine
         ;

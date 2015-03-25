@@ -609,17 +609,54 @@ namespace ztl
 				iter->DeleteNullPropertyAction();
 			}
 		}
+		void AddGrammarNumberOnPath(PDAEdge* root,int count)
+		{
+			unordered_set<PDAEdge*> sign;
+			deque<PDAEdge*> queue;
+			queue.emplace_back(root);
+			sign.insert(root);
+			root->SetGrammarNumber(count);
+			while(!queue.empty())
+			{
+				auto front = queue.front();
+				for (auto&&edgeIter:front->GetTarget()->GetNexts())
+				{
+					if (sign.find(edgeIter)==sign.end())
+					{
+						assert(edgeIter->GetGrammarNumber() == -1);
+						sign.insert(edgeIter);
+						queue.emplace_back(edgeIter);
+						edgeIter->SetGrammarNumber(count);
+					}
+				}
+				queue.pop_front();
+			}
+		}
+		void AddGrammarNumber(PushDownAutoMachine& machine)
+		{
+			auto count = 0;
+			for(auto&& ruleIter : machine.GetPDAMap())
+			{
+				for (auto&& grammarIter:ruleIter.second.first->GetNexts())
+				{
+					AddGrammarNumberOnPath(grammarIter, count);
+					++count;
+				}
+			}
+		}
 		void CreateDPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto PDAMap = CreateEpsilonPDA(machine);
 			MergeStartAndEndNode(machine, PDAMap);
 			AddPDAToPDAMachine(machine, PDAMap);
 			machine.CreateRoot();
+			MergeGrammarCommonFactor(machine);
+			//添加文法编号
+			AddGrammarNumber(machine);
 			MergeEpsilonPDAGraph(machine);
-		//	MergeGrammarCommonFactor(machine);
 			//添加结束节点.
-
 			AddFinishNode(machine);
+			
 			MergePDAEpsilonSymbol(machine);
 		//	MergeGrammarCommonFactor(machine);
 		}

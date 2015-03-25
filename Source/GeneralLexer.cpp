@@ -63,6 +63,8 @@ namespace ztl
 					stream.emplace_back(make_shared<TokenInfo>(groupIter.second.content, tag, groupIter.second.position, groupIter.second.length));
 				}
 			}
+			//Ìí¼Óend×Ö·û
+			stream.emplace_back(make_shared<TokenInfo>(L"<$>",L"FINISH",-1,4));
 			return stream;
 		}
 	}

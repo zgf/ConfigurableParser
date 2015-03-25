@@ -7,6 +7,7 @@
 #include "Include\GeneralParser.h"
 #include "Include\GeneralTreeNode.h"
 #include "Include\ParserSymbol.h"
+#include "..\Lib\ZTL\ztl_hash.hpp"
 namespace ztl
 {
 	namespace general_parser
@@ -30,19 +31,33 @@ namespace ztl
 			CreateDPDAGraph(*machine.get());
 			jumpTable = make_shared<GeneralJumpTable>(machine.get());
 			CreateJumpTable(*jumpTable.get());
-			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
+			HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 
 		void	GeneralParser::SaveEdge(deque<ParserState>& states,const vector<EdgeInfo>& edges)
 		{
+			//当前edge/tokenIndex,没有被加入过队列就继续
+			static unordered_set<pair<PDAEdge*, int>,ztl::hasher::ztl_hash<pair<PDAEdge*, int>>> sign;
 			if(!edges.empty())
 			{
-				states.front().SaveEdgeInfo(edges.front());
+				if(sign.find(make_pair(edges.front().edge, states.front().tokenIndex)) != sign.end())
+				{
+					states.pop_front();
+				}
+				else
+				{
+					states.front().SaveEdgeInfo(edges.front());
+				}
+
 				for(size_t i = 1; i < edges.size(); ++i)
 				{
-					states.emplace_back(states.front());
-					states.back().SaveEdgeInfo(edges[i]);
-					states.back().createdNodeStack = SaveCurrentStack(states.front().createdNodeStack);
+					if(sign.find(make_pair(edges[i].edge, states.front().tokenIndex)) == sign.end())
+					{
+						sign.insert(make_pair(edges[i].edge, states.front().tokenIndex));
+						states.emplace_back(states.front());
+						states.back().SaveEdgeInfo(edges[i]);
+						states.back().createdNodeStack = SaveCurrentStack(states.front().createdNodeStack);
+					}
 				}
 			}
 			else
@@ -57,25 +72,36 @@ namespace ztl
 			auto rootRule = machine->GetRootRuleName();
 			assert(!rootRule.empty());
 			this->parserStates.emplace_back(0, jumpTable->GetRootNumber(), rootRule, MakeEmptyTreeNode());
-			while(parserStates.front().tokenIndex != (int)tokenPool.size())
+			vector<GeneralTreeNode*>result;
+			while(!parserStates.empty())
 			{
-				if(parserStates.front().tokenIndex == 486)
+				while(parserStates.front().tokenIndex != (int) tokenPool.size())
 				{
-					int a = 0;
+					/*if(parserStates.front().tokenIndex == 434)
+					{
+						wcout << parserStates.front().currentNodeIndex << endl;
+						int a = 0;
+					}*/
+					auto edges = EdgeResolve(parserStates.front());
+					SaveEdge(parserStates, edges);
+					if (parserStates.empty())
+					{
+						break;
+					}
+					HandleRightRecursionEdge(parserStates.front());
+					ExecuteEdgeActions(parserStates.front());
+					++parserStates.front().tokenIndex;
+					parserStates.front().currentNodeIndex = parserStates.front().GetEdge()->GetTarget()->GetNumber();
 				}
-				auto edges = EdgeResolve(parserStates.front());
-				SaveEdge(parserStates, edges);
-
-				HandleRightRecursionEdge(parserStates.front());
-				ExecuteEdgeActions(parserStates.front());
-				++parserStates.front().tokenIndex;
-				parserStates.front().currentNodeIndex = parserStates.front().GetEdge()->GetTarget()->GetNumber();
+				if (!parserStates.empty())
+				{
+					assert(parserStates.front().createdNodeStack.size() == 1);
+					result.emplace_back(parserStates.front().createdNodeStack.front());
+					parserStates.pop_front();
+				}
+			
 			}
-
-
-
-			assert(parserStates.front().createdNodeStack.size() == 1);
-			treeRoot = parserStates.front().createdNodeStack.front();
+		
 		}
 
 		shared_ptr<void> GeneralParser::GeneralParserTree()
@@ -96,7 +122,8 @@ namespace ztl
 			auto edges = jumpTable->GetPDAEdgeByTerminate(number, token->tag);
 			if(edges == nullptr || edges->empty())
 			{
-				throw ztl_exception(L"error!can't find match token,tokenInfo.\n" + GetParserInfo(state));
+				/*throw ztl_exception(L"error!can't find match token,tokenInfo.\n" + GetParserInfo(state));*/
+				return{};
 			}
 			return RuleResolve(edges, state);
 		}
@@ -123,17 +150,21 @@ namespace ztl
 			auto& tokenIndex = state.tokenIndex;
 			assert(edges != nullptr && !edges->empty());
 			vector<EdgeInfo> result;
-			for(auto i = 0; i < edges->size();++i)
+			for(size_t i = 0; i < edges->size();++i)
 			{
 				auto&& iter = edges->operator[](i);
 				auto&& ruleRequire = jumpTable->GetRuleRequires(iter);
-				auto rbegin = make_reverse_iterator(rulePathStack.end());
-				auto rend = rbegin + ruleRequire.size();
 
-				if(std::equal(ruleRequire.begin(), ruleRequire.end(), rbegin, rend))
+				if (rulePathStack.size()>=ruleRequire.size())
 				{
-					result.emplace_back(iter,false);
+					auto rbegin = make_reverse_iterator(rulePathStack.end());
+					auto rend = rbegin + ruleRequire.size();
+					if(std::equal(ruleRequire.begin(), ruleRequire.end(), rbegin, rend))
+					{
+						result.emplace_back(iter, false);
+					}
 				}
+				
 			}
 			if(result.empty())
 			{
@@ -148,7 +179,8 @@ namespace ztl
 			}
 			if(result.empty())
 			{
-				throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(state));
+				return {};
+				/*throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(state));*/
 			}
 			return CreateNodeResolve(result, state);
 		}
@@ -158,103 +190,153 @@ namespace ztl
 			auto& rulePathStack = state.rulePathStack;
 			auto& createdNodeStack = state.createdNodeStack;
 			auto& isRightRecursionEdge = state.edgeInfo.rightRecursion;
+			HandleRightRecursionEdge(edge,rulePathStack,createdNodeStack,isRightRecursionEdge);
+		/*	if(isRightRecursionEdge)
+			{
+				auto&& ruleRequire = jumpTable->GetRuleRequires(edge);
+
+				auto rulePathIndex = rulePathStack.size() - 1;
+				for(auto ruleRequireBegin = ruleRequire.begin(); ruleRequireBegin != ruleRequire.end();++ruleRequireBegin)
+				{
+					ruleRequireBegin = find_if_not(ruleRequireBegin, ruleRequire.end(), [&rulePathStack, &rulePathIndex](const wstring& value)
+					{
+						return value == rulePathStack[rulePathIndex--];
+					});
+					auto position = rulePathIndex + 2;
+					rulePathStack.insert(rulePathStack.begin() + position, *ruleRequireBegin);
+					createdNodeStack.insert(createdNodeStack.begin() + position, MakeEmptyTreeNode());
+					rulePathIndex += 1;
+				}
+			}*/
+		}
+		void GeneralParser::HandleRightRecursionEdge(PDAEdge* edge,vector<wstring>& rulePathStack,vector<GeneralTreeNode*>& createdNodeStack,bool isRightRecursionEdge)
+		{
 			if(isRightRecursionEdge)
 			{
 				auto&& ruleRequire = jumpTable->GetRuleRequires(edge);
+
 				auto rulePathIndex = rulePathStack.size() - 1;
-				auto iter = find_if_not(ruleRequire.begin(), ruleRequire.end(), [&rulePathStack, &rulePathIndex](const wstring& value)
+				for(auto ruleRequireBegin = ruleRequire.begin(); ruleRequireBegin != ruleRequire.end(); ++ruleRequireBegin)
 				{
-					return value == rulePathStack[rulePathIndex--];
-				});
-				auto position = rulePathIndex + 2;
-				rulePathStack.insert(rulePathStack.begin() + position, *iter);
-				createdNodeStack.insert(createdNodeStack.begin() + position, MakeEmptyTreeNode());
+					ruleRequireBegin = find_if_not(ruleRequireBegin, ruleRequire.end(), [&rulePathStack, &rulePathIndex](const wstring& value)
+					{
+						return value == rulePathStack[rulePathIndex--];
+					});
+					auto position = rulePathIndex + 2;
+					rulePathStack.insert(rulePathStack.begin() + position, *ruleRequireBegin);
+					createdNodeStack.insert(createdNodeStack.begin() + position, MakeEmptyTreeNode());
+					rulePathIndex += 1;
+				}
 			}
 		}
+		pair<bool,EdgeInfo> GeneralParser::CreateNodeResolve(const 
+			EdgeInfo& iter,const vector<GeneralTreeNode*>& createdNodeStack)
+		{
+			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
+			static auto chioceFiledMap = InintChoiceFiledMap();
+			auto actions = iter.edge->GetActions();
+
+			GeneralTreeNode current = *createdNodeStack.back();
+			auto currentIndex = createdNodeStack.size() - 1;
+			for(size_t i = 0; i < actions.size() && actions[i].GetActionType() != ActionType::Shift; ++i)
+			{
+				auto&& actionIter = actions[i];
+				ActionType type = actionIter.GetActionType();
+				bool isTerminate = false;
+				switch(type)
+				{
+					case ztl::general_parser::ActionType::Using:
+						if(!createdNodeStack[currentIndex - 1]->IsEmpty())
+						{
+							goto TestNextEdge;
+						}
+						--currentIndex;
+						break;
+					case ztl::general_parser::ActionType::Create:
+						isTerminate = false;
+						current.SetName(actionIter.GetName());
+						if(chioceFiledMap.find(actionIter.GetName()) == chioceFiledMap.end())
+						{
+							if(!current.IsTheSameType(signMap[actionIter.GetName()]))
+							{
+								goto TestNextEdge;
+							}
+						}
+						else
+						{
+							if(!current.IsTheSameType(signMap[actionIter.GetName()], chioceFiledMap[actionIter.GetName()]))
+							{
+								goto TestNextEdge;
+							}
+						}
+
+						break;
+					case ztl::general_parser::ActionType::Assign:
+						--currentIndex;
+						current = *createdNodeStack[currentIndex];
+						if(isTerminate)
+						{
+							current.SetTermMap(actionIter.GetName(), -1);
+						}
+						else
+						{
+							current.SetFieldMap(actionIter.GetName(), -1);
+						}
+						break;
+					case ztl::general_parser::ActionType::Setter:
+						current.SetTermMap(actionIter.GetName(), -1);
+						break;
+					case ztl::general_parser::ActionType::Terminate:
+						isTerminate = true;
+						break;
+					case ztl::general_parser::ActionType::Shift:
+					case ztl::general_parser::ActionType::NonTerminate:
+					case ztl::general_parser::ActionType::Epsilon:
+					case ztl::general_parser::ActionType::Reduce:
+					default:
+						assert(false);
+						break;
+				}
+			}
+			return{ true, iter };
+		TestNextEdge:
+			return{ false,{} };
+		}
+
 		vector<EdgeInfo> GeneralParser::CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state)
 		{
 			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
 			static auto chioceFiledMap = InintChoiceFiledMap();
-			auto& createdNodeStack = state.createdNodeStack;
-			auto& tokenIndex = state.tokenIndex;
-
+			
 			assert(!edges.empty());
 			vector<EdgeInfo> result;
 
 			for(auto&& iter : edges)
 			{
-				auto actions = iter.edge->GetActions();
-
-				GeneralTreeNode current = *createdNodeStack.back();
-				auto currentIndex = createdNodeStack.size() - 1;
-				for(size_t i = 0; i < actions.size() && actions[i].GetActionType() != ActionType::Shift; ++i)
+				pair<bool, EdgeInfo> resolve;
+				if (iter.rightRecursion)
 				{
-					auto&& actionIter = actions[i];
-					ActionType type = actionIter.GetActionType();
-					bool isTerminate = false;
-					switch(type)
-					{
-						case ztl::general_parser::ActionType::Using:
-							if(!createdNodeStack[currentIndex - 1]->IsEmpty())
-							{
-								goto TestNextEdge;
-							}
-							--currentIndex;
-							break;
-						case ztl::general_parser::ActionType::Create:
-							isTerminate = false;
-							current.SetName(actionIter.GetName());
-							if(chioceFiledMap.find(actionIter.GetName()) == chioceFiledMap.end())
-							{
-								if(!current.IsTheSameType(signMap[actionIter.GetName()]))
-								{
-									goto TestNextEdge;
-								}
-							}
-							else
-							{
-								if(!current.IsTheSameType(signMap[actionIter.GetName()], chioceFiledMap[actionIter.GetName()]))
-								{
-									goto TestNextEdge;
-								}
-							}
-
-							break;
-						case ztl::general_parser::ActionType::Assign:
-							--currentIndex;
-							current = *createdNodeStack[currentIndex];
-							if(isTerminate)
-							{
-								current.SetTermMap(actionIter.GetName(), -1);
-							}
-							else
-							{
-								current.SetFieldMap(actionIter.GetName(), -1);
-							}
-							break;
-						case ztl::general_parser::ActionType::Setter:
-							current.SetTermMap(actionIter.GetName(), -1);
-							break;
-						case ztl::general_parser::ActionType::Terminate:
-							isTerminate = true;
-							break;
-						case ztl::general_parser::ActionType::Shift:
-						case ztl::general_parser::ActionType::NonTerminate:
-						case ztl::general_parser::ActionType::Epsilon:
-						case ztl::general_parser::ActionType::Reduce:
-						default:
-							assert(false);
-							break;
-					}
+					auto createdNodeStack = state.createdNodeStack;
+					auto tokenIndex = state.tokenIndex;
+					auto rulePathStack = state.rulePathStack;
+					HandleRightRecursionEdge(iter.edge, rulePathStack, createdNodeStack, iter.rightRecursion);
+					resolve = CreateNodeResolve(iter, createdNodeStack);
+				
 				}
-				result.emplace_back(iter);
-
-			TestNextEdge:;
+				else
+				{
+					resolve = CreateNodeResolve(iter, state.createdNodeStack);
+				}
+				if(resolve.first)
+				{
+					result.emplace_back(iter);
+				}
+				
 			}
-			if(result.empty())
+		/*	if(result.empty())
 			{
 				throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(state));
-			}
+			}*/
 		/*	if(result.size() > 1)
 			{
 				throw ztl_exception(L"error ambiguous parse! find more match edge.\n" + GetParserInfo(state));
