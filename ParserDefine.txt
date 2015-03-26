@@ -181,7 +181,6 @@ rule GenTypeDefine TypeDecl
 rule GenClassTypeDefine Class
         = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GenClassTypeDefine
         ;
-		
 rule GenGrammarTypeDefine SequenceGrammar
         = !PrimitiveGrammar
         = SequenceGrammar : first PrimitiveGrammar : second as GenGrammarSequenceTypeDefine
@@ -195,17 +194,22 @@ rule GenGrammarTypeDefine Grammar
         = !AlternativeGrammar
         = Grammar : grammar "as" Type : type as GenGrammarCreateTypeDefine
         = Grammar : grammar "with" "{" NAME : name "=" STRING : value  "}"  as GenGrammarSetterTypeDefine
-        ;
+		;
+rule GenGrammarTypeDefine NormalGrammar
+        = NAME : name as GenGrammarNormalTypeDefine
+		;
 
+rule GenGrammarTypeDefine AssginGrammar
+		= NormalGrammar : grammar ":" NAME : name as GenGrammarAssignTypeDefine
+		= STRING : text as GenGrammarTextTypeDefine
+		= "(" !Grammar ")"
+		;
 
 rule GenGrammarTypeDefine PrimitiveGrammar
-        = NAME : name as GenGrammarNormalTypeDefine
-        = STRING : text as GenGrammarTextTypeDefine
-        = PrimitiveGrammar : grammar ":" NAME : name as GenGrammarAssignTypeDefine
-        = "!" PrimitiveGrammar : grammar as GenGrammarUsingTypeDefine
+        =  !AssginGrammar
+        = "!" NormalGrammar : grammar as GenGrammarUsingTypeDefine
         = "[" Grammar : grammar "]" as GenGrammarOptionalTypeDefine
         = "{" Grammar : grammar "}" as GenGrammarLoopTypeDefine
-        = "(" !Grammar ")"
         ;
 
 rule GenTokenDefine TokenDecl
