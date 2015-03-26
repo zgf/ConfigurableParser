@@ -40,14 +40,26 @@ namespace ztl
 			target->fronts->push_back(edge);
 		}
 
-		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const vector<ActionWrap>& wrapList)
+		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap & wrap, int number)
 		{
-			auto edge = NewEdge(source, target);
-			edge->actions = wrapList;
+			auto edge = NewEdge(source, target, wrap);
+			edge->SetGrammarNumber(number);
 			source->nexts->push_back(edge);
 			target->fronts->push_back(edge);
 		}
 
+		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const vector<ActionWrap>& wrapList)
+		{
+			AddEdge(source, target, wrapList, -1);
+		}
+		void PushDownAutoMachine::AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList, int number)
+		{
+			auto edge = NewEdge(source, target);
+			edge->actions = wrapList;
+			edge->SetGrammarNumber(number);
+			source->nexts->push_back(edge);
+			target->fronts->push_back(edge);
+		}
 		void PushDownAutoMachine::DeleteEdge(PDAEdge* target)
 		{
 			auto frontNode = target->GetSource();
@@ -115,7 +127,7 @@ namespace ztl
 					return wrap.GetActionType() == ActionType::Create;
 				}) != frontIter->GetActions().end())
 				{
-					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName,L""));
+					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName,L"",frontIter->GetGrammarNumber()));
 				}
 			}
 		}
@@ -154,6 +166,16 @@ namespace ztl
 				swap(edgeIter->actions.back(), edgeIter->actions[edgeIter->actions.size() - 2]);
 			}
 
+		}
+
+		void PushDownAutoMachine::SetEdgeGrammarNumberToAction(PDAEdge * edge)
+		{
+			for(auto&& actionIter : edge->actions)
+			{
+				assert(edge->GetGrammarNumber() != -1);
+				assert(actionIter.GetGrammarNumber() == -1);
+				actionIter.SetGrammarNumber(edge->GetGrammarNumber());
+			}
 		}
 
 	

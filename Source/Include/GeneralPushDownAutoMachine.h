@@ -30,15 +30,26 @@ namespace ztl
 			wstring value;//setter value assgin ruleName
 			wstring current;//当前文法
 			wstring next;//下一个文法
+			int		grammarNumber = -1;
 		public:
 			ActionWrap() = default;
 			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value,const wstring& _current,const wstring& _next)
-				: action(_action), name(_name), value(_value),current(_current),next(_next)
+				: ActionWrap(_action,_name,_value,_current,_next,-1)
 			{
 			}
-		
+			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value, const wstring& _current, const wstring& _next,int number)
+				: action(_action), name(_name), value(_value), current(_current), next(_next),grammarNumber(number)
+			{
+			}
 			~ActionWrap() = default;
-		
+			int GetGrammarNumber() const
+			{
+				return grammarNumber;
+			}
+			void SetGrammarNumber(int val)
+			{
+				grammarNumber = val;
+			}
 			ActionType GetActionType()const
 			{
 				return action;
@@ -243,7 +254,11 @@ namespace ztl
 			PDANode*					GetRoot() const;
 			void						SetRoot(PDANode* val);
 			void						AddEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
+			void						AddEdge(PDANode* source, PDANode* target, const ActionWrap& wrap, int number);
+
 			void						AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList);
+			void						AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList,int number);
+
 			void						DeleteEdge(PDAEdge* target);
 
 			void						AddGeneratePDA(wstring ruleName, const pair<PDANode *, PDANode*>& pairNode);
@@ -254,7 +269,7 @@ namespace ztl
 			void						AddFinishNodeFollowTarget(PDANode* target,const wstring& ruleName);
 			void						FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap);
 			void						FrontEdgesAdditionSetterAction(PDANode* targetNode, const ActionWrap& wrap);
-
+			void						SetEdgeGrammarNumberToAction(PDAEdge* edge);
 			wstring						GetRootRuleName()const;
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);

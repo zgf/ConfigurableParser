@@ -9,7 +9,7 @@ namespace ztl
 		
 		shared_ptr<void> GeneralParser::GeneralHeterogeneousParserTree()
 		{
-			assert(treeRoot != nullptr);
+			assert(!treeRoots.empty());
 			return shared_ptr<void>();
 		}
 	}

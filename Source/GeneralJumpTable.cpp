@@ -237,7 +237,7 @@ namespace ztl
 			auto functor = [](const ActionWrap& wrap)->wstring
 			{
 				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue() +
-					L" : " + wrap.GetFrom() + L":" + wrap.GetTo();
+					L" : " + wrap.GetFrom() + L":" + wrap.GetTo()+L" grammarNumber : "+to_wstring(wrap.GetGrammarNumber());
 			};
 			vector<ActionType> ActionTypeList = {
 				ActionType::Assign,

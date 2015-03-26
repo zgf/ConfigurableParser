@@ -102,7 +102,7 @@ namespace ztl
 			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
 			vector<shared_ptr<TokenInfo>>		 terminatePool;
 
-			GeneralTreeNode*					 treeRoot;
+			vector<GeneralTreeNode*>			 treeRoots;
 			deque<ParserState>					 parserStates;
 
 
