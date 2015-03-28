@@ -30,6 +30,7 @@ namespace ztl
 			CreateDPDAGraph(*machine.get());
 			jumpTable = make_shared<GeneralJumpTable>(machine.get());
 			CreateJumpTable(*jumpTable.get());
+			CreatReflectionFile(manager.get());
 			//HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 
@@ -60,8 +61,7 @@ namespace ztl
 				}
 			}
 			else
-			{
-				states.pop_front();
+			{				states.pop_front();
 			}
 			if(states.empty())
 			{
@@ -106,8 +106,8 @@ namespace ztl
 
 		shared_ptr<void> GeneralParser::GeneralParserTree()
 		{
-			GenerateIsomorphismParserTree();
-			return GeneralHeterogeneousParserTree();
+			return shared_ptr<void>(); 
+			//return GeneralHeterogeneousParserTree();
 		}
 		vector<EdgeInfo> GeneralParser::EdgeResolve(ParserState& state)
 		{
@@ -211,22 +211,31 @@ namespace ztl
 			if(isRightRecursionEdge)
 			{
 				auto&& ruleRequire = jumpTable->GetRuleRequires(edge);
-				for(auto ruleRequireBegin = ruleRequire.begin(); ruleRequireBegin != ruleRequire.end(); ++ruleRequireBegin)
+				for(auto ruleRequireBegin = ruleRequire.begin(); ruleRequireBegin < ruleRequire.end();)
 				{
 					auto end = FindRightRecursionPosition(ruleRequireBegin, ruleRequire.end());
-					ruleRequireBegin = end;
-					assert(end != ruleRequire.end());
-					auto first = find_if(ruleRequire.begin(), end, [&end](const wstring& value)
+					if(end != ruleRequire.end())
 					{
-						return value == *end;
-					});
-					assert(first != end);
-					auto offset = first - ruleRequire.begin();
-					auto pathOffset = rulePathStack.size() - 1 - offset;
-					assert(rulePathStack[pathOffset] == ruleRequire[offset]);
-					auto number = end - first;
-					createdNodeStack.insert(createdNodeStack.begin() + pathOffset, number, MakeEmptyTreeNode());
-					rulePathStack.insert(rulePathStack.begin() + pathOffset + 1, make_reverse_iterator(end), make_reverse_iterator(first));
+						auto first = find_if(ruleRequireBegin, end, [&end](const wstring& value)
+						{
+							return value == *end;
+						});
+						ruleRequireBegin = end;
+						if(first != end)
+						{
+							auto offset = first - ruleRequire.begin();
+							auto pathOffset = rulePathStack.size() - 1 - offset;
+							assert(rulePathStack[pathOffset] == ruleRequire[offset]);
+							auto number = end - first;
+							createdNodeStack.insert(createdNodeStack.begin() + pathOffset, number, MakeEmptyTreeNode());
+							rulePathStack.insert(rulePathStack.begin() + pathOffset + 1, make_reverse_iterator(end), make_reverse_iterator(first));
+						}
+					}
+					else
+					{
+						break;
+					}
+				
 				}
 			}
 		}
@@ -388,7 +397,7 @@ namespace ztl
 						if(IsTerminate)
 						{
 							terminatePool.emplace_back(tokenPool[tokenIndex]);
-							createdNodeStack.back()->SetTermMap(actionIter.GetName(), terminatePool.size() - 1);
+							createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int)terminatePool.size() - 1);
 						}
 						else
 						{
@@ -402,7 +411,7 @@ namespace ztl
 						break;
 					case ztl::general_parser::ActionType::Setter:
 						terminatePool.emplace_back(make_shared<TokenInfo>(actionIter.GetValue(), L"Setter", -1, -1));
-						createdNodeStack.back()->SetTermMap(actionIter.GetName(), terminatePool.size() - 1);
+						createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int)terminatePool.size() - 1);
 						break;
 					case ztl::general_parser::ActionType::Epsilon:
 					case ztl::general_parser::ActionType::Reduce:
@@ -502,13 +511,13 @@ namespace ztl
 				throw ztl_exception(L"error!" + nodeName + L" isn't a vaild TreeNode's name");
 			}
 			this->nodePool.emplace_back(make_shared<GeneralTreeNode>(findIter->second));
-			nodePool.back()->SetNumber(nodePool.size() - 1);
+			nodePool.back()->SetNumber((int)nodePool.size() - 1);
 			return nodePool.back().get();
 		}
 		GeneralTreeNode*	GeneralParser::MakeEmptyTreeNode()
 		{
 			this->nodePool.emplace_back(new GeneralTreeNode());
-			nodePool.back()->SetNumber(nodePool.size() - 1);
+			nodePool.back()->SetNumber((int)nodePool.size() - 1);
 			return nodePool.back().get();
 		}
 		GeneralTreeNode*	GeneralParser::CopyTreeNode(GeneralTreeNode* target)
@@ -527,5 +536,7 @@ namespace ztl
 			}
 			return result;
 		}
+
+	
 	}
 }

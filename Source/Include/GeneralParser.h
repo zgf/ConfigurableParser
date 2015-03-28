@@ -74,7 +74,7 @@ namespace ztl
 		public:
 			void				BuildParser();
 			void				GenerateIsomorphismParserTree();
-			shared_ptr<void>	GeneralHeterogeneousParserTree();
+			//shared_ptr<void>	GeneralHeterogeneousParserTree();
 			shared_ptr<void>	GeneralParserTree();
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
@@ -96,6 +96,7 @@ namespace ztl
 			unordered_map<wstring, GeneralTreeNode> InitTreeNodeMap();
 			unordered_map<wstring,vector<wstring>> InintChoiceFiledMap();
 			vector<GeneralTreeNode*> SaveCurrentStack(const vector<GeneralTreeNode*>& current);
+			void InitBuilderMap();
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;

@@ -53,12 +53,13 @@ namespace ztl
 			ParserSymbol*							GetDescriptorSymbol()					 const;
 			void									AddSubSymbol(ParserSymbol* subSymbol);
 			void									SetDescriptor(ParserSymbol* _descriptor);
-			void SetFieldEssential();
+			void									SetFieldEssential();
 			bool									IsChoiceFieldDef()						 const;
 			ParserSymbol*							GetSubSymbolByName(const wstring& _name) const;
 			size_t									SubSymbolCount()						 const;
 			ParserSymbol*							SearchClassSubSymbol(const wstring& _name)const;
-			vector<ParserSymbol*> GetClassAllFieldDefSymbol()const;
+			vector<ParserSymbol*>					GetClassAllFieldDefSymbol()const;
+			const unordered_map<wstring, ParserSymbol*>	GetSubSymbolMap()const;
 		public:
 			bool									IsType()     const;
 			bool									IsDefine()   const;

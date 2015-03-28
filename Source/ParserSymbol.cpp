@@ -208,6 +208,11 @@ namespace ztl
 			return result;
 		}
 
+		const unordered_map<wstring, ParserSymbol*> ParserSymbol::GetSubSymbolMap() const
+		{
+			return *subSymbolMap;
+		}
+
 		wstring			ParserSymbol::GetTypeToWString()	 const
 		{
 			wstring result;

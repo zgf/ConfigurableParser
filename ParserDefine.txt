@@ -1,3 +1,5 @@
+include : "zgf" ;
+namespace : "xml" ;
 		struct GenHeadInfoDefine
 		{
 			wstring    property;

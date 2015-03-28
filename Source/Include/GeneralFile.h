@@ -5,7 +5,8 @@ namespace ztl
 	namespace general_parser
 	{
 		class SymbolManager;
-		
+		//节点定义文件的生成,节点反射函数的生成.
+		//
 		class GeneralParserFile
 		{
 		public:
@@ -24,5 +25,6 @@ namespace ztl
 		void CreateLexerFile(const wstring& fileName, SymbolManager* manager);
 		wstring GetNodeDefineFilePreDefineIncludeString();
 		wstring GetNodeDefineFileInclude(SymbolManager* manager);
+		void CreatReflectionFile(SymbolManager* manager);
 	}
 }

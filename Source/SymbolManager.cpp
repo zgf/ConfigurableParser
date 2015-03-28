@@ -70,7 +70,7 @@ namespace ztl
 		SymbolManager::SymbolManager(const shared_ptr<GeneralTableDefine>& _table) : table(_table)
 		{
 			globalSymbol = CreatASymbol(SymbolType::Global, L"", nullptr, nullptr);
-			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"token", nullptr, nullptr);
+			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"TokenInfo", nullptr, nullptr);
 		}
 		const vector<shared_ptr<GeneralTokenDefine>>& SymbolManager::GetTokens()const
 		{
