@@ -144,7 +144,7 @@ namespace ztl
 		{
 			auto reflectionBuilderFunction  = GetReflectBuilderFunctionString(manager);
 			auto objectReflectFunction		= GetOjectReflectioFunctionString(manager);
-
+			//还差实现gen EBNF核心项函数,然后就可以把我现在这个核心给换了:)
 			CreateFile(L"test.cpp", reflectionBuilderFunction + objectReflectFunction);
 		}
 	}
