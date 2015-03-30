@@ -27,7 +27,7 @@ namespace ztl
 		public:
 			virtual void								GeneralTypeDefineVisitor::Visit(GeneralClassTypeDefine* node) override;
 			virtual void								GeneralTypeDefineVisitor::Visit(GeneralEnumTypeDefine* node) override;
-			virtual void								GeneralTypeDefineVisitor::Visit(GeneralClassMemberTypeDenfine* node) override;
+			virtual void								GeneralTypeDefineVisitor::Visit(GeneralClassMemberTypeDefine* node) override;
 			virtual void								GeneralTypeDefineVisitor::Visit(GeneralEnumMemberTypeDefine* node) override;
 			wstring GetResult()const
 			{
@@ -192,7 +192,7 @@ namespace ztl
 		wstring GeneralTypeDefineVisitor::GetClassMembersString(GeneralClassTypeDefine* node)
 		{
 			return accumulate(node->members.begin(), node->members.end(), wstring(),
-				[this](const wstring& sum, const shared_ptr<GeneralClassMemberTypeDenfine>& element)
+				[this](const wstring& sum, const shared_ptr<GeneralClassMemberTypeDefine>& element)
 			{
 				GeneralTypeDefineVisitor visitor(manager);
 				element->Accept(&visitor);
@@ -201,7 +201,7 @@ namespace ztl
 		}
 		wstring GeneralTypeDefineVisitor::GetClassSubTypesString(GeneralClassTypeDefine* node)
 		{
-			return accumulate(node->subType.begin(), node->subType.end(), wstring(),
+			return accumulate(node->subTypes.begin(), node->subTypes.end(), wstring(),
 				[this](const wstring& sum, const shared_ptr<GeneralTypeDefine>& element)
 			{
 				GeneralTypeDefineVisitor visitor(manager);
@@ -280,7 +280,7 @@ namespace ztl
 			generator::MarcoGenerator generator(templateString, {L"$<ClassName>",L"$<EnumBody>"});
 			content = generator.GenerateText({enumClassName,bodyString}).GetMacroResult();
 		}
-		 void								GeneralTypeDefineVisitor::Visit(GeneralClassMemberTypeDenfine* node) 
+		 void								GeneralTypeDefineVisitor::Visit(GeneralClassMemberTypeDefine* node) 
 		{
 			GeneralTypeObjectVisitor visitor(manager);
 			node->type->Accept(&visitor);

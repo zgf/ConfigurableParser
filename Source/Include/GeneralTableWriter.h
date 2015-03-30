@@ -33,7 +33,7 @@ namespace ztl
 			};
 			//TypeObject ÷–¥
 			shared_ptr<GeneralArrayTypeObject>			Array(const shared_ptr<GeneralTypeObject>& elementType);
-			shared_ptr<GeneralClassMemberTypeDenfine>	ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring& name);
+			shared_ptr<GeneralClassMemberTypeDefine>	ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring& name);
 			shared_ptr<GeneralEnumMemberTypeDefine>		EnumMember(const wstring& name);
 			shared_ptr<GeneralStringTypeObject>			String();
 			shared_ptr<GeneralSubTypeObject>			SubTypeObject(const shared_ptr<GeneralTypeObject>& parent, const wstring& name);
@@ -59,7 +59,7 @@ namespace ztl
 				}
 			public:
 				GeneralClassTypeWriter& Name(const wstring& name);
-				GeneralClassTypeWriter& Member(const shared_ptr<GeneralClassMemberTypeDenfine>& member);
+				GeneralClassTypeWriter& Member(const shared_ptr<GeneralClassMemberTypeDefine>& member);
 				GeneralClassTypeWriter& SubType(const GeneralTypeListWriter& writer);
 				GeneralClassTypeWriter& ParentType(const shared_ptr<GeneralTypeObject>& type);
 			};

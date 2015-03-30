@@ -50,6 +50,7 @@ namespace ztl
 			assert(parentType->IsClassType() || parentType->IsGlobal());
 			CheckNameReDefineError(name, parentType);
 			auto classTypeSymbol = CreatASymbol(SymbolType::ClassType, name, parentType, baseType);
+			classTypeSymbol->SetAbsoluteScope(parentType->GetSymbolAbsoluteName());
 			TryAddSubSymbol(classTypeSymbol, parentType);
 			CacheBaseSymbolToDeriveMap(baseType, classTypeSymbol);
 			return classTypeSymbol;
@@ -59,6 +60,7 @@ namespace ztl
 			assert(parentType->IsClassType());
 			CheckNameReDefineError(name, parentType);
 			auto fieldSymbol = CreatASymbol(SymbolType::FieldDef, name, parentType, fieldType);
+			fieldSymbol->SetAbsoluteScope(parentType->GetSymbolAbsoluteName());
 			TryAddSubSymbol(fieldSymbol, parentType);
 			return fieldSymbol;
 		}
@@ -86,6 +88,7 @@ namespace ztl
 			assert(parentType->IsClassType() || parentType->IsGlobal());
 			this->CheckNameReDefineError(name, parentType);
 			auto enumTypeSymbol = CreatASymbol(SymbolType::EnumType, name, parentType, nullptr);
+			enumTypeSymbol->SetAbsoluteScope(parentType->GetSymbolAbsoluteName());
 			TryAddSubSymbol(enumTypeSymbol, parentType);
 			return enumTypeSymbol;
 		}
@@ -96,6 +99,7 @@ namespace ztl
 			CheckNameReDefineError(name, parentType);
 
 			auto&& enumItemSymbol = CreatASymbol(SymbolType::EnumDef, name, parentType, parentType);
+			enumItemSymbol->SetAbsoluteScope(parentType->GetSymbolAbsoluteName());
 			TryAddSubSymbol(enumItemSymbol, parentType);
 			return enumItemSymbol;
 		}

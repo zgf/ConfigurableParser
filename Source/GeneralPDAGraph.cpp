@@ -99,7 +99,7 @@ namespace ztl
 				machine->AddEdge(result.second, newNode, move(wrap));
 				result.second = newNode;
 			}
-			void								Visit(GeneralGrammarAlterationTypeDefine* node)
+			void								Visit(GeneralGrammarAlternationTypeDefine* node)
 			{
 				node->left->Accept(this);
 				auto firstResult = this->GetResult();
