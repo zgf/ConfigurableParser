@@ -9,9 +9,9 @@ namespace ztl
 	{
 		ParserSymbol::ParserSymbol(SymbolManager * _manager, SymbolType _type,
 			const wstring & _name, ParserSymbol * _parent, ParserSymbol * _descriptor)
-			:manager(_manager),type(_type),name(_name),parent(_parent),
+			:manager(_manager), type(_type), name(_name), parent(_parent),
 			descriptor(_descriptor),
-			subSymbolMap(make_unique<unordered_map<wstring, ParserSymbol*>>())
+			subSymbolMap(make_unique<unordered_map<wstring, ParserSymbol*>>()),ignore(false)
 		{
 
 		}
@@ -220,7 +220,32 @@ namespace ztl
 		{
 			return *subSymbolMap;
 		}
-
+		vector<ParserSymbol*>  ParserSymbol::GetAllParentSymbol()const
+		{
+			vector<ParserSymbol*> result;
+			auto worker = parent;
+			while(worker!=nullptr&&!worker->IsGlobal())
+			{
+				result.emplace_back(worker);
+				worker = worker->GetParentSymbol();
+			}
+			return result;
+		}
+		void ParserSymbol::SetAbsoluteScope(const wstring& scope)
+		{
+			assert(this->IsClassType() ||this->IsEnumType()|| this->IsEnumDef()||this->IsFieldDef());
+			absoluteScope = scope;
+		}
+		wstring		ParserSymbol::GetSymbolAbsoluteName()const
+		{
+			auto result = GetAllParentSymbol();
+			auto scope = accumulate(result.begin(), result.end(), wstring(), [](const wstring& sum, const ParserSymbol* symbol)
+			{
+				assert(symbol->IsClassType());
+				return sum + symbol->GetName() + L"::";
+			});
+			return absoluteScope + L"::" + name;
+		}
 		wstring			ParserSymbol::GetTypeToWString()	 const
 		{
 			wstring result;
