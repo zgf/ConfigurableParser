@@ -170,8 +170,14 @@ namespace ztl
 		bool GeneralTreeNode::IsTheSameType(const GeneralTreeNode & node, const vector<wstring>& exclude) const
 		{
 			return name == node.GetName() && IsMayDeriveType(node,exclude) && node.IsMayDeriveType(*this,exclude);
-
 		}
-
+		const unordered_map<wstring, vector<int>> GeneralTreeNode::GetFieldMap()const
+		{
+			return termMap;
+		}
+		const unordered_map<wstring, vector<int>> GeneralTreeNode::GetTermMap()const
+		{
+			return termMap;
+		}
 	}
 }

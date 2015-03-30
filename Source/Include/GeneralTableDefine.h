@@ -96,7 +96,10 @@ namespace ztl
 				
 			};
 
-			virtual void									Accept(IVisitor* visitor) = 0;
+			virtual void									Accept(IVisitor*)
+			{
+
+			}
 		};
 
 		struct GeneralArrayTypeObject: public GeneralTypeObject
@@ -141,7 +144,7 @@ namespace ztl
 		struct GeneralTypeDefine;
 		struct GeneralClassTypeDefine;
 		struct GeneralEnumTypeDefine;
-		struct GeneralClassMemberTypeDenfine;
+		struct GeneralClassMemberTypeDefine;
 		struct GeneralEnumMemberTypeDefine;
 		/*
 		类型的声明的定义
@@ -154,15 +157,18 @@ namespace ztl
 			public:
 				virtual void								Visit(GeneralClassTypeDefine* node)=0;
 				virtual void								Visit(GeneralEnumTypeDefine* node)=0;
-				virtual void								Visit(GeneralClassMemberTypeDenfine* node)=0;
+				virtual void								Visit(GeneralClassMemberTypeDefine* node)=0;
 				virtual void								Visit(GeneralEnumMemberTypeDefine* node)=0;
 
 			};
 
-			virtual void									Accept(IVisitor* visitor)=0;
+			virtual void									Accept(IVisitor*)
+			{
+
+			}
 			
 		};
-		struct GeneralClassMemberTypeDenfine: public GeneralTypeDefine
+		struct GeneralClassMemberTypeDefine: public GeneralTypeDefine
 		{
 			shared_ptr<GeneralTypeObject>			type;
 			wstring									name;
@@ -181,8 +187,8 @@ namespace ztl
 		};
 		struct GeneralClassTypeDefine: public GeneralTypeDefine
 		{
-			vector<shared_ptr<GeneralTypeDefine>>				subType;
-			vector<shared_ptr<GeneralClassMemberTypeDenfine>>	members;
+			vector<shared_ptr<GeneralTypeDefine>>				subTypes;
+			vector<shared_ptr<GeneralClassMemberTypeDefine>>	members;
 			shared_ptr<GeneralTypeObject>						parent;
 			wstring												name;
 			virtual void									Accept(IVisitor* visitor)override
@@ -226,7 +232,7 @@ namespace ztl
 		//创建节点.区别返回类型
 		struct GeneralGrammarCreateTypeDefine;
 		//选择
-		struct GeneralGrammarAlterationTypeDefine;
+		struct GeneralGrammarAlternationTypeDefine;
 		struct GeneralGrammarTypeDefine
 		{
 			class IVisitor
@@ -240,13 +246,16 @@ namespace ztl
 				virtual void								Visit(GeneralGrammarSetterTypeDefine* node)=0;
 				virtual void								Visit(GeneralGrammarUsingTypeDefine* node)=0;
 				virtual void								Visit(GeneralGrammarCreateTypeDefine* node)=0;
-				virtual void								Visit(GeneralGrammarAlterationTypeDefine* node)=0;
+				virtual void								Visit(GeneralGrammarAlternationTypeDefine* node)=0;
 				virtual void								Visit(GeneralGrammarAssignTypeDefine* node)=0;
 
 
 			};
 
-			virtual void									Accept(IVisitor* visitor)=0;
+			virtual void									Accept(IVisitor*)
+			{
+
+			}
 		};
 		struct GeneralGrammarTextTypeDefine: public GeneralGrammarTypeDefine
 		{
@@ -332,7 +341,7 @@ namespace ztl
 				visitor->Visit(this);
 			}
 		};
-		struct GeneralGrammarAlterationTypeDefine: public GeneralGrammarTypeDefine
+		struct GeneralGrammarAlternationTypeDefine: public GeneralGrammarTypeDefine
 		{
 			shared_ptr<GeneralGrammarTypeDefine>				left;
 			shared_ptr<GeneralGrammarTypeDefine>				right;

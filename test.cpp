@@ -1,487 +1,417 @@
 
 			void ReflectionBuidler(const wstring& className,const wstring& fieldName,void* classObject,void* valueObject)
 			{
-				using buiderType = void(*)(void*,void*);
-				static unordered_map<wstring, unordered_map<wstring, buiderType>> buidlerMap =
+				using builderType = void(*)(void*,void*);
+				static unordered_map<wstring, unordered_map<wstring, builderType>> builderMap =
 				{
 					{
-								L"GenGrammarAssignTypeDefine",
+								L"GeneralTableDefine",
 								{
-									
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarAssignTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"grammar",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarAssignTypeDefine>(classObject)->grammar=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenClassMemberTypeDefine",
-								{
-									
-									{
-										L"type",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenClassMemberTypeDefine>(classObject)->type=static_cast<GenTypeObject>(valueObject);
-											return;
-										}
-									},
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenClassMemberTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenHeadInfoDefine",
-								{
-									
-									{
-										L"property",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenHeadInfoDefine>(classObject)->property=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"value",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenHeadInfoDefine>(classObject)->value=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenNormalTypeObject",
-								{
-									
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenNormalTypeObject>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarCreateTypeDefine",
-								{
-									
-									{
-										L"type",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarCreateTypeDefine>(classObject)->type=static_cast<GenTypeObject>(valueObject);
-											return;
-										}
-									},
-									{
-										L"grammar",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarCreateTypeDefine>(classObject)->grammar=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarLoopTypeDefine",
-								{
-									
-									{
-										L"grammar",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarLoopTypeDefine>(classObject)->grammar=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenTokenDefine",
-								{
-									
-									{
-										L"regex",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenTokenDefine>(classObject)->regex=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenTokenDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"ignore",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenTokenDefine>(classObject)->ignore=static_cast<TokenOptional>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarSequenceTypeDefine",
-								{
-									
-									{
-										L"first",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarSequenceTypeDefine>(classObject)->first=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-									{
-										L"second",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarSequenceTypeDefine>(classObject)->second=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenTypeDefine",
-								{
-									
-								}
-							},{
-								L"GenTypeObject",
-								{
-									
-								}
-							},{
-								L"GenArrayTypeObject",
-								{
-									
-									{
-										L"element",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenArrayTypeObject>(classObject)->element=static_cast<GenTypeObject>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenStringTypeObject",
-								{
-									
-								}
-							},{
-								L"GenSubTypeObject",
-								{
-									
-									{
-										L"parent",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenSubTypeObject>(classObject)->parent=static_cast<GenTypeObject>(valueObject);
-											return;
-										}
-									},
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenSubTypeObject>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenEnumMemberTypeDefine",
-								{
-									
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenEnumMemberTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenClassTypeDefine",
-								{
-									
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenClassTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"subTypes",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenClassTypeDefine>(classObject)->subTypes.emplace_back(static_cast<GenTypeDefine>(valueObject));
-											return;
-										}
-									},
-									{
-										L"parent",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenClassTypeDefine>(classObject)->parent=static_cast<GenTypeObject>(valueObject);
-											return;
-										}
-									},
-									{
-										L"members",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenClassTypeDefine>(classObject)->members.emplace_back(static_cast<GenClassMemberTypeDefine>(valueObject));
-											return;
-										}
-									},
-								}
-							},{
-								L"GenEnumTypeDefine",
-								{
-									
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenEnumTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"members",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenEnumTypeDefine>(classObject)->members.emplace_back(static_cast<GenEnumMemberTypeDefine>(valueObject));
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarTypeDefine",
-								{
-									
-								}
-							},{
-								L"GenGrammarTextTypeDefine",
-								{
-									
-									{
-										L"text",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarTextTypeDefine>(classObject)->text=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarNormalTypeDefine",
-								{
-									
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarNormalTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarOptionalTypeDefine",
-								{
-									
-									{
-										L"grammar",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarOptionalTypeDefine>(classObject)->grammar=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarSetterTypeDefine",
-								{
-									
-									{
-										L"grammar",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarSetterTypeDefine>(classObject)->grammar=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarSetterTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"value",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarSetterTypeDefine>(classObject)->value=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarAdditionTypeDefine",
-								{
-									
-									{
-										L"grammar",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarAdditionTypeDefine>(classObject)->grammar=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-									{
-										L"setters",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarAdditionTypeDefine>(classObject)->setters.emplace_back(static_cast<GenGrammarSetterTypeDefine>(valueObject));
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarUsingTypeDefine",
-								{
-									
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarUsingTypeDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"grammar",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarUsingTypeDefine>(classObject)->grammar=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenGrammarAlternationTypeDefine",
-								{
-									
-									{
-										L"left",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarAlternationTypeDefine>(classObject)->left=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-									{
-										L"right",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenGrammarAlternationTypeDefine>(classObject)->right=static_cast<GenGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},
-								}
-							},{
-								L"GenRuleDefine",
-								{
-									
-									{
-										L"type",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenRuleDefine>(classObject)->type=static_cast<GenTypeObject>(valueObject);
-											return;
-										}
-									},
-									{
-										L"name",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenRuleDefine>(classObject)->name=static_cast<TokenInfo>(valueObject);
-											return;
-										}
-									},
-									{
-										L"grammars",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<GenRuleDefine>(classObject)->grammars.emplace_back(static_cast<GenGrammarTypeDefine>(valueObject));
-											return;
-										}
-									},
-								}
-							},{
-								L"GenTableDefine",
-								{
-									
 									{
 										L"heads",
 										[](void* classObject,void* valueObject)
 										{
-											static_cast<GenTableDefine>(classObject)->heads.emplace_back(static_cast<GenHeadInfoDefine>(valueObject));
+											static_cast<::GeneralTableDefine*>(classObject)->heads.emplace_back(static_cast<::GeneralHeadInfoDefine*>(valueObject));
 											return;
 										}
-									},
-									{
+									},{
 										L"types",
 										[](void* classObject,void* valueObject)
 										{
-											static_cast<GenTableDefine>(classObject)->types.emplace_back(static_cast<GenTypeDefine>(valueObject));
+											static_cast<::GeneralTableDefine*>(classObject)->types.emplace_back(static_cast<::GeneralTypeDefine*>(valueObject));
 											return;
 										}
-									},
-									{
+									},{
 										L"tokens",
 										[](void* classObject,void* valueObject)
 										{
-											static_cast<GenTableDefine>(classObject)->tokens.emplace_back(static_cast<GenTokenDefine>(valueObject));
+											static_cast<::GeneralTableDefine*>(classObject)->tokens.emplace_back(static_cast<::GeneralTokenDefine*>(valueObject));
 											return;
 										}
-									},
-									{
+									},{
 										L"rules",
 										[](void* classObject,void* valueObject)
 										{
-											static_cast<GenTableDefine>(classObject)->rules.emplace_back(static_cast<GenRuleDefine>(valueObject));
+											static_cast<::GeneralTableDefine*>(classObject)->rules.emplace_back(static_cast<::GeneralRuleDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralClassMemberTypeDefine",
+								{
+									{
+										L"type",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralClassMemberTypeDefine*>(classObject)->type.reset(static_cast<::GeneralTypeObject*>(valueObject));
+											return;
+										}
+									},{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralClassMemberTypeDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarSetterTypeDefine",
+								{
+									{
+										L"grammar",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarSetterTypeDefine*>(classObject)->grammar.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarSetterTypeDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"value",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarSetterTypeDefine*>(classObject)->value=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralHeadInfoDefine",
+								{
+									{
+										L"property",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralHeadInfoDefine*>(classObject)->property=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"value",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralHeadInfoDefine*>(classObject)->value=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarLoopTypeDefine",
+								{
+									{
+										L"grammar",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarLoopTypeDefine*>(classObject)->grammar.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralNormalTypeObject",
+								{
+									{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralNormalTypeObject*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarCreateTypeDefine",
+								{
+									{
+										L"type",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarCreateTypeDefine*>(classObject)->type.reset(static_cast<::GeneralTypeObject*>(valueObject));
+											return;
+										}
+									},{
+										L"grammar",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarCreateTypeDefine*>(classObject)->grammar.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralEnumMemberTypeDefine",
+								{
+									{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralEnumMemberTypeDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralTokenDefine",
+								{
+									{
+										L"regex",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralTokenDefine*>(classObject)->regex=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralTokenDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"ignore",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralTokenDefine*>(classObject)->ignore=*static_cast<::TokenOptional*>(valueObject);
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarSequenceTypeDefine",
+								{
+									{
+										L"first",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarSequenceTypeDefine*>(classObject)->first.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},{
+										L"second",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarSequenceTypeDefine*>(classObject)->second.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralTypeDefine",
+								{
+									
+								}
+							},{
+								L"GeneralTypeObject",
+								{
+									
+								}
+							},{
+								L"GeneralArrayTypeObject",
+								{
+									{
+										L"element",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralArrayTypeObject*>(classObject)->element.reset(static_cast<::GeneralTypeObject*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralStringTypeObject",
+								{
+									
+								}
+							},{
+								L"GeneralSubTypeObject",
+								{
+									{
+										L"parent",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralSubTypeObject*>(classObject)->parent.reset(static_cast<::GeneralTypeObject*>(valueObject));
+											return;
+										}
+									},{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralSubTypeObject*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralClassTypeDefine",
+								{
+									{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralClassTypeDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"subTypes",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralClassTypeDefine*>(classObject)->subTypes.emplace_back(static_cast<::GeneralTypeDefine*>(valueObject));
+											return;
+										}
+									},{
+										L"parent",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralClassTypeDefine*>(classObject)->parent.reset(static_cast<::GeneralTypeObject*>(valueObject));
+											return;
+										}
+									},{
+										L"members",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralClassTypeDefine*>(classObject)->members.emplace_back(static_cast<::GeneralClassMemberTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralEnumTypeDefine",
+								{
+									{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralEnumTypeDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"members",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralEnumTypeDefine*>(classObject)->members.emplace_back(static_cast<::GeneralEnumMemberTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarTypeDefine",
+								{
+									
+								}
+							},{
+								L"GeneralGrammarTextTypeDefine",
+								{
+									{
+										L"text",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarTextTypeDefine*>(classObject)->text=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarNormalTypeDefine",
+								{
+									{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarNormalTypeDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarOptionalTypeDefine",
+								{
+									{
+										L"grammar",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarOptionalTypeDefine*>(classObject)->grammar.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarAssignTypeDefine",
+								{
+									{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarAssignTypeDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"grammar",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarAssignTypeDefine*>(classObject)->grammar.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarUsingTypeDefine",
+								{
+									{
+										L"grammar",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarUsingTypeDefine*>(classObject)->grammar.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarAlternationTypeDefine",
+								{
+									{
+										L"left",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarAlternationTypeDefine*>(classObject)->left.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},{
+										L"right",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralGrammarAlternationTypeDefine*>(classObject)->right.reset(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralRuleDefine",
+								{
+									{
+										L"type",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralRuleDefine*>(classObject)->type.reset(static_cast<::GeneralTypeObject*>(valueObject));
+											return;
+										}
+									},{
+										L"name",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralRuleDefine*>(classObject)->name=static_cast<::TokenInfo*>(valueObject)->content;
+											return;
+										}
+									},{
+										L"grammars",
+										[](void* classObject,void* valueObject)
+										{
+											static_cast<::GeneralRuleDefine*>(classObject)->grammars.emplace_back(static_cast<::GeneralGrammarTypeDefine*>(valueObject));
 											return;
 										}
 									},
@@ -495,193 +425,203 @@
 			}
 			shared_ptr<void> ReflecteObjectByName(const wstring& name)
 			{
-				using lambdaType = shared_ptr<void>(*)();
-				static unordered_map < wstring, lambdaType> objectMap =
+				using reflectObjectType = shared_ptr<void>(*)();
+				static unordered_map < wstring, reflectObjectType> objectMap =
 				{
 					
 				{
-					L"GenGrammarAssignTypeDefine",
+					L"GeneralTableDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarAssignTypeDefine>();
+						return make_shared<GeneralTableDefine>();
 					}
 				},
 				{
-					L"GenClassMemberTypeDefine",
+					L"GeneralClassMemberTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenClassMemberTypeDefine>();
+						return make_shared<GeneralClassMemberTypeDefine>();
 					}
 				},
 				{
-					L"GenHeadInfoDefine",
+					L"GeneralGrammarSetterTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenHeadInfoDefine>();
+						return make_shared<GeneralGrammarSetterTypeDefine>();
 					}
 				},
 				{
-					L"GenNormalTypeObject",
+					L"GeneralHeadInfoDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenNormalTypeObject>();
+						return make_shared<GeneralHeadInfoDefine>();
 					}
 				},
 				{
-					L"GenGrammarCreateTypeDefine",
+					L"GeneralGrammarLoopTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarCreateTypeDefine>();
+						return make_shared<GeneralGrammarLoopTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarLoopTypeDefine",
+					L"GeneralNormalTypeObject",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarLoopTypeDefine>();
+						return make_shared<GeneralNormalTypeObject>();
 					}
 				},
 				{
-					L"GenTokenDefine",
+					L"GeneralGrammarCreateTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenTokenDefine>();
+						return make_shared<GeneralGrammarCreateTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarSequenceTypeDefine",
+					L"GeneralEnumMemberTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarSequenceTypeDefine>();
+						return make_shared<GeneralEnumMemberTypeDefine>();
 					}
 				},
 				{
-					L"GenTypeDefine",
+					L"GeneralTokenDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenTypeDefine>();
+						return make_shared<GeneralTokenDefine>();
 					}
 				},
 				{
-					L"GenTypeObject",
+					L"GeneralGrammarSequenceTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenTypeObject>();
+						return make_shared<GeneralGrammarSequenceTypeDefine>();
 					}
 				},
 				{
-					L"GenArrayTypeObject",
+					L"GeneralTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenArrayTypeObject>();
+						return make_shared<GeneralTypeDefine>();
 					}
 				},
 				{
-					L"GenStringTypeObject",
+					L"GeneralTypeObject",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenStringTypeObject>();
+						return make_shared<GeneralTypeObject>();
 					}
 				},
 				{
-					L"GenSubTypeObject",
+					L"GeneralArrayTypeObject",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenSubTypeObject>();
+						return make_shared<GeneralArrayTypeObject>();
 					}
 				},
 				{
-					L"GenEnumMemberTypeDefine",
+					L"GeneralStringTypeObject",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenEnumMemberTypeDefine>();
+						return make_shared<GeneralStringTypeObject>();
 					}
 				},
 				{
-					L"GenClassTypeDefine",
+					L"GeneralSubTypeObject",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenClassTypeDefine>();
+						return make_shared<GeneralSubTypeObject>();
 					}
 				},
 				{
-					L"GenEnumTypeDefine",
+					L"GeneralClassTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenEnumTypeDefine>();
+						return make_shared<GeneralClassTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarTypeDefine",
+					L"GeneralEnumTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarTypeDefine>();
+						return make_shared<GeneralEnumTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarTextTypeDefine",
+					L"GeneralGrammarTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarTextTypeDefine>();
+						return make_shared<GeneralGrammarTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarNormalTypeDefine",
+					L"GeneralGrammarTextTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarNormalTypeDefine>();
+						return make_shared<GeneralGrammarTextTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarOptionalTypeDefine",
+					L"GeneralGrammarNormalTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarOptionalTypeDefine>();
+						return make_shared<GeneralGrammarNormalTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarSetterTypeDefine",
+					L"GeneralGrammarOptionalTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarSetterTypeDefine>();
+						return make_shared<GeneralGrammarOptionalTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarAdditionTypeDefine",
+					L"GeneralGrammarAssignTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarAdditionTypeDefine>();
+						return make_shared<GeneralGrammarAssignTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarUsingTypeDefine",
+					L"GeneralGrammarUsingTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarUsingTypeDefine>();
+						return make_shared<GeneralGrammarUsingTypeDefine>();
 					}
 				},
 				{
-					L"GenGrammarAlternationTypeDefine",
+					L"GeneralGrammarAlternationTypeDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenGrammarAlternationTypeDefine>();
+						return make_shared<GeneralGrammarAlternationTypeDefine>();
 					}
 				},
 				{
-					L"GenRuleDefine",
+					L"GeneralRuleDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GenRuleDefine>();
-					}
-				},
-				{
-					L"GenTableDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GenTableDefine>();
+						return make_shared<GeneralRuleDefine>();
 					}
 				},
 				};
 				assert(objectMap.find(name) != objectMap.end());
 				return objectMap[name]();
+			}
+			int WstringToEnumItem(const wstring& value)
+			{
+				static unordered_map<wstring, int> signMap =
+				{
+					
+				{
+					L"::False",
+					static_cast<int>(::False)
+				},
+				{
+					L"::True",
+					static_cast<int>(::True)
+				},
+				};
+				assert(signMap.find(value)!=signMap.end());
+				return signMap[value];
 			}

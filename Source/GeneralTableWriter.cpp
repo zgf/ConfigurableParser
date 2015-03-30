@@ -33,9 +33,9 @@ namespace ztl
 				result->element = elementType;
 				return result;
 			}
-			shared_ptr<GeneralClassMemberTypeDenfine>	ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring& name)
+			shared_ptr<GeneralClassMemberTypeDefine>	ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring& name)
 			{
-				auto result = make_shared<GeneralClassMemberTypeDenfine>();
+				auto result = make_shared<GeneralClassMemberTypeDefine>();
 				result->type = type;
 				result->name = name;
 				return result;
@@ -86,7 +86,7 @@ namespace ztl
 				return *this;
 			}
 
-			GeneralClassTypeWriter& GeneralClassTypeWriter::Member(const shared_ptr<GeneralClassMemberTypeDenfine>& member)
+			GeneralClassTypeWriter& GeneralClassTypeWriter::Member(const shared_ptr<GeneralClassMemberTypeDefine>& member)
 			{
 				this->_struct->members.emplace_back(member);
 				return *this;
@@ -94,7 +94,7 @@ namespace ztl
 
 			GeneralClassTypeWriter& GeneralClassTypeWriter::SubType(const GeneralTypeListWriter& writer)
 			{
-				this->_struct->subType = writer.types;
+				this->_struct->subTypes = writer.types;
 				return *this;
 			}
 
@@ -236,7 +236,7 @@ namespace ztl
 			GeneralGrammarWriter operator|(const GeneralGrammarWriter& left, const GeneralGrammarWriter& right)
 			{
 				GeneralGrammarWriter grammarWriter;
-				auto result = make_shared<GeneralGrammarAlterationTypeDefine>();
+				auto result = make_shared<GeneralGrammarAlternationTypeDefine>();
 				result->left = left.grammar;
 				result->right = right.grammar;
 				grammarWriter.grammar = move(result);

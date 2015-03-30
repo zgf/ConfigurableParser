@@ -36,7 +36,8 @@ namespace ztl
 			bool IsMayDeriveType(const GeneralTreeNode & node, const vector<wstring>& exclude) const;
 			bool IsTheSameType(const GeneralTreeNode&node)const;
 			bool IsTheSameType(const GeneralTreeNode&node, const vector<wstring>& exclude) const;
-
+			const unordered_map<wstring, vector<int>> GetFieldMap()const;
+			const unordered_map<wstring, vector<int>> GetTermMap()const;
 		private:
 			int nodeNumber;//nodeÔÚnodePoolµÄindex
 			wstring name;

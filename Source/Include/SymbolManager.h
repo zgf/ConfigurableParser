@@ -28,6 +28,7 @@ namespace ztl
 			using DefSymbolToRuleNodeMapType = unordered_map< ParserSymbol*,GeneralRuleDefine*>;
 			using RuleNodeToDefSymbolMapType = unordered_map< GeneralRuleDefine*, ParserSymbol*>;
 			using GrammarNodeToDefSymbolMapType = unordered_map<GeneralGrammarTypeDefine*, ParserSymbol*>;
+			//using AbsoluteNameToSymbolType = unordered_map<wstring, ParserSymbol*>;
 			//收集继承关系.
 			using  BaseSymbolToDeriveSymbolMapType = unordered_map<ParserSymbol*, vector<ParserSymbol*>>;
 		private:
@@ -42,6 +43,8 @@ namespace ztl
 			TypeObjectToSymbolMapType			 typeSymbolMap;
 			TypeDefineToSymbolMapType			 typeDefSymbolMap;//类型定义到符号的绑定
 			SymbolToTypeDefineMapType			 symbolTypeDefMap;//从符号到类型定义的绑定
+			//AbsoluteNameToSymbolType			 absoluteNameToSymbolMap;//符号的绝对名称到符号表映射
+
 
 			RuleNameToSymbolMapType				 ruleNameSymbolMap;
 			TokenNameToSymbolMapType			 tokenNameSymbolMap;
@@ -49,8 +52,6 @@ namespace ztl
 			DefSymbolToRuleNodeMapType           symbolRuleDefineMap;
 			GrammarNodeToDefSymbolMapType		 grammarNodeDefSymbolMap;
 			RegexStringToSymbolMapType			 regexSymbolMap;
-			unordered_map<wstring, int>			 nameToTagMap;
-			vector<wstring>						 tagToNameList;
 			unordered_map<wstring, vector<wstring>>propertyToValueMap;//headInfoMap property value;
 
 			

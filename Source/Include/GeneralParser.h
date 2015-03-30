@@ -97,6 +97,11 @@ namespace ztl
 			unordered_map<wstring,vector<wstring>> InintChoiceFiledMap();
 			vector<GeneralTreeNode*> SaveCurrentStack(const vector<GeneralTreeNode*>& current);
 			void InitBuilderMap();
+			void HeterogeneousParse(GeneralTreeNode* classNode, shared_ptr<void>& classObject);
+			shared_ptr<void> HeterogeneousParse(GeneralTreeNode* root);
+			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
+			TokenInfo* GetTermNodeByIndex(int index)const;
+
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
@@ -106,6 +111,7 @@ namespace ztl
 			vector<GeneralTreeNode*>			 treeRoots;
 			deque<ParserState>					 parserStates;
 
+			vector<shared_ptr<void>>	 heterogeneousNodePool;
 
 			shared_ptr<PushDownAutoMachine>		 machine;
 			shared_ptr<GeneralJumpTable>		 jumpTable;
