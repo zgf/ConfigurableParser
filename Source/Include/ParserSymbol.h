@@ -22,7 +22,7 @@ namespace ztl
 		{
 			friend class SymbolManager;
 		public:
-			
+
 		private:
 			SymbolManager*										manager;
 			SymbolType											type;
@@ -31,13 +31,15 @@ namespace ztl
 			ParserSymbol*										descriptor;
 			bool												ignore;//token ignore.对于classDef的filedDef,ignore表名该字段是否必要
 			unique_ptr<unordered_map<wstring, ParserSymbol*>>	subSymbolMap;
+			wstring												absoluteScope;//符号的修饰后的作用域
+
 		public:
 			ParserSymbol() = delete;
 			ParserSymbol(SymbolManager * _manager, SymbolType _type,
 				const wstring & _name, ParserSymbol * _parent, ParserSymbol * _descriptor);
-				
+
 			ParserSymbol(SymbolManager * _manager, SymbolType _type,
-				const wstring & _name, ParserSymbol * _parent, ParserSymbol * _descriptor,bool _ignore);
+				const wstring & _name, ParserSymbol * _parent, ParserSymbol * _descriptor, bool _ignore);
 			~ParserSymbol() = default;
 			ParserSymbol(ParserSymbol&&) = default;
 			ParserSymbol(const ParserSymbol&) = default;
@@ -60,6 +62,10 @@ namespace ztl
 			ParserSymbol*							SearchClassSubSymbol(const wstring& _name)const;
 			vector<ParserSymbol*>					GetClassAllFieldDefSymbol()const;
 			const unordered_map<wstring, ParserSymbol*>	GetSubSymbolMap()const;
+			vector<ParserSymbol*>					GetAllParentSymbol()const;
+			wstring									GetSymbolAbsoluteName()const;
+			void SetAbsoluteScope(const wstring& scope);
+
 		public:
 			bool									IsType()     const;
 			bool									IsDefine()   const;

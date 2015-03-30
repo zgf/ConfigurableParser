@@ -149,7 +149,7 @@ namespace ztl
 				auto classTypeSymbol = manager->AddClass(name, node->parent == nullptr ? nullptr : FindType(manager, scope, node->parent.get()), scope);
 				manager->CacheTypeDefineAndSymbolMap(node, classTypeSymbol);
 				swap(scope, classTypeSymbol);
-				for(auto&& iter : node->subType)
+				for(auto&& iter : node->subTypes)
 				{
 					iter->Accept(this);
 				}

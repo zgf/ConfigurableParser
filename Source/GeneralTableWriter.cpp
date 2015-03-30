@@ -94,7 +94,7 @@ namespace ztl
 
 			GeneralClassTypeWriter& GeneralClassTypeWriter::SubType(const GeneralTypeListWriter& writer)
 			{
-				this->_struct->subType = writer.types;
+				this->_struct->subTypes = writer.types;
 				return *this;
 			}
 

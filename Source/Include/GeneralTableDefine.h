@@ -181,7 +181,7 @@ namespace ztl
 		};
 		struct GeneralClassTypeDefine: public GeneralTypeDefine
 		{
-			vector<shared_ptr<GeneralTypeDefine>>				subType;
+			vector<shared_ptr<GeneralTypeDefine>>				subTypes;
 			vector<shared_ptr<GeneralClassMemberTypeDenfine>>	members;
 			shared_ptr<GeneralTypeObject>						parent;
 			wstring												name;

@@ -201,7 +201,7 @@ namespace ztl
 		}
 		wstring GeneralTypeDefineVisitor::GetClassSubTypesString(GeneralClassTypeDefine* node)
 		{
-			return accumulate(node->subType.begin(), node->subType.end(), wstring(),
+			return accumulate(node->subTypes.begin(), node->subTypes.end(), wstring(),
 				[this](const wstring& sum, const shared_ptr<GeneralTypeDefine>& element)
 			{
 				GeneralTypeDefineVisitor visitor(manager);

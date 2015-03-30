@@ -207,7 +207,32 @@ namespace ztl
 			}
 			return result;
 		}
-
+		vector<ParserSymbol*>  ParserSymbol::GetAllParentSymbol()const
+		{
+			vector<ParserSymbol*> result;
+			auto worker = parent;
+			while(worker != nullptr&&!worker->IsGlobal())
+			{
+				result.emplace_back(worker);
+				worker = worker->GetParentSymbol();
+			}
+			return result;
+		}
+		void ParserSymbol::SetAbsoluteScope(const wstring& scope)
+		{
+			assert(this->IsClassType() || this->IsEnumType() || this->IsEnumDef() || this->IsFieldDef());
+			absoluteScope = scope;
+		}
+		wstring		ParserSymbol::GetSymbolAbsoluteName()const
+		{
+			auto result = GetAllParentSymbol();
+			auto scope = accumulate(result.begin(), result.end(), wstring(), [](const wstring& sum, const ParserSymbol* symbol)
+			{
+				assert(symbol->IsClassType());
+				return sum + symbol->GetName() + L"::";
+			});
+			return absoluteScope + L"::" + name;
+		}
 		const unordered_map<wstring, ParserSymbol*> ParserSymbol::GetSubSymbolMap() const
 		{
 			return *subSymbolMap;
