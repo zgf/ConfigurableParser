@@ -10,45 +10,76 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		wstring GetReflectionFiledString(ParserSymbol* classSymbol, ParserSymbol*filedDefSymbol)
+		wstring GetArrayTypeFiledReflectTemplate(const wstring& basicTemplateString, ParserSymbol* fieldTypeSymbol)
+		{
+			assert(fieldTypeSymbol->IsArrayType());
+			auto elementTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
+			static unordered_map<SymbolType, wstring> signMap =
+			{
+				{
+					SymbolType::ClassType,
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.emplace_back(static_cast<$<FieldType>*>(valueObject));)"
+				},
+				{
+					SymbolType::TokenType,
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.emplace_back(static_cast<$<FieldType>*>(valueObject)->content);)"
+				},
+				{
+					SymbolType::EnumType,
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.emplace_back(static_cast<$<FieldType>>(WstringToEnumItem(L"$<FieldType>::" + static_cast<TokenInfo*>(valueObject)->content)));)"
+				}
+			};
+			assert(signMap.find(elementTypeSymbol->GetType()) != signMap.end());
+			ztl::generator::MarcoGenerator generator(basicTemplateString, { L"$<SymbolType>" });
+			return generator.GenerateText({ signMap[elementTypeSymbol->GetType()] }).GetMacroResult();
+		}
+		wstring GetNonArrayTypeFiledReflectTemplate(const wstring& basicTemplateString, ParserSymbol* fieldTypeSymbol)
+		{
+			assert(!fieldTypeSymbol->IsArrayType());
+			static unordered_map<SymbolType, wstring> signMap =
+			{
+				{
+					SymbolType::ClassType,
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.reset(static_cast<$<FieldType>*>(valueObject));)"
+				},
+				{
+					SymbolType::TokenType,
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>=static_cast<$<FieldType>*>(valueObject)->content;)"
+				},
+				{
+					SymbolType::EnumType,
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>=static_cast<$<FieldType>>(WstringToEnumItem(L"$<FieldType>::" + static_cast<TokenInfo*>(valueObject)->content));)"
+				}
+			};
+			ztl::generator::MarcoGenerator generator(basicTemplateString, { L"$<SymbolType>" });
+			assert(signMap.find(fieldTypeSymbol->GetType()) != signMap.end());
+			return generator.GenerateText({ signMap[fieldTypeSymbol->GetType()] }).GetMacroResult();
+		}
+		wstring GetReflectionFiledString(ParserSymbol* classSymbol, ParserSymbol*fieldDefSymbol)
 		{
 			wstring filedReflectString;
-			wstring classType = classSymbol->GetName();
-			wstring fieldName = filedDefSymbol->GetName();
-			assert(filedDefSymbol->GetDescriptorSymbol() != nullptr);
-			if(filedDefSymbol->GetDescriptorSymbol()->IsArrayType())
-			{
-				auto arrayTypeSymbol = filedDefSymbol->GetDescriptorSymbol();
-				wstring arrayFieldReflectTemplate = LR"(
-									{
+			wstring classType = classSymbol->GetSymbolAbsoluteName();
+			wstring fieldName = fieldDefSymbol->GetName();
+			assert(fieldDefSymbol->GetDescriptorSymbol() != nullptr);
+			auto fieldTypeSymbol = fieldDefSymbol->GetDescriptorSymbol();
+			auto fieldTypeName = (fieldTypeSymbol->IsArrayType()) ?
+				fieldTypeSymbol->GetDescriptorSymbol()->GetSymbolAbsoluteName() :
+				fieldTypeSymbol->GetSymbolAbsoluteName();
+			wstring basicTemplateString = LR"({
 										L"$<FieldName>",
 										[](void* classObject,void* valueObject)
 										{
-											static_cast<$<ClassType>>(classObject)->$<FieldName>.emplace_back(static_cast<$<ElementType>>(valueObject));
+											$<SymbolType>
 											return;
 										}
 									},)";
-				ztl::generator::MarcoGenerator generator(arrayFieldReflectTemplate, { L"$<ClassType>",L"$<FieldName>",L"$<ElementType>" });
-				wstring elementType = arrayTypeSymbol->GetDescriptorSymbol()->GetName();
-				return generator.GenerateText({ classType, fieldName, elementType }).GetMacroResult();
-			}
-			else
-			{
-				wstring normalFieldReflectTempalte = LR"(
-									{
-										L"$<FieldName>",
-										[](void* classObject,void* valueObject)
-										{
-											static_cast<$<ClassType>>(classObject)->$<FieldName>=static_cast<$<FieldType>>(valueObject);
-											return;
-										}
-									},)";
-				auto fieldType = filedDefSymbol->GetDescriptorSymbol()->GetName();
-				ztl::generator::MarcoGenerator generator(normalFieldReflectTempalte, { L"$<ClassType>",L"$<FieldName>",L"$<FieldType>" });
-				return generator.GenerateText({ classType,fieldName,fieldType }).GetMacroResult();
-
-			}
+			auto typeReflectionTemplateString = (fieldTypeSymbol->IsArrayType()) ?
+				GetArrayTypeFiledReflectTemplate(basicTemplateString, fieldTypeSymbol) :
+				GetNonArrayTypeFiledReflectTemplate(basicTemplateString, fieldTypeSymbol);
+			ztl::generator::MarcoGenerator generator(typeReflectionTemplateString, { L"$<ClassType>",L"$<FieldName>",L"$<FieldType>" });
+			return generator.GenerateText({ classType,fieldName,fieldTypeName }).GetMacroResult();
 		}
+
 		wstring GetClassReflectionString(ParserSymbol* classSymbol)
 		{
 			wstring tempalteString = LR"({
@@ -63,6 +94,7 @@ namespace ztl
 			{
 				if(iter.second->IsFieldDef())
 				{
+					assert(iter.second->GetDescriptorSymbol() != nullptr);
 					FieldReflectList += GetReflectionFiledString(classSymbol, iter.second);
 				}
 			}
@@ -95,11 +127,7 @@ namespace ztl
 			}
 			return generator.GenerateText({ ClassReflecteList }).GetMacroResult();
 		}
-		void GetHeterogeneousParseFunction()
-		{
-			wstring tempalteString = LR"(shared_ptr<void> )";
 
-		}
 		wstring GetObjectReflectionListString(const wstring& className)
 		{
 			wstring classReflecteString = LR"(
@@ -138,14 +166,67 @@ namespace ztl
 				}
 			}
 			return generator.GenerateText({ classReflecteString }).GetMacroResult();
-
+		}
+		wstring GetEnumSymbolString(ParserSymbol* enumSymbol)
+		{
+			assert(enumSymbol->IsEnumType());
+			wstring result;
+			wstring templateString = LR"(
+				{
+					L"$<EnumItemString>",
+					static_cast<int>($<EnumItemString>)
+				},)";
+			for(auto&&iter : enumSymbol->GetSubSymbolMap())
+			{
+				auto itemSymbol = iter.second;
+				auto enumItemValue = itemSymbol->GetSymbolAbsoluteName();
+				ztl::generator::MarcoGenerator generator(templateString, { L"$<EnumItemString>" });
+				result += generator.GenerateText({ enumItemValue }).GetMacroResult();
+			}
+			return result;
+		}
+		wstring GetWStringToEnumFunctionString(SymbolManager* manager)
+		{
+			auto global = manager->GetGlobalSymbol();
+			deque<ParserSymbol*>queue;
+			queue.emplace_back(global);
+			wstring templateString = LR"(
+			int WstringToEnumItem(const wstring& value)
+			{
+				static unordered_map<wstring, int> signMap =
+				{
+					$<initEnumList>
+				};
+				assert(signMap.find(value)!=signMap.end());
+				return signMap[value];
+			})";
+			wstring initEnumList;
+			while(!queue.empty())
+			{
+				auto front = queue.front();
+				queue.pop_front();
+				for(auto&& iter : front->GetSubSymbolMap())
+				{
+					if(iter.second->IsClassType())
+					{
+						queue.emplace_back(iter.second);
+					}
+					else if(iter.second->IsEnumType())
+					{
+						initEnumList += GetEnumSymbolString(iter.second);
+					}
+				}
+			}
+			ztl::generator::MarcoGenerator generator(templateString, { L"$<initEnumList>" });
+			return generator.GenerateText({ initEnumList }).GetMacroResult();
 		}
 		void CreatReflectionFile(SymbolManager* manager)
 		{
-			auto reflectionBuilderFunction  = GetReflectBuilderFunctionString(manager);
-			auto objectReflectFunction		= GetOjectReflectioFunctionString(manager);
+			auto reflectionBuilderFunction = GetReflectBuilderFunctionString(manager);
+			auto objectReflectFunction = GetOjectReflectioFunctionString(manager);
+			auto enumToStringFunction = GetWStringToEnumFunctionString(manager);
 			//还差实现gen EBNF核心项函数,然后就可以把我现在这个核心给换了:)
-			CreateFile(L"test.cpp", reflectionBuilderFunction + objectReflectFunction);
+			CreateFile(L"test.cpp", enumToStringFunction+reflectionBuilderFunction + objectReflectFunction);
 		}
 	}
 }

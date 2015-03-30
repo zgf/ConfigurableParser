@@ -171,7 +171,7 @@ namespace ztl
 				}
 				swap(scope, enumTypeSymbol);
 			}
-			void								Visit(GeneralClassMemberTypeDenfine* node)
+			void								Visit(GeneralClassMemberTypeDefine* node)
 			{
 				auto name = node->name;
 				auto fieldSymbol = manager->AddField(name, nullptr, scope);
@@ -330,7 +330,7 @@ namespace ztl
 				}
 				node->grammar->Accept(this);
 			}
-			void								Visit(GeneralGrammarAlterationTypeDefine* node)
+			void								Visit(GeneralGrammarAlternationTypeDefine* node)
 			{
 				node->left->Accept(this);
 				ValidateGrammarNodeIVisitor visitor(*this);
@@ -631,7 +631,7 @@ namespace ztl
 				node->grammar->Accept(this);
 				SetCreatSymbolNode(createdTypeSymbol);
 			}
-			void								Visit(GeneralGrammarAlterationTypeDefine* node)
+			void								Visit(GeneralGrammarAlternationTypeDefine* node)
 			{
 				CollectGeneratePathVisitor visitor(*this);
 				node->left->Accept(&visitor);
@@ -923,7 +923,7 @@ namespace ztl
 					throw ztl_exception(L"Can't convet grammar creat node type to rule node type");
 				}
 			}
-			void								Visit(GeneralGrammarAlterationTypeDefine*)
+			void								Visit(GeneralGrammarAlternationTypeDefine*)
 			{
 				assert(false);
 			}
@@ -1067,7 +1067,7 @@ namespace ztl
 			{
 				node->grammar->Accept(this);
 			}
-			void								Visit(GeneralGrammarAlterationTypeDefine*node)
+			void								Visit(GeneralGrammarAlternationTypeDefine*node)
 			{
 				node->left->Accept(this);
 				node->right->Accept(this);
@@ -1150,7 +1150,7 @@ namespace ztl
 			{
 				node->grammar->Accept(this);
 			}
-			void								Visit(GeneralGrammarAlterationTypeDefine*node)
+			void								Visit(GeneralGrammarAlternationTypeDefine*node)
 			{
 				node->left->Accept(this);
 				node->right->Accept(this);

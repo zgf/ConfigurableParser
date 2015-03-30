@@ -14,7 +14,7 @@ int main()
 		ztl::general_parser::ParseToken(L"ParserDefine.txt"),
 		ztl::general_parser::BootStrapDefineTable());
 	parser.BuildParser();
-	parser.GenerateIsomorphismParserTree();
+	parser.GeneralParserTree();
 	
 	return 0;
 }
