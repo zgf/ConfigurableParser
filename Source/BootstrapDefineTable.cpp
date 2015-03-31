@@ -14,8 +14,6 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		namespace table_writer
-		{
 			//ÊÖÐ´ENBFºËÐÄ±í
 			shared_ptr<GeneralTableDefine> BootStrapDefineTable()
 			{
@@ -143,21 +141,21 @@ namespace ztl
 						)
 						.Class
 						(
-						GeneralClassTypeWriter()
-						.Name(L"GeneralClassTypeDefine")
-						.Member(ClassMember(String(), L"name"))
-						.Member(ClassMember(Normal(L"GeneralTypeObject"), L"parent"))
-						.Member(ClassMember(Array(Normal(L"GeneralTypeDefine")), L"subTypes"))
-						.Member(ClassMember(Array(Normal(L"GeneralClassMemberTypeDefine")), L"members"))
-						.ParentType(Normal(L"GeneralTypeDefine"))
+							GeneralClassTypeWriter()
+							.Name(L"GeneralClassTypeDefine")
+							.Member(ClassMember(String(), L"name"))
+							.Member(ClassMember(Normal(L"GeneralTypeObject"), L"parent"))
+							.Member(ClassMember(Array(Normal(L"GeneralTypeDefine")), L"subTypes"))
+							.Member(ClassMember(Array(Normal(L"GeneralClassMemberTypeDefine")), L"members"))
+							.ParentType(Normal(L"GeneralTypeDefine"))
 						)
 						.Class
 						(
-						GeneralClassTypeWriter()
-						.Name(L"GeneralEnumTypeDefine")
-						.Member(ClassMember(String(), L"name"))
-						.Member(ClassMember(Array(Normal(L"GeneralEnumMemberTypeDefine")), L"members"))
-						.ParentType(Normal(L"GeneralTypeDefine"))
+							GeneralClassTypeWriter()
+							.Name(L"GeneralEnumTypeDefine")
+							.Member(ClassMember(String(), L"name"))
+							.Member(ClassMember(Array(Normal(L"GeneralEnumMemberTypeDefine")), L"members"))
+							.ParentType(Normal(L"GeneralTypeDefine"))
 						)
 						.Class
 						(
@@ -258,7 +256,7 @@ namespace ztl
 						.Member(ClassMember(Array(Normal(L"GeneralRuleDefine")), L"rules"))
 						)
 					)
-					.RuleList
+					.Rules
 					(
 						GeneralRuleListWriter()
 						.Rule
@@ -517,12 +515,5 @@ namespace ztl
 					);
 				return writer.table;
 			}
-
-		
-		}
-		shared_ptr<GeneralTableDefine> BootStrapDefineTable()
-		{
-			return table_writer::BootStrapDefineTable();
-		}
 	}
 }

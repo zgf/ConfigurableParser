@@ -220,11 +220,17 @@ namespace ztl
 			ztl::generator::MarcoGenerator generator(templateString, { L"$<initEnumList>" });
 			return generator.GenerateText({ initEnumList }).GetMacroResult();
 		}
+	/*	wstring SerializeEBNFCore(void* root)
+		{
+			auto current = static_cast<GeneralTableDefine*>(root);
+
+			return{};
+		}*/
 		void CreatReflectionFile(SymbolManager* manager)
 		{
+			auto enumToStringFunction = GetWStringToEnumFunctionString(manager);
 			auto reflectionBuilderFunction = GetReflectBuilderFunctionString(manager);
 			auto objectReflectFunction = GetOjectReflectioFunctionString(manager);
-			auto enumToStringFunction = GetWStringToEnumFunctionString(manager);
 			//还差实现gen EBNF核心项函数,然后就可以把我现在这个核心给换了:)
 			CreateFile(L"test.cpp", enumToStringFunction+reflectionBuilderFunction + objectReflectFunction);
 		}

@@ -18,7 +18,8 @@
 #include <set>
 #include<iterator>
 #include "../../Lib/ZTL/ztl_exception.h"
-
+#include "../../Lib/ZTL/ztl_hash.hpp"
+#include "../../Lib/ZTL/ztl_generator.hpp"
 namespace ztl
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -71,4 +72,6 @@ namespace ztl
 	using std::back_inserter;
 	using std::for_each;
 	using ztl::contract::ztl_exception;
+	using ztl::generator::MarcoGenerator; 
+	using ztl::hasher::ztl_hash;
 }

@@ -4,10 +4,9 @@
 #include "Include\GeneralPushDownAutoMachine.h"
 #include "Include\GeneralJumpTable.h"
 #include "Include\GeneralFile.h"
-#include "Include\GeneralParser.h"
 #include "Include\GeneralTreeNode.h"
+#include "../Lib/Regex/ztl_regex_interpretor.h"
 #include "Include\ParserSymbol.h"
-#include "..\Lib\ZTL\ztl_hash.hpp"
 namespace ztl
 {
 	namespace general_parser
@@ -22,6 +21,15 @@ namespace ztl
 		{
 		}
 
+		GeneralParser::GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :/* tokenPool(tokens),*/
+			tableDefine(_tableDefine),
+			jumpTable(nullptr),
+			machine(nullptr),
+			manager(nullptr)
+		{
+			tokenPool = move(ParseToken(fileName));
+		}
+
 		void GeneralParser::BuildParser()
 		{
 			manager = make_shared<SymbolManager>(this->tableDefine);
@@ -31,7 +39,7 @@ namespace ztl
 			jumpTable = make_shared<GeneralJumpTable>(machine.get());
 			CreateJumpTable(*jumpTable.get());
 			CreatReflectionFile(manager.get());
-		//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
+			//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 
 		void	GeneralParser::SaveEdge(deque<ParserState>& states, const vector<EdgeInfo>& edges)
@@ -78,11 +86,12 @@ namespace ztl
 				return sum + L" " + value;
 			}) << endl;
 		}
-		void GeneralParser::GenerateIsomorphismParserTree()
+		vector<GeneralTreeNode*> GeneralParser::GenerateIsomorphismParserTree()
 		{
 			assert(!this->tokenPool.empty());
 			auto rootRule = machine->GetRootRuleName();
 			assert(!rootRule.empty());
+			vector<GeneralTreeNode*> result;
 			this->parserStates.emplace_back(0, jumpTable->GetRootNumber(), rootRule, MakeEmptyTreeNode());
 			while(!parserStates.empty())
 			{
@@ -99,17 +108,27 @@ namespace ztl
 				if(!parserStates.empty())
 				{
 					assert(parserStates.front().createdNodeStack.size() == 1);
-					treeRoots.emplace_back(parserStates.front().createdNodeStack.front());
+					result.emplace_back(parserStates.front().createdNodeStack.front());
 					parserStates.pop_front();
 				}
 			}
+			return result;
 		}
 
-		shared_ptr<void> GeneralParser::GeneralParserTree()
+		void GeneralParser::GeneralParserTree()
 		{
-			this->GenerateIsomorphismParserTree();
-			return GeneralHeterogeneousParserTree(treeRoots[0]);
+			assert(treeRoots.empty());
+			auto roots = this->GenerateIsomorphismParserTree();
+			for(auto&&iter : roots)
+			{
+				treeRoots.emplace_back(GeneralHeterogeneousParserTree(iter));
+			}
 		}
+		const vector<shared_ptr<void>>& GeneralParser::GetParserTree() const
+		{
+			return treeRoots;
+		}
+
 		vector<EdgeInfo> GeneralParser::EdgeResolve(ParserState& state)
 		{
 			return TerminateResolve(state);
@@ -195,7 +214,6 @@ namespace ztl
 			if(result.empty())
 			{
 				return{};
-				/*throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(state));*/
 			}
 			return CreateNodeResolve(result, state);
 		}
@@ -341,15 +359,6 @@ namespace ztl
 					result.emplace_back(iter);
 				}
 			}
-			/*	if(result.empty())
-				{
-					throw ztl_exception(L"error!can't find match token'rule.\n" + GetParserInfo(state));
-				}*/
-				/*	if(result.size() > 1)
-					{
-						throw ztl_exception(L"error ambiguous parse! find more match edge.\n" + GetParserInfo(state));
-					}
-					assert(result.size() == 1);*/
 			return result;
 		}
 		void GeneralParser::ExecuteEdgeActions(ParserState& state)
@@ -545,666 +554,42 @@ namespace ztl
 			return terminatePool[index].get();
 		}
 
-
-		int WstringToEnumItem(const wstring& value)
+		vector<shared_ptr<TokenInfo>> GeneralParser::ParseToken(const wstring& fileName)
 		{
-			static unordered_map<wstring, int> signMap =
+			assert(tableDefine != nullptr);
+			unordered_map<wstring, GeneralTokenDefine> infos;// = manager->GetTokens();
+			for_each(tableDefine->tokens.begin(), tableDefine->tokens.end(), [&infos](const shared_ptr<GeneralTokenDefine>& token)
 			{
+				infos.insert(make_pair(token->name, *token));
+			});
 
-				{
-					L"GeneralTokenDefine::TokenOptional::False",
-					static_cast<int>(GeneralTokenDefine::TokenOptional::False)
-				},
-				{
-					L"GeneralTokenDefine::TokenOptional::True",
-					static_cast<int>(GeneralTokenDefine::TokenOptional::True)
-				},
-			};
-			assert(signMap.find(value) != signMap.end());
-			return signMap[value];
-		}
-		void ReflectionBuidler(const wstring& className, const wstring& fieldName, void* classObject, void* valueObject)
-		{
-			using builderType = void(*)(void*, void*);
-			static unordered_map<wstring, unordered_map<wstring, builderType>> builderMap =
+			wifstream input(fileName);
+			if(!input.is_open())
 			{
-				{
-					L"GeneralTableDefine",
-					{
-						{
-							L"heads",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralTableDefine*>(classObject)->heads.emplace_back(static_cast<GeneralHeadInfoDefine*>(valueObject));
-								return;
-							}
-						},{
-							L"types",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralTableDefine*>(classObject)->types.emplace_back(static_cast<GeneralTypeDefine*>(valueObject));
-								return;
-							}
-						},{
-							L"tokens",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralTableDefine*>(classObject)->tokens.emplace_back(static_cast<GeneralTokenDefine*>(valueObject));
-								return;
-							}
-						},{
-							L"rules",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralTableDefine*>(classObject)->rules.emplace_back(static_cast<GeneralRuleDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralClassMemberTypeDefine",
-					{
-						{
-							L"type",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralClassMemberTypeDefine*>(classObject)->type.reset(static_cast<GeneralTypeObject*>(valueObject));
-								return;
-							}
-						},{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralClassMemberTypeDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarSetterTypeDefine",
-					{
-						{
-							L"grammar",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarSetterTypeDefine*>(classObject)->grammar.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarSetterTypeDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"value",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarSetterTypeDefine*>(classObject)->value = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralHeadInfoDefine",
-					{
-						{
-							L"property",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralHeadInfoDefine*>(classObject)->property = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"value",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralHeadInfoDefine*>(classObject)->value = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarLoopTypeDefine",
-					{
-						{
-							L"grammar",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarLoopTypeDefine*>(classObject)->grammar.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralNormalTypeObject",
-					{
-						{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralNormalTypeObject*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarCreateTypeDefine",
-					{
-						{
-							L"type",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarCreateTypeDefine*>(classObject)->type.reset(static_cast<GeneralTypeObject*>(valueObject));
-								return;
-							}
-						},{
-							L"grammar",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarCreateTypeDefine*>(classObject)->grammar.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralEnumMemberTypeDefine",
-					{
-						{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralEnumMemberTypeDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralTokenDefine",
-					{
-						{
-							L"regex",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralTokenDefine*>(classObject)->regex = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralTokenDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"ignore",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralTokenDefine*>(classObject)->ignore = static_cast<GeneralTokenDefine::TokenOptional>(WstringToEnumItem(L"GeneralTokenDefine::TokenOptional::" + static_cast<TokenInfo*>(valueObject)->content));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarSequenceTypeDefine",
-					{
-						{
-							L"first",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarSequenceTypeDefine*>(classObject)->first.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},{
-							L"second",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarSequenceTypeDefine*>(classObject)->second.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralTypeDefine",
-					{
-
-					}
-				},{
-					L"GeneralTypeObject",
-					{
-
-					}
-				},{
-					L"GeneralArrayTypeObject",
-					{
-						{
-							L"element",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralArrayTypeObject*>(classObject)->element.reset(static_cast<GeneralTypeObject*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralStringTypeObject",
-					{
-
-					}
-				},{
-					L"GeneralSubTypeObject",
-					{
-						{
-							L"parent",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralSubTypeObject*>(classObject)->parent.reset(static_cast<GeneralTypeObject*>(valueObject));
-								return;
-							}
-						},{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralSubTypeObject*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralClassTypeDefine",
-					{
-						{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralClassTypeDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"subTypes",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralClassTypeDefine*>(classObject)->subTypes.emplace_back(static_cast<GeneralTypeDefine*>(valueObject));
-								return;
-							}
-						},{
-							L"parent",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralClassTypeDefine*>(classObject)->parent.reset(static_cast<GeneralTypeObject*>(valueObject));
-								return;
-							}
-						},{
-							L"members",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralClassTypeDefine*>(classObject)->members.emplace_back(static_cast<GeneralClassMemberTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralEnumTypeDefine",
-					{
-						{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralEnumTypeDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"members",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralEnumTypeDefine*>(classObject)->members.emplace_back(static_cast<GeneralEnumMemberTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarTypeDefine",
-					{
-
-					}
-				},{
-					L"GeneralGrammarTextTypeDefine",
-					{
-						{
-							L"text",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarTextTypeDefine*>(classObject)->text = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarNormalTypeDefine",
-					{
-						{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarNormalTypeDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarOptionalTypeDefine",
-					{
-						{
-							L"grammar",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarOptionalTypeDefine*>(classObject)->grammar.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarAssignTypeDefine",
-					{
-						{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarAssignTypeDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"grammar",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarAssignTypeDefine*>(classObject)->grammar.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarUsingTypeDefine",
-					{
-						{
-							L"grammar",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarUsingTypeDefine*>(classObject)->grammar.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralGrammarAlternationTypeDefine",
-					{
-						{
-							L"left",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarAlternationTypeDefine*>(classObject)->left.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},{
-							L"right",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralGrammarAlternationTypeDefine*>(classObject)->right.reset(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},{
-					L"GeneralRuleDefine",
-					{
-						{
-							L"type",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralRuleDefine*>(classObject)->type.reset(static_cast<GeneralTypeObject*>(valueObject));
-								return;
-							}
-						},{
-							L"name",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralRuleDefine*>(classObject)->name = static_cast<TokenInfo*>(valueObject)->content;
-								return;
-							}
-						},{
-							L"grammars",
-							[](void* classObject,void* valueObject)
-							{
-								static_cast<GeneralRuleDefine*>(classObject)->grammars.emplace_back(static_cast<GeneralGrammarTypeDefine*>(valueObject));
-								return;
-							}
-						},
-					}
-				},
-			};
-			auto findIter = builderMap.find(className);
-			assert(findIter != builderMap.end());
-			assert(findIter->second.find(fieldName) != findIter->second.end());
-			builderMap[className][fieldName](classObject, valueObject);
-		}
-		shared_ptr<void> ReflecteObjectByName(const wstring& name)
-		{
-			using reflectObjectType = shared_ptr<void>(*)();
-			static unordered_map < wstring, reflectObjectType> objectMap =
+				throw ztl_exception(L"error:file" + fileName + L"not open!");
+			}
+			vector<shared_ptr<TokenInfo>> stream;
+			std::wstring content((std::istreambuf_iterator<wchar_t>(input)),
+				std::istreambuf_iterator<wchar_t>());
+			auto pattern = accumulate(infos.begin(), infos.end(), wstring(), [](const wstring& sum, const pair<const wstring, GeneralTokenDefine>& token)
 			{
-
-				{
-					L"GeneralTableDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralTableDefine>();
-					}
-				},
-				{
-					L"GeneralClassMemberTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralClassMemberTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarSetterTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarSetterTypeDefine>();
-					}
-				},
-				{
-					L"GeneralHeadInfoDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralHeadInfoDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarLoopTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarLoopTypeDefine>();
-					}
-				},
-				{
-					L"GeneralNormalTypeObject",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralNormalTypeObject>();
-					}
-				},
-				{
-					L"GeneralGrammarCreateTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarCreateTypeDefine>();
-					}
-				},
-				{
-					L"GeneralEnumMemberTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralEnumMemberTypeDefine>();
-					}
-				},
-				{
-					L"GeneralTokenDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralTokenDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarSequenceTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarSequenceTypeDefine>();
-					}
-				},
-				{
-					L"GeneralTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralTypeDefine>();
-					}
-				},
-				{
-					L"GeneralTypeObject",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralTypeObject>();
-					}
-				},
-				{
-					L"GeneralArrayTypeObject",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralArrayTypeObject>();
-					}
-				},
-				{
-					L"GeneralStringTypeObject",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralStringTypeObject>();
-					}
-				},
-				{
-					L"GeneralSubTypeObject",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralSubTypeObject>();
-					}
-				},
-				{
-					L"GeneralClassTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralClassTypeDefine>();
-					}
-				},
-				{
-					L"GeneralEnumTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralEnumTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarTextTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarTextTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarNormalTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarNormalTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarOptionalTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarOptionalTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarAssignTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarAssignTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarUsingTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarUsingTypeDefine>();
-					}
-				},
-				{
-					L"GeneralGrammarAlternationTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarAlternationTypeDefine>();
-					}
-				},
-				{
-					L"GeneralRuleDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralRuleDefine>();
-					}
-				},
-			};
-			assert(objectMap.find(name) != objectMap.end());
-			return objectMap[name]();
-		}
-		void GeneralParser::GeneralHeterogeneousParserTree(GeneralTreeNode* classNode, shared_ptr<void>& classObject)
-		{
-			assert(classObject != nullptr);
-			assert(classNode != nullptr);
-			auto className = classNode->GetName();
-			for(auto&& iter : classNode->GetFieldMap())
+				return sum + L"(<" + token.second.name + L">" + token.second.regex + L")|";
+			});
+			pattern.pop_back();
+			RegexInterpretor interpretor(pattern);
+			auto result = interpretor.Matches(content);
+			for(auto&& iter : result)
 			{
-				auto fieldName = iter.first;
-				for(auto&& nodeIter : iter.second)
+				assert(iter.group.size() == 1);
+				auto groupIter = *iter.group.begin();
+				auto tag = groupIter.first;
+				assert(infos.find(tag) != infos.end());
+				if(infos[tag].ignore != GeneralTokenDefine::TokenOptional::True)
 				{
-					auto fieldNode = GetNonTermNodeByIndex(nodeIter);
-					auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
-					heterogeneousNodePool.emplace_back(fieldObject);
-					ReflectionBuidler(className, fieldName, classObject.get(), fieldObject.get());
-					GeneralHeterogeneousParserTree(fieldNode, fieldObject);
+					stream.emplace_back(make_shared<TokenInfo>(groupIter.second.content, tag, groupIter.second.position, groupIter.second.length));
 				}
 			}
-			for(auto&&iter : classNode->GetTermMap())
-			{
-				auto fieldName = iter.first;
-				for (auto&& nodeIter:iter.second)
-				{
-					ReflectionBuidler(className, fieldName, classObject.get(), GetTermNodeByIndex(nodeIter));
-				}
-			}
-		}
-		shared_ptr<void> GeneralParser::GeneralHeterogeneousParserTree(GeneralTreeNode* root)
-		{
-			assert(root != nullptr);
-			auto rootObject = ReflecteObjectByName(root->GetName());
-			heterogeneousNodePool.emplace_back(rootObject);
-			GeneralHeterogeneousParserTree(root, rootObject);
-			return rootObject;
+			return stream;
 		}
 	}
 }

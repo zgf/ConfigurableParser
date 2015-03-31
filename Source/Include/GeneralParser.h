@@ -14,6 +14,7 @@ namespace ztl
 		struct GeneralTableDefine;
 		class PushDownAutoMachine;
 		struct CreateInfo;
+		struct GeneralTokenDefine;
 		PAIR_BUILDER(EdgeInfo, PDAEdge*, edge, bool, rightRecursion);
 
 		struct ParserState
@@ -66,6 +67,7 @@ namespace ztl
 		public:
 			GeneralParser() = delete;
 			GeneralParser(const vector<shared_ptr<TokenInfo>>& tokens,const shared_ptr<GeneralTableDefine>& _tableDefine);
+			GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine);
 			~GeneralParser() noexcept = default;
 			GeneralParser(GeneralParser&&)  = default;
 			GeneralParser(const GeneralParser&)  = default;
@@ -73,9 +75,11 @@ namespace ztl
 			GeneralParser& operator=(const GeneralParser&)   = default;
 		public:
 			void				BuildParser();
-			void				GenerateIsomorphismParserTree();
+			vector<GeneralTreeNode*>GenerateIsomorphismParserTree();
 			shared_ptr<void>	GeneralHeterogeneousParserTree(GeneralTreeNode* root);
-			shared_ptr<void>	GeneralParserTree();
+			void GeneralParserTree();
+			const vector<shared_ptr<void>>& GetParserTree() const;
+			wstring SerializeEBNFCore();
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
 			vector<EdgeInfo> TerminateResolve(ParserState& state);
@@ -99,17 +103,17 @@ namespace ztl
 			void GeneralHeterogeneousParserTree(GeneralTreeNode* classNode, shared_ptr<void>& classObject);
 			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
 			TokenInfo* GetTermNodeByIndex(int index)const;
-
+			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
 			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
 			vector<shared_ptr<TokenInfo>>		 terminatePool;
 
-			vector<GeneralTreeNode*>			 treeRoots;
+			vector<shared_ptr<void>>			 treeRoots;
 			deque<ParserState>					 parserStates;
 
-			vector<shared_ptr<void>>	 heterogeneousNodePool;
+			vector<shared_ptr<void>>			 heterogeneousNodePool;
 
 			shared_ptr<PushDownAutoMachine>		 machine;
 			shared_ptr<GeneralJumpTable>		 jumpTable;

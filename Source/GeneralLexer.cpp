@@ -7,6 +7,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
+		
 		vector<shared_ptr<TokenInfo>>	 ParseToken(const wstring& fileName)
 		{
 			unordered_map<wstring, GeneralTokenDefine> infos;
