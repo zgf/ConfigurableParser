@@ -1,6 +1,7 @@
 #include "Include\stdafx.h"
 #include "Include\GeneralParser.h"
 #include "Include\SymbolManager.h"
+#include "..\Lib\ZTL\ztl_algorithm.h"
 namespace ztl
 {
 	namespace general_parser
@@ -19,14 +20,15 @@ namespace ztl
 				return sum + generator.GenerateText({ info->property,info->value }).GetMacroResult();
 			});
 		}
+
 		wstring SerializeTokenInfoList(const vector<shared_ptr<GeneralTokenDefine>>& tokens)
 		{
 			wstring templateString =
 				L".$<TokenType>(L\"$<TokenName>\",LR\"($<Value>)\")\n";
 			return accumulate(tokens.begin(), tokens.end(), wstring(), [&templateString](const wstring& sum, const shared_ptr<GeneralTokenDefine>& token)
 			{
-				ztl::generator::MarcoGenerator generator(templateString, { L"$<TokenType>",L"$<TokenName>",L"$<Value>" });
-				wstring tokenType = (token->ignore == GeneralTokenDefine::TokenOptional::True) ? L"Token" : L"IgnoreToken";
+				ztl::generator::MarcoGenerator generator(templateString, { L"$<TokenType>",LR"($<TokenName>)",LR"($<Value>)" });
+				wstring tokenType = (token->ignore == GeneralTokenDefine::TokenOptional::True) ? L"IgnoreToken" : L"Token";
 				return sum + generator.GenerateText({ tokenType,token->name,token->regex }).GetMacroResult();
 			});
 		}
@@ -50,7 +52,7 @@ namespace ztl
 				node->element->Accept(&visitor);
 				result = L"Array(" + visitor.GetResult() + L")";
 			}
-			void								Visit(GeneralStringTypeObject* )
+			void								Visit(GeneralStringTypeObject*)
 			{
 				result = L"String()";
 			}
@@ -110,14 +112,14 @@ namespace ztl
 				{
 					SerialzeTypeObjectVisitor visitor;
 					node->parent->Accept(&visitor);
-					parentName = L".ParentType("+visitor.GetResult()+L")";
+					parentName = L".ParentType(" + visitor.GetResult() + L")";
 				}
 				if(!node->subTypes.empty())
 				{
-					subTypeList = 
+					subTypeList =
 						LR"(
 							.SubType(
-						)" + SerializeTypeList(node->subTypes)+
+						)" + SerializeTypeList(node->subTypes) +
 						LR"(
 									)
 						)";
@@ -215,7 +217,6 @@ namespace ztl
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
 			{
 				result = L"GrammarSymbol(L\"" + node->name + L"\")";
-
 			}
 			void								Visit(GeneralGrammarSequenceTypeDefine* node)
 			{
@@ -241,8 +242,8 @@ namespace ztl
 					LR"(
 						.Setter(L"$<Key>", L"$<Value>")
 					)";
-				MarcoGenerator generator(templateString, {L"$<Key>",L"$<Value>"});
-				result += generator.GenerateText({node->name,node->value}).GetMacroResult();
+				MarcoGenerator generator(templateString, { L"$<Key>",L"$<Value>" });
+				result += generator.GenerateText({ node->name,node->value }).GetMacroResult();
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
@@ -259,7 +260,7 @@ namespace ztl
 					LR"(
 					.Create($<ReturnType>)
 					)";
-				MarcoGenerator generator(templateString, {L"$<ReturnType>"});
+				MarcoGenerator generator(templateString, { L"$<ReturnType>" });
 				result += generator.GenerateText({ createType }).GetMacroResult();
 			}
 			void								Visit(GeneralGrammarAlternationTypeDefine* node)
@@ -272,7 +273,7 @@ namespace ztl
 				node->left->Accept(this);
 				SerializeGrammarDefineVisitor visitor;
 				node->right->Accept(&visitor);
-				result = generator.GenerateText({result,visitor.GetResult()}).GetMacroResult();
+				result = generator.GenerateText({ result,visitor.GetResult() }).GetMacroResult();
 			}
 			void								Visit(GeneralGrammarAssignTypeDefine* node)
 			{
@@ -295,7 +296,6 @@ namespace ztl
 				)";
 			return accumulate(grammars.begin(), grammars.end(), wstring(), [&templateString](const wstring& sum, const shared_ptr<GeneralGrammarTypeDefine>& grammar)
 			{
-				
 				SerializeGrammarDefineVisitor visitor;
 				grammar->Accept(&visitor);
 				MarcoGenerator generator(templateString, { L"$<GrammarString>" });
@@ -325,9 +325,95 @@ namespace ztl
 				return sum + generator.GenerateText({ rule->name,returnType,grammarList }).GetMacroResult();
 			});
 		}
-		wstring GeneralParser::SerializeEBNFCore(void* tableDefine)
+		void TrimLeftAndRightOneQuotation(wstring& value)
 		{
-			auto table = static_cast<ztl::general_parser::GeneralTableDefine*>(tableDefine);
+			value.erase(0, 1);
+			value.pop_back();
+		}
+		//处理捕获的字符串中多余的""和捕获的regex中多余的\"到"
+		class GrammarQuotationVisitor:public GeneralGrammarTypeDefine::IVisitor
+		{
+		public:
+			GrammarQuotationVisitor() noexcept = default;
+			~GrammarQuotationVisitor() noexcept = default;
+			GrammarQuotationVisitor(GrammarQuotationVisitor&&) noexcept = default;
+			GrammarQuotationVisitor(const GrammarQuotationVisitor&) noexcept = default;
+			GrammarQuotationVisitor& operator=(GrammarQuotationVisitor&&) noexcept = default;
+			GrammarQuotationVisitor& operator=(const GrammarQuotationVisitor&) noexcept = default;
+
+		protected:
+			void								Visit(GeneralGrammarTextTypeDefine* node)
+			{
+				TrimLeftAndRightOneQuotation(node->text);
+			}
+			void								Visit(GeneralGrammarNormalTypeDefine* )
+			{
+			}
+			void								Visit(GeneralGrammarSequenceTypeDefine* node)
+			{
+				node->first->Accept(this);
+				node->second->Accept(this);
+			}
+			void								Visit(GeneralGrammarLoopTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarOptionalTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+			}
+			void								Visit(GeneralGrammarSetterTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+				TrimLeftAndRightOneQuotation(node->value);
+			}
+			void								Visit(GeneralGrammarUsingTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+			}
+			void								Visit(GeneralGrammarCreateTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarAlternationTypeDefine* node)
+			{
+				node->left->Accept(this);
+				node->right->Accept(this);
+			}
+			void								Visit(GeneralGrammarAssignTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+		private:
+		};
+		void DealWithQuotation(ztl::general_parser::GeneralTableDefine* table)
+		{
+			for(auto&&iter : table->heads)
+			{
+				TrimLeftAndRightOneQuotation(iter->value);
+			}
+			for(auto&&iter : table->tokens)
+			{
+				TrimLeftAndRightOneQuotation(iter->regex);
+				ztl::algorithm::replace_all_distinct<wstring>(iter->regex, LR"(\")", LR"(")");
+			}
+			GrammarQuotationVisitor visitor;
+			for(auto&&iter : table->rules)
+			{
+				for(auto&& grammarIter : iter->grammars)
+				{
+					grammarIter->Accept(&visitor);
+
+				}
+			}
+		}
+
+		wstring GeneralParser::SerializeEBNFCore(void* tableDef)
+		{
+			auto table = static_cast<ztl::general_parser::GeneralTableDefine*>(tableDef);
+			DealWithQuotation(table);
 			wstring templateString =
 				LR"(
 				shared_ptr<GeneralTableDefine> BootStrapDefineTable()
@@ -362,8 +448,5 @@ namespace ztl
 			ztl::generator::MarcoGenerator generator(templateString, { L"$<HeadInfoList>",L"$<TokenInfoList>",L"$<TypeList>",L"$<RuleList>" });
 			return generator.GenerateText({ headInfoList ,tokenInfoList,typeList,ruleList }).GetMacroResult();
 		}
-
-
-
 	}
 }

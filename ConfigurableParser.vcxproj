@@ -178,6 +178,7 @@
     <ClCompile Include="Source\GeneralLexer.cpp" />
     <ClCompile Include="Source\GeneralLexerFile.cpp" />
     <ClCompile Include="Source\GeneralParser.cpp" />
+    <ClCompile Include="Source\GeneralParserLexer.cpp" />
     <ClCompile Include="Source\GeneralParserReflection.cpp" />
     <ClCompile Include="Source\GeneralParserSerialzeCore.cpp" />
     <ClCompile Include="Source\GeneralPDAGraph.cpp" />

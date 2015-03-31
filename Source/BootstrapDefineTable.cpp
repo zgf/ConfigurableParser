@@ -54,8 +54,8 @@ namespace ztl
 						.Token(L"STRING", LR"("(\\"|[^"])*")")
 						.Token(L"FINISH",L"<\\$>")
 						.IgnoreToken(L"SPACE", LR"(\s+)")
-						.IgnoreToken(L"LINENOTE", L"(//[^\\n]*\\n)")
-						.IgnoreToken(L"BLOCKNOTE", L"/*.*?*/ //")
+						.IgnoreToken(L"LINENOTE", LR"(//[^\n]*\n)")
+						.IgnoreToken(L"BLOCKNOTE", LR"(/\*.*?\*/)")
 					)
 					.Type
 					(
@@ -515,5 +515,6 @@ namespace ztl
 					);
 				return writer.table;
 			}
+
 	}
 }

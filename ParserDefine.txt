@@ -1,3 +1,7 @@
+/* class*/
+
+//asdasasas
+
 include : "zgf" ;
 namespace : "xml" ;
 		struct GenHeadInfoDefine
@@ -138,7 +142,7 @@ namespace : "xml" ;
 			GenTokenDefine[]  tokens;
 			GenRuleDefine[]   rules;
 		};
-		
+
 token CLASS = "class";
 token STRUCT = "struct";
 token ENUM = "enum";
@@ -147,8 +151,8 @@ token DISCARDTOKEN = "ignoretoken";
 token RULE = "rule";
 token AS = "as";
 token WITH = "with";
-token OPEN = "{";
-token CLOSE = "}";
+token OPEN = "\{";
+token CLOSE = "\}";
 token SEMICOLON = ";";
 token COLON = ":";
 token COMMA = ",";
@@ -160,6 +164,11 @@ token OPTOPEN = "\[";
 token OPTCLOSE = "\]";
 token PREOPEN = "\(";
 token PRECLOSE = "\)";
+token NAME = "[a-zA-Z_]\w*";
+token STRING = "\"(\\\"|[^\"])*\"";
+ignoretoken SPACE = "\s+";
+ignoretoken LINENOTE = "//[^\n]*\n";
+ignoretoken BLOCKNOTE = "/\*.*?\*/";
 
 rule GenTypeObject Type
         = NAME : name as GenNormalTypeObject

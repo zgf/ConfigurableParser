@@ -6,35 +6,40 @@
 						(
 							GeneralHeadInfoWriter()
 							
-					.Info(L"include",L""zgf"")
+					.Info(L"include",L"zgf")
 					
-					.Info(L"namespace",L""xml"")
+					.Info(L"namespace",L"xml")
 					
 						)
 						.Token
 						(
 							GeneralTokenWriter()
-							.IgnoreToken(L"CLASS",LR"("class")")
-.IgnoreToken(L"STRUCT",LR"("struct")")
-.IgnoreToken(L"ENUM",LR"("enum")")
-.IgnoreToken(L"TOKEN",LR"("token")")
-.IgnoreToken(L"DISCARDTOKEN",LR"("ignoretoken")")
-.IgnoreToken(L"RULE",LR"("rule")")
-.IgnoreToken(L"AS",LR"("as")")
-.IgnoreToken(L"WITH",LR"("with")")
-.IgnoreToken(L"OPEN",LR"("{")")
-.IgnoreToken(L"CLOSE",LR"("}")")
-.IgnoreToken(L"SEMICOLON",LR"(";")")
-.IgnoreToken(L"COLON",LR"(":")")
-.IgnoreToken(L"COMMA",LR"(",")")
-.IgnoreToken(L"DOT",LR"(".")")
-.IgnoreToken(L"ASSIGN",LR"("=")")
-.IgnoreToken(L"USING",LR"("!")")
-.IgnoreToken(L"OR",LR"("|")")
-.IgnoreToken(L"OPTOPEN",LR"("\[")")
-.IgnoreToken(L"OPTCLOSE",LR"("\]")")
-.IgnoreToken(L"PREOPEN",LR"("\(")")
-.IgnoreToken(L"PRECLOSE",LR"("\)")")
+							.Token(L"CLASS",LR"(class)")
+.Token(L"STRUCT",LR"(struct)")
+.Token(L"ENUM",LR"(enum)")
+.Token(L"TOKEN",LR"(token)")
+.Token(L"DISCARDTOKEN",LR"(ignoretoken)")
+.Token(L"RULE",LR"(rule)")
+.Token(L"AS",LR"(as)")
+.Token(L"WITH",LR"(with)")
+.Token(L"OPEN",LR"(\{)")
+.Token(L"CLOSE",LR"(\})")
+.Token(L"SEMICOLON",LR"(;)")
+.Token(L"COLON",LR"(:)")
+.Token(L"COMMA",LR"(,)")
+.Token(L"DOT",LR"(.)")
+.Token(L"ASSIGN",LR"(=)")
+.Token(L"USING",LR"(!)")
+.Token(L"OR",LR"(|)")
+.Token(L"OPTOPEN",LR"(\[)")
+.Token(L"OPTCLOSE",LR"(\])")
+.Token(L"PREOPEN",LR"(\()")
+.Token(L"PRECLOSE",LR"(\))")
+.Token(L"NAME",LR"([a-zA-Z_]\w*)")
+.Token(L"STRING",LR"("(\\"|[^"])*")")
+.IgnoreToken(L"SPACE",LR"(\s+)")
+.IgnoreToken(L"LINENOTE",LR"(//[^\n]*\n)")
+.IgnoreToken(L"BLOCKNOTE",LR"(/\*.*?\*/)")
 
 						)
 						.Type
@@ -398,13 +403,13 @@
 					.Create(Normal(L"GenNormalTypeObject"))
 					
 				
-						|Text(L""token"")
+						|Text(L"token")
 					.Create(Normal(L"GenTokenTypeObject"))
 					
 				
 						|
 						GrammarSymbol(L"Type")[L"parent"]
-					+Text(L""."")+
+					+Text(L".")+
 						GrammarSymbol(L"NAME")[L"name"]
 					
 					.Create(Normal(L"GenSubTypeObject"))
@@ -412,7 +417,7 @@
 				
 						|
 						GrammarSymbol(L"Type")[L"element"]
-					+Text(L""["")+Text(L""]"")
+					+Text(L"[")+Text(L"]")
 					.Create(Normal(L"GenArrayTypeObject"))
 					
 				
@@ -426,7 +431,7 @@
 							
 						|
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"","")
+					+Text(L",")
 					.Create(Normal(L"GenEnumMemberTypeDefine"))
 					
 				
@@ -438,11 +443,11 @@
 							.Name(L"Enum")
 							.ReturnType(Normal(L"GenEnumTypeDefine"))
 							
-						|Text(L""enum"")+
+						|Text(L"enum")+
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L""{"")+*(
+					+Text(L"{")+*(
 						GrammarSymbol(L"EnumMember")[L"members"]
-					)+Text(L""}"")
+					)+Text(L"}")
 					.Create(Normal(L"GenEnumTypeDefine"))
 					
 				
@@ -458,7 +463,7 @@
 						GrammarSymbol(L"Type")[L"type"]
 					+
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"";"")
+					+Text(L";")
 					.Create(Normal(L"GenClassMemberTypeObject"))
 					
 				
@@ -484,16 +489,16 @@
 							
 						|
 						( 
-						( Text(L""struct"") | Text(L""class"")+
+						( Text(L"struct") | Text(L"class")+
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"":"")+~(
+					+Text(L":")+~(
 						GrammarSymbol(L"Type")[L"parent"]
-					)+Text(L""{"")+
+					)+Text(L"{")+
 						GrammarSymbol(L"ClassMember")[L"members"]
 					 )
 					 | *(
 						GrammarSymbol(L"TypeDecl")[L"subTypes"]
-					)+Text(L""}"")+Text(L"";"") )
+					)+Text(L"}")+Text(L";") )
 					
 					.Create(Normal(L"GenClassTypeDefine"))
 					
@@ -528,7 +533,7 @@
 				
 						|
 						GrammarSymbol(L"AlternativeGrammar")[L"left"]
-					+Text(L""|"")+
+					+Text(L"|")+
 						GrammarSymbol(L"SequenceGrammar")[L"right"]
 					
 					.Create(Normal(L"GenGrammarAlternationTypeDefine"))
@@ -546,7 +551,7 @@
 				
 						|
 						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L""as"")+
+					+Text(L"as")+
 						GrammarSymbol(L"Type")[L"type"]
 					
 					.Create(Normal(L"GenGrammarCreateTypeDefine"))
@@ -554,11 +559,11 @@
 				
 						|
 						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L""with"")+Text(L""{"")+
+					+Text(L"with")+Text(L"{")+
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L""="")+
+					+Text(L"=")+
 						GrammarSymbol(L"STRING")[L"value"]
-					+Text(L""}"")
+					+Text(L"}")
 					.Create(Normal(L"GenGrammarSetterTypeDefine"))
 					
 				
@@ -586,7 +591,7 @@
 							
 						|
 						GrammarSymbol(L"NormalGrammar")[L"grammar"]
-					+Text(L"":"")+
+					+Text(L":")+
 						GrammarSymbol(L"NAME")[L"name"]
 					
 					.Create(Normal(L"GenGrammarAssignTypeDefine"))
@@ -598,7 +603,7 @@
 					.Create(Normal(L"GenGrammarTextTypeDefine"))
 					
 				
-						|Text(L""("")+!(GrammarSymbol(L"Grammar"))+Text(L"")"")
+						|Text(L"(")+!(GrammarSymbol(L"Grammar"))+Text(L")")
 				
 						)
 				
@@ -610,21 +615,21 @@
 							
 						|!(GrammarSymbol(L"AssginGrammar"))
 				
-						|Text(L""!"")+
+						|Text(L"!")+
 						GrammarSymbol(L"NormalGrammar")[L"grammar"]
 					
 					.Create(Normal(L"GenGrammarUsingTypeDefine"))
 					
 				
-						|Text(L""["")+
+						|Text(L"[")+
 						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L""]"")
+					+Text(L"]")
 					.Create(Normal(L"GenGrammarOptionalTypeDefine"))
 					
 				
-						|Text(L""{"")+
+						|Text(L"{")+
 						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L""}"")
+					+Text(L"}")
 					.Create(Normal(L"GenGrammarLoopTypeDefine"))
 					
 				
@@ -636,24 +641,24 @@
 							.Name(L"TokenDecl")
 							.ReturnType(Normal(L"GenTokenDefine"))
 							
-						|Text(L""token"")+
+						|Text(L"token")+
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L""="")+
+					+Text(L"=")+
 						GrammarSymbol(L"STRING")[L"regex"]
-					+Text(L"";"")
+					+Text(L";")
 					.Create(Normal(L"GenTokenDefine"))
 					
-						.Setter(L"ignore", L""False"")
+						.Setter(L"ignore", L"False")
 					
 				
-						|Text(L""ignoretoken"")+
+						|Text(L"ignoretoken")+
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L""="")+
+					+Text(L"=")+
 						GrammarSymbol(L"STRING")[L"regex"]
-					+Text(L"";"")
+					+Text(L";")
 					.Create(Normal(L"GenTokenDefine"))
 					
-						.Setter(L"ignore", L""True"")
+						.Setter(L"ignore", L"True")
 					
 				
 						)
@@ -666,9 +671,9 @@
 							
 						|
 						GrammarSymbol(L"NAME")[L"property"]
-					+Text(L"":"")+
+					+Text(L":")+
 						GrammarSymbol(L"STRING")[L"value"]
-					+Text(L"";"")
+					+Text(L";")
 					.Create(Normal(L"GenHeadInfoDefine"))
 					
 				
@@ -680,13 +685,13 @@
 							.Name(L"RuleDecl")
 							.ReturnType(Normal(L"GenRuleDefine"))
 							
-						|Text(L""rule"")+
+						|Text(L"rule")+
 						GrammarSymbol(L"Type")[L"type"]
 					+
 						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L""="")+*(
+					+Text(L"=")+*(
 						GrammarSymbol(L"Grammar")[L"grammars"]
-					)+Text(L"";"")
+					)+Text(L";")
 					.Create(Normal(L"GenRuleDefine"))
 					
 				

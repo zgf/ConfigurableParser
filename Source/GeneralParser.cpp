@@ -3,9 +3,7 @@
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
 #include "Include\GeneralJumpTable.h"
-#include "Include\GeneralFile.h"
 #include "Include\GeneralTreeNode.h"
-#include "../Lib/Regex/ztl_regex_interpretor.h"
 #include "Include\ParserSymbol.h"
 namespace ztl
 {
@@ -38,7 +36,7 @@ namespace ztl
 			CreateDPDAGraph(*machine.get());
 			jumpTable = make_shared<GeneralJumpTable>(machine.get());
 			CreateJumpTable(*jumpTable.get());
-			CreatReflectionFile(manager.get());
+			//CreatReflectionFile(manager.get());
 			//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 
@@ -554,42 +552,5 @@ namespace ztl
 			return terminatePool[index].get();
 		}
 
-		vector<shared_ptr<TokenInfo>> GeneralParser::ParseToken(const wstring& fileName)
-		{
-			assert(tableDefine != nullptr);
-			unordered_map<wstring, GeneralTokenDefine> infos;// = manager->GetTokens();
-			for_each(tableDefine->tokens.begin(), tableDefine->tokens.end(), [&infos](const shared_ptr<GeneralTokenDefine>& token)
-			{
-				infos.insert(make_pair(token->name, *token));
-			});
-
-			wifstream input(fileName);
-			if(!input.is_open())
-			{
-				throw ztl_exception(L"error:file" + fileName + L"not open!");
-			}
-			vector<shared_ptr<TokenInfo>> stream;
-			std::wstring content((std::istreambuf_iterator<wchar_t>(input)),
-				std::istreambuf_iterator<wchar_t>());
-			auto pattern = accumulate(infos.begin(), infos.end(), wstring(), [](const wstring& sum, const pair<const wstring, GeneralTokenDefine>& token)
-			{
-				return sum + L"(<" + token.second.name + L">" + token.second.regex + L")|";
-			});
-			pattern.pop_back();
-			RegexInterpretor interpretor(pattern);
-			auto result = interpretor.Matches(content);
-			for(auto&& iter : result)
-			{
-				assert(iter.group.size() == 1);
-				auto groupIter = *iter.group.begin();
-				auto tag = groupIter.first;
-				assert(infos.find(tag) != infos.end());
-				if(infos[tag].ignore != GeneralTokenDefine::TokenOptional::True)
-				{
-					stream.emplace_back(make_shared<TokenInfo>(groupIter.second.content, tag, groupIter.second.position, groupIter.second.length));
-				}
-			}
-			return stream;
-		}
 	}
 }
