@@ -80,6 +80,7 @@ namespace ztl
 			void GeneralParserTree();
 			const vector<shared_ptr<void>>& GetParserTree() const;
 			wstring SerializeEBNFCore(void* tableDefine);
+			SymbolManager* GetManager() const;
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
 			vector<EdgeInfo> TerminateResolve(ParserState& state);

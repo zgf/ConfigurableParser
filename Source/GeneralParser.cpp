@@ -36,8 +36,11 @@ namespace ztl
 			CreateDPDAGraph(*machine.get());
 			jumpTable = make_shared<GeneralJumpTable>(machine.get());
 			CreateJumpTable(*jumpTable.get());
-			//CreatReflectionFile(manager.get());
 			//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
+		}
+		SymbolManager* GeneralParser::GetManager() const
+		{
+			return manager.get();
 		}
 
 		void	GeneralParser::SaveEdge(deque<ParserState>& states, const vector<EdgeInfo>& edges)

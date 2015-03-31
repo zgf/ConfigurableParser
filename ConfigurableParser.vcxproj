@@ -176,7 +176,6 @@
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
     <ClCompile Include="Source\GeneralJumpTable.cpp" />
     <ClCompile Include="Source\GeneralLexer.cpp" />
-    <ClCompile Include="Source\GeneralLexerFile.cpp" />
     <ClCompile Include="Source\GeneralParser.cpp" />
     <ClCompile Include="Source\GeneralParserLexer.cpp" />
     <ClCompile Include="Source\GeneralParserReflection.cpp" />

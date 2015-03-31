@@ -112,9 +112,6 @@
     <ClCompile Include="Source\GeneralJumpTable.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralLexerFile.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralReflectionNodeDefineFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
