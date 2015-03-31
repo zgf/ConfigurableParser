@@ -325,9 +325,9 @@ namespace ztl
 				return sum + generator.GenerateText({ rule->name,returnType,grammarList }).GetMacroResult();
 			});
 		}
-		wstring GeneralParser::SerializeEBNFCore()
+		wstring GeneralParser::SerializeEBNFCore(void* tableDefine)
 		{
-			auto& table = tableDefine;
+			auto table = static_cast<ztl::general_parser::GeneralTableDefine*>(tableDefine);
 			wstring templateString =
 				LR"(
 				shared_ptr<GeneralTableDefine> BootStrapDefineTable()

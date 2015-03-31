@@ -79,7 +79,7 @@ namespace ztl
 			shared_ptr<void>	GeneralHeterogeneousParserTree(GeneralTreeNode* root);
 			void GeneralParserTree();
 			const vector<shared_ptr<void>>& GetParserTree() const;
-			wstring SerializeEBNFCore();
+			wstring SerializeEBNFCore(void* tableDefine);
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
 			vector<EdgeInfo> TerminateResolve(ParserState& state);

@@ -17,6 +17,6 @@ int main()
 	parser.BuildParser();
 	parser.GeneralParserTree();
 	auto parserResult = parser.GetParserTree();
-	ztl::general_parser::CreateFile(L"testEBNFCore.cpp",parser.SerializeEBNFCore());
+	ztl::general_parser::CreateFile(L"testEBNFCore.cpp",parser.SerializeEBNFCore(parserResult.front().get()));
 	return 0;
 }
