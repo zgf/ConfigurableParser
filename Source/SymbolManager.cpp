@@ -133,7 +133,8 @@ namespace ztl
 					L"token regex: " + regex +
 					L"can't creat correct regex string! the regex error message is:" + ex.Message());
 			}
-			auto tokenSymbol = CreatASymbol(SymbolType::TokenDef, name, GetGlobalSymbol(), nullptr, ignore);
+			auto regexSymbol = CreatASymbol(SymbolType::RegexDef, regex, nullptr, nullptr, ignore);
+			auto tokenSymbol = CreatASymbol(SymbolType::TokenDef, name, GetGlobalSymbol(), regexSymbol, ignore);
 
 			TryAddSubSymbol(tokenSymbol, GetGlobalSymbol());
 			if(tokenSymbol->IsIgnore())

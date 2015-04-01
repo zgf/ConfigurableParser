@@ -43,8 +43,6 @@ namespace ztl
 			TypeObjectToSymbolMapType			 typeSymbolMap;
 			TypeDefineToSymbolMapType			 typeDefSymbolMap;//类型定义到符号的绑定
 			SymbolToTypeDefineMapType			 symbolTypeDefMap;//从符号到类型定义的绑定
-			//AbsoluteNameToSymbolType			 absoluteNameToSymbolMap;//符号的绝对名称到符号表映射
-
 
 			RuleNameToSymbolMapType				 ruleNameSymbolMap;
 			TokenNameToSymbolMapType			 tokenNameSymbolMap;

@@ -93,7 +93,7 @@ namespace ztl
 				manager->CachePropertyToValueMap(iter->property, iter->value);
 			}
 		}
-		//classprefix只能有一个
+		//classprefix,filename只能有一个
 		//namspace不能同名
 		//include不能重复
 		void CheckPropertyHaveSameValues(const wstring& property, SymbolManager* manager)
@@ -113,21 +113,23 @@ namespace ztl
 				}
 			}
 		}
+		void  CheckPropertyUnique(const wstring& property, SymbolManager* manager)
+		{
+			auto values = manager->GetCacheValueByProperty(property);
+			if(values.size() > 1)
+			{
+				throw ztl_exception(property + L"only has one or none");
+			}
+		}
 		void ValidateHeadInfo(SymbolManager* manager)
 		{
 			using ValidateActionType = void(*)(const wstring&, SymbolManager*);
 			unordered_map<wstring, ValidateActionType> validateHeadMap;
-			validateHeadMap.insert(make_pair(L"classprefix", [](const wstring& property, SymbolManager* manager)
-			{
-				auto values = manager->GetCacheValueByProperty(property);
-				if(values.size() > 1)
-				{
-					throw ztl_exception(property + L"only has one or none");
-				}
-			}));
+			validateHeadMap.insert(make_pair(L"classprefix", CheckPropertyUnique));
 
 			validateHeadMap.insert(make_pair(L"namespace", CheckPropertyHaveSameValues));
 			validateHeadMap.insert(make_pair(L"include", CheckPropertyHaveSameValues));
+			validateHeadMap.insert(make_pair(L"filename", CheckPropertyUnique));
 			for(auto&& iter : manager->GetPropertyToValueMap())
 			{
 				validateHeadMap[iter.first](iter.first, manager);
@@ -791,15 +793,18 @@ namespace ztl
 			{
 				assert(filedDefSymbol->IsFieldDef());
 				assert(!filedDefSymbol->GetDescriptorSymbol()->IsArrayType());
-				auto findIter = fieldSet->find(filedDefSymbol);
-				if(findIter == fieldSet->end())
-				{
-					fieldSet->insert(filedDefSymbol);
-				}
-				else
-				{
-					throw ztl_exception(L"field not array type,but assgin more time");
-				}
+				
+					auto findIter = fieldSet->find(filedDefSymbol);
+					if(findIter == fieldSet->end())
+					{
+						fieldSet->insert(filedDefSymbol);
+					}
+					else
+					{
+						throw ztl_exception(L"field not array type,but assgin more time");
+					}
+				
+			
 			}
 			void CheckCreatNodeExist()
 			{
@@ -857,7 +862,7 @@ namespace ztl
 				//在类型定义收集与验证中检测过了.
 				assert(fieldTypeSymbol);
 
-				if(!inLoop)
+				if((!inLoop) && (!fieldTypeSymbol->IsArrayType()))
 				{
 					CheckSetFiledMoreTime(fieldSymbol);
 				}
@@ -881,7 +886,7 @@ namespace ztl
 				auto fieldTypeSymbol = fieldSymbol->GetDescriptorSymbol();
 
 				assert(fieldTypeSymbol);
-				if(!inLoop)
+				if((!inLoop) && (!fieldTypeSymbol->IsArrayType()))
 				{
 					CheckSetFiledMoreTime(fieldSymbol);
 				}
@@ -987,7 +992,7 @@ namespace ztl
 			CollectAndValidateTypeDefine(manager);
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);
-			ValidateGeneratePathStructure(manager, pathMap);
+			//ValidateGeneratePathStructure(manager, pathMap);
 			AnalyzeClassChoiceField(manager);
 			GetStartSymbol(manager);
 			//manager->CacheNameAndTagMap();

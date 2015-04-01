@@ -626,6 +626,97 @@ namespace ztl
 			assert(objectMap.find(name) != objectMap.end());
 			return objectMap[name]();
 		}
+		void TrimLeftAndRightOneQuotation(wstring& value)
+		{
+			if(value.front() == '"')
+			{
+				value.erase(0, 1);
+			}
+			if(value.back() == '"')
+			{
+				value.pop_back();
+			}
+		}
+		//处理捕获的字符串中多余的""和捕获的regex中多余的\"到"
+		class GrammarQuotationVisitor:public GeneralGrammarTypeDefine::IVisitor
+		{
+		public:
+			GrammarQuotationVisitor() noexcept = default;
+			~GrammarQuotationVisitor() noexcept = default;
+			GrammarQuotationVisitor(GrammarQuotationVisitor&&) noexcept = default;
+			GrammarQuotationVisitor(const GrammarQuotationVisitor&) noexcept = default;
+			GrammarQuotationVisitor& operator=(GrammarQuotationVisitor&&) noexcept = default;
+			GrammarQuotationVisitor& operator=(const GrammarQuotationVisitor&) noexcept = default;
+
+		protected:
+			void								Visit(GeneralGrammarTextTypeDefine* node)
+			{
+				TrimLeftAndRightOneQuotation(node->text);
+			}
+			void								Visit(GeneralGrammarNormalTypeDefine*)
+			{
+			}
+			void								Visit(GeneralGrammarSequenceTypeDefine* node)
+			{
+				node->first->Accept(this);
+				node->second->Accept(this);
+			}
+			void								Visit(GeneralGrammarLoopTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarOptionalTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+			}
+			void								Visit(GeneralGrammarSetterTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+				TrimLeftAndRightOneQuotation(node->value);
+			}
+			void								Visit(GeneralGrammarUsingTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+
+			}
+			void								Visit(GeneralGrammarCreateTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+			void								Visit(GeneralGrammarAlternationTypeDefine* node)
+			{
+				node->left->Accept(this);
+				node->right->Accept(this);
+			}
+			void								Visit(GeneralGrammarAssignTypeDefine* node)
+			{
+				node->grammar->Accept(this);
+			}
+		private:
+		};
+		void DealWithQuotation(GeneralTableDefine* table)
+		{
+			for(auto&&iter : table->heads)
+			{
+				TrimLeftAndRightOneQuotation(iter->value);
+			}
+			for(auto&&iter : table->tokens)
+			{
+				TrimLeftAndRightOneQuotation(iter->regex);
+				ztl::algorithm::replace_all_distinct<wstring>(iter->regex, LR"(\")", LR"(")");
+			}
+			GrammarQuotationVisitor visitor;
+			for(auto&&iter : table->rules)
+			{
+				for(auto&& grammarIter : iter->grammars)
+				{
+					grammarIter->Accept(&visitor);
+
+				}
+			}
+		}
+
 		void GeneralParser::GeneralHeterogeneousParserTree(GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 		{
 			assert(classObject != nullptr);
@@ -652,12 +743,17 @@ namespace ztl
 				}
 			}
 		}
+		shared_ptr<void>	GeneralParser::GeneralHeterogeneousParserTree()
+		{
+			return GeneralHeterogeneousParserTree(generalTreeRoot);
+		}
 		shared_ptr<void> GeneralParser::GeneralHeterogeneousParserTree(GeneralTreeNode* root)
 		{
 			assert(root != nullptr);
 			auto rootObject = ReflecteObjectByName(root->GetName());
 			heterogeneousNodePool.emplace_back(rootObject);
 			GeneralHeterogeneousParserTree(root, rootObject);
+			DealWithQuotation((GeneralTableDefine*)rootObject.get());
 			return rootObject;
 		}
 	}

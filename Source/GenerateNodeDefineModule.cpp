@@ -4,7 +4,7 @@
 #include "Include/SymbolManager.h"
 #include "../Lib/ZTL/ztl_generator.hpp"
 #include "Include/ParserSymbol.h"
-#include "Include/GeneralFile.h"
+#include "Include/GeneralParserFile.h"
 namespace ztl
 {
 	namespace general_parser
@@ -59,7 +59,10 @@ namespace ztl
 				public:
 					$<VisitorBody>
 				};
-				virtual void									Accept(IVisitor* visitor)=0;
+				virtual void									Accept(IVisitor* )
+				{
+
+				}
 				)";
 				auto bodyString = GetVisitorBodyString(classSymbol);
 				generator::MarcoGenerator generator(templateString, {L"$<VisitorBody>"});
@@ -294,69 +297,8 @@ namespace ztl
 		{
 			content = node->name + L",\n";
 		}
-		 vector<wstring> GetNodeDefineFileNamespace(SymbolManager* manager)
-		 {
-			 auto values = manager->GetCacheValueByProperty(L"namespace");
-			 return values;
-		 }
-		 void NodeDefineFileAddNamespace(wstring& content, SymbolManager* manager)
-		 {
-			 auto namespaceString = GetNodeDefineFileNamespace(manager);
-			 
-			 if(!namespaceString.empty())
-			 {
-				 reverse(namespaceString.begin(), namespaceString.end());
-				 for(auto&& iter : namespaceString)
-				 {
-					 wstring templateString = 
-						 LR"(
-							namespace $<Name>
-							{
-								$<Body>
-							}
-						 )";
-					 generator::MarcoGenerator generator(templateString, { L"$<Name>",L"$<Body>" });
-					 
-					 content = generator.GenerateText({ iter ,content }).GetMacroResult();
-				 }
-			 }
-		 }
-		 wstring GetNodeDefineFilePreDefineIncludeString()
-		 {
-			 return LR"(
-				#include <memory>
-				#include <string>
-				#include <vector>
-				#include <unordered_map>
-				#include <iostream>
-				using std::pair;
-				using std::wstring;
-				using std::shared_ptr;
-				using std::vector;
-				using std::unordered_map;
-				using std::wifstream;
-)";
-		 }
-		 wstring GetNodeDefineFileInclude(SymbolManager* manager)
-		 {
 
-			 auto values = manager->GetCacheValueByProperty(L"include");
-			 wstring includeString = L"";
-			 if (!values.empty())
-			 {
-				 wstring templateString = L"#include \"$<FileName>\"\n";
-				 includeString = accumulate(values.begin(), values.end(), includeString, [&templateString](const wstring& sum, const wstring& value)
-				 {
-					 generator::MarcoGenerator generator(templateString, {L"$<FileName>"});
-					 return sum + generator.GenerateText({ value }).GetMacroResult() + L"\n";
-				 });
-
-			 }
-
-			 return includeString + GetNodeDefineFilePreDefineIncludeString();
-		 }
-		
-		 wstring GetNodeDefineFileBody(GeneralTableDefine* table,SymbolManager*manager)
+		 wstring GetNodeDefineModule(GeneralTableDefine* table,SymbolManager*manager)
 		 {
 			return accumulate(table->types.begin(), table->types.end(), wstring(), [&manager](const wstring& sum, const shared_ptr<GeneralTypeDefine>&target)
 			 {
@@ -365,20 +307,7 @@ namespace ztl
 				 return sum +L"\n\n"+ visitor.GetResult();
 			 });
 		 }
-		 void CreateFile(const wstring& fileName,const wstring& content)
-		 {
-			 wofstream output(fileName);
-			 output.write(content.c_str(), content.size());
-
-		 }
 		
-		 void CreateNodeDefineFile(const wstring& fileName,SymbolManager* manager)
-		 {
-			 auto&& body = GetNodeDefineFileBody(manager->GetTable(),manager);
-			 auto includeString = GetNodeDefineFileInclude(manager);
-			 NodeDefineFileAddNamespace(body, manager);
-			 auto content = includeString +L"\n\n"+ body;
-			 CreateFile(fileName, content);
-		 }
+		
 	}
 }

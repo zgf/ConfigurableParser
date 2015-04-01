@@ -2,7 +2,7 @@
 #include "Include/stdafx.h"
 #include "Include/SymbolManager.h"
 #include "Include/GeneralTableDefine.h"
-#include "Include/GeneralFile.h"
+#include "Include/GeneralParserFile.h"
 #include "Include/ParserSymbol.h"
 #include "../Lib/ZTL/ztl_generator.hpp"
 #include "Include/GeneralTreeNode.h"
@@ -12,6 +12,7 @@ namespace ztl
 	{
 		wstring GetArrayTypeFiledReflectTemplate(const wstring& basicTemplateString, ParserSymbol* fieldTypeSymbol)
 		{
+			const wstring tokenTypeString = L"ztl::general_parser::TokenInfo";
 			assert(fieldTypeSymbol->IsArrayType());
 			auto elementTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
 			static unordered_map<SymbolType, wstring> signMap =
@@ -22,11 +23,11 @@ namespace ztl
 				},
 				{
 					SymbolType::TokenType,
-					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.emplace_back(static_cast<$<FieldType>*>(valueObject)->content);)"
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.emplace_back(static_cast<)"+ tokenTypeString +LR"(*>(valueObject)->content);)"
 				},
 				{
 					SymbolType::EnumType,
-					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.emplace_back(static_cast<$<FieldType>>(WstringToEnumItem(L"$<FieldType>::" + static_cast<TokenInfo*>(valueObject)->content)));)"
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>.emplace_back(static_cast<$<FieldType>>(WstringToEnumItem(L"$<FieldType>::" + static_cast<)" + tokenTypeString + LR"(*>(valueObject)->content)));)"
 				}
 			};
 			assert(signMap.find(elementTypeSymbol->GetType()) != signMap.end());
@@ -35,6 +36,7 @@ namespace ztl
 		}
 		wstring GetNonArrayTypeFiledReflectTemplate(const wstring& basicTemplateString, ParserSymbol* fieldTypeSymbol)
 		{
+			const wstring tokenTypeString = L"ztl::general_parser::TokenInfo";
 			assert(!fieldTypeSymbol->IsArrayType());
 			static unordered_map<SymbolType, wstring> signMap =
 			{
@@ -44,11 +46,11 @@ namespace ztl
 				},
 				{
 					SymbolType::TokenType,
-					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>=static_cast<$<FieldType>*>(valueObject)->content;)"
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>=static_cast<)" + tokenTypeString + LR"(*>(valueObject)->content;)"
 				},
 				{
 					SymbolType::EnumType,
-					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>=static_cast<$<FieldType>>(WstringToEnumItem(L"$<FieldType>::" + static_cast<TokenInfo*>(valueObject)->content));)"
+					LR"(static_cast<$<ClassType>*>(classObject)->$<FieldName>=static_cast<$<FieldType>>(WstringToEnumItem(L"$<FieldType>::" + static_cast<)" + tokenTypeString + LR"(*>(valueObject)->content));)"
 				}
 			};
 			ztl::generator::MarcoGenerator generator(basicTemplateString, { L"$<SymbolType>" });
@@ -220,19 +222,12 @@ namespace ztl
 			ztl::generator::MarcoGenerator generator(templateString, { L"$<initEnumList>" });
 			return generator.GenerateText({ initEnumList }).GetMacroResult();
 		}
-	/*	wstring SerializeEBNFCore(void* root)
-		{
-			auto current = static_cast<GeneralTableDefine*>(root);
-
-			return{};
-		}*/
-		void CreatReflectionFile(SymbolManager* manager)
+		wstring GetReflectionModule(SymbolManager* manager)
 		{
 			auto enumToStringFunction = GetWStringToEnumFunctionString(manager);
 			auto reflectionBuilderFunction = GetReflectBuilderFunctionString(manager);
 			auto objectReflectFunction = GetOjectReflectioFunctionString(manager);
-			//还差实现gen EBNF核心项函数,然后就可以把我现在这个核心给换了:)
-			CreateFile(L"test.cpp", enumToStringFunction+reflectionBuilderFunction + objectReflectFunction);
+			return enumToStringFunction + reflectionBuilderFunction + objectReflectFunction;
 		}
 	}
 }

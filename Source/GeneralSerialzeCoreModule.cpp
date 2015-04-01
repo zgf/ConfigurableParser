@@ -6,14 +6,17 @@ namespace ztl
 {
 	namespace general_parser
 	{
+		static const wstring namespacePrefix = L"ztl::general_parser::";
 		wstring SerializeTypeList(const vector<shared_ptr<GeneralTypeDefine>>& types);
 
 		wstring SerializeHeadInfoList(const vector<shared_ptr<GeneralHeadInfoDefine>>& infos)
 		{
 			wstring templateString =
+				L".Info(LR\"($<Property>)\",LR\"($<Value>)\")";
+			templateString = 
 				LR"(
-					.Info(L"$<Property>",L"$<Value>")
-					)";
+					)"+ templateString +LR"(
+				)";
 			return accumulate(infos.begin(), infos.end(), wstring(), [&templateString](const wstring& sum, const shared_ptr<GeneralHeadInfoDefine>& info)
 			{
 				ztl::generator::MarcoGenerator generator(templateString, { L"$<Property>",L"$<Value>" });
@@ -50,24 +53,21 @@ namespace ztl
 			{
 				SerialzeTypeObjectVisitor visitor;
 				node->element->Accept(&visitor);
-				result = L"Array(" + visitor.GetResult() + L")";
+				result = namespacePrefix+L"Array(" + visitor.GetResult() + L")";
 			}
 			void								Visit(GeneralStringTypeObject*)
 			{
-				result = L"String()";
+				result = namespacePrefix+L"String()";
 			}
 			void								Visit(GeneralNormalTypeObject* node)
 			{
-				result = L"Normal(L\"" + node->name + L"\")";
+				result = namespacePrefix+L"Normal(L\"" + node->name + L"\")";
 			}
 			void								Visit(GeneralSubTypeObject* node)
 			{
 				SerialzeTypeObjectVisitor visitor;
 				node->parent->Accept(&visitor);
-				wstring templateString =
-					LR"(
-						SubTypeObject($<Parent>,$<Name>)
-					)";
+				wstring templateString = namespacePrefix + L"SubTypeObject($<Parent>,$<Name>)";
 				MarcoGenerator generator(templateString, { L"$<Parent>",L"$<Name>" });
 				result = generator.GenerateText({ visitor.GetResult() ,node->name }).GetMacroResult();
 			}
@@ -96,7 +96,7 @@ namespace ztl
 					LR"(
 						.Class
 						(
-							GeneralClassTypeWriter()
+							$<Namespace>GeneralClassTypeWriter()
 							.Name(L"$<ClassName>")
 							$<SubTypeList>
 							$<ClassMemberList>
@@ -133,8 +133,8 @@ namespace ztl
 						return sum + visitor.result;
 					});
 				}
-				MarcoGenerator generator(templateString, { L"$<ClassName>",L"$<SubTypeList>",L"$<ClassMemberList>",L"$<ParentName>" });
-				result = generator.GenerateText({ node->name,subTypeList,classMemberList, parentName }).GetMacroResult();
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<ClassName>",L"$<SubTypeList>",L"$<ClassMemberList>",L"$<ParentName>" });
+				result = generator.GenerateText({namespacePrefix, node->name,subTypeList,classMemberList, parentName }).GetMacroResult();
 			}
 			void								Visit(GeneralEnumTypeDefine* node)
 			{
@@ -142,7 +142,7 @@ namespace ztl
 					LR"(
 						.Enum
 						(
-							GeneralEnumTypeWriter()
+							$<Namespace>GeneralEnumTypeWriter()
 							.Name(L"$<EnumName>")
 							$<EnumItemList>
 						)
@@ -153,8 +153,8 @@ namespace ztl
 					node->Accept(&visitor);
 					return sum + visitor.result;
 				});
-				MarcoGenerator generator(templateString, { L"$<EnumName>",L"$<EnumItemList>" });
-				result = generator.GenerateText({ node->name,enumItemList }).GetMacroResult();
+				MarcoGenerator generator(templateString, { L"$<Namespace>",L"$<EnumName>",L"$<EnumItemList>" });
+				result = generator.GenerateText({namespacePrefix, node->name,enumItemList }).GetMacroResult();
 			}
 			void								Visit(GeneralClassMemberTypeDefine* node)
 			{
@@ -163,19 +163,19 @@ namespace ztl
 				auto fieldType = visitor.GetResult();
 				wstring templateString =
 					LR"(
-					.Member(ClassMember($<FieldType>, L"$<Value>"))
+					.Member($<Namespace>ClassMember($<FieldType>, L"$<Value>"))
 				)";
-				MarcoGenerator generator(templateString, { L"$<FieldType>",L"$<Value>" });
-				result = generator.GenerateText({ fieldType,node->name }).GetMacroResult();
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<FieldType>",L"$<Value>" });
+				result = generator.GenerateText({ namespacePrefix, fieldType,node->name }).GetMacroResult();
 			}
 			void								Visit(GeneralEnumMemberTypeDefine* node)
 			{
 				wstring templateString =
 					LR"(
-						.Member(EnumMember(L"$<Value>"))
+						.Member($<Namespace>EnumMember(L"$<Value>"))
 					)";
-				MarcoGenerator generator(templateString, { L"$<Value>" });
-				result = generator.GenerateText({ node->name }).GetMacroResult();
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<Value>" });
+				result = generator.GenerateText({ namespacePrefix, node->name }).GetMacroResult();
 			}
 		private:
 			wstring result;
@@ -183,8 +183,9 @@ namespace ztl
 		wstring SerializeTypeList(const vector<shared_ptr<GeneralTypeDefine>>& types)
 		{
 			wstring templateString =
+				
 				LR"(
-					GeneralTypeListWriter()
+					$<Namespace>GeneralTypeListWriter()
 					$<TypeList>
 				)";
 			auto typeList = accumulate(types.begin(), types.end(), wstring(), [](const wstring& sum, const shared_ptr<GeneralTypeDefine>& type)
@@ -193,8 +194,8 @@ namespace ztl
 				type->Accept(&visitor);
 				return sum + visitor.GetResult();
 			});
-			MarcoGenerator generator(templateString, { L"$<TypeList>" });
-			return generator.GenerateText({ typeList }).GetMacroResult();
+			MarcoGenerator generator(templateString, { L"$<Namespace>", L"$<TypeList>" });
+			return generator.GenerateText({ namespacePrefix,typeList }).GetMacroResult();
 		}
 		class SerializeGrammarDefineVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
@@ -212,11 +213,12 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarTextTypeDefine* node)
 			{
-				result = L"Text(L\"" + node->text + L"\")";
+				//这里要注意,因为Text在验证语义的时候regex被转成了tokenName,所以用GrammarSymbol
+				result = namespacePrefix+L"GrammarSymbol(L\"" + node->text + L"\")";
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
 			{
-				result = L"GrammarSymbol(L\"" + node->name + L"\")";
+				result = namespacePrefix+ L"GrammarSymbol(L\"" + node->name + L"\")";
 			}
 			void								Visit(GeneralGrammarSequenceTypeDefine* node)
 			{
@@ -309,7 +311,7 @@ namespace ztl
 				LR"(
 						.Rule
 						(
-							GeneralRuleWriter()
+							$<Namespace>GeneralRuleWriter()
 							.Name(L"$<RuleName>")
 							.ReturnType($<Returnype>)
 							$<GrammarList>
@@ -321,112 +323,28 @@ namespace ztl
 				SerialzeTypeObjectVisitor visitor;
 				rule->type->Accept(&visitor);
 				wstring returnType = visitor.GetResult();
-				MarcoGenerator generator(templateString, { L"$<RuleName>",L"$<Returnype>",L"$<GrammarList>" });
-				return sum + generator.GenerateText({ rule->name,returnType,grammarList }).GetMacroResult();
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<RuleName>",L"$<Returnype>",L"$<GrammarList>" });
+				return sum + generator.GenerateText({ namespacePrefix,rule->name,returnType,grammarList }).GetMacroResult();
 			});
 		}
-		void TrimLeftAndRightOneQuotation(wstring& value)
+
+
+		wstring SerializeEBNFCoreModule(void* tableDefine)
 		{
-			value.erase(0, 1);
-			value.pop_back();
-		}
-		//处理捕获的字符串中多余的""和捕获的regex中多余的\"到"
-		class GrammarQuotationVisitor:public GeneralGrammarTypeDefine::IVisitor
-		{
-		public:
-			GrammarQuotationVisitor() noexcept = default;
-			~GrammarQuotationVisitor() noexcept = default;
-			GrammarQuotationVisitor(GrammarQuotationVisitor&&) noexcept = default;
-			GrammarQuotationVisitor(const GrammarQuotationVisitor&) noexcept = default;
-			GrammarQuotationVisitor& operator=(GrammarQuotationVisitor&&) noexcept = default;
-			GrammarQuotationVisitor& operator=(const GrammarQuotationVisitor&) noexcept = default;
-
-		protected:
-			void								Visit(GeneralGrammarTextTypeDefine* node)
-			{
-				TrimLeftAndRightOneQuotation(node->text);
-			}
-			void								Visit(GeneralGrammarNormalTypeDefine* )
-			{
-			}
-			void								Visit(GeneralGrammarSequenceTypeDefine* node)
-			{
-				node->first->Accept(this);
-				node->second->Accept(this);
-			}
-			void								Visit(GeneralGrammarLoopTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-			}
-			void								Visit(GeneralGrammarOptionalTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-
-			}
-			void								Visit(GeneralGrammarSetterTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-				TrimLeftAndRightOneQuotation(node->value);
-			}
-			void								Visit(GeneralGrammarUsingTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-
-			}
-			void								Visit(GeneralGrammarCreateTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-			}
-			void								Visit(GeneralGrammarAlternationTypeDefine* node)
-			{
-				node->left->Accept(this);
-				node->right->Accept(this);
-			}
-			void								Visit(GeneralGrammarAssignTypeDefine* node)
-			{
-				node->grammar->Accept(this);
-			}
-		private:
-		};
-		void DealWithQuotation(ztl::general_parser::GeneralTableDefine* table)
-		{
-			for(auto&&iter : table->heads)
-			{
-				TrimLeftAndRightOneQuotation(iter->value);
-			}
-			for(auto&&iter : table->tokens)
-			{
-				TrimLeftAndRightOneQuotation(iter->regex);
-				ztl::algorithm::replace_all_distinct<wstring>(iter->regex, LR"(\")", LR"(")");
-			}
-			GrammarQuotationVisitor visitor;
-			for(auto&&iter : table->rules)
-			{
-				for(auto&& grammarIter : iter->grammars)
-				{
-					grammarIter->Accept(&visitor);
-
-				}
-			}
-		}
-
-		wstring GeneralParser::SerializeEBNFCore(void* tableDef)
-		{
-			auto table = static_cast<ztl::general_parser::GeneralTableDefine*>(tableDef);
-			DealWithQuotation(table);
+			auto table = static_cast<ztl::general_parser::GeneralTableDefine*>(tableDefine);
 			wstring templateString =
 				LR"(
-				shared_ptr<GeneralTableDefine> BootStrapDefineTable()
+				shared_ptr<$<Namespace>GeneralTableDefine> BootStrapDefineTable()
 				{
-					GeneralTableWriter writer;
+					$<Namespace>GeneralTableWriter writer;
 					writer.Head
 						(
-							GeneralHeadInfoWriter()
+							$<Namespace>GeneralHeadInfoWriter()
 							$<HeadInfoList>
 						)
 						.Token
 						(
-							GeneralTokenWriter()
+							$<Namespace>GeneralTokenWriter()
 							$<TokenInfoList>
 						)
 						.Type
@@ -435,7 +353,7 @@ namespace ztl
 						)
 						.Rules
 						(
-							GeneralRuleListWriter()
+							$<Namespace>GeneralRuleListWriter()
 							$<RuleList>
 						);
 					return writer.table;;
@@ -445,8 +363,8 @@ namespace ztl
 			wstring tokenInfoList = SerializeTokenInfoList(table->tokens);
 			wstring typeList = SerializeTypeList(table->types);
 			wstring ruleList = SerializeRuleList(table->rules);
-			ztl::generator::MarcoGenerator generator(templateString, { L"$<HeadInfoList>",L"$<TokenInfoList>",L"$<TypeList>",L"$<RuleList>" });
-			return generator.GenerateText({ headInfoList ,tokenInfoList,typeList,ruleList }).GetMacroResult();
+			ztl::generator::MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<HeadInfoList>",L"$<TokenInfoList>",L"$<TypeList>",L"$<RuleList>" });
+			return generator.GenerateText({ namespacePrefix,headInfoList ,tokenInfoList,typeList,ruleList }).GetMacroResult();
 		}
 	}
 }

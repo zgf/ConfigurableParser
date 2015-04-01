@@ -6,40 +6,22 @@
 						(
 							GeneralHeadInfoWriter()
 							
-					.Info(L"include",L"zgf")
-					
-					.Info(L"namespace",L"xml")
-					
 						)
 						.Token
 						(
 							GeneralTokenWriter()
-							.Token(L"CLASS",LR"(class)")
-.Token(L"STRUCT",LR"(struct)")
-.Token(L"ENUM",LR"(enum)")
-.Token(L"TOKEN",LR"(token)")
-.Token(L"DISCARDTOKEN",LR"(ignoretoken)")
-.Token(L"RULE",LR"(rule)")
-.Token(L"AS",LR"(as)")
-.Token(L"WITH",LR"(with)")
-.Token(L"OPEN",LR"(\{)")
-.Token(L"CLOSE",LR"(\})")
-.Token(L"SEMICOLON",LR"(;)")
-.Token(L"COLON",LR"(:)")
+							.Token(L"TRUEVALUE",LR"(true)")
+.Token(L"FALSEVALUE",LR"(false)")
+.Token(L"NULLVALUE",LR"(null)")
+.Token(L"OBJOPEN",LR"(\{)")
+.Token(L"OBJCLOSE",LR"(\})")
+.Token(L"ARROPEN",LR"(\[)")
+.Token(L"ARRCLOSE",LR"(\])")
 .Token(L"COMMA",LR"(,)")
-.Token(L"DOT",LR"(.)")
-.Token(L"ASSIGN",LR"(=)")
-.Token(L"USING",LR"(!)")
-.Token(L"OR",LR"(|)")
-.Token(L"OPTOPEN",LR"(\[)")
-.Token(L"OPTCLOSE",LR"(\])")
-.Token(L"PREOPEN",LR"(\()")
-.Token(L"PRECLOSE",LR"(\))")
-.Token(L"NAME",LR"([a-zA-Z_]\w*)")
+.Token(L"COLON",LR"(:)")
+.Token(L"NUMBER",LR"([\-]?\d+(.\d+)?([eE][+\-]?\d+)?)")
 .Token(L"STRING",LR"("(\\"|[^"])*")")
 .IgnoreToken(L"SPACE",LR"(\s+)")
-.IgnoreToken(L"LINENOTE",LR"(//[^\n]*\n)")
-.IgnoreToken(L"BLOCKNOTE",LR"(/\*.*?\*/)")
 
 						)
 						.Type
@@ -50,20 +32,16 @@
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GenHeadInfoDefine")
+							.Name(L"Node")
 							
 							
-					.Member(ClassMember(Normal(L"wstring"), L"property"))
-				
-					.Member(ClassMember(Normal(L"wstring"), L"value"))
-				
 							
 						)
 					
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GenTokenDefine")
+							.Name(L"Literal")
 							
 							.SubType(
 						
@@ -72,11 +50,13 @@
 						.Enum
 						(
 							GeneralEnumTypeWriter()
-							.Name(L"TokenOptional")
+							.Name(L"Value")
 							
+						.Member(EnumMember(L"True"))
+					
 						.Member(EnumMember(L"False"))
 					
-						.Member(EnumMember(L"True"))
+						.Member(EnumMember(L"Null"))
 					
 						)
 					
@@ -84,305 +64,66 @@
 									)
 						
 							
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
+					.Member(ClassMember(Normal(L"Value"), L"value"))
 				
-					.Member(ClassMember(Normal(L"wstring"), L"regex"))
-				
-					.Member(ClassMember(Normal(L"TokenOptional"), L"ignore"))
-				
-							
+							.ParentType(Normal(L"Node"))
 						)
 					
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GenTypeObject")
+							.Name(L"String")
 							
 							
-							
+					.Member(ClassMember(String(), L"content"))
+				
+							.ParentType(Normal(L"Node"))
 						)
 					
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GenArrayTypeObject")
+							.Name(L"Number")
 							
 							
-					.Member(ClassMember(Normal(L"GenTypeObject"), L"element"))
+					.Member(ClassMember(String(), L"content"))
 				
-							.ParentType(Normal(L"GenTypeObject"))
+							.ParentType(Normal(L"Node"))
 						)
 					
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GenStringTypeObject")
+							.Name(L"Array")
 							
 							
-							.ParentType(Normal(L"GenTypeObject"))
+					.Member(ClassMember(Array(Normal(L"Node")), L"items"))
+				
+							.ParentType(Normal(L"Node"))
 						)
 					
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GenNormalTypeObject")
+							.Name(L"ObjectField")
 							
 							
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
+					.Member(ClassMember(String(), L"name"))
 				
-							.ParentType(Normal(L"GenTypeObject"))
+					.Member(ClassMember(Normal(L"Node"), L"value"))
+				
+							.ParentType(Normal(L"Node"))
 						)
 					
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GenSubTypeObject")
+							.Name(L"Object")
 							
 							
-					.Member(ClassMember(Normal(L"GenTypeObject"), L"parent"))
+					.Member(ClassMember(Array(Normal(L"ObjectField")), L"fields"))
 				
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-							.ParentType(Normal(L"GenTypeObject"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenTypeDefine")
-							
-							
-							
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenClassTypeDefine")
-							
-							
-					.Member(ClassMember(Array(Normal(L"GenTypeDefine")), L"subTypes"))
-				
-					.Member(ClassMember(Array(Normal(L"GenClassMemberTypeDefine")), L"members"))
-				
-					.Member(ClassMember(Normal(L"GenTypeObject"), L"parent"))
-				
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-							.ParentType(Normal(L"GenTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenEnumTypeDefine")
-							
-							
-					.Member(ClassMember(Array(Normal(L"GenEnumMemberTypeDefine")), L"members"))
-				
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-							.ParentType(Normal(L"GenTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenClassMemberTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenTypeObject"), L"type"))
-				
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-							.ParentType(Normal(L"GenTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenEnumMemberTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-							.ParentType(Normal(L"GenTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarTypeDefine")
-							
-							
-							
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarTextTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"wstring"), L"text"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarNormalTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarSequenceTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"first"))
-				
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"second"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarLoopTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"grammar"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarOptionalTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"grammar"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarAssignTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"grammar"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarSetterTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GrammarDef"), L"grammar"))
-				
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-					.Member(ClassMember(Normal(L"wstring"), L"value"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarAdditionTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"grammar"))
-				
-					.Member(ClassMember(Array(Normal(L"GenGrammarSetterTypeDefine")), L"setters"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarUsingTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"grammar"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarCreateTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenTypeObject"), L"type"))
-				
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"grammar"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenGrammarAlternationTypeDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"left"))
-				
-					.Member(ClassMember(Normal(L"GenGrammarTypeDefine"), L"right"))
-				
-							.ParentType(Normal(L"GenGrammarTypeDefine"))
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenRuleDefine")
-							
-							
-					.Member(ClassMember(Normal(L"GenTypeObject"), L"type"))
-				
-					.Member(ClassMember(Normal(L"wstring"), L"name"))
-				
-					.Member(ClassMember(Array(Normal(L"GenGrammarTypeDefine")), L"grammars"))
-				
-							
-						)
-					
-						.Class
-						(
-							GeneralClassTypeWriter()
-							.Name(L"GenTableDefine")
-							
-							
-					.Member(ClassMember(Array(Normal(L"GenHeadInfoDefine")), L"heads"))
-				
-					.Member(ClassMember(Array(Normal(L"GenTypeDefine")), L"types"))
-				
-					.Member(ClassMember(Array(Normal(L"GenTokenDefine")), L"tokens"))
-				
-					.Member(ClassMember(Array(Normal(L"GenRuleDefine")), L"rules"))
-				
-							
+							.ParentType(Normal(L"Node"))
 						)
 					
 				
@@ -394,31 +135,37 @@
 						.Rule
 						(
 							GeneralRuleWriter()
-							.Name(L"Type")
-							.ReturnType(Normal(L"GenTypeObject"))
+							.Name(L"JLiteral")
+							.ReturnType(Normal(L"Node"))
 							
 						|
-						GrammarSymbol(L"NAME")[L"name"]
+						GrammarSymbol(L"STRING")[L"content"]
 					
-					.Create(Normal(L"GenNormalTypeObject"))
-					
-				
-						|Text(L"token")
-					.Create(Normal(L"GenTokenTypeObject"))
+					.Create(Normal(L"String"))
 					
 				
 						|
-						GrammarSymbol(L"Type")[L"parent"]
-					+Text(L".")+
-						GrammarSymbol(L"NAME")[L"name"]
+						GrammarSymbol(L"NUMBER")[L"content"]
 					
-					.Create(Normal(L"GenSubTypeObject"))
+					.Create(Normal(L"Number"))
 					
 				
-						|
-						GrammarSymbol(L"Type")[L"element"]
-					+Text(L"[")+Text(L"]")
-					.Create(Normal(L"GenArrayTypeObject"))
+						|Text(L"TRUEVALUE")
+					.Create(Normal(L"Literal"))
+					
+						.Setter(L"value", L"True")
+					
+				
+						|Text(L"FALSEVALUE")
+					.Create(Normal(L"Literal"))
+					
+						.Setter(L"value", L"False")
+					
+				
+						|Text(L"NULLVALUE")
+					.Create(Normal(L"Literal"))
+					
+						.Setter(L"value", L"Null")
 					
 				
 						)
@@ -426,13 +173,15 @@
 						.Rule
 						(
 							GeneralRuleWriter()
-							.Name(L"EnumMember")
-							.ReturnType(Normal(L"GenEnumMemberTypeDefine"))
+							.Name(L"JField")
+							.ReturnType(Normal(L"ObjectField"))
 							
 						|
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L",")
-					.Create(Normal(L"GenEnumMemberTypeDefine"))
+						GrammarSymbol(L"STRING")[L"name"]
+					+Text(L"COLON")+
+						GrammarSymbol(L"JValue")[L"value"]
+					
+					.Create(Normal(L"ObjectField"))
 					
 				
 						)
@@ -440,15 +189,15 @@
 						.Rule
 						(
 							GeneralRuleWriter()
-							.Name(L"Enum")
-							.ReturnType(Normal(L"GenEnumTypeDefine"))
+							.Name(L"JObject")
+							.ReturnType(Normal(L"Object"))
 							
-						|Text(L"enum")+
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"{")+*(
-						GrammarSymbol(L"EnumMember")[L"members"]
-					)+Text(L"}")
-					.Create(Normal(L"GenEnumTypeDefine"))
+						|Text(L"OBJOPEN")+
+						GrammarSymbol(L"JField")[L"fields"]
+					+Text(L"COMMA")+~(*(
+						GrammarSymbol(L"JField")[L"fields"]
+					))+Text(L"OBJCLOSE")
+					.Create(Normal(L"Object"))
 					
 				
 						)
@@ -456,15 +205,15 @@
 						.Rule
 						(
 							GeneralRuleWriter()
-							.Name(L"ClassMember")
-							.ReturnType(Normal(L"GenClassMemberTypeObject"))
+							.Name(L"JArray")
+							.ReturnType(Normal(L"Array"))
 							
-						|
-						GrammarSymbol(L"Type")[L"type"]
-					+
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L";")
-					.Create(Normal(L"GenClassMemberTypeObject"))
+						|Text(L"ARROPEN")+
+						GrammarSymbol(L"JValue")[L"items"]
+					+Text(L"COMMA")+~(*(
+						GrammarSymbol(L"JValue")[L"items"]
+					))+Text(L"ARRCLOSE")
+					.Create(Normal(L"Array"))
 					
 				
 						)
@@ -472,254 +221,26 @@
 						.Rule
 						(
 							GeneralRuleWriter()
-							.Name(L"TypeDecl")
-							.ReturnType(Normal(L"GenTypeDefine"))
+							.Name(L"JValue")
+							.ReturnType(Normal(L"Node"))
 							
-						|
-						( !(GrammarSymbol(L"Enum")) | !(GrammarSymbol(L"Class")) )
-					
+						|!(GrammarSymbol(L"JLiteral"))
+				
+						|!(GrammarSymbol(L"JObject"))
+				
+						|!(GrammarSymbol(L"JArray"))
 				
 						)
 				
 						.Rule
 						(
 							GeneralRuleWriter()
-							.Name(L"Class")
-							.ReturnType(Normal(L"GenClassTypeDefine"))
+							.Name(L"JRoot")
+							.ReturnType(Normal(L"Node"))
 							
-						|
-						( 
-						( Text(L"struct") | Text(L"class")+
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L":")+~(
-						GrammarSymbol(L"Type")[L"parent"]
-					)+Text(L"{")+
-						GrammarSymbol(L"ClassMember")[L"members"]
-					 )
-					 | *(
-						GrammarSymbol(L"TypeDecl")[L"subTypes"]
-					)+Text(L"}")+Text(L";") )
-					
-					.Create(Normal(L"GenClassTypeDefine"))
-					
+						|!(GrammarSymbol(L"JObject"))
 				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"SequenceGrammar")
-							.ReturnType(Normal(L"GenGrammarTypeDefine"))
-							
-						|!(GrammarSymbol(L"PrimitiveGrammar"))
-				
-						|
-						GrammarSymbol(L"SequenceGrammar")[L"first"]
-					+
-						GrammarSymbol(L"PrimitiveGrammar")[L"second"]
-					
-					.Create(Normal(L"GenGrammarSequenceTypeDefine"))
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"AlternativeGrammar")
-							.ReturnType(Normal(L"GenGrammarTypeDefine"))
-							
-						|!(GrammarSymbol(L"SequenceGrammar"))
-				
-						|
-						GrammarSymbol(L"AlternativeGrammar")[L"left"]
-					+Text(L"|")+
-						GrammarSymbol(L"SequenceGrammar")[L"right"]
-					
-					.Create(Normal(L"GenGrammarAlternationTypeDefine"))
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"Grammar")
-							.ReturnType(Normal(L"GenGrammarTypeDefine"))
-							
-						|!(GrammarSymbol(L"AlternativeGrammar"))
-				
-						|
-						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L"as")+
-						GrammarSymbol(L"Type")[L"type"]
-					
-					.Create(Normal(L"GenGrammarCreateTypeDefine"))
-					
-				
-						|
-						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L"with")+Text(L"{")+
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"=")+
-						GrammarSymbol(L"STRING")[L"value"]
-					+Text(L"}")
-					.Create(Normal(L"GenGrammarSetterTypeDefine"))
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"NormalGrammar")
-							.ReturnType(Normal(L"GenGrammarTypeDefine"))
-							
-						|
-						GrammarSymbol(L"NAME")[L"name"]
-					
-					.Create(Normal(L"GenGrammarNormalTypeDefine"))
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"AssginGrammar")
-							.ReturnType(Normal(L"GenGrammarTypeDefine"))
-							
-						|
-						GrammarSymbol(L"NormalGrammar")[L"grammar"]
-					+Text(L":")+
-						GrammarSymbol(L"NAME")[L"name"]
-					
-					.Create(Normal(L"GenGrammarAssignTypeDefine"))
-					
-				
-						|
-						GrammarSymbol(L"STRING")[L"text"]
-					
-					.Create(Normal(L"GenGrammarTextTypeDefine"))
-					
-				
-						|Text(L"(")+!(GrammarSymbol(L"Grammar"))+Text(L")")
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"PrimitiveGrammar")
-							.ReturnType(Normal(L"GenGrammarTypeDefine"))
-							
-						|!(GrammarSymbol(L"AssginGrammar"))
-				
-						|Text(L"!")+
-						GrammarSymbol(L"NormalGrammar")[L"grammar"]
-					
-					.Create(Normal(L"GenGrammarUsingTypeDefine"))
-					
-				
-						|Text(L"[")+
-						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L"]")
-					.Create(Normal(L"GenGrammarOptionalTypeDefine"))
-					
-				
-						|Text(L"{")+
-						GrammarSymbol(L"Grammar")[L"grammar"]
-					+Text(L"}")
-					.Create(Normal(L"GenGrammarLoopTypeDefine"))
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"TokenDecl")
-							.ReturnType(Normal(L"GenTokenDefine"))
-							
-						|Text(L"token")+
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"=")+
-						GrammarSymbol(L"STRING")[L"regex"]
-					+Text(L";")
-					.Create(Normal(L"GenTokenDefine"))
-					
-						.Setter(L"ignore", L"False")
-					
-				
-						|Text(L"ignoretoken")+
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"=")+
-						GrammarSymbol(L"STRING")[L"regex"]
-					+Text(L";")
-					.Create(Normal(L"GenTokenDefine"))
-					
-						.Setter(L"ignore", L"True")
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"HeadDecl")
-							.ReturnType(Normal(L"GenHeadInfoDefine"))
-							
-						|
-						GrammarSymbol(L"NAME")[L"property"]
-					+Text(L":")+
-						GrammarSymbol(L"STRING")[L"value"]
-					+Text(L";")
-					.Create(Normal(L"GenHeadInfoDefine"))
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"RuleDecl")
-							.ReturnType(Normal(L"GenRuleDefine"))
-							
-						|Text(L"rule")+
-						GrammarSymbol(L"Type")[L"type"]
-					+
-						GrammarSymbol(L"NAME")[L"name"]
-					+Text(L"=")+*(
-						GrammarSymbol(L"Grammar")[L"grammars"]
-					)+Text(L";")
-					.Create(Normal(L"GenRuleDefine"))
-					
-				
-						)
-				
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"ParserDecl")
-							.ReturnType(Normal(L"GenTableDefine"))
-							
-						|
-						( 
-						( 
-						( *(
-						GrammarSymbol(L"HeadDecl")[L"heads"]
-					) | *(
-						GrammarSymbol(L"TypeDecl")[L"definitions"]
-					) )
-					 | *(
-						GrammarSymbol(L"TokenDecl")[L"definitions"]
-					) )
-					 | *(
-						GrammarSymbol(L"RuleDecl")[L"definitions"]
-					) )
-					
-					.Create(Normal(L"GenTableDefine"))
-					
+						|!(GrammarSymbol(L"JArray"))
 				
 						)
 				

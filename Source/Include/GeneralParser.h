@@ -10,7 +10,7 @@ namespace ztl
 		struct TokenInfo;
 		class SymbolManager;
 		class ActionWrap;
-		class GeneralJumpTable;
+		class GeneralJumpInfoTable;
 		struct GeneralTableDefine;
 		class PushDownAutoMachine;
 		struct CreateInfo;
@@ -66,7 +66,6 @@ namespace ztl
 		{
 		public:
 			GeneralParser() = delete;
-			GeneralParser(const vector<shared_ptr<TokenInfo>>& tokens,const shared_ptr<GeneralTableDefine>& _tableDefine);
 			GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine);
 			~GeneralParser() noexcept = default;
 			GeneralParser(GeneralParser&&)  = default;
@@ -75,11 +74,10 @@ namespace ztl
 			GeneralParser& operator=(const GeneralParser&)   = default;
 		public:
 			void				BuildParser();
-			vector<GeneralTreeNode*>GenerateIsomorphismParserTree();
+			vector<GeneralTreeNode*> GenerateIsomorphismParserTree();
 			shared_ptr<void>	GeneralHeterogeneousParserTree(GeneralTreeNode* root);
-			void GeneralParserTree();
-			const vector<shared_ptr<void>>& GetParserTree() const;
-			wstring SerializeEBNFCore(void* tableDefine);
+			shared_ptr<void>	GeneralHeterogeneousParserTree();
+			GeneralTreeNode* GetGeneralTreeRoot() const;
 			SymbolManager* GetManager() const;
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
@@ -105,23 +103,22 @@ namespace ztl
 			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
 			TokenInfo* GetTermNodeByIndex(int index)const;
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
+			void CheckParserResultConvergence();
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
 			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
 			vector<shared_ptr<TokenInfo>>		 terminatePool;
 
-			vector<shared_ptr<void>>			 treeRoots;
+			GeneralTreeNode*					 generalTreeRoot;
 			deque<ParserState>					 parserStates;
-
 			vector<shared_ptr<void>>			 heterogeneousNodePool;
 
 			shared_ptr<PushDownAutoMachine>		 machine;
-			shared_ptr<GeneralJumpTable>		 jumpTable;
+			shared_ptr<GeneralJumpInfoTable>	 jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
 			shared_ptr<GeneralTableDefine>		 tableDefine;
 
 		};
-		vector<shared_ptr<TokenInfo>>	 ParseToken(const wstring& fileName);
 	}
 }

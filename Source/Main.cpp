@@ -4,19 +4,17 @@
 #include "Include\stdafx.h"
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
-#include "Include\GeneralJumpTable.h"
-#include "Include\GeneralFile.h"
+#include "Include\GeneralJumpInfoTable.h"
+#include "Include\GeneralParserFile.h"
 #include "Include\GeneralParser.h"
+#include "Include\JsonParser.hpp"
 int main()
 {
 	
-	ztl::general_parser::GeneralParser parser(L"ParserDefine.txt"
-		,
-		ztl::general_parser::BootStrapDefineTable());
+//	ztl::general_parser::GeneralParserFile parserGen(L"Json.ParserDefine.txt",ztl::general_parser::BootStrapDefineTable());
+//	parserGen.GenerateSpecialParserFile();
+
+	ztl::general_parser::GeneralParser parser(L"TestJson.txt", ztl::json::BootStrapDefineTable());
 	parser.BuildParser();
-	parser.GeneralParserTree();
-	auto parserResult = parser.GetParserTree();
-	ztl::general_parser::CreatReflectionFile(parser.GetManager());
-	ztl::general_parser::CreateFile(L"testEBNFCore.cpp",parser.SerializeEBNFCore(parserResult.front().get()));
 	return 0;
 }

@@ -1,15 +1,14 @@
 #include "Include/stdafx.h"
-#include "Include/GeneralJumpTable.h"
+#include "Include/GeneralJumpInfoTable.h"
 #include "Include/GeneralPushDownAutoMachine.h"
 
 namespace ztl
 {
 	namespace general_parser
 	{
-		GeneralJumpTable::GeneralJumpTable(PushDownAutoMachine * _machine)
+		GeneralJumpInfoTable::GeneralJumpInfoTable(PushDownAutoMachine * _machine)
 			:machine(_machine),
 			createdNodeRequiresMap(make_shared<unordered_map<PDAEdge*, vector<CreateInfo>>>()),
-			jumpTable(make_shared<unordered_map<int, vector<JumpItem>>>()),
 			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
 			terminateMap(make_shared<TerminateMapType>()),
 			rootNumber(-1)
@@ -17,16 +16,16 @@ namespace ztl
 			assert(machine->GetRoot() != nullptr);
 			rootNumber = machine->GetRoot()->GetNumber();
 		}
-		SymbolManager* GeneralJumpTable::GetSymbolManager()const
+		SymbolManager* GeneralJumpInfoTable::GetSymbolManager()const
 		{
 			return machine->GetSymbolManager();
 		}
-		PDANode* GeneralJumpTable::GetRoot()const
+		PDANode* GeneralJumpInfoTable::GetRoot()const
 		{
 			return machine->GetRoot();
 		}
 
-		void GeneralJumpTable::CreateJumpTable()
+		void GeneralJumpInfoTable::CreateJumpInfoTable()
 		{
 			unordered_set<PDAEdge*> sign;
 			deque<PDANode*> queue;
@@ -35,26 +34,19 @@ namespace ztl
 			{
 				auto front = queue.front();
 				queue.pop_front();
-				jumpTable->insert(make_pair(front->GetNumber(), CreateJumpItem(front, sign, queue)));
-			}
-		}
-		vector<JumpItem> GeneralJumpTable::CreateJumpItem(PDANode* source, unordered_set<PDAEdge*>& sign, deque<PDANode*>& queue)
-		{
-			vector<JumpItem > result;
-			for(PDAEdge* edgeIter : source->GetNexts())
-			{
-				if(sign.find(edgeIter) == sign.end())
+				for(PDAEdge* edgeIter : front->GetNexts())
 				{
-					sign.insert(edgeIter);
-					assert(edgeIter->GetActions().size() >= 1);
-					result.emplace_back(edgeIter->GetTarget()->GetNumber(), edgeIter);
-					CacheEdgeInfo(edgeIter);
-					queue.emplace_back(edgeIter->GetTarget());
+					if(sign.find(edgeIter) == sign.end())
+					{
+						sign.insert(edgeIter);
+						assert(edgeIter->GetActions().size() >= 1);
+						CacheEdgeInfo(edgeIter);
+						queue.emplace_back(edgeIter->GetTarget());
+					}
 				}
 			}
-			return result;
 		}
-		void GeneralJumpTable::CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos)
+		void GeneralJumpInfoTable::CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos)
 		{
 			for_each(nodeStack.begin(), nodeStack.end(), [&createInfos](const ActionWrap& wrap)
 			{
@@ -65,7 +57,7 @@ namespace ztl
 				this->createdNodeRequiresMap->insert(make_pair(edge, createInfos));
 			}
 		}
-		void GeneralJumpTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
+		void GeneralJumpInfoTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
 			for(size_t i = 0; i < ruleStack.size();++i)
 			{
@@ -86,7 +78,7 @@ namespace ztl
 				CacheEnterRule(edge);
 			}
 		}
-		void GeneralJumpTable::CacheEnterRule(PDAEdge* edge)
+		void GeneralJumpInfoTable::CacheEnterRule(PDAEdge* edge)
 		{
 			assert(!edge->GetActions().empty());
 			auto actions = edge->GetActions();
@@ -117,7 +109,7 @@ namespace ztl
 			this->ruleRequiresMap->insert({ edge,vector<wstring>() });
 			(*ruleRequiresMap)[edge].emplace_back(name);
 		}
-		void GeneralJumpTable::CacheTerminateMap(PDAEdge* edge)
+		void GeneralJumpInfoTable::CacheTerminateMap(PDAEdge* edge)
 		{
 			auto findTermIter = find_if(make_reverse_iterator(edge->GetActions().end()), make_reverse_iterator(edge->GetActions().begin()), [](const ActionWrap& wrap)
 			{
@@ -138,7 +130,7 @@ namespace ztl
 			}
 			(*terminateMap)[number].termnateToEdgesMap[terminate].emplace_back(edge);
 		}
-		vector<PDAEdge*>* GeneralJumpTable::GetPDAEdgeByTerminate(const int number, const wstring & terminate)const
+		vector<PDAEdge*>* GeneralJumpInfoTable::GetPDAEdgeByTerminate(const int number, const wstring & terminate)const
 		{
 			auto findIter = terminateMap->find(number);
 			assert(findIter != terminateMap->end());
@@ -146,23 +138,23 @@ namespace ztl
 			return (findTerminateIter == findIter->second.termnateToEdgesMap.end()) ? nullptr : std::addressof(findTerminateIter->second);
 		}
 
-		int GeneralJumpTable::GetRootNumber()const
+		int GeneralJumpInfoTable::GetRootNumber()const
 		{
 			assert(rootNumber != -1);
 			return rootNumber;
 		}
 
-		const vector<wstring>& GeneralJumpTable::GetRuleRequires(PDAEdge* edge) const
+		const vector<wstring>& GeneralJumpInfoTable::GetRuleRequires(PDAEdge* edge) const
 		{
 			assert(ruleRequiresMap->find(edge) != ruleRequiresMap->end());
 			return (*ruleRequiresMap)[edge];
 		}
-		const vector<CreateInfo>* GeneralJumpTable::GetCreateNodeRequires(PDAEdge * edge) const
+		const vector<CreateInfo>* GeneralJumpInfoTable::GetCreateNodeRequires(PDAEdge * edge) const
 		{
 			auto findIter = createdNodeRequiresMap->find(edge);
 			return (findIter != createdNodeRequiresMap->end()) ? std::addressof(findIter->second) : nullptr;
 		}
-		void GeneralJumpTable::CacheEdgeInfo(PDAEdge * edge)
+		void GeneralJumpInfoTable::CacheEdgeInfo(PDAEdge * edge)
 		{
 			auto&& actions = edge->GetActions();
 
@@ -220,87 +212,9 @@ namespace ztl
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
 		}
 	
-		void GeneralJumpTable::ClearJumpTable()
+		void CreateJumpTable(GeneralJumpInfoTable & jumpTable)
 		{
-			jumpTable->clear();
-		}
-
-		const unordered_map<int, vector<JumpItem>>& GeneralJumpTable::GetJumpTable() const
-		{
-			assert(!jumpTable->empty());
-			return *jumpTable;
-		}
-		using lambdaType = wstring(*)(const ActionWrap&);
-		unordered_map<ActionType, lambdaType> InitActionTypeAndGrammarLogMap()
-		{
-			unordered_map<ActionType, lambdaType> actionMap;
-			auto functor = [](const ActionWrap& wrap)->wstring
-			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue() +
-					L" : " + wrap.GetFrom() + L":" + wrap.GetTo()+L" grammarNumber : "+to_wstring(wrap.GetGrammarNumber());
-			};
-			vector<ActionType> ActionTypeList = {
-				ActionType::Assign,
-				ActionType::Create,
-				ActionType::Epsilon,
-				ActionType::NonTerminate,
-				ActionType::Reduce,
-				ActionType::Setter,
-				ActionType::Shift,
-				ActionType::Terminate,
-				ActionType::Using
-			};
-			for(auto&& iter : ActionTypeList)
-			{
-				actionMap.insert(make_pair(iter, functor));
-			}
-			return actionMap;
-		}
-		vector<wstring> ActionWrapStringList(const vector<ActionWrap>& wrapList, unordered_map<ActionType, lambdaType>& actionMap)
-		{
-			vector<wstring> result;
-			std::for_each(wrapList.begin(), wrapList.end(), [&result, &actionMap](auto&& element)
-			{
-				result.emplace_back(L"action:" + actionMap[element.GetActionType()](element) + L";");
-			});
-			return result;
-		}
-		void LogJumpTable(wstring fileName, GeneralJumpTable& jumpTable)
-		{
-			auto actionMap = InitActionTypeAndGrammarLogMap();
-			auto&& table = jumpTable.GetJumpTable();
-			wofstream output(fileName);
-			for(auto rowsIter : table)
-			{
-				auto&& nodeIndex = rowsIter.first;
-				auto&&  edges = rowsIter.second;
-				sort(edges.begin(), edges.end(), [](const JumpItem& left, const JumpItem& right)
-				{
-					return left.targetIndex < right.targetIndex;
-				});
-				output << L"NodeIndex:" + to_wstring(nodeIndex) << endl;
-
-				for(auto&& colsIter : edges)
-				{
-					auto&& targetNodeIndex = colsIter.targetIndex;
-					output << L" targetIndex: " << to_wstring(targetNodeIndex) << endl;
-
-					auto&& actionWrapList = colsIter.edges->GetActions();
-					auto&& actionWrapStringList = ActionWrapStringList(actionWrapList, actionMap);
-					for(auto&& iter : actionWrapStringList)
-					{
-						output << L"			" << iter << endl;
-					}
-				}
-			}
-		}
-		void CreateJumpTable(GeneralJumpTable & jumpTable)
-		{
-			jumpTable.CreateJumpTable();
-		}
-		void HelpLogJumpTable(wstring fileName, GeneralJumpTable& jumpTable)
-		{
-			LogJumpTable(fileName, jumpTable);
+			jumpTable.CreateJumpInfoTable();
 		}
 	}
 }

@@ -91,9 +91,6 @@
     <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp">
       <Filter>Lib\Regex</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GenerateNodeDefineFile.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SymbolManager.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
@@ -109,28 +106,31 @@
     <ClCompile Include="Source\GeneralPDAGraph.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralJumpTable.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GeneralReflectionNodeDefineFile.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GeneralLexer.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralTreeNode.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GeneralParser.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralParserSerialzeCore.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralParserReflection.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GeneralParserLexer.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralJumpInfoTable.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralParserFile.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralSerialzeCoreModule.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GenerateNodeDefineModule.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralReflectionObjectModulecpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
   </ItemGroup>
@@ -189,19 +189,22 @@
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralJumpTable.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Template\PDATemplate.hpp">
       <Filter>Source\Template</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralParser.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralFile.h">
+    <ClInclude Include="Source\Include\GeneralTreeNode.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralTreeNode.h">
+    <ClInclude Include="Source\Include\GeneralJumpInfoTable.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralParserFile.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\JsonParser.hpp">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

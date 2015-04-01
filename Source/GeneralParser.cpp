@@ -2,26 +2,16 @@
 #include "Include\GeneralParser.h"
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
-#include "Include\GeneralJumpTable.h"
+#include "Include\GeneralJumpInfoTable.h"
 #include "Include\GeneralTreeNode.h"
 #include "Include\ParserSymbol.h"
 namespace ztl
 {
 	namespace general_parser
 	{
-		GeneralParser::GeneralParser(const vector<shared_ptr<TokenInfo>>& tokens, const shared_ptr<GeneralTableDefine>& _tableDefine)
-			: tokenPool(tokens),
+		GeneralParser::GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :
 			tableDefine(_tableDefine),
-			jumpTable(nullptr),
-			machine(nullptr),
-			manager(nullptr)
-
-		{
-		}
-
-		GeneralParser::GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :/* tokenPool(tokens),*/
-			tableDefine(_tableDefine),
-			jumpTable(nullptr),
+			jumpInfos(nullptr),
 			machine(nullptr),
 			manager(nullptr)
 		{
@@ -34,8 +24,8 @@ namespace ztl
 			ValidateGeneratorCoreSemantic(manager.get());
 			machine = make_shared<PushDownAutoMachine >(manager.get());
 			CreateDPDAGraph(*machine.get());
-			jumpTable = make_shared<GeneralJumpTable>(machine.get());
-			CreateJumpTable(*jumpTable.get());
+			jumpInfos = make_shared<GeneralJumpInfoTable>(machine.get());
+			CreateJumpTable(*jumpInfos.get());
 			//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 		SymbolManager* GeneralParser::GetManager() const
@@ -81,24 +71,30 @@ namespace ztl
 		void PrintRuntimeInfo(const vector<ParserState>& parserStates, const vector<shared_ptr<TokenInfo>>& tokenPool)
 		{
 			wcout << L"nodeIndex:" << parserStates.front().currentNodeIndex << endl;
-			wcout << L"tokenIndex:" << parserStates.front().tokenIndex << L" token: " << tokenPool[parserStates.front().tokenIndex]->tag << endl;
+			wcout << L"tokenIndex:" << parserStates.front().tokenIndex << L" token: " << tokenPool[parserStates.front().tokenIndex]->GetTokenInfo() << endl;
 			wcout << L"currentStack:" << accumulate(parserStates.front().rulePathStack.begin(), parserStates.front().rulePathStack.end(), wstring(), [](const wstring& sum, const wstring& value)
 			{
 				return sum + L" " + value;
 			}) << endl;
+		}
+		void GeneralParser::CheckParserResultConvergence()
+{
+			if(parserStates.front().createdNodeStack.size() != 1)
+			{
+				throw ztl_exception(L"Parser Result Can't convergence!" + GetParserInfo(parserStates.front()));
+			}
 		}
 		vector<GeneralTreeNode*> GeneralParser::GenerateIsomorphismParserTree()
 		{
 			assert(!this->tokenPool.empty());
 			auto rootRule = machine->GetRootRuleName();
 			assert(!rootRule.empty());
-			vector<GeneralTreeNode*> result;
-			this->parserStates.emplace_back(0, jumpTable->GetRootNumber(), rootRule, MakeEmptyTreeNode());
+			this->parserStates.emplace_back(0, jumpInfos->GetRootNumber(), rootRule, MakeEmptyTreeNode());
+			vector<GeneralTreeNode*> ambiguityRoots;
 			while(!parserStates.empty())
 			{
 				while(parserStates.front().tokenIndex != (int) tokenPool.size())
 				{
-					//PrintRuntimeInfo(parserStates);
 					auto edges = EdgeResolve(parserStates.front());
 					SaveEdge(parserStates, edges);
 					HandleRightRecursionEdge(parserStates.front());
@@ -108,26 +104,20 @@ namespace ztl
 				}
 				if(!parserStates.empty())
 				{
-					assert(parserStates.front().createdNodeStack.size() == 1);
-					result.emplace_back(parserStates.front().createdNodeStack.front());
+					CheckParserResultConvergence();
+					ambiguityRoots.emplace_back(parserStates.front().createdNodeStack.front());
 					parserStates.pop_front();
 				}
 			}
-			return result;
-		}
-
-		void GeneralParser::GeneralParserTree()
-		{
-			assert(treeRoots.empty());
-			auto roots = this->GenerateIsomorphismParserTree();
-			for(auto&&iter : roots)
+			if (!ambiguityRoots.empty())
 			{
-				treeRoots.emplace_back(GeneralHeterogeneousParserTree(iter));
+				generalTreeRoot = ambiguityRoots.front();
 			}
+			return ambiguityRoots;
 		}
-		const vector<shared_ptr<void>>& GeneralParser::GetParserTree() const
+		GeneralTreeNode* GeneralParser::GetGeneralTreeRoot() const
 		{
-			return treeRoots;
+			return generalTreeRoot;
 		}
 
 		vector<EdgeInfo> GeneralParser::EdgeResolve(ParserState& state)
@@ -140,10 +130,9 @@ namespace ztl
 			auto& number = state.currentNodeIndex;
 			auto&& token = this->tokenPool[tokenIndex];
 
-			auto edges = jumpTable->GetPDAEdgeByTerminate(number, token->tag);
+			auto edges = jumpInfos->GetPDAEdgeByTerminate(number, token->tag);
 			if(edges == nullptr || edges->empty())
 			{
-				/*throw ztl_exception(L"error!can't find match token,tokenInfo.\n" + GetParserInfo(state));*/
 				return{};
 			}
 			return RuleResolve(edges, state);
@@ -184,7 +173,7 @@ namespace ztl
 			for(size_t i = 0; i < edges->size(); ++i)
 			{
 				auto&& iter = edges->operator[](i);
-				auto&& ruleRequire = jumpTable->GetRuleRequires(iter);
+				auto&& ruleRequire = jumpInfos->GetRuleRequires(iter);
 
 				if(rulePathStack.size() >= ruleRequire.size())
 				{
@@ -230,7 +219,7 @@ namespace ztl
 		{
 			if(isRightRecursionEdge)
 			{
-				auto&& ruleRequire = jumpTable->GetRuleRequires(edge);
+				auto&& ruleRequire = jumpInfos->GetRuleRequires(edge);
 				for(auto ruleRequireBegin = ruleRequire.begin(); ruleRequireBegin < ruleRequire.end();)
 				{
 					auto end = FindRightRecursionPosition(ruleRequireBegin, ruleRequire.end());
@@ -449,6 +438,12 @@ namespace ztl
 
 		wstring GeneralParser::GetParserInfo(ParserState& state) const
 		{
+			wcout << L"nodeIndex:" << parserStates.front().currentNodeIndex << endl;
+			wcout << L"tokenIndex:" << parserStates.front().tokenIndex << L" token: " << tokenPool[parserStates.front().tokenIndex]->GetTokenInfo() << endl;
+			wcout << L"currentStack:" << accumulate(parserStates.front().rulePathStack.begin(), parserStates.front().rulePathStack.end(), wstring(), [](const wstring& sum, const wstring& value)
+			{
+				return sum + L" " + value;
+			}) << endl;
 			return L" current rule Path" + GetRulePathInfo(state) +
 				L"current token info" + tokenPool[state.tokenIndex]->GetTokenInfo() +
 				L"current creatNodeStack: " + GetCreatNodeStackInfo(state);
