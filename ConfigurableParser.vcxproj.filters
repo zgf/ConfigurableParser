@@ -29,9 +29,6 @@
     <Filter Include="Lib\ZTL">
       <UniqueIdentifier>{a415d544-e0c7-4843-8f23-09c5301e2018}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Template">
-      <UniqueIdentifier>{a8b83686-80e8-42ad-b341-ad5a9b251026}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -130,8 +127,11 @@
     <ClCompile Include="Source\GenerateNodeDefineModule.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralReflectionObjectModulecpp">
+    <ClCompile Include="Source\GeneralReflectionObjectModule.cpp">
       <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Include\JsonParser.cpp">
+      <Filter>Source\AInclude</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +189,6 @@
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Template\PDATemplate.hpp">
-      <Filter>Source\Template</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Include\GeneralParser.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
@@ -204,7 +201,7 @@
     <ClInclude Include="Source\Include\GeneralParserFile.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\JsonParser.hpp">
+    <ClInclude Include="Source\Include\JsonParser.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

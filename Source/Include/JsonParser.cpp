@@ -1,116 +1,10 @@
-#include <memory>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <iostream>
-#include <assert.h>
-using std::pair;
-using std::wstring;
-using std::shared_ptr;
-using std::vector;
-using std::unordered_map;
-using std::wifstream;
-using std::make_shared;
-#include "GeneralTableDefine.h"
+#include "Include/stdafx.h"
 
-#include "GeneralTableWriter.h"
-
+#include "JsonParser.h"
 namespace ztl
 {
 	namespace json
 	{
-		struct Object;
-		struct ObjectField;
-		struct Array;
-		struct Number;
-		struct String;
-		struct Literal;
-
-		struct Node
-		{
-			class IVisitor
-			{
-			public:
-				virtual void		Visit(Object* node) = 0;
-				virtual void		Visit(ObjectField* node) = 0;
-				virtual void		Visit(Array* node) = 0;
-				virtual void		Visit(Number* node) = 0;
-				virtual void		Visit(String* node) = 0;
-				virtual void		Visit(Literal* node) = 0;
-			};
-			virtual void									Accept(IVisitor*)
-			{
-			}
-		};
-
-		struct Literal: public Node
-		{
-			enum class Value
-			{
-				True,
-				False,
-				Null,
-			};
-
-			Value    value;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
-		struct String: public Node
-		{
-			wstring    content;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
-		struct Number: public Node
-		{
-			wstring    content;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
-		struct Array: public Node
-		{
-			vector<shared_ptr<Node>>    items;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
-		struct ObjectField: public Node
-		{
-			wstring    name;
-			shared_ptr<Node>    value;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
-		struct Object: public Node
-		{
-			vector<shared_ptr<ObjectField>>    fields;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
 		int WstringToEnumItem(const wstring& value)
 		{
 			static unordered_map<wstring, int> signMap =
@@ -284,6 +178,42 @@ namespace ztl
 			assert(objectMap.find(name) != objectMap.end());
 			return objectMap[name]();
 		}
+		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+		{
+			assert(classObject != nullptr);
+			assert(classNode != nullptr);
+			auto className = classNode->GetName();
+			for(auto&& iter : classNode->GetFieldMap())
+			{
+				auto fieldName = iter.first;
+				for(auto&& nodeIter : iter.second)
+				{
+					auto fieldNode = parser.GetNonTermNodeByIndex(nodeIter);
+					auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
+					parser.SaveHeterogeneousNode(fieldObject);
+					ReflectionBuidler(className, fieldName, classObject.get(), fieldObject.get());
+					GeneralHeterogeneousParserTree(parser, fieldNode, fieldObject);
+				}
+			}
+			for(auto&&iter : classNode->GetTermMap())
+			{
+				auto fieldName = iter.first;
+				for(auto&& nodeIter : iter.second)
+				{
+					ReflectionBuidler(className, fieldName, classObject.get(), parser.GetTermNodeByIndex(nodeIter));
+				}
+			}
+		}
+
+		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root)
+		{
+			assert(root != nullptr);
+			auto rootObject = ReflecteObjectByName(root->GetName());
+			parser.SaveHeterogeneousNode(rootObject);
+			GeneralHeterogeneousParserTree(parser, root, rootObject);
+			return rootObject;
+		}
+
 		shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable()
 		{
 			ztl::general_parser::GeneralTableWriter writer;
@@ -293,9 +223,7 @@ namespace ztl
 
 				.Info(LR"(filename)", LR"(Source\Include\JsonParser)")
 
-				.Info(LR"(include)", LR"(GeneralTableDefine.h)")
-
-				.Info(LR"(include)", LR"(GeneralTableWriter.h)")
+				.Info(LR"(include)", LR"(Include/stdafx.h)")
 
 				.Info(LR"(namespace)", LR"(ztl)")
 
@@ -424,26 +352,41 @@ namespace ztl
 				.ReturnType(ztl::general_parser::Normal(L"Node"))
 
 				|
+				(
+
 				ztl::general_parser::GrammarSymbol(L"STRING")[L"content"]
 
+				)
 				.Create(ztl::general_parser::Normal(L"String"))
 
 				|
+				(
+
 				ztl::general_parser::GrammarSymbol(L"NUMBER")[L"content"]
 
+				)
 				.Create(ztl::general_parser::Normal(L"Number"))
 
-				| ztl::general_parser::GrammarSymbol(L"TRUEVALUE")
+				|
+				(
+				ztl::general_parser::GrammarSymbol(L"TRUEVALUE")
+				)
 				.Create(ztl::general_parser::Normal(L"Literal"))
 
 				.Setter(L"value", L"True")
 
-				| ztl::general_parser::GrammarSymbol(L"FALSEVALUE")
+				|
+				(
+				ztl::general_parser::GrammarSymbol(L"FALSEVALUE")
+				)
 				.Create(ztl::general_parser::Normal(L"Literal"))
 
 				.Setter(L"value", L"False")
 
-				| ztl::general_parser::GrammarSymbol(L"NULLVALUE")
+				|
+				(
+				ztl::general_parser::GrammarSymbol(L"NULLVALUE")
+				)
 				.Create(ztl::general_parser::Normal(L"Literal"))
 
 				.Setter(L"value", L"Null")
@@ -457,10 +400,13 @@ namespace ztl
 				.ReturnType(ztl::general_parser::Normal(L"ObjectField"))
 
 				|
+				(
+
 				ztl::general_parser::GrammarSymbol(L"STRING")[L"name"]
 				+ ztl::general_parser::GrammarSymbol(L"COLON") +
 				ztl::general_parser::GrammarSymbol(L"JValue")[L"value"]
 
+				)
 				.Create(ztl::general_parser::Normal(L"ObjectField"))
 
 				)
@@ -471,11 +417,14 @@ namespace ztl
 				.Name(L"JObject")
 				.ReturnType(ztl::general_parser::Normal(L"Object"))
 
-				| ztl::general_parser::GrammarSymbol(L"OBJOPEN") +
+				|
+				(
+				ztl::general_parser::GrammarSymbol(L"OBJOPEN") +
 				ztl::general_parser::GrammarSymbol(L"JField")[L"fields"]
 				+ ztl::general_parser::GrammarSymbol(L"COMMA") + ~(*(
 				ztl::general_parser::GrammarSymbol(L"JField")[L"fields"]
 				)) + ztl::general_parser::GrammarSymbol(L"OBJCLOSE")
+				)
 				.Create(ztl::general_parser::Normal(L"Object"))
 
 				)
@@ -486,11 +435,14 @@ namespace ztl
 				.Name(L"JArray")
 				.ReturnType(ztl::general_parser::Normal(L"Array"))
 
-				| ztl::general_parser::GrammarSymbol(L"ARROPEN") +
+				|
+				(
+				ztl::general_parser::GrammarSymbol(L"ARROPEN") +
 				ztl::general_parser::GrammarSymbol(L"JValue")[L"items"]
 				+ ztl::general_parser::GrammarSymbol(L"COMMA") + ~(*(
 				ztl::general_parser::GrammarSymbol(L"JValue")[L"items"]
 				)) + ztl::general_parser::GrammarSymbol(L"ARRCLOSE")
+				)
 				.Create(ztl::general_parser::Normal(L"Array"))
 
 				)

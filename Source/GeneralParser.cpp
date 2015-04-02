@@ -84,6 +84,10 @@ namespace ztl
 				throw ztl_exception(L"Parser Result Can't convergence!" + GetParserInfo(parserStates.front()));
 			}
 		}
+		void GeneralParser::SaveHeterogeneousNode(const shared_ptr<void>& node)
+		{
+			heterogeneousNodePool.emplace_back(node);
+		}
 		vector<GeneralTreeNode*> GeneralParser::GenerateIsomorphismParserTree()
 		{
 			assert(!this->tokenPool.empty());

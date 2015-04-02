@@ -13,7 +13,7 @@ namespace ztl
 		{
 			generalParser->BuildParser();
 			generalParser->GenerateIsomorphismParserTree();
-			auto parserResult = generalParser->GeneralHeterogeneousParserTree();
+			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
 			return shared_ptr<GeneralTableDefine>(*(std::shared_ptr<GeneralTableDefine>*)(&parserResult));
 		}
 		wstring GeneralParserFile::GenerateModulesWithNamespace(const wstring& content, const vector<wstring>& namespaces)
@@ -49,48 +49,85 @@ namespace ztl
 				using std::unordered_map;
 				using std::wifstream;
 				using std::make_shared;
+				#include "GeneralTableDefine.h"
+				#include "GeneralTableWriter.h"
+				#include "GeneralTreeNode.h"
+				#include "GeneralParser.h"
 				)";
 		}
-		wstring GeneralParserFile::GenerateModulesInclude(const vector<wstring>& includes)
+		
+		wstring GeneralParserFile::GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes)
+		{
+			const wstring endInclude =
+				LR"(#include ")" + GetFileLeafName(filename) + LR"(.h")";
+			return GenerateModuleInclude(endInclude, includes);
+		}
+		wstring GeneralParserFile::GenerateModuleInclude(const wstring& endInclude, const vector<wstring>& includes)
 		{
 			const wstring templateString = L"#include \"$<FileName>\"\n";
-			return accumulate(includes.begin(), includes.end(), GetPreDefineInclude(), [&templateString](const wstring& sum, const wstring& value)
+			return accumulate(includes.begin(), includes.end(), wstring(), [&templateString](const wstring& sum, const wstring& value)
 			{
 				generator::MarcoGenerator generator(templateString, { L"$<FileName>" });
 				return sum + generator.GenerateText({ value }).GetMacroResult() + L"\n";
-			});
+			})+endInclude;
 		}
-		wstring GeneralParserFile::GetGenerateModuleBody(GeneralTableDefine* table, SymbolManager*manager)
+		wstring GeneralParserFile::GenerateHeadModuleInclude()
+{
+			return 	GetPreDefineInclude();
+		}
+		wstring GeneralParserFile::GenerateHeadModuleContent(GeneralTableDefine* table, SymbolManager*manager,const vector<wstring>& namespaces)
+		{
+			auto headModule = GetGenerateHeadModuleBody(table, manager);
+			headModule = GenerateModulesWithNamespace(headModule, namespaces);
+			auto headInclude = GenerateHeadModuleInclude();
+			return headInclude + headModule;
+		}
+		wstring GeneralParserFile::GenerateImpModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& includes, const wstring filename, const vector<wstring>& namespaces)
+		{
+			auto impModule = GetGenerateImpModuleBody(table, manager);
+			impModule = GenerateModulesWithNamespace(impModule, namespaces);
+			auto impInclude = GenerateImpModuleInclude(filename, includes);
+			return impInclude + impModule;
+		}
+		wstring GeneralParserFile::GetGenerateHeadModuleBody(GeneralTableDefine* table, SymbolManager*manager)
 		{
 			auto nodeDefineModule = GetNodeDefineModule(table, manager);
-			auto reflectModule = GetReflectionModule(manager);
-			auto serialzeCoreModule = SerializeEBNFCoreModule(table);
-			return nodeDefineModule + reflectModule + serialzeCoreModule;
+			auto reflectModuleHead = GetReflectionModuleHead();
+			auto serialCoreModuleHead = SerializeEBNFCoreModuleHead();
+			return nodeDefineModule+serialCoreModuleHead+reflectModuleHead;
 		}
+		wstring GeneralParserFile::GetGenerateImpModuleBody(GeneralTableDefine* table, SymbolManager*manager)
+		{
+			auto reflectModule = GetReflectionModuleImp(manager);
+			auto serialzeCoreModule = SerializeEBNFCoreModuleImp(table);
+			return reflectModule + serialzeCoreModule;
+		}
+
 		void GeneralParserFile::GenerateSpecialParserFile()
 		{
 			auto table = GetGenerateParserTableDefine();
 			SymbolManager manager(table);
 			ValidateGeneratorCoreSemantic(&manager);
-			auto modules = GetGenerateModuleBody(table.get(), &manager);
 
 			auto namespaces = GetGenerateNameSapce(&manager);
-			auto body = GenerateModulesWithNamespace(modules, namespaces);
-
 			auto includes = GetGenerateInclude(&manager);
-			auto include = GenerateModulesInclude(includes);
-
-			auto content = include + body;
 			auto filename = GetGenerateFileName(&manager);
-			CreateFile(filename, content);
-		}
+		
+			auto implContent = GenerateImpModuleContent(table.get(), &manager, includes, filename, namespaces);
+			auto headContent = GenerateHeadModuleContent(table.get(), &manager, namespaces);
 
+			auto headFilename = filename + L".h";
+			auto implFilename = filename + L".cpp";
+			
+			CreateFile(headFilename, headContent);
+			CreateFile(implFilename, implContent);
+		}
 		wstring GeneralParserFile::GetGenerateFileName(SymbolManager* manager)
 		{
 			assert(generalParser != nullptr);
 			auto result = manager->GetCacheValueByProperty(L"filename");
 			assert(result.size() <= 1);
-			return result.empty() ? wstring(L"GenerateParserFile.hpp") : result[0] + L".hpp";
+			return result.empty() ? wstring(L"GenerateParserFile") : result[0];
 		}
 		vector<wstring> GeneralParserFile::GetGenerateNameSapce(SymbolManager* manager)
 		{
@@ -116,6 +153,15 @@ namespace ztl
 			wofstream output(fileName);
 			output.write(content.c_str(), content.size());
 
+		}
+		wstring GeneralParserFile::GetFileLeafName(const wstring & fileName)
+		{
+			int backslashResult =  fileName.rfind(L"/");
+			int slashResult = fileName.rfind(L"\\");
+			assert(backslashResult != slashResult);
+			auto slashPosition = std::max(backslashResult, slashResult);
+			auto leaf = fileName.substr(slashPosition + 1);
+			return leaf;
 		}
 	}
 }

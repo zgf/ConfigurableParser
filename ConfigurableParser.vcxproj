@@ -182,10 +182,11 @@
     <ClCompile Include="Source\GeneralSerialzeCoreModule.cpp" />
     <ClCompile Include="Source\GeneralPDAGraph.cpp" />
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
-    <ClCompile Include="Source\GeneralReflectionObjectModulecpp" />
+    <ClCompile Include="Source\GeneralReflectionObjectModule.cpp" />
     <ClCompile Include="Source\GeneralTreeNode.cpp" />
     <ClCompile Include="Source\GenerateNodeDefineModule.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />
+    <ClCompile Include="Source\Include\JsonParser.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ParserSymbol.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
@@ -220,11 +221,10 @@
     <ClInclude Include="Source\Include\GeneralTreeNode.h" />
     <ClInclude Include="Source\Include\GeneralTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableWriter.h" />
-    <ClInclude Include="Source\Include\JsonParser.hpp" />
+    <ClInclude Include="Source\Include\JsonParser.h" />
     <ClInclude Include="Source\Include\ParserSymbol.h" />
     <ClInclude Include="Source\Include\stdafx.h" />
     <ClInclude Include="Source\Include\SymbolManager.h" />
-    <ClInclude Include="Source\Template\PDATemplate.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

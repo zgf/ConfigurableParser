@@ -716,8 +716,8 @@ namespace ztl
 				}
 			}
 		}
-
-		void GeneralParser::GeneralHeterogeneousParserTree(GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+	
+		void GeneralHeterogeneousParserTree(GeneralParser& parser, GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 		{
 			assert(classObject != nullptr);
 			assert(classNode != nullptr);
@@ -727,11 +727,11 @@ namespace ztl
 				auto fieldName = iter.first;
 				for(auto&& nodeIter : iter.second)
 				{
-					auto fieldNode = GetNonTermNodeByIndex(nodeIter);
+					auto fieldNode = parser.GetNonTermNodeByIndex(nodeIter);
 					auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
-					heterogeneousNodePool.emplace_back(fieldObject);
+					parser.SaveHeterogeneousNode(fieldObject);
 					ReflectionBuidler(className, fieldName, classObject.get(), fieldObject.get());
-					GeneralHeterogeneousParserTree(fieldNode, fieldObject);
+					GeneralHeterogeneousParserTree(parser,fieldNode, fieldObject);
 				}
 			}
 			for(auto&&iter : classNode->GetTermMap())
@@ -739,22 +739,23 @@ namespace ztl
 				auto fieldName = iter.first;
 				for(auto&& nodeIter : iter.second)
 				{
-					ReflectionBuidler(className, fieldName, classObject.get(), GetTermNodeByIndex(nodeIter));
+					ReflectionBuidler(className, fieldName, classObject.get(), parser.GetTermNodeByIndex(nodeIter));
 				}
 			}
 		}
-		shared_ptr<void>	GeneralParser::GeneralHeterogeneousParserTree()
-		{
-			return GeneralHeterogeneousParserTree(generalTreeRoot);
-		}
-		shared_ptr<void> GeneralParser::GeneralHeterogeneousParserTree(GeneralTreeNode* root)
+	
+		shared_ptr<void> GeneralHeterogeneousParserTree(GeneralParser& parser,GeneralTreeNode* root)
 		{
 			assert(root != nullptr);
 			auto rootObject = ReflecteObjectByName(root->GetName());
-			heterogeneousNodePool.emplace_back(rootObject);
-			GeneralHeterogeneousParserTree(root, rootObject);
+			parser.SaveHeterogeneousNode(rootObject);
+			GeneralHeterogeneousParserTree(parser,root, rootObject);
 			DealWithQuotation((GeneralTableDefine*)rootObject.get());
 			return rootObject;
+		}
+		shared_ptr<void>	GeneralHeterogeneousParserTree(GeneralParser& parser)
+		{
+			return GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 		}
 	}
 }

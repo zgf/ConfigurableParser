@@ -20,14 +20,14 @@ namespace ztl
 		struct ParserState
 		{
 		public:
-			ParserState()  = default;
+			ParserState() = default;
 			~ParserState() noexcept = default;
-			ParserState(ParserState&&)  = default;
-			ParserState(const ParserState&)  = default;
-			ParserState& operator=(ParserState&&)  = default;
-			ParserState& operator=(const ParserState&)   = default;
-			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule, GeneralTreeNode* initCreateNode,const EdgeInfo& _edgeInfo) :
-				tokenIndex(_tokenIndex), currentNodeIndex(_currentNodeIndex),edgeInfo(_edgeInfo)
+			ParserState(ParserState&&) = default;
+			ParserState(const ParserState&) = default;
+			ParserState& operator=(ParserState&&) = default;
+			ParserState& operator=(const ParserState&) = default;
+			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule, GeneralTreeNode* initCreateNode, const EdgeInfo& _edgeInfo) :
+				tokenIndex(_tokenIndex), currentNodeIndex(_currentNodeIndex), edgeInfo(_edgeInfo)
 			{
 				createdNodeStack.emplace_back(initCreateNode);
 				rulePathStack.emplace_back(initRule);
@@ -54,7 +54,7 @@ namespace ztl
 			{
 				return edgeInfo.rightRecursion;
 			}
-		
+
 		public:
 			vector<GeneralTreeNode*>			 createdNodeStack;
 			vector<wstring>						 rulePathStack;
@@ -68,17 +68,19 @@ namespace ztl
 			GeneralParser() = delete;
 			GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine);
 			~GeneralParser() noexcept = default;
-			GeneralParser(GeneralParser&&)  = default;
-			GeneralParser(const GeneralParser&)  = default;
-			GeneralParser& operator=(GeneralParser&&)  = default;
-			GeneralParser& operator=(const GeneralParser&)   = default;
+			GeneralParser(GeneralParser&&) = default;
+			GeneralParser(const GeneralParser&) = default;
+			GeneralParser& operator=(GeneralParser&&) = default;
+			GeneralParser& operator=(const GeneralParser&) = default;
 		public:
 			void				BuildParser();
 			vector<GeneralTreeNode*> GenerateIsomorphismParserTree();
-			shared_ptr<void>	GeneralHeterogeneousParserTree(GeneralTreeNode* root);
-			shared_ptr<void>	GeneralHeterogeneousParserTree();
+
 			GeneralTreeNode* GetGeneralTreeRoot() const;
 			SymbolManager* GetManager() const;
+			void SaveHeterogeneousNode(const shared_ptr<void>& node);
+			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
+			TokenInfo* GetTermNodeByIndex(int index)const;
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
 			vector<EdgeInfo> TerminateResolve(ParserState& state);
@@ -86,7 +88,7 @@ namespace ztl
 			void HandleRightRecursionEdge(ParserState& state);
 			void HandleRightRecursionEdge(PDAEdge* edge, vector<wstring>& rulePathStack, vector<GeneralTreeNode*>& createdNodeStack, bool isRightRecursionEdge);
 			vector<EdgeInfo> CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state);
-			pair<bool, EdgeInfo> CreateNodeResolve(const EdgeInfo& iter,const vector<GeneralTreeNode*>& createdNodeStack);
+			pair<bool, EdgeInfo> CreateNodeResolve(const EdgeInfo& iter, const vector<GeneralTreeNode*>& createdNodeStack);
 
 			void ExecuteEdgeActions(ParserState& state);
 			wstring GetRulePathInfo(ParserState& state)const;
@@ -97,13 +99,12 @@ namespace ztl
 			void	SaveEdge(deque<ParserState>& states, const vector<EdgeInfo>& edges);
 			wstring GetParserInfo(ParserState& state)const;
 			unordered_map<wstring, GeneralTreeNode> InitTreeNodeMap();
-			unordered_map<wstring,vector<wstring>> InintChoiceFiledMap();
+			unordered_map<wstring, vector<wstring>> InintChoiceFiledMap();
 			vector<GeneralTreeNode*> SaveCurrentStack(const vector<GeneralTreeNode*>& current);
-			void GeneralHeterogeneousParserTree(GeneralTreeNode* classNode, shared_ptr<void>& classObject);
-			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
-			TokenInfo* GetTermNodeByIndex(int index)const;
+
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
 			void CheckParserResultConvergence();
+
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  nodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
@@ -118,7 +119,8 @@ namespace ztl
 			shared_ptr<GeneralJumpInfoTable>	 jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
 			shared_ptr<GeneralTableDefine>		 tableDefine;
-
 		};
+		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root);
+		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser);
 	}
 }

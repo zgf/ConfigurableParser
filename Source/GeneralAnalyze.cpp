@@ -992,10 +992,9 @@ namespace ztl
 			CollectAndValidateTypeDefine(manager);
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);
-			//ValidateGeneratePathStructure(manager, pathMap);
+			ValidateGeneratePathStructure(manager, pathMap);
 			AnalyzeClassChoiceField(manager);
 			GetStartSymbol(manager);
-			//manager->CacheNameAndTagMap();
 			//LogGeneratePath(L"test.txt", pathMap);
 		}
 		class GetStartSymbolVisitor:public GeneralGrammarTypeDefine::IVisitor

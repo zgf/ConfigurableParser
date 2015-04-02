@@ -25,7 +25,7 @@ namespace ztl
 			using RuleNameToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
 			using TokenNameToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
 			using RegexStringToSymbolMapType = unordered_map<wstring, ParserSymbol*>;
-			using DefSymbolToRuleNodeMapType = unordered_map< ParserSymbol*,GeneralRuleDefine*>;
+			using DefSymbolToRuleNodeMapType = unordered_map< ParserSymbol*, GeneralRuleDefine*>;
 			using RuleNodeToDefSymbolMapType = unordered_map< GeneralRuleDefine*, ParserSymbol*>;
 			using GrammarNodeToDefSymbolMapType = unordered_map<GeneralGrammarTypeDefine*, ParserSymbol*>;
 			//using AbsoluteNameToSymbolType = unordered_map<wstring, ParserSymbol*>;
@@ -35,7 +35,7 @@ namespace ztl
 			shared_ptr<GeneralTableDefine>   table;
 			vector<shared_ptr<ParserSymbol>> createdSymbolList;//符号的对象池
 			ParserSymbol*					 globalSymbol;//根符号
-			ParserSymbol*					 tokenTypeSymbol;//token类型符号 
+			ParserSymbol*					 tokenTypeSymbol;//token类型符号
 			//作用域内类型到符号的映射.因为Symbol->type类型被擦除了,所以这样绑定后,下次不用使用visitor FindType去查看实际类型了.
 			vector<wstring>						 startRuleList;
 			BaseSymbolToDeriveSymbolMapType		 baseSymbolToDeriveMap;//类和类的派生类继承链收集
@@ -52,7 +52,6 @@ namespace ztl
 			RegexStringToSymbolMapType			 regexSymbolMap;
 			unordered_map<wstring, vector<wstring>>propertyToValueMap;//headInfoMap property value;
 
-			
 		public:
 			SymbolManager();
 			SymbolManager(const shared_ptr<GeneralTableDefine>& _table);
@@ -65,7 +64,6 @@ namespace ztl
 			ParserSymbol* GetGlobalSymbol();
 			ParserSymbol* GetTokenTypeSymbol();
 
-
 			ParserSymbol* AddClass(const wstring& name, ParserSymbol* baseType, ParserSymbol* parentType);
 			ParserSymbol* AddField(const wstring& name, ParserSymbol* fieldType, ParserSymbol* parentType);
 			ParserSymbol* AddEnum(const wstring& name, ParserSymbol* parentType);
@@ -76,10 +74,10 @@ namespace ztl
 			ParserSymbol* CreatASymbol(SymbolType type,
 				const wstring & name, ParserSymbol * parent, ParserSymbol * descriptor);
 			ParserSymbol* CreatASymbol(SymbolType type,
-				const wstring & name, ParserSymbol * parent, ParserSymbol * descriptor,bool ignore);
-			void		  CacheTypeObjectSymbolMap( GeneralTypeObject* type, ParserSymbol* typeSymbol);
-			ParserSymbol* GetCacheTypeObjectSymbol( GeneralTypeObject* type);
-			
+				const wstring & name, ParserSymbol * parent, ParserSymbol * descriptor, bool ignore);
+			void		  CacheTypeObjectSymbolMap(GeneralTypeObject* type, ParserSymbol* typeSymbol);
+			ParserSymbol* GetCacheTypeObjectSymbol(GeneralTypeObject* type);
+
 			void		  CacheTypeDefineAndSymbolMap(GeneralTypeDefine* type, ParserSymbol* typeSymbol);
 			ParserSymbol* GetCacheSymbolByTypeDefine(GeneralTypeDefine* type);
 			GeneralTypeDefine* GetCacheTypeDefineBySymbol(ParserSymbol* type);
@@ -89,9 +87,7 @@ namespace ztl
 
 			void CacheRuleDefineAndSymbolMap(GeneralRuleDefine* ruleDef, ParserSymbol* symbol);
 			GeneralRuleDefine* GetCacheRuleDefineBySymbol(ParserSymbol* symbol);
-			
 
-			
 			ParserSymbol* GetCacheRuleNameToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheTokenNameToSymbol(const wstring& name)const;
 			ParserSymbol* GetCacheRegexStringToSymbol(const wstring& name)const;
@@ -113,8 +109,8 @@ namespace ztl
 			void				  CachePropertyToValueMap(const wstring& property, const vector<wstring>& value);
 			void				  CachePropertyToValueMap(const wstring& property, const wstring& value);
 			vector<wstring>		  GetCacheValueByProperty(const wstring& property)const;
-			void				  CacheBaseSymbolToDeriveMap( ParserSymbol* baseSymbol,  ParserSymbol* deriveSymbol);
-			vector<ParserSymbol*>		  GetCacheDeriveByBaseSymbol( ParserSymbol* baseSymbol)const;
+			void				  CacheBaseSymbolToDeriveMap(ParserSymbol* baseSymbol, ParserSymbol* deriveSymbol);
+			vector<ParserSymbol*>		  GetCacheDeriveByBaseSymbol(ParserSymbol* baseSymbol)const;
 			vector<ParserSymbol*>		  GetCacheAllDeriveByBaseSymbol(ParserSymbol* baseSymbol)const;
 
 			unordered_map<wstring, vector<wstring>>& GetPropertyToValueMap();

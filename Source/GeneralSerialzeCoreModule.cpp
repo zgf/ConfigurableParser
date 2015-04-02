@@ -260,10 +260,13 @@ namespace ztl
 				node->grammar->Accept(this);
 				const wstring templateString =
 					LR"(
+					(
+						$<Statement>
+					)
 					.Create($<ReturnType>)
 					)";
-				MarcoGenerator generator(templateString, { L"$<ReturnType>" });
-				result += generator.GenerateText({ createType }).GetMacroResult();
+				MarcoGenerator generator(templateString, { L"$<Statement>",L"$<ReturnType>" });
+				result = generator.GenerateText({ result, createType }).GetMacroResult();
 			}
 			void								Visit(GeneralGrammarAlternationTypeDefine* node)
 			{
@@ -327,9 +330,18 @@ namespace ztl
 				return sum + generator.GenerateText({ namespacePrefix,rule->name,returnType,grammarList }).GetMacroResult();
 			});
 		}
+		wstring SerializeEBNFCoreModuleHead()
+		{
+			wstring templateString =
+				LR"(
+				shared_ptr<$<Namespace>GeneralTableDefine> BootStrapDefineTable();
+				)";
+			ztl::generator::MarcoGenerator generator(templateString, { L"$<Namespace>" });
+			return generator.GenerateText({ namespacePrefix }).GetMacroResult();
+		}
 
 
-		wstring SerializeEBNFCoreModule(void* tableDefine)
+		wstring SerializeEBNFCoreModuleImp(void* tableDefine)
 		{
 			auto table = static_cast<ztl::general_parser::GeneralTableDefine*>(tableDefine);
 			wstring templateString =

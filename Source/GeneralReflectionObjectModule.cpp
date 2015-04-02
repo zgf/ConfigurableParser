@@ -10,9 +10,10 @@ namespace ztl
 {
 	namespace general_parser
 	{
+		static const wstring namespacePrefix = LR"(ztl::general_parser::)";
 		wstring GetArrayTypeFiledReflectTemplate(const wstring& basicTemplateString, ParserSymbol* fieldTypeSymbol)
 		{
-			const wstring tokenTypeString = L"ztl::general_parser::TokenInfo";
+			const wstring tokenTypeString = namespacePrefix +L"TokenInfo";
 			assert(fieldTypeSymbol->IsArrayType());
 			auto elementTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
 			static unordered_map<SymbolType, wstring> signMap =
@@ -36,7 +37,7 @@ namespace ztl
 		}
 		wstring GetNonArrayTypeFiledReflectTemplate(const wstring& basicTemplateString, ParserSymbol* fieldTypeSymbol)
 		{
-			const wstring tokenTypeString = L"ztl::general_parser::TokenInfo";
+			const wstring tokenTypeString = namespacePrefix + L"TokenInfo";
 			assert(!fieldTypeSymbol->IsArrayType());
 			static unordered_map<SymbolType, wstring> signMap =
 			{
@@ -222,12 +223,69 @@ namespace ztl
 			ztl::generator::MarcoGenerator generator(templateString, { L"$<initEnumList>" });
 			return generator.GenerateText({ initEnumList }).GetMacroResult();
 		}
-		wstring GetReflectionModule(SymbolManager* manager)
+		wstring GetReflectionExecuteString()
+		{
+		 
+		wstring templateString =
+			LR"(
+			void GeneralHeterogeneousParserTree($<NameSpace>GeneralParser& parser, $<NameSpace>GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+			{
+				assert(classObject != nullptr);
+				assert(classNode != nullptr);
+				auto className = classNode->GetName();
+				for(auto&& iter : classNode->GetFieldMap())
+				{
+					auto fieldName = iter.first;
+					for(auto&& nodeIter : iter.second)
+					{
+						auto fieldNode = parser.GetNonTermNodeByIndex(nodeIter);
+						auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
+						parser.SaveHeterogeneousNode(fieldObject);
+						ReflectionBuidler(className, fieldName, classObject.get(), fieldObject.get());
+						GeneralHeterogeneousParserTree(parser,fieldNode, fieldObject);
+					}
+				}
+				for(auto&&iter : classNode->GetTermMap())
+				{
+					auto fieldName = iter.first;
+					for(auto&& nodeIter : iter.second)
+					{
+						ReflectionBuidler(className, fieldName, classObject.get(), parser.GetTermNodeByIndex(nodeIter));
+					}
+				}
+			}
+	
+			shared_ptr<void> GeneralHeterogeneousParserTree($<NameSpace>GeneralParser& parser,$<NameSpace>GeneralTreeNode* root)
+			{
+				assert(root != nullptr);
+				auto rootObject = ReflecteObjectByName(root->GetName());
+				parser.SaveHeterogeneousNode(rootObject);
+				GeneralHeterogeneousParserTree(parser,root, rootObject);
+				return rootObject;
+			}
+			)";
+		ztl::generator::MarcoGenerator generator(templateString, { L"$<NameSpace>" });
+		return generator.GenerateText({ namespacePrefix }).GetMacroResult();
+		}
+		wstring GetReflectionModuleHead()
+		{
+			
+			wstring templateString =
+			LR"(
+			void ReflectionBuidler(const wstring& className,const wstring& fieldName,void* classObject,void* valueObject);
+			shared_ptr<void> ReflecteObjectByName(const wstring& name);
+			shared_ptr<void> GeneralHeterogeneousParserTree($<NameSpace>GeneralParser& parser,$<NameSpace>GeneralTreeNode* root);
+			)";
+			ztl::generator::MarcoGenerator generator(templateString, { L"$<NameSpace>" });
+			return generator.GenerateText({ namespacePrefix }).GetMacroResult();
+		}
+		wstring GetReflectionModuleImp(SymbolManager* manager)
 		{
 			auto enumToStringFunction = GetWStringToEnumFunctionString(manager);
 			auto reflectionBuilderFunction = GetReflectBuilderFunctionString(manager);
 			auto objectReflectFunction = GetOjectReflectioFunctionString(manager);
-			return enumToStringFunction + reflectionBuilderFunction + objectReflectFunction;
+			auto relectionExecuteFunction = GetReflectionExecuteString();
+			return enumToStringFunction + reflectionBuilderFunction + objectReflectFunction + relectionExecuteFunction;
 		}
 	}
 }

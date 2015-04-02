@@ -6,6 +6,7 @@ namespace ztl
 	{
 		class GeneralParser;
 		struct GeneralTableDefine;
+		class SymbolManager;
 		//节点定义文件的生成,节点反射函数的生成.
 		//要生成的,节点定义,节点反射 节点序列化三个模块.放到同一个.hpp文件里面去
 		//
@@ -22,24 +23,32 @@ namespace ztl
 		public:
 			void				GenerateSpecialParserFile();
 			void CreateFile(const wstring& fileName, const wstring& content);
-
+			wstring GetFileLeafName(const wstring& fileName);
 		private:
-			wstring				  GetGenerateModuleBody(GeneralTableDefine* table, SymbolManager*manager);
+			wstring GetGenerateImpModuleBody(GeneralTableDefine* table, SymbolManager*manager);
+			wstring GetGenerateHeadModuleBody(GeneralTableDefine* table, SymbolManager*manager);
 			wstring GetGenerateFileName(SymbolManager* manager);
 			vector<wstring> GetGenerateNameSapce(SymbolManager* manager);
 			wstring GetGenerateClassPrefix(SymbolManager* manager);
 			vector<wstring> GetGenerateInclude(SymbolManager* manager);
 			shared_ptr<GeneralTableDefine>	GetGenerateParserTableDefine();
 			wstring GenerateModulesWithNamespace(const wstring& content,const vector<wstring>& namespaces);
-			wstring GenerateModulesInclude(const vector<wstring>& includes);
+			wstring GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes);
+			wstring GenerateModuleInclude(const wstring& endInclude, const vector<wstring>& includes);
+			wstring GenerateHeadModuleInclude();
+			wstring GenerateHeadModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& namespaces);
+			wstring GenerateImpModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& includes, const wstring filename, const vector<wstring>& namespaces);
+
 		private:
 			shared_ptr<GeneralParser>	generalParser;
 			
 
 		};
 		wstring GetNodeDefineFileInclude(SymbolManager* manager);
-		wstring GetReflectionModule(SymbolManager* manager);
+		wstring GetReflectionModuleImp(SymbolManager* manager);
+		wstring SerializeEBNFCoreModuleHead();
+		wstring GetReflectionModuleHead();
 		wstring GetNodeDefineModule(GeneralTableDefine* table, SymbolManager*manager);
-		wstring SerializeEBNFCoreModule(void* tableDefine);
+		wstring SerializeEBNFCoreModuleImp(void* tableDefine);
 	}
 }

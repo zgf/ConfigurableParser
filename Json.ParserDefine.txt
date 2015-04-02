@@ -1,6 +1,5 @@
 filename : "Source\Include\JsonParser";
-include : "GeneralTableDefine.h";
-include : "GeneralTableWriter.h";
+include : "Include/stdafx.h";
 namespace : "ztl";
 namespace : "json";
 class Node
