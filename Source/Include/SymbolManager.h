@@ -51,7 +51,7 @@ namespace ztl
 			GrammarNodeToDefSymbolMapType		 grammarNodeDefSymbolMap;
 			RegexStringToSymbolMapType			 regexSymbolMap;
 			unordered_map<wstring, vector<wstring>>propertyToValueMap;//headInfoMap property value;
-
+			unordered_map<wstring, vector<wstring>>	choiceMap;//可选字段的映射 绝对class名,到字段
 		public:
 			SymbolManager();
 			SymbolManager(const shared_ptr<GeneralTableDefine>& _table);
@@ -116,6 +116,10 @@ namespace ztl
 			unordered_map<wstring, vector<wstring>>& GetPropertyToValueMap();
 			const TypeDefineToSymbolMapType& GetTypeDefSymbolMap()const;
 			const BaseSymbolToDeriveSymbolMapType&	GetbaseSymbolToDeriveMap()const;
+
+			//可选字段
+			void CacheChoiceFieldMap(const wstring& classAbsoluteName,const wstring& fieldName);
+			unordered_map<wstring, vector<wstring>>& GetChoiceFieldMap();
 		private:
 			void TryAddSubSymbol(ParserSymbol* subSymbol, ParserSymbol* parentSymbol);
 			void CacheRuleNameToSymbolMap(const wstring& name, ParserSymbol* symbol);

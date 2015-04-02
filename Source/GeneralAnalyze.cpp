@@ -985,18 +985,7 @@ namespace ztl
 			}
 		}
 
-		void ValidateGeneratorCoreSemantic(SymbolManager* manager)
-		{
-			CollectHeadInfo(manager);
-			ValidateHeadInfo(manager);
-			CollectAndValidateTypeDefine(manager);
-			ValidateGrammarNode(manager);
-			auto&& pathMap = CollectGeneratePath(manager);
-			ValidateGeneratePathStructure(manager, pathMap);
-			AnalyzeClassChoiceField(manager);
-			GetStartSymbol(manager);
-			//LogGeneratePath(L"test.txt", pathMap);
-		}
+		
 		class GetStartSymbolVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
 		private:
@@ -1199,6 +1188,38 @@ namespace ztl
 					manager->GetStartRuleList().clear();
 				}
 			}
+		}
+		void CollectChoiceFieldMap(SymbolManager*manager)
+		{
+			for(auto&& iter : manager->GetTypeDefSymbolMap())
+			{
+				ParserSymbol* typeDefSymbol = iter.second;
+				if(typeDefSymbol->IsClassType())
+				{
+					auto fieldSymbol = typeDefSymbol->GetClassAllFieldDefSymbol();
+					for(auto&& symbol : fieldSymbol)
+					{
+						if(symbol->IsChoiceFieldDef())
+						{
+							manager->CacheChoiceFieldMap(typeDefSymbol->GetName(), symbol->GetName());
+						}
+					}
+				}
+				assert(typeDefSymbol->IsClassType() || typeDefSymbol->IsEnumType());
+			}
+		}
+		void ValidateGeneratorCoreSemantic(SymbolManager* manager)
+		{
+			CollectHeadInfo(manager);
+			ValidateHeadInfo(manager);
+			CollectAndValidateTypeDefine(manager);
+			ValidateGrammarNode(manager);
+			auto&& pathMap = CollectGeneratePath(manager);
+			ValidateGeneratePathStructure(manager, pathMap);
+			AnalyzeClassChoiceField(manager);
+			GetStartSymbol(manager);
+			CollectChoiceFieldMap(manager);
+			//LogGeneratePath(L"test.txt", pathMap);
 		}
 	}
 }

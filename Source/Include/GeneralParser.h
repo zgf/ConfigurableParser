@@ -98,7 +98,7 @@ namespace ztl
 			GeneralTreeNode*	CopyTreeNode(GeneralTreeNode*);
 			void	SaveEdge(deque<ParserState>& states, const vector<EdgeInfo>& edges);
 			wstring GetParserInfo(ParserState& state)const;
-			unordered_map<wstring, GeneralTreeNode> InitTreeNodeMap();
+			unordered_map<wstring, shared_ptr<GeneralTreeNode>> InitTreeNodeMap();
 			unordered_map<wstring, vector<wstring>> InintChoiceFiledMap();
 			vector<GeneralTreeNode*> SaveCurrentStack(const vector<GeneralTreeNode*>& current);
 
@@ -119,6 +119,8 @@ namespace ztl
 			shared_ptr<GeneralJumpInfoTable>	 jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
 			shared_ptr<GeneralTableDefine>		 tableDefine;
+
+			unordered_map<wstring, shared_ptr<GeneralTreeNode>> wstringToTreeNodeMap;
 		};
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root);
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser);

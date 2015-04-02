@@ -434,5 +434,18 @@ namespace ztl
 		{
 			return ztl::LinearStringToRegexString(regex);
 		}
+		void SymbolManager::CacheChoiceFieldMap(const wstring& classAbsoluteName, const wstring& fieldName)
+		{
+			auto findIter  = choiceMap.find(classAbsoluteName);
+			if (findIter == choiceMap.end())
+			{
+				choiceMap[classAbsoluteName];
+			}
+			choiceMap[classAbsoluteName].emplace_back(fieldName);
+		}
+		unordered_map<wstring, vector<wstring>>& SymbolManager::GetChoiceFieldMap()
+		{
+			return choiceMap;
+		}
 	}
 }

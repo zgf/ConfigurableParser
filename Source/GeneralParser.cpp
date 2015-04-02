@@ -26,6 +26,7 @@ namespace ztl
 			CreateDPDAGraph(*machine.get());
 			jumpInfos = make_shared<GeneralJumpInfoTable>(machine.get());
 			CreateJumpInfoTable(*jumpInfos.get());
+			wstringToTreeNodeMap = move(InitTreeNodeMap());
 			//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 		SymbolManager* GeneralParser::GetManager() const
@@ -254,8 +255,8 @@ namespace ztl
 		pair<bool, EdgeInfo> GeneralParser::CreateNodeResolve(const
 			EdgeInfo& iter, const vector<GeneralTreeNode*>& createdNodeStack)
 		{
-			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
-			static auto chioceFiledMap = InintChoiceFiledMap();
+			auto& signMap = wstringToTreeNodeMap;
+			auto& chioceFiledMap = manager->GetChoiceFieldMap();
 			auto actions = iter.edge->GetActions();
 
 			GeneralTreeNode current = *createdNodeStack.back();
@@ -279,14 +280,14 @@ namespace ztl
 						current.SetName(actionIter.GetName());
 						if(chioceFiledMap.find(actionIter.GetName()) == chioceFiledMap.end())
 						{
-							if(!current.IsTheSameType(signMap[actionIter.GetName()]))
+							if(!current.IsTheSameType(*signMap[actionIter.GetName()]))
 							{
 								goto TestNextEdge;
 							}
 						}
 						else
 						{
-							if(!current.IsTheSameType(signMap[actionIter.GetName()], chioceFiledMap[actionIter.GetName()]))
+							if(!current.IsTheSameType(*signMap[actionIter.GetName()], chioceFiledMap[actionIter.GetName()]))
 							{
 								goto TestNextEdge;
 							}
@@ -327,8 +328,6 @@ namespace ztl
 
 		vector<EdgeInfo> GeneralParser::CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state)
 		{
-			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
-			static auto chioceFiledMap = InintChoiceFiledMap();
 
 			assert(!edges.empty());
 			vector<EdgeInfo> result;
@@ -452,14 +451,15 @@ namespace ztl
 				L"current token info" + tokenPool[state.tokenIndex]->GetTokenInfo() +
 				L"current creatNodeStack: " + GetCreatNodeStackInfo(state);
 		}
-		unordered_map<wstring, GeneralTreeNode> GeneralParser::InitTreeNodeMap()
+		unordered_map<wstring, shared_ptr<GeneralTreeNode>> GeneralParser::InitTreeNodeMap()
 		{
-			unordered_map<wstring, GeneralTreeNode> result;
+			assert(manager != nullptr);
+			unordered_map<wstring, shared_ptr<GeneralTreeNode>> result;
 			for(auto&& iter : manager->GetTypeDefSymbolMap())
 			{
 				ParserSymbol* typeDefSymbol = iter.second;
 
-				result.emplace(typeDefSymbol->GetName(), GeneralTreeNode(typeDefSymbol->GetName()));
+				result.emplace(typeDefSymbol->GetName(), make_shared<GeneralTreeNode>(typeDefSymbol->GetName()));
 
 				if(typeDefSymbol->IsClassType())
 				{
@@ -470,11 +470,11 @@ namespace ztl
 						if(symbol->GetDescriptorSymbol()->IsTokenType() ||
 							symbol->GetDescriptorSymbol()->IsEnumType())
 						{
-							result[typeDefSymbol->GetName()].InitTermMap(name);
+							result[typeDefSymbol->GetName()]->InitTermMap(name);
 						}
 						else
 						{
-							result[typeDefSymbol->GetName()].InitFieldMap(name);
+							result[typeDefSymbol->GetName()]->InitFieldMap(name);
 						}
 					}
 				}
@@ -482,44 +482,17 @@ namespace ztl
 			}
 			return result;
 		}
-		unordered_map<wstring, vector<wstring>> GeneralParser::InintChoiceFiledMap()
-		{
-			vector<wstring> temp;
-			unordered_map<wstring, vector<wstring>> result;
-			for(auto&& iter : manager->GetTypeDefSymbolMap())
-			{
-				ParserSymbol* typeDefSymbol = iter.second;
-
-				if(typeDefSymbol->IsClassType())
-				{
-					auto fieldSymbol = typeDefSymbol->GetClassAllFieldDefSymbol();
-					for(auto&& symbol : fieldSymbol)
-					{
-						if(symbol->IsChoiceFieldDef())
-						{
-							temp.emplace_back(symbol->GetName());
-						}
-					}
-				}
-				assert(typeDefSymbol->IsClassType() || typeDefSymbol->IsEnumType());
-				if(!temp.empty())
-				{
-					result.emplace(typeDefSymbol->GetName(), move(temp));
-				}
-			}
-			return result;
-		}
+		
 
 		GeneralTreeNode* GeneralParser::MakeTreeNode(const wstring & nodeName)
 		{
-			static unordered_map<wstring, GeneralTreeNode> signMap = InitTreeNodeMap();
-
-			auto&& findIter = signMap.find(nodeName);
-			if(findIter == signMap.end())
+			
+			auto&& findIter = wstringToTreeNodeMap.find(nodeName);
+			if(findIter == wstringToTreeNodeMap.end())
 			{
 				throw ztl_exception(L"error!" + nodeName + L" isn't a vaild TreeNode's name");
 			}
-			this->nodePool.emplace_back(make_shared<GeneralTreeNode>(findIter->second));
+			this->nodePool.emplace_back(make_shared<GeneralTreeNode>(*findIter->second));
 			nodePool.back()->SetNumber((int) nodePool.size() - 1);
 			return nodePool.back().get();
 		}
