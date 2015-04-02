@@ -272,8 +272,6 @@ namespace ztl
 			
 			wstring templateString =
 			LR"(
-			void ReflectionBuidler(const wstring& className,const wstring& fieldName,void* classObject,void* valueObject);
-			shared_ptr<void> ReflecteObjectByName(const wstring& name);
 			shared_ptr<void> GeneralHeterogeneousParserTree($<NameSpace>GeneralParser& parser,$<NameSpace>GeneralTreeNode* root);
 			)";
 			ztl::generator::MarcoGenerator generator(templateString, { L"$<NameSpace>" });

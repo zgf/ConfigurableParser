@@ -213,7 +213,7 @@ namespace ztl
 			GeneralHeterogeneousParserTree(parser, root, rootObject);
 			return rootObject;
 		}
-
+	
 		shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable()
 		{
 			ztl::general_parser::GeneralTableWriter writer;

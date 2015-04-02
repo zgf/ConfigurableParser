@@ -113,9 +113,6 @@ namespace ztl
 		};
 
 		shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable();
-
-		void ReflectionBuidler(const wstring& className, const wstring& fieldName, void* classObject, void* valueObject);
-		shared_ptr<void> ReflecteObjectByName(const wstring& name);
 		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root);
 	}
 }
