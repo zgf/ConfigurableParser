@@ -66,3 +66,7 @@ EBNF Core源码中使用"\n\"的问题 解决
 捕获的String外面有""需要去掉 解决
 源码中写regex时候,""内部的所有"需要添加转义为\"; 解决
 终于看到完工的曙光了- -
+
+headinfo里面的classprefix待解决
+生成文件应该放到GenerateFile文件里面去
+添加dirname HeadInfo.

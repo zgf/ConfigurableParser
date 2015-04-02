@@ -36,6 +36,7 @@ namespace ztl
 		wstring GetPreDefineInclude()
 		{
 			return LR"(
+				#pragma once
 				#include <memory>
 				#include <string>
 				#include <vector>
@@ -50,7 +51,6 @@ namespace ztl
 				using std::wifstream;
 				using std::make_shared;
 				#include "GeneralTableDefine.h"
-				#include "GeneralTableWriter.h"
 				#include "GeneralTreeNode.h"
 				#include "GeneralParser.h"
 				)";
@@ -59,7 +59,11 @@ namespace ztl
 		wstring GeneralParserFile::GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes)
 		{
 			const wstring endInclude =
-				LR"(#include ")" + GetFileLeafName(filename) + LR"(.h")";
+				LR"(#include ")" + GetFileLeafName(filename) + LR"(.h")"+
+				LR"(
+					#include "GeneralTableWriter.h"
+					
+				)";
 			return GenerateModuleInclude(endInclude, includes);
 		}
 		wstring GeneralParserFile::GenerateModuleInclude(const wstring& endInclude, const vector<wstring>& includes)
@@ -158,8 +162,8 @@ namespace ztl
 		{
 			int backslashResult =  fileName.rfind(L"/");
 			int slashResult = fileName.rfind(L"\\");
-			assert(backslashResult != slashResult);
-			auto slashPosition = std::max(backslashResult, slashResult);
+			assert(backslashResult != slashResult||((backslashResult == slashResult)&&(backslashResult == -1)));
+			int slashPosition = std::max(backslashResult, slashResult);
 			auto leaf = fileName.substr(slashPosition + 1);
 			return leaf;
 		}

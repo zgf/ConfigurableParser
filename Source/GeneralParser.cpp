@@ -25,7 +25,7 @@ namespace ztl
 			machine = make_shared<PushDownAutoMachine >(manager.get());
 			CreateDPDAGraph(*machine.get());
 			jumpInfos = make_shared<GeneralJumpInfoTable>(machine.get());
-			CreateJumpTable(*jumpInfos.get());
+			CreateJumpInfoTable(*jumpInfos.get());
 			//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
 		SymbolManager* GeneralParser::GetManager() const
@@ -549,9 +549,9 @@ namespace ztl
 		{
 			return this->nodePool[index].get();
 		}
-		TokenInfo* GeneralParser::GetTermNodeByIndex(int index) const
+		shared_ptr<TokenInfo> GeneralParser::GetTermNodeByIndex(int index) const
 		{
-			return terminatePool[index].get();
+			return terminatePool[index];
 		}
 
 	}

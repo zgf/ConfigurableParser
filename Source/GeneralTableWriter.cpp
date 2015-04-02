@@ -50,9 +50,9 @@ namespace ztl
 			result->name = name;
 			return result;
 		}
-		shared_ptr<GeneralStringTypeObject>			String()
+		shared_ptr<GeneralTokenTypeObject>			String()
 		{
-			auto result = make_shared<GeneralStringTypeObject>();
+			auto result = make_shared<GeneralTokenTypeObject>();
 			return result;
 		}
 		shared_ptr<GeneralSubTypeObject>			SubTypeObject(const shared_ptr<GeneralTypeObject>& parent, const wstring& name)

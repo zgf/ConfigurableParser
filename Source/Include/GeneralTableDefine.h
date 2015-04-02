@@ -78,7 +78,7 @@ namespace ztl
 
 		/*类型对象前置声明*/
 		struct GeneralArrayTypeObject;
-		struct GeneralStringTypeObject;
+		struct GeneralTokenTypeObject;
 		struct GeneralNormalTypeObject;
 		struct GeneralSubTypeObject;
 		
@@ -90,7 +90,7 @@ namespace ztl
 			{
 			public:
 				virtual void								Visit(GeneralArrayTypeObject* node)=0;
-				virtual void								Visit(GeneralStringTypeObject* node)=0;
+				virtual void								Visit(GeneralTokenTypeObject* node)=0;
 				virtual void								Visit(GeneralNormalTypeObject* node)=0;
 				virtual void								Visit(GeneralSubTypeObject* node)=0;
 				
@@ -111,7 +111,7 @@ namespace ztl
 			}
 		};
 		//对string类型的使用
-		struct GeneralStringTypeObject: public GeneralTypeObject
+		struct GeneralTokenTypeObject: public GeneralTypeObject
 		{
 			virtual void									Accept(IVisitor* visitor)override
 			{

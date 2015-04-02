@@ -1,157 +1,150 @@
-		struct GenHeadInfoDefine
-		{
-			wstring    property;
-			wstring    value;
-		};
-		/*
-		token和IgnoreToken的定义
+/* class*/
 
-		*/
-		class GenTokenDefine
+//asdasasas
+
+namespace : "ztl" ;
+namespace : "general_parser" ;
+
+		struct GeneralHeadInfoDefine
+		{
+			token    property;
+			token    value;
+		};
+		
+		class GeneralTokenDefine
 		{
 			enum TokenOptional
 			{
 				False,
 				True,
 			};
-			wstring			name;
-			wstring			regex;
+			token			name;
+			token			regex;
 			TokenOptional	ignore;
 		};
 
-		/*类型对象定义*/
-		class GenTypeObject
+	
+		class GeneralTypeObject
 		{
 
 		};
 
-		class GenArrayTypeObject :  GenTypeObject
+		class GeneralArrayTypeObject :  GeneralTypeObject
 		{
-			GenTypeObject			element;
+			GeneralTypeObject			element;
 		};
-		//对string类型的使用
-		class GenStringTypeObject :  GenTypeObject
+	
+		class GeneralTokenTypeObject :  GeneralTypeObject
 		{
 
 		};
-		//对自定义类型的使用
-		class GenNormalTypeObject :  GenTypeObject
+		class GeneralNormalTypeObject :  GeneralTypeObject
 		{
-			wstring									name;
+			token									name;
 		};
-		//对嵌套定义类型的使用 例如 类型A下定义了类型B     A.B cc;
-		class GenSubTypeObject :  GenTypeObject
+		class GeneralSubTypeObject :  GeneralTypeObject
 		{
-			GenTypeObject						parent;
-			wstring									name;
+			GeneralTypeObject						parent;
+			token									name;
 		};
 		
-		/*
-		类型的声明的定义
-		*/
-		class GenTypeDefine
+		class GeneralTypeDefine
 		{
 
 		};
-		class GenClassTypeDefine :  GenTypeDefine
+		
+		class GeneralClassMemberTypeDefine :  GeneralTypeDefine
 		{
-			GenTypeDefine[]				subTypes;
-			GenClassMemberTypeDefine[]	members;
-			GenTypeObject				parent;
-			wstring						name;
+			GeneralTypeObject						   type;
+			token									name;
 		};
-		class GenEnumTypeDefine :  GenTypeDefine
+		class GeneralEnumMemberTypeDefine :  GeneralTypeDefine
 		{
-			GenEnumMemberTypeDefine[]			members;
-			wstring								name;
+			token									name;
 		};
-		class GenClassMemberTypeDefine :  GenTypeDefine
+		class GeneralClassTypeDefine :  GeneralTypeDefine
 		{
-			GenTypeObject						    type;
-			wstring									name;
+			GeneralTypeDefine[]				subTypes;
+			GeneralClassMemberTypeDefine[]	members;
+			GeneralTypeObject				parent;
+			token						name;
 		};
-		class GenEnumMemberTypeDefine :  GenTypeDefine
+		class GeneralEnumTypeDefine :  GeneralTypeDefine
 		{
-			wstring									name;
+			GeneralEnumMemberTypeDefine[]			members;
+			token								name;
 		};
-		class GenGrammarTypeDefine 
+		class GeneralGrammarTypeDefine 
 		{
 
 		};
-		class GenGrammarTextTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarTextTypeDefine :  GeneralGrammarTypeDefine
 		{
-			wstring												text;
+			token												text;
 		};
-		class GenGrammarNormalTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarNormalTypeDefine :  GeneralGrammarTypeDefine
 		{
-			wstring												name;
+			token												name;
 		};
-		class GenGrammarSequenceTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarSequenceTypeDefine :  GeneralGrammarTypeDefine
 		{
-			GenGrammarTypeDefine				first;
-			GenGrammarTypeDefine				second;
+			GeneralGrammarTypeDefine				first;
+			GeneralGrammarTypeDefine				second;
 		};
-		//循环
-		class GenGrammarLoopTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarLoopTypeDefine :  GeneralGrammarTypeDefine
 		{
-			GenGrammarTypeDefine				grammar;
+			GeneralGrammarTypeDefine				grammar;
 		};
-		//可选
-		class GenGrammarOptionalTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarOptionalTypeDefine :  GeneralGrammarTypeDefine
 		{
-			GenGrammarTypeDefine				grammar;
+			GeneralGrammarTypeDefine				grammar;
 		};
-		//赋值
-		class GenGrammarAssignTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarAssignTypeDefine :  GeneralGrammarTypeDefine
 		{
-			wstring									name;
-			GenGrammarTypeDefine				grammar;
+			token									name;
+			GeneralGrammarTypeDefine				grammar;
 		};
 		
-		//附加的key-value对
-		class GenGrammarSetterTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarSetterTypeDefine :  GeneralGrammarTypeDefine
 		{
-			GrammarDef grammar;
-			wstring												name;
-			wstring												value;
+			GeneralGrammarTypeDefine grammar;
+			token												name;
+			token												value;
 		};
-		//附加赋值 with{}
-		class GenGrammarAdditionTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarAdditionTypeDefine :  GeneralGrammarTypeDefine
 		{
-			GenGrammarTypeDefine				grammar;
-			GenGrammarSetterTypeDefine[]		setters;
+			GeneralGrammarTypeDefine				grammar;
+			GeneralGrammarSetterTypeDefine[]		setters;
 		};
-		//Using操作. 隐式类型转换
-		class GenGrammarUsingTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarUsingTypeDefine :  GeneralGrammarTypeDefine
 		{
-			GenGrammarTypeDefine				grammar;
+			GeneralGrammarTypeDefine				grammar;
 		};
-		//创建节点 区别返回类型
-		class GenGrammarCreateTypeDefine :  GenGrammarTypeDefine
+		class GeneralGrammarCreateTypeDefine :  GeneralGrammarTypeDefine
 		{
-			GenTypeObject						type;
-			GenGrammarTypeDefine				grammar;
+			GeneralTypeObject						type;
+			GeneralGrammarTypeDefine				grammar;
 		};
 		
-		class GenGrammarAlternationTypeDefine : GenGrammarTypeDefine
+		class GeneralGrammarAlternationTypeDefine : GeneralGrammarTypeDefine
 		{
-			GenGrammarTypeDefine left;
-			GenGrammarTypeDefine right;
+			GeneralGrammarTypeDefine left;
+			GeneralGrammarTypeDefine right;
 		};
-		class GenRuleDefine
+		class GeneralRuleDefine
 		{
-			GenTypeObject						type;
-			wstring								name;
-			GenGrammarTypeDefine[]				grammars;
+			GeneralTypeObject						type;
+			token								name;
+			GeneralGrammarTypeDefine[]				grammars;
 		};
-		class GenTableDefine
+		class GeneralTableDefine
 		{
-			GenHeadInfoDefine[] heads;
-			GenTypeDefine[]   types;
-			GenTokenDefine[]  tokens;
-			GenRuleDefine[]   rules;
+			GeneralHeadInfoDefine[] heads;
+			GeneralTypeDefine[]   types;
+			GeneralTokenDefine[]  tokens;
+			GeneralRuleDefine[]   rules;
 		};
-		
+
 token CLASS = "class";
 token STRUCT = "struct";
 token ENUM = "enum";
@@ -160,86 +153,87 @@ token DISCARDTOKEN = "ignoretoken";
 token RULE = "rule";
 token AS = "as";
 token WITH = "with";
-token OPEN = "{";
-token CLOSE = "}";
+token OPEN = "\{";
+token CLOSE = "\}";
 token SEMICOLON = ";";
 token COLON = ":";
 token COMMA = ",";
-token DOT = ".";
+token DOT = "\.";
 token ASSIGN = "=";
 token USING = "!";
-token OR = "|";
+token OR = "\|";
 token OPTOPEN = "\[";
 token OPTCLOSE = "\]";
 token PREOPEN = "\(";
 token PRECLOSE = "\)";
 token NAME = "[a-zA-Z_]\w*";
-token STRING = "\"(\\\"|[^"])*\""
+token STRING = "\"(\\\"|[^\"])*\"";
 ignoretoken SPACE = "\s+";
 ignoretoken LINENOTE = "//[^\n]*\n";
-ignoretoken BLOCKNOTE = "/*.*?*/";
+ignoretoken BLOCKNOTE = "/\*.*?\*/";
 
-rule GenTypeObject Type
-        = NAME : name as GenNormalTypeObject
-        = "token" as GenTokenTypeObject
-        = Type : parent "." NAME : name as GenSubTypeObject 
-        = Type : element "[" "]" as GenArrayTypeObject
+rule GeneralTypeObject Type
+        = NAME : name as GeneralNormalTypeObject
+        = "token" as GeneralTokenTypeObject
+        = Type : parent "." NAME : name as GeneralSubTypeObject 
+        = Type : element "[" "]" as GeneralArrayTypeObject
         ;
-rule GenEnumMemberTypeDefine EnumMember
-        = NAME : name "," as GenEnumMemberTypeDefine 
+rule GeneralEnumMemberTypeDefine EnumMember
+        = NAME : name "," as GeneralEnumMemberTypeDefine 
         ;
-rule GenEnumTypeDefine Enum
-        = "enum" NAME : name  "{" { EnumMember : members } "}" as GenEnumTypeDefine
+rule GeneralEnumTypeDefine Enum
+        = "enum" NAME : name  "{" { EnumMember : members } "}" as GeneralEnumTypeDefine
         ;
-rule GenClassMemberTypeObject ClassMember
-        = Type : type NAME : name ";" as GenClassMemberTypeObject
+rule GeneralClassMemberTypeDefine ClassMember
+        = Type : type NAME : name ";" as GeneralClassMemberTypeDefine
         ;
-rule GenTypeDefine TypeDecl
+rule GeneralTypeDefine TypeDecl
         = !Enum | !Class
         ;
 
-rule GenClassTypeDefine Class
-        = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GenClassTypeDefine
+rule GeneralClassTypeDefine Class
+        = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GeneralClassTypeDefine
         ;
-rule GenGrammarTypeDefine SequenceGrammar
+rule GeneralGrammarTypeDefine SequenceGrammar
         = !PrimitiveGrammar
-        = SequenceGrammar : first PrimitiveGrammar : second as GenGrammarSequenceTypeDefine
+        = SequenceGrammar : first PrimitiveGrammar : second as GeneralGrammarSequenceTypeDefine
         ;
-rule GenGrammarTypeDefine AlternativeGrammar
+rule GeneralGrammarTypeDefine AlternativeGrammar
         = !SequenceGrammar
-        = AlternativeGrammar : left "|" SequenceGrammar : right as GenGrammarAlternationTypeDefine
+        = AlternativeGrammar : left "|" SequenceGrammar : right as GeneralGrammarAlternationTypeDefine
         ;
 
-rule GenGrammarTypeDefine Grammar
+rule GeneralGrammarTypeDefine Grammar
         = !AlternativeGrammar
-        = Grammar : grammar "as" Type : type as GenGrammarCreateTypeDefine
-        = Grammar : grammar "with" "{" NAME : name "=" STRING : value  "}"  as GenGrammarSetterTypeDefine
+        = Grammar : grammar "as" Type : type as GeneralGrammarCreateTypeDefine
+        = Grammar : grammar "with" "{" NAME : name "=" STRING : value  "}"  as GeneralGrammarSetterTypeDefine
 		;
-rule GenGrammarTypeDefine NormalGrammar
-        = NAME : name as GenGrammarNormalTypeDefine
+rule GeneralGrammarTypeDefine NormalGrammar
+        = NAME : name as GeneralGrammarNormalTypeDefine
 		;
 
-rule GenGrammarTypeDefine AssginGrammar
-		= NormalGrammar : grammar ":" NAME : name as GenGrammarAssignTypeDefine
-		= STRING : text as GenGrammarTextTypeDefine
+rule GeneralGrammarTypeDefine AssginGrammar
+		= NormalGrammar : grammar ":" NAME : name as GeneralGrammarAssignTypeDefine
+		= STRING : text as GeneralGrammarTextTypeDefine
 		= "(" !Grammar ")"
 		;
 
-rule GenGrammarTypeDefine PrimitiveGrammar
+rule GeneralGrammarTypeDefine PrimitiveGrammar
         =  !AssginGrammar
-        = "!" NormalGrammar : grammar as GenGrammarUsingTypeDefine
-        = "[" Grammar : grammar "]" as GenGrammarOptionalTypeDefine
-        = "{" Grammar : grammar "}" as GenGrammarLoopTypeDefine
+        = "!" NormalGrammar : grammar as GeneralGrammarUsingTypeDefine
+        = "[" Grammar : grammar "]" as GeneralGrammarOptionalTypeDefine
+        = "{" Grammar : grammar "}" as GeneralGrammarLoopTypeDefine
         ;
 
-rule GenTokenDefine TokenDecl
-        = "token" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "False" }
-        = "ignoretoken" NAME : name "=" STRING : regex ";" as GenTokenDefine with { ignore = "True" }
+rule GeneralTokenDefine TokenDecl
+        = "token" NAME : name "=" STRING : regex ";" as GeneralTokenDefine with { ignore = "False" }
+        = "ignoretoken" NAME : name "=" STRING : regex ";" as GeneralTokenDefine with { ignore = "True" }
         ;
-rule GenHeadInfoDefine HeadDecl = NAME : property ":" STRING : value ";" as GenHeadInfoDefine;
-rule GenRuleDefine RuleDecl
-        = "rule" Type : type NAME : name { "=" Grammar : grammars } ";" as GenRuleDefine
+rule GeneralHeadInfoDefine HeadDecl = NAME : property ":" STRING : value ";" as GeneralHeadInfoDefine
+		;
+rule GeneralRuleDefine RuleDecl
+        = "rule" Type : type NAME : name { "=" Grammar : grammars } ";" as GeneralRuleDefine
         ;
-rule GenTableDefine ParserDecl
-        = {HeadDecl : heads}| { TypeDecl : definitions} |{ TokenDecl : definitions} |{ RuleDecl : definitions } as GenTableDefine
+rule GeneralTableDefine ParserDecl
+        = {HeadDecl : heads}| { TypeDecl : types} |{ TokenDecl : tokens} |{ RuleDecl : rules } as GeneralTableDefine
         ;

@@ -212,7 +212,7 @@ namespace ztl
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
 		}
 	
-		void CreateJumpTable(GeneralJumpInfoTable & jumpTable)
+		void CreateJumpInfoTable(GeneralJumpInfoTable& jumpTable)
 		{
 			jumpTable.CreateJumpInfoTable();
 		}

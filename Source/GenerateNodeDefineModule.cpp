@@ -136,7 +136,7 @@ namespace ztl
 				generator::MarcoGenerator generator(tempalteString, { L"$<Type>" });
 				content = generator.GenerateText({ visitor.GetResult() }).GetMacroResult();
 			}
-			virtual void								Visit(GeneralStringTypeObject*) override
+			virtual void								Visit(GeneralTokenTypeObject*) override
 			{
 				content = L"wstring";
 			}

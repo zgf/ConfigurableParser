@@ -10,11 +10,11 @@
 #include "Include\JsonParser.h"
 int main()
 {
-	//ztl::general_parser::GeneralParserFile parserGen(L"Json.ParserDefine.txt",ztl::general_parser::BootStrapDefineTable());
+	//ztl::general_parser::GeneralParserFile parserGen(L"Json.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
 	//parserGen.GenerateSpecialParserFile();
 	ztl::general_parser::GeneralParser parser(L"TestJson.txt", ztl::json::BootStrapDefineTable());
 	parser.BuildParser();
 	parser.GenerateIsomorphismParserTree();
-	auto tree = ztl::json::GeneralHeterogeneousParserTree(parser,parser.GetGeneralTreeRoot());
+	auto tree = ztl::json::GeneralHeterogeneousParserTree(parser);
 	return 0;
 }

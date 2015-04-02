@@ -55,7 +55,7 @@ namespace ztl
 				node->element->Accept(&visitor);
 				result = namespacePrefix+L"Array(" + visitor.GetResult() + L")";
 			}
-			void								Visit(GeneralStringTypeObject*)
+			void								Visit(GeneralTokenTypeObject*)
 			{
 				result = namespacePrefix+L"String()";
 			}

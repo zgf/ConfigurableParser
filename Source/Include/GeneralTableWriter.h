@@ -33,7 +33,7 @@ namespace ztl
 		shared_ptr<GeneralArrayTypeObject>			Array(const shared_ptr<GeneralTypeObject>& elementType);
 		shared_ptr<GeneralClassMemberTypeDefine>	ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring& name);
 		shared_ptr<GeneralEnumMemberTypeDefine>		EnumMember(const wstring& name);
-		shared_ptr<GeneralStringTypeObject>			String();
+		shared_ptr<GeneralTokenTypeObject>			String();
 		shared_ptr<GeneralSubTypeObject>			SubTypeObject(const shared_ptr<GeneralTypeObject>& parent, const wstring& name);
 		shared_ptr<GeneralNormalTypeObject> Normal(const wstring& name);
 		//Type ÷–¥

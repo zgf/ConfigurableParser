@@ -80,7 +80,7 @@ namespace ztl
 			SymbolManager* GetManager() const;
 			void SaveHeterogeneousNode(const shared_ptr<void>& node);
 			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
-			TokenInfo* GetTermNodeByIndex(int index)const;
+			shared_ptr<TokenInfo> GetTermNodeByIndex(int index)const;
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
 			vector<EdgeInfo> TerminateResolve(ParserState& state);

@@ -30,7 +30,7 @@ namespace ztl
 				auto&& arrayTypeSymbol = manager->AddArrayType(elementTypeSymbol);
 				result = arrayTypeSymbol;
 			}
-			void								Visit(GeneralStringTypeObject*)
+			void								Visit(GeneralTokenTypeObject*)
 			{
 				auto&& tokenTypeSymbol = manager->GetTokenTypeSymbol();
 				result = tokenTypeSymbol;

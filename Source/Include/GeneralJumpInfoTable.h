@@ -51,7 +51,7 @@ namespace ztl
 			int																				 rootNumber;
 		
 		};
-		void CreateJumpTable(GeneralJumpInfoTable& jumpTable);
+		void CreateJumpInfoTable(GeneralJumpInfoTable& jumpTable);
 
 	}
 }

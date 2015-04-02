@@ -101,7 +101,7 @@ namespace ztl
 						.Class
 						(
 							GeneralClassTypeWriter()
-							.Name(L"GeneralStringTypeObject")
+							.Name(L"GeneralTokenTypeObject")
 							.ParentType(Normal(L"GeneralTypeObject"))
 						)
 						.Class
@@ -267,7 +267,7 @@ namespace ztl
 							| GrammarSymbol(L"NAME")[L"name"]
 							.Create(Normal(L"GeneralNormalTypeObject"))
 							| Text(L"token")
-							.Create(Normal(L"GeneralStringTypeObject"))
+							.Create(Normal(L"GeneralTokenTypeObject"))
 							| (
 								GrammarSymbol(L"Type")[L"parent"] +
 								Text(L".") + 
