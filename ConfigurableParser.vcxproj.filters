@@ -29,6 +29,18 @@
     <Filter Include="Lib\ZTL">
       <UniqueIdentifier>{a415d544-e0c7-4843-8f23-09c5301e2018}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GenerateFile">
+      <UniqueIdentifier>{34e71167-b1b5-4163-a687-aa47792ffdcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GenerateFile\Json">
+      <UniqueIdentifier>{b43e2689-c433-4a78-8ed6-e1222dc02bc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GenerateFile\Xml">
+      <UniqueIdentifier>{649dc9a1-2ca7-4972-818c-640a95c49388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GenerateFile\ExRegex">
+      <UniqueIdentifier>{a207762d-b469-4396-bfad-51c6a50f1c51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -133,6 +145,9 @@
     <ClCompile Include="Source\Include\JsonParser.cpp">
       <Filter>Source\AInclude</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Include\XmlParser.cpp">
+      <Filter>Source\AInclude</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -202,6 +217,9 @@
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\JsonParser.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\XmlParser.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

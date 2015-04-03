@@ -74,7 +74,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>F:\boost;$(IncludePath)</IncludePath>
-    <LibraryPath>F:\boost\stage\lib32-msvc-12.0;$(LibraryPath)</LibraryPath>
+    <LibraryPath>F:\boost\stage\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -84,7 +84,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>F:\boost;$(IncludePath)</IncludePath>
-    <LibraryPath>F:\boost\stage\lib32-msvc-12.0;$(LibraryPath)</LibraryPath>
+    <LibraryPath>F:\boost\stage\lib64-msvc-12.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -187,6 +187,7 @@
     <ClCompile Include="Source\GenerateNodeDefineModule.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />
     <ClCompile Include="Source\Include\JsonParser.cpp" />
+    <ClCompile Include="Source\Include\XmlParser.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ParserSymbol.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
@@ -225,6 +226,7 @@
     <ClInclude Include="Source\Include\ParserSymbol.h" />
     <ClInclude Include="Source\Include\stdafx.h" />
     <ClInclude Include="Source\Include\SymbolManager.h" />
+    <ClInclude Include="Source\Include\XmlParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

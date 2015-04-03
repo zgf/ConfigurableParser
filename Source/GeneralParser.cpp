@@ -69,7 +69,8 @@ namespace ztl
 				throw ztl_exception(L"Can't find vail Parser Tree");
 			}
 		}
-		void PrintRuntimeInfo(const vector<ParserState>& parserStates, const vector<shared_ptr<TokenInfo>>& tokenPool)
+
+		void PrintRuntimeInfo(const deque<ParserState>& parserStates, const vector<shared_ptr<TokenInfo>>& tokenPool)
 		{
 			wcout << L"nodeIndex:" << parserStates.front().currentNodeIndex << endl;
 			wcout << L"tokenIndex:" << parserStates.front().tokenIndex << L" token: " << tokenPool[parserStates.front().tokenIndex]->GetTokenInfo() << endl;
@@ -100,6 +101,11 @@ namespace ztl
 			{
 				while(parserStates.front().tokenIndex != (int) tokenPool.size())
 				{
+					if (parserStates.front().tokenIndex == 6)
+					{
+						int a = 0;
+					}
+					//PrintRuntimeInfo(parserStates, tokenPool);
 					auto edges = EdgeResolve(parserStates.front());
 					SaveEdge(parserStates, edges);
 					HandleRightRecursionEdge(parserStates.front());
@@ -179,25 +185,23 @@ namespace ztl
 			{
 				auto&& iter = edges->operator[](i);
 				auto&& ruleRequire = jumpInfos->GetRuleRequires(iter);
-
-				if(rulePathStack.size() >= ruleRequire.size())
+				auto position = FindRightRecursionPosition(ruleRequire);
+				if (position == ruleRequire.end())
 				{
-					auto rbegin = make_reverse_iterator(rulePathStack.end());
-					auto rend = rbegin + ruleRequire.size();
-					auto miss = std::mismatch(ruleRequire.begin(), ruleRequire.end(), rbegin, rend);
-					if(miss.first == ruleRequire.end() && miss.second == rend)
+					if(rulePathStack.size() >= ruleRequire.size())
 					{
-						result.emplace_back(iter, false);
-					}
-					else
-					{
-						auto position = FindRightRecursionPosition(ruleRequire);
-						if(position <= miss.first)
+						auto test = std::equal(ruleRequire.begin(), ruleRequire.end(), rulePathStack.rbegin(), rulePathStack.rbegin()+ruleRequire.size());
+						if (test)
 						{
-							candicate.emplace_back(iter);
+							result.emplace_back(iter, false);
 						}
 					}
 				}
+				else
+				{
+					candicate.emplace_back(iter);
+				}
+				
 			}
 			if(result.empty())
 			{

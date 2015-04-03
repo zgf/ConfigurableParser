@@ -55,14 +55,14 @@ namespace ztl
 				#include "GeneralParser.h"
 				)";
 		}
-		
+
 		wstring GeneralParserFile::GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes)
 		{
 			const wstring endInclude =
-				LR"(#include ")" + GetFileLeafName(filename) + LR"(.h")"+
+				LR"(#include ")" + filename + LR"(.h")" +
 				LR"(
 					#include "GeneralTableWriter.h"
-					
+
 				)";
 			return GenerateModuleInclude(endInclude, includes);
 		}
@@ -73,13 +73,13 @@ namespace ztl
 			{
 				generator::MarcoGenerator generator(templateString, { L"$<FileName>" });
 				return sum + generator.GenerateText({ value }).GetMacroResult() + L"\n";
-			})+endInclude;
+			}) + endInclude;
 		}
 		wstring GeneralParserFile::GenerateHeadModuleInclude()
-{
+		{
 			return 	GetPreDefineInclude();
 		}
-		wstring GeneralParserFile::GenerateHeadModuleContent(GeneralTableDefine* table, SymbolManager*manager,const vector<wstring>& namespaces)
+		wstring GeneralParserFile::GenerateHeadModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& namespaces)
 		{
 			auto headModule = GetGenerateHeadModuleBody(table, manager);
 			headModule = GenerateModulesWithNamespace(headModule, namespaces);
@@ -98,7 +98,7 @@ namespace ztl
 			auto nodeDefineModule = GetNodeDefineModule(table, manager);
 			auto reflectModuleHead = GetReflectionModuleHead();
 			auto serialCoreModuleHead = SerializeEBNFCoreModuleHead();
-			return nodeDefineModule+serialCoreModuleHead+reflectModuleHead;
+			return nodeDefineModule + serialCoreModuleHead + reflectModuleHead;
 		}
 		wstring GeneralParserFile::GetGenerateImpModuleBody(GeneralTableDefine* table, SymbolManager*manager)
 		{
@@ -116,53 +116,80 @@ namespace ztl
 			auto namespaces = GetGenerateNameSapce(&manager);
 			auto includes = GetGenerateInclude(&manager);
 			auto filename = GetGenerateFileName(&manager);
-		
+
 			auto implContent = GenerateImpModuleContent(table.get(), &manager, includes, filename, namespaces);
 			auto headContent = GenerateHeadModuleContent(table.get(), &manager, namespaces);
+			auto path = GetGeneratePath(&manager);
+			auto headFilename = path + filename + L".h";
+			auto implFilename = path + filename + L".cpp";
 
-			auto headFilename = filename + L".h";
-			auto implFilename = filename + L".cpp";
-			
 			CreateFile(headFilename, headContent);
 			CreateFile(implFilename, implContent);
 		}
+
 		wstring GeneralParserFile::GetGenerateFileName(SymbolManager* manager)
 		{
-			assert(generalParser != nullptr);
-			auto result = manager->GetCacheValueByProperty(L"filename");
-			assert(result.size() <= 1);
-			return result.empty() ? wstring(L"GenerateParserFile") : result[0];
+			return GetGenerateUniqueProperty(manager, L"filename", L"GenerateParserFile");
+		}
+
+		wstring GeneralParserFile::GetGenerateClassPrefix(SymbolManager* manager)
+		{
+			return GetGenerateUniqueProperty(manager, L"classprefix");
+		}
+		wstring GeneralParserFile::GetGenerateDirname(SymbolManager * manager)
+		{
+			auto dirname = GetGenerateUniqueProperty(manager, L"dirname");
+			if (dirname.empty())
+			{
+				return dirname;
+			}
+			else
+			{
+				return dirname + LR"(\)";
+			}
+		}
+		wstring GeneralParserFile::GetGeneratePath(SymbolManager * manager)
+		{
+			auto path = GetGenerateUniqueProperty(manager, L"path", LR"(Source\GenerateFile\)");
+			if (path.back()!='\\')
+			{
+				path.append(1, '\\');
+			}
+			return  path + GetGenerateDirname(manager);
 		}
 		vector<wstring> GeneralParserFile::GetGenerateNameSapce(SymbolManager* manager)
 		{
-			assert(generalParser != nullptr);
-			auto result = manager->GetCacheValueByProperty(L"namespace");
-			return result;
-		}
-		wstring GeneralParserFile::GetGenerateClassPrefix(SymbolManager* manager)
-		{
-			assert(generalParser != nullptr);
-			auto result = manager->GetCacheValueByProperty(L"classprefix");
-			assert(result.size() <= 1);
-			return result.empty() ? wstring() : result[0];
+			return GetGenerateArrayProperty(manager, L"namespace");
 		}
 		vector<wstring> GeneralParserFile::GetGenerateInclude(SymbolManager* manager)
 		{
+			return GetGenerateArrayProperty(manager, L"include");
+		}
+		wstring GeneralParserFile::GetGenerateUniqueProperty(SymbolManager * manager, const wstring & property, const wstring & default)
+		{
 			assert(generalParser != nullptr);
-			auto result = manager->GetCacheValueByProperty(L"include");
+			auto result = manager->GetCacheValueByProperty(property);
+			assert(result.size() <= 1);
+			return result.empty() ? default: result[0];
+		}
+
+		vector<wstring> GeneralParserFile::GetGenerateArrayProperty(SymbolManager * manager, const wstring & property)
+		{
+			assert(generalParser != nullptr);
+			auto result = manager->GetCacheValueByProperty(property);
 			return result;
 		}
+
 		void GeneralParserFile::CreateFile(const wstring& fileName, const wstring& content)
 		{
 			wofstream output(fileName);
 			output.write(content.c_str(), content.size());
-
 		}
 		wstring GeneralParserFile::GetFileLeafName(const wstring & fileName)
 		{
-			int backslashResult =  fileName.rfind(L"/");
+			int backslashResult = fileName.rfind(L"/");
 			int slashResult = fileName.rfind(L"\\");
-			assert(backslashResult != slashResult||((backslashResult == slashResult)&&(backslashResult == -1)));
+			assert(backslashResult != slashResult || ((backslashResult == slashResult) && (backslashResult == -1)));
 			int slashPosition = std::max(backslashResult, slashResult);
 			auto leaf = fileName.substr(slashPosition + 1);
 			return leaf;

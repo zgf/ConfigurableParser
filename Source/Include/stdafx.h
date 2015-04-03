@@ -20,6 +20,7 @@
 #include "../../Lib/ZTL/ztl_exception.h"
 #include "../../Lib/ZTL/ztl_hash.hpp"
 #include "../../Lib/ZTL/ztl_generator.hpp"
+
 namespace ztl
 {
 	//////////////////////////////////////////////////////////////////////////

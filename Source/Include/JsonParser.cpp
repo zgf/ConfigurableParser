@@ -31,9 +31,9 @@
 				assert(signMap.find(value)!=signMap.end());
 				return signMap[value];
 			}
-			void ReflectionBuidler(const wstring& className,const wstring& fieldName,shared_ptr<void> classObject,shared_ptr<void> valueObject)
+			void ReflectionBuidler(const wstring& className,const wstring& fieldName,const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 			{
-				using builderType = void(*)(shared_ptr<void>,shared_ptr<void>);
+				using builderType = void(*)(const shared_ptr<void>&,const shared_ptr<void>&);
 				static unordered_map<wstring, unordered_map<wstring, builderType>> builderMap =
 				{
 					{
@@ -46,7 +46,7 @@
 								{
 									{
 										L"content",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<Number>(classObject)->content=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
@@ -58,7 +58,7 @@
 								{
 									{
 										L"value",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<Literal>(classObject)->value=static_cast<Literal::Value>(WstringToEnumItem(L"Literal::Value::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
 											return;
@@ -70,7 +70,7 @@
 								{
 									{
 										L"fields",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<Object>(classObject)->fields.emplace_back(std::static_pointer_cast<ObjectField>(valueObject));
 											return;
@@ -82,7 +82,7 @@
 								{
 									{
 										L"content",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<String>(classObject)->content=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
@@ -94,7 +94,7 @@
 								{
 									{
 										L"items",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<Array>(classObject)->items.emplace_back(std::static_pointer_cast<Node>(valueObject));
 											return;
@@ -106,14 +106,14 @@
 								{
 									{
 										L"name",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<ObjectField>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
 										}
 									},{
 										L"value",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<ObjectField>(classObject)->value = std::static_pointer_cast<Node>(valueObject);
 											return;

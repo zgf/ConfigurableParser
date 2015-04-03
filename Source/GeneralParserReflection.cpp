@@ -25,7 +25,7 @@ namespace ztl
 		}
 		void ReflectionBuidler(const wstring& className, const wstring& fieldName, shared_ptr<void> classObject, shared_ptr<void> valueObject)
 		{
-			using builderType = void(*)(shared_ptr<void>, shared_ptr<void>);
+			using builderType = void(*)(const shared_ptr<void>&, const shared_ptr<void>&);
 			static unordered_map<wstring, unordered_map<wstring, builderType>> builderMap =
 			{
 				{
@@ -33,28 +33,28 @@ namespace ztl
 					{
 						{
 							L"heads",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralTableDefine>(classObject)->heads.emplace_back(std::static_pointer_cast<GeneralHeadInfoDefine>(valueObject));
 								return;
 							}
 						},{
 							L"types",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralTableDefine>(classObject)->types.emplace_back(std::static_pointer_cast<GeneralTypeDefine>(valueObject));
 								return;
 							}
 						},{
 							L"tokens",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralTableDefine>(classObject)->tokens.emplace_back(std::static_pointer_cast<GeneralTokenDefine>(valueObject));
 								return;
 							}
 						},{
 							L"rules",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralTableDefine>(classObject)->rules.emplace_back(std::static_pointer_cast<GeneralRuleDefine>(valueObject));
 								return;
@@ -66,14 +66,14 @@ namespace ztl
 					{
 						{
 							L"type",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralClassMemberTypeDefine>(classObject)->type = std::static_pointer_cast<GeneralTypeObject>(valueObject);
 								return;
 							}
 						},{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralClassMemberTypeDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -85,21 +85,21 @@ namespace ztl
 					{
 						{
 							L"grammar",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
 							}
 						},{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
 							}
 						},{
 							L"value",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->value = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -111,14 +111,14 @@ namespace ztl
 					{
 						{
 							L"property",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->property = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
 							}
 						},{
 							L"value",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->value = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -130,7 +130,7 @@ namespace ztl
 					{
 						{
 							L"grammar",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarLoopTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
@@ -142,7 +142,7 @@ namespace ztl
 					{
 						{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralNormalTypeObject>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -159,14 +159,14 @@ namespace ztl
 					{
 						{
 							L"type",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarCreateTypeDefine>(classObject)->type = std::static_pointer_cast<GeneralTypeObject>(valueObject);
 								return;
 							}
 						},{
 							L"grammar",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarCreateTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
@@ -178,7 +178,7 @@ namespace ztl
 					{
 						{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralEnumMemberTypeDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -190,21 +190,21 @@ namespace ztl
 					{
 						{
 							L"regex",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralTokenDefine>(classObject)->regex = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
 							}
 						},{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralTokenDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
 							}
 						},{
 							L"ignore",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralTokenDefine>(classObject)->ignore = static_cast<GeneralTokenDefine::TokenOptional>(WstringToEnumItem(L"GeneralTokenDefine::TokenOptional::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
 								return;
@@ -216,14 +216,14 @@ namespace ztl
 					{
 						{
 							L"first",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarSequenceTypeDefine>(classObject)->first = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
 							}
 						},{
 							L"second",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarSequenceTypeDefine>(classObject)->second = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
@@ -245,7 +245,7 @@ namespace ztl
 					{
 						{
 							L"element",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralArrayTypeObject>(classObject)->element = std::static_pointer_cast<GeneralTypeObject>(valueObject);
 								return;
@@ -257,14 +257,14 @@ namespace ztl
 					{
 						{
 							L"parent",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralSubTypeObject>(classObject)->parent = std::static_pointer_cast<GeneralTypeObject>(valueObject);
 								return;
 							}
 						},{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralSubTypeObject>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -276,28 +276,28 @@ namespace ztl
 					{
 						{
 							L"subTypes",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralClassTypeDefine>(classObject)->subTypes.emplace_back(std::static_pointer_cast<GeneralTypeDefine>(valueObject));
 								return;
 							}
 						},{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralClassTypeDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
 							}
 						},{
 							L"members",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralClassTypeDefine>(classObject)->members.emplace_back(std::static_pointer_cast<GeneralClassMemberTypeDefine>(valueObject));
 								return;
 							}
 						},{
 							L"parent",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralClassTypeDefine>(classObject)->parent = std::static_pointer_cast<GeneralTypeObject>(valueObject);
 								return;
@@ -309,14 +309,14 @@ namespace ztl
 					{
 						{
 							L"members",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralEnumTypeDefine>(classObject)->members.emplace_back(std::static_pointer_cast<GeneralEnumMemberTypeDefine>(valueObject));
 								return;
 							}
 						},{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralEnumTypeDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -333,7 +333,7 @@ namespace ztl
 					{
 						{
 							L"text",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarTextTypeDefine>(classObject)->text = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -345,7 +345,7 @@ namespace ztl
 					{
 						{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarNormalTypeDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
@@ -357,7 +357,7 @@ namespace ztl
 					{
 						{
 							L"grammar",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarOptionalTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
@@ -369,14 +369,14 @@ namespace ztl
 					{
 						{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarAssignTypeDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
 							}
 						},{
 							L"grammar",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarAssignTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
@@ -388,7 +388,7 @@ namespace ztl
 					{
 						{
 							L"grammar",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarUsingTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
@@ -400,14 +400,14 @@ namespace ztl
 					{
 						{
 							L"left",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarAlternationTypeDefine>(classObject)->left = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
 							}
 						},{
 							L"right",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralGrammarAlternationTypeDefine>(classObject)->right = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 								return;
@@ -419,21 +419,21 @@ namespace ztl
 					{
 						{
 							L"type",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralRuleDefine>(classObject)->type = std::static_pointer_cast<GeneralTypeObject>(valueObject);
 								return;
 							}
 						},{
 							L"name",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralRuleDefine>(classObject)->name = std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 								return;
 							}
 						},{
 							L"grammars",
-							[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+							[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 							{
 								std::static_pointer_cast<GeneralRuleDefine>(classObject)->grammars.emplace_back(std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject));
 								return;

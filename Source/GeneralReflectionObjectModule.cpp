@@ -70,7 +70,7 @@ namespace ztl
 				fieldTypeSymbol->GetSymbolAbsoluteName();
 			wstring basicTemplateString = LR"({
 										L"$<FieldName>",
-										[](shared_ptr<void> classObject,shared_ptr<void> valueObject)
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											$<SymbolType>
 											return;
@@ -106,9 +106,9 @@ namespace ztl
 		wstring GetReflectBuilderFunctionString(SymbolManager* manager)
 		{
 			wstring tempalteString = LR"(
-			void ReflectionBuidler(const wstring& className,const wstring& fieldName,shared_ptr<void> classObject,shared_ptr<void> valueObject)
+			void ReflectionBuidler(const wstring& className,const wstring& fieldName,const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 			{
-				using builderType = void(*)(shared_ptr<void>,shared_ptr<void>);
+				using builderType = void(*)(const shared_ptr<void>&,const shared_ptr<void>&);
 				static unordered_map<wstring, unordered_map<wstring, builderType>> builderMap =
 				{
 					$<ClassReflecteList>

@@ -1,7 +1,8 @@
-filename : "Source\Include\JsonParser";
+filename : "JsonParser";
 include : "Include/stdafx.h";
 namespace : "ztl";
 namespace : "json";
+dirname : "json";
 class Node
 {
 };

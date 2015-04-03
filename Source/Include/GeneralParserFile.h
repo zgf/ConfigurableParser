@@ -30,6 +30,11 @@ namespace ztl
 			wstring GetGenerateFileName(SymbolManager* manager);
 			vector<wstring> GetGenerateNameSapce(SymbolManager* manager);
 			wstring GetGenerateClassPrefix(SymbolManager* manager);
+			wstring GetGenerateDirname(SymbolManager* manager);
+			wstring GetGeneratePath(SymbolManager* manager);
+			wstring GetGenerateUniqueProperty(SymbolManager* manager, const wstring& property, const wstring& default = wstring());
+			vector<wstring> GetGenerateArrayProperty(SymbolManager* manager, const wstring& property);
+
 			vector<wstring> GetGenerateInclude(SymbolManager* manager);
 			shared_ptr<GeneralTableDefine>	GetGenerateParserTableDefine();
 			wstring GenerateModulesWithNamespace(const wstring& content,const vector<wstring>& namespaces);

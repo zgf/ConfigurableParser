@@ -1,10 +1,3 @@
-/* class*/
-
-//asdasasas
-
-namespace : "ztl" ;
-namespace : "general_parser" ;
-
 		struct GeneralHeadInfoDefine
 		{
 			token    property;

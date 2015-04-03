@@ -126,7 +126,8 @@ namespace ztl
 			using ValidateActionType = void(*)(const wstring&, SymbolManager*);
 			unordered_map<wstring, ValidateActionType> validateHeadMap;
 			validateHeadMap.insert(make_pair(L"classprefix", CheckPropertyUnique));
-
+			validateHeadMap.insert(make_pair(L"dirname", CheckPropertyUnique));
+			validateHeadMap.insert(make_pair(L"path", CheckPropertyUnique));
 			validateHeadMap.insert(make_pair(L"namespace", CheckPropertyHaveSameValues));
 			validateHeadMap.insert(make_pair(L"include", CheckPropertyHaveSameValues));
 			validateHeadMap.insert(make_pair(L"filename", CheckPropertyUnique));
