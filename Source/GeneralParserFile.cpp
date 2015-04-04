@@ -12,7 +12,7 @@ namespace ztl
 		shared_ptr<GeneralTableDefine> GeneralParserFile::GetGenerateParserTableDefine()
 		{
 			generalParser->BuildParser();
-			generalParser->GenerateIsomorphismParserTree();
+			auto result = generalParser->GenerateIsomorphismParserTree();
 			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
 			return shared_ptr<GeneralTableDefine>(*(std::shared_ptr<GeneralTableDefine>*)(&parserResult));
 		}

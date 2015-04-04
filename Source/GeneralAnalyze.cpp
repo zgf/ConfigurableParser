@@ -1067,7 +1067,7 @@ namespace ztl
 				node->right->Accept(this);
 			}
 		};
-		//处在循环范围内的也是可选的
+		//处在循环范围内的也是可选的,处在|范围内也是可选的
 		class AnalyzeClassChoiceFieldVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
 		private:
@@ -1146,8 +1146,10 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarAlternationTypeDefine*node)
 			{
+				this->InOptional(true);
 				node->left->Accept(this);
 				node->right->Accept(this);
+				this->InOptional(false);
 			}
 		};
 		void AnalyzeClassChoiceField(SymbolManager* manager)

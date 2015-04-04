@@ -66,7 +66,7 @@ namespace ztl
 			}
 			if(states.empty())
 			{
-				throw ztl_exception(L"Can't find vail Parser Tree");
+				throw ztl_exception(L"Can't find vaild Parser Tree");
 			}
 		}
 
@@ -101,12 +101,10 @@ namespace ztl
 			{
 				while(parserStates.front().tokenIndex != (int) tokenPool.size())
 				{
-					if (parserStates.front().tokenIndex == 6)
-					{
-						int a = 0;
-					}
-					//PrintRuntimeInfo(parserStates, tokenPool);
+
+				
 					auto edges = EdgeResolve(parserStates.front());
+					
 					SaveEdge(parserStates, edges);
 					HandleRightRecursionEdge(parserStates.front());
 					ExecuteEdgeActions(parserStates.front());

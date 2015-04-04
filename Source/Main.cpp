@@ -23,11 +23,22 @@ void TestXml()
 	parser.GenerateIsomorphismParserTree();
 	auto tree = ztl::xml::GeneralHeterogeneousParserTree(parser);
 }
+void GenerateXmlParserFile()
+{
+	ztl::general_parser::GeneralParserFile parserGen(L"Xml.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
+	parserGen.GenerateSpecialParserFile();
+}
+void GenerateJsonParserFile()
+{
+	ztl::general_parser::GeneralParserFile parserGen(L"Json.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
+	parserGen.GenerateSpecialParserFile();
+}
 int main()
 {
-	ztl::general_parser::GeneralParserFile parserGen(L"ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
-	parserGen.GenerateSpecialParserFile();
-	TestJson();
+	GenerateXmlParserFile();
+	GenerateJsonParserFile();
 	TestXml();
+	TestJson();
+	
 	return 0;
 }
