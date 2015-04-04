@@ -1,7 +1,7 @@
 #include "Include/stdafx.h"
 
 #include "JsonParser.h"
-					#include "GeneralTableWriter.h"
+					#include "..\..\Include\GeneralTableWriter.h"
 
 				
 							namespace ztl

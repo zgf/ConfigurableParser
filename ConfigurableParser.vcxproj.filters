@@ -38,7 +38,16 @@
     <Filter Include="Source\GenerateFile\Xml">
       <UniqueIdentifier>{649dc9a1-2ca7-4972-818c-640a95c49388}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\GenerateFile\ExRegex">
+    <Filter Include="UnitTest\Xml">
+      <UniqueIdentifier>{c80b519d-a74c-41ae-a871-d1c4a89d48ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTest\Json">
+      <UniqueIdentifier>{fde34a29-5830-416b-aceb-577999dc358c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTest\General">
+      <UniqueIdentifier>{c3c9ae5f-d21b-4280-84b4-cdc24dd4382d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GenerateFile\General">
       <UniqueIdentifier>{a207762d-b469-4396-bfad-51c6a50f1c51}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -77,9 +86,6 @@
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\stdafx.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BootstrapDefineTable.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Lib\Regex\forward.cpp">
@@ -121,9 +127,6 @@
     <ClCompile Include="Source\GeneralParser.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralParserReflection.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralParserLexer.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
@@ -142,11 +145,17 @@
     <ClCompile Include="Source\GeneralReflectionObjectModule.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Include\JsonParser.cpp">
-      <Filter>Source\AInclude</Filter>
+    <ClCompile Include="Source\GenerateFile\Json\JsonParser.cpp">
+      <Filter>Source\GenerateFile\Json</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Include\XmlParser.cpp">
-      <Filter>Source\AInclude</Filter>
+    <ClCompile Include="Source\GenerateFile\Xml\XmlParser.cpp">
+      <Filter>Source\GenerateFile\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BootstrapDefineTable.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralParserReflection.cpp">
+      <Filter>Source\Implement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,11 +225,11 @@
     <ClInclude Include="Source\Include\GeneralParserFile.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\JsonParser.h">
-      <Filter>Source\AInclude</Filter>
+    <ClInclude Include="Source\GenerateFile\Json\JsonParser.h">
+      <Filter>Source\GenerateFile\Json</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\XmlParser.h">
-      <Filter>Source\AInclude</Filter>
+    <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h">
+      <Filter>Source\GenerateFile\Xml</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

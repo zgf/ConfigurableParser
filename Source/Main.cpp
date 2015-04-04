@@ -5,10 +5,10 @@
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
 #include "Include\GeneralJumpInfoTable.h"
-#include "Include\GeneralParserFile.h"
 #include "Include\GeneralParser.h"
-#include "Include\JsonParser.h"
-#include "Include\XmlParser.h"
+#include "Include\GeneralParserFile.h"
+#include "GenerateFile\Json\JsonParser.h"
+#include "GenerateFile\Xml\XmlParser.h"
 void TestJson()
 {
 	ztl::general_parser::GeneralParser parser(L"TestJson.txt", ztl::json::BootStrapDefineTable());
@@ -23,6 +23,12 @@ void TestXml()
 	parser.GenerateIsomorphismParserTree();
 	auto tree = ztl::xml::GeneralHeterogeneousParserTree(parser);
 }
+
+void GenerateGeneralParserFile()
+{
+	ztl::general_parser::GeneralParserFile parserGen(L"ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
+	parserGen.GenerateSpecialParserFile();
+}
 void GenerateXmlParserFile()
 {
 	ztl::general_parser::GeneralParserFile parserGen(L"Xml.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
@@ -35,10 +41,9 @@ void GenerateJsonParserFile()
 }
 int main()
 {
+	GenerateGeneralParserFile();
 	GenerateXmlParserFile();
 	GenerateJsonParserFile();
-	TestXml();
-	TestJson();
 	
 	return 0;
 }

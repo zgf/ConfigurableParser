@@ -101,10 +101,7 @@ namespace ztl
 			{
 				while(parserStates.front().tokenIndex != (int) tokenPool.size())
 				{
-
-				
 					auto edges = EdgeResolve(parserStates.front());
-					
 					SaveEdge(parserStates, edges);
 					HandleRightRecursionEdge(parserStates.front());
 					ExecuteEdgeActions(parserStates.front());

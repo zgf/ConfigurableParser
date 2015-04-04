@@ -184,10 +184,10 @@
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
     <ClCompile Include="Source\GeneralReflectionObjectModule.cpp" />
     <ClCompile Include="Source\GeneralTreeNode.cpp" />
+    <ClCompile Include="Source\GenerateFile\Json\JsonParser.cpp" />
+    <ClCompile Include="Source\GenerateFile\Xml\XmlParser.cpp" />
     <ClCompile Include="Source\GenerateNodeDefineModule.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />
-    <ClCompile Include="Source\Include\JsonParser.cpp" />
-    <ClCompile Include="Source\Include\XmlParser.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ParserSymbol.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
@@ -215,6 +215,8 @@
     <ClInclude Include="Lib\ZTL\ztl_generator.hpp" />
     <ClInclude Include="Lib\ZTL\ztl_hash.hpp" />
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
+    <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
+    <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h" />
     <ClInclude Include="Source\Include\GeneralParserFile.h" />
     <ClInclude Include="Source\Include\GeneralJumpInfoTable.h" />
     <ClInclude Include="Source\Include\GeneralParser.h" />
@@ -222,11 +224,9 @@
     <ClInclude Include="Source\Include\GeneralTreeNode.h" />
     <ClInclude Include="Source\Include\GeneralTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableWriter.h" />
-    <ClInclude Include="Source\Include\JsonParser.h" />
     <ClInclude Include="Source\Include\ParserSymbol.h" />
     <ClInclude Include="Source\Include\stdafx.h" />
     <ClInclude Include="Source\Include\SymbolManager.h" />
-    <ClInclude Include="Source\Include\XmlParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

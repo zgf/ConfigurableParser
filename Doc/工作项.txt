@@ -78,8 +78,13 @@ ExRegex的解析,添加上对平衡组的支持,替换掉原先的正则核心.
 添加错误恢复机制.比较麻烦的是错在A挂在B- -还要研究下怎么做比较好.
 把通用语法树重新组织.二义性分析歧义限制在局部范围,而不是扩展出多颗语法树,扩展出多颗是很low很渣的做法.
 XML解析器有问题 待解决
-根据Path指定的路径调整Include.用boost filesystem
 
 根据dirname 调整Include路径
+对XML的合并左公因子有问题,待解决
 赶紧补上单元测试-.-........添加更多的断言
 
+Gen的General解析器的boostrap定义有问题
+("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GeneralClassTypeDefine
+冒号出了循环 members也不在循环内
+Gen的Xml解析器的boosttrap定义语法树长的也些有问题- -
+貌似是()和|一起用在文法中间的优先级问题

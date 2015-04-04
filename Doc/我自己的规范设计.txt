@@ -1,9 +1,8 @@
-/* class*/
-
-//asdasasas
-
-namespace : "ztl" ;
-namespace : "general_parser" ;
+filename : "GenerateParser";
+include : "Include/stdafx.h";
+namespace : "ztl";
+namespace : "general_parser";
+dirname : "General";
 
 		struct GeneralHeadInfoDefine
 		{
@@ -111,11 +110,6 @@ namespace : "general_parser" ;
 			token												name;
 			token												value;
 		};
-		class GeneralGrammarAdditionTypeDefine :  GeneralGrammarTypeDefine
-		{
-			GeneralGrammarTypeDefine				grammar;
-			GeneralGrammarSetterTypeDefine[]		setters;
-		};
 		class GeneralGrammarUsingTypeDefine :  GeneralGrammarTypeDefine
 		{
 			GeneralGrammarTypeDefine				grammar;
@@ -182,7 +176,7 @@ rule GeneralEnumMemberTypeDefine EnumMember
         = NAME : name "," as GeneralEnumMemberTypeDefine 
         ;
 rule GeneralEnumTypeDefine Enum
-        = "enum" NAME : name  "{" { EnumMember : members } "}" as GeneralEnumTypeDefine
+        = "enum" NAME : name  "{" { EnumMember : members } "}" ";" as GeneralEnumTypeDefine
         ;
 rule GeneralClassMemberTypeDefine ClassMember
         = Type : type NAME : name ";" as GeneralClassMemberTypeDefine

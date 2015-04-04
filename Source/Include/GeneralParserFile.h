@@ -34,13 +34,13 @@ namespace ztl
 			wstring GetGeneratePath(SymbolManager* manager);
 			wstring GetGenerateUniqueProperty(SymbolManager* manager, const wstring& property, const wstring& default = wstring());
 			vector<wstring> GetGenerateArrayProperty(SymbolManager* manager, const wstring& property);
-
+			wstring			GetIncludeRelativePath(SymbolManager*manager);
 			vector<wstring> GetGenerateInclude(SymbolManager* manager);
 			shared_ptr<GeneralTableDefine>	GetGenerateParserTableDefine();
 			wstring GenerateModulesWithNamespace(const wstring& content,const vector<wstring>& namespaces);
-			wstring GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes);
+			wstring GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes, SymbolManager* manager);
 			wstring GenerateModuleInclude(const wstring& endInclude, const vector<wstring>& includes);
-			wstring GenerateHeadModuleInclude();
+			wstring GenerateHeadModuleInclude(SymbolManager* manager);
 			wstring GenerateHeadModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& namespaces);
 			wstring GenerateImpModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& includes, const wstring filename, const vector<wstring>& namespaces);
 

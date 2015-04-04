@@ -13,6 +13,7 @@ namespace ztl
 		{
 			generalParser->BuildParser();
 			auto result = generalParser->GenerateIsomorphismParserTree();
+			assert(result.size() == 1);
 			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
 			return shared_ptr<GeneralTableDefine>(*(std::shared_ptr<GeneralTableDefine>*)(&parserResult));
 		}
@@ -50,20 +51,22 @@ namespace ztl
 				using std::unordered_map;
 				using std::wifstream;
 				using std::make_shared;
-				#include "GeneralTableDefine.h"
-				#include "GeneralTreeNode.h"
-				#include "GeneralParser.h"
+				#include "$<RelativePath>GeneralTableDefine.h"
+				#include "$<RelativePath>GeneralTreeNode.h"
+				#include "$<RelativePath>GeneralParser.h"
 				)";
 		}
 
-		wstring GeneralParserFile::GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes)
+		wstring GeneralParserFile::GenerateImpModuleInclude(const wstring& filename, const vector<wstring>& includes, SymbolManager* manager)
 		{
-			const wstring endInclude =
+			const wstring endIncludeTemplate =
 				LR"(#include ")" + filename + LR"(.h")" +
 				LR"(
-					#include "GeneralTableWriter.h"
+					#include "$<RelativePath>GeneralTableWriter.h"
 
 				)";
+			generator::MarcoGenerator generator(endIncludeTemplate, { L"$<RelativePath>" });
+			auto endInclude = generator.GenerateText({ GetIncludeRelativePath(manager) }).GetMacroResult();
 			return GenerateModuleInclude(endInclude, includes);
 		}
 		wstring GeneralParserFile::GenerateModuleInclude(const wstring& endInclude, const vector<wstring>& includes)
@@ -75,22 +78,36 @@ namespace ztl
 				return sum + generator.GenerateText({ value }).GetMacroResult() + L"\n";
 			}) + endInclude;
 		}
-		wstring GeneralParserFile::GenerateHeadModuleInclude()
+		wstring	GeneralParserFile::GetIncludeRelativePath(SymbolManager*manager)
 		{
-			return 	GetPreDefineInclude();
+			auto dirname = GetGenerateDirname(manager);
+			if(dirname.empty())
+			{
+				return  LR"(..\Include\)";
+			}
+			else
+			{
+				return LR"(..\..\Include\)" ;
+			}
+		}
+		wstring GeneralParserFile::GenerateHeadModuleInclude(SymbolManager* manager)
+		{
+			auto headTemplateString = GetPreDefineInclude();
+			generator::MarcoGenerator generator(headTemplateString, { L"$<RelativePath>" });
+			return generator.GenerateText({ GetIncludeRelativePath(manager) }).GetMacroResult();
 		}
 		wstring GeneralParserFile::GenerateHeadModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& namespaces)
 		{
 			auto headModule = GetGenerateHeadModuleBody(table, manager);
 			headModule = GenerateModulesWithNamespace(headModule, namespaces);
-			auto headInclude = GenerateHeadModuleInclude();
+			auto headInclude = GenerateHeadModuleInclude(manager);
 			return headInclude + headModule;
 		}
 		wstring GeneralParserFile::GenerateImpModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& includes, const wstring filename, const vector<wstring>& namespaces)
 		{
 			auto impModule = GetGenerateImpModuleBody(table, manager);
 			impModule = GenerateModulesWithNamespace(impModule, namespaces);
-			auto impInclude = GenerateImpModuleInclude(filename, includes);
+			auto impInclude = GenerateImpModuleInclude(filename, includes, manager);
 			return impInclude + impModule;
 		}
 		wstring GeneralParserFile::GetGenerateHeadModuleBody(GeneralTableDefine* table, SymbolManager*manager)
@@ -150,11 +167,7 @@ namespace ztl
 		}
 		wstring GeneralParserFile::GetGeneratePath(SymbolManager * manager)
 		{
-			auto path = GetGenerateUniqueProperty(manager, L"path", LR"(Source\GenerateFile\)");
-			if (path.back()!='\\')
-			{
-				path.append(1, '\\');
-			}
+			wstring path =  LR"(Source\GenerateFile\)";
 			return  path + GetGenerateDirname(manager);
 		}
 		vector<wstring> GeneralParserFile::GetGenerateNameSapce(SymbolManager* manager)

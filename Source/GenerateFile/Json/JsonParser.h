@@ -13,9 +13,9 @@
 				using std::unordered_map;
 				using std::wifstream;
 				using std::make_shared;
-				#include "GeneralTableDefine.h"
-				#include "GeneralTreeNode.h"
-				#include "GeneralParser.h"
+				#include "..\..\Include\GeneralTableDefine.h"
+				#include "..\..\Include\GeneralTreeNode.h"
+				#include "..\..\Include\GeneralParser.h"
 				
 							namespace ztl
 							{

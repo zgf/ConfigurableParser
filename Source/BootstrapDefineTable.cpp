@@ -21,10 +21,12 @@ namespace ztl
 				writer.Head
 					(
 						GeneralHeadInfoWriter()
-						.Info(L"namespace",L"XML")
+						.Info(L"namespace",L"ztl")
+						.Info(L"namespace", L"general")
 						.Info(L"classprefix",L"ZGF")
-						.Info(L"namespace",L"test")
-						.Info(L"include",L"Source/Include/stdafx.h")
+						.Info(L"include",L"Include/stdafx.h")
+						.Info(L"dirname", L"General")
+						.Info(L"filename",L"GeneralParser")
 					)
 					.Token
 					(

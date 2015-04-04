@@ -66,7 +66,7 @@ rule Attribute XAttribute
         = NAME : name "=" ATTVALUE : value as Attribute
         ;
 rule Text XText
-        = NAME : content | ATTVALUE : content | TEXT : content as Text
+        = NAME : content | EQUAL : content | ATTVALUE : content | TEXT : content as Text
         ;
 rule CData XCData
         = CDATA : content as CData
@@ -75,8 +75,7 @@ rule Comment XComment
         = COMMENT : content as Comment
         ;
 rule Element XElement
-        = "<" NAME : name { XAttribute : attributes }  "/>" as Element
-		=  "<" NAME : name { XAttribute : attributes } ">" { XSubNode : subNodes } "</" NAME : closingName ">" as Element
+        = "<" NAME : name { XAttribute : attributes } ( "/>" | ">" { XSubNode : subNodes } "</" NAME : closingName ">" ) as Element
         ;
 rule Node XSubNode
         = !XText | !XCData | !XComment | !XElement

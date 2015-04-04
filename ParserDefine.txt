@@ -1,3 +1,9 @@
+filename : "GenerateParser";
+include : "Include/stdafx.h";
+namespace : "ztl";
+namespace : "general_parser";
+dirname : "General";
+
 		struct GeneralHeadInfoDefine
 		{
 			token    property;
@@ -170,7 +176,7 @@ rule GeneralEnumMemberTypeDefine EnumMember
         = NAME : name "," as GeneralEnumMemberTypeDefine 
         ;
 rule GeneralEnumTypeDefine Enum
-        = "enum" NAME : name  "{" { EnumMember : members } "}" as GeneralEnumTypeDefine
+        = "enum" NAME : name  "{" { EnumMember : members } "}" ";" as GeneralEnumTypeDefine
         ;
 rule GeneralClassMemberTypeDefine ClassMember
         = Type : type NAME : name ";" as GeneralClassMemberTypeDefine
