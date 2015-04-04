@@ -44,6 +44,7 @@ int main()
 	GenerateGeneralParserFile();
 	GenerateXmlParserFile();
 	GenerateJsonParserFile();
-	
+	TestJson();
+	//TestXml();
 	return 0;
 }

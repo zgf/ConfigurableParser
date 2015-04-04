@@ -206,13 +206,13 @@ namespace ztl
 
 		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
 		{
-			edges.emplace_back(make_shared<PDAEdge>(wrap, source,target));
+			edges.emplace_back(make_shared<PDAEdge>(wrap, source,target, (int) edges.size()));
 			return edges.back().get();
 		}
 
 		PDAEdge * PushDownAutoMachine::NewEdge(PDANode * source, PDANode * target)
 		{
-			edges.emplace_back(make_shared<PDAEdge>(source, target));
+			edges.emplace_back(make_shared<PDAEdge>(source, target, (int)edges.size()));
 			return edges.back().get();
 		}
 

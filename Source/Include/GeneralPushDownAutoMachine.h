@@ -100,13 +100,13 @@ namespace ztl
 			PDAEdge(const PDAEdge&)  = default;
 			PDAEdge& operator=(PDAEdge&&)  = default;
 			PDAEdge& operator=(const PDAEdge&)  = default;
-			PDAEdge(const ActionWrap& wrap, PDANode* _source,PDANode* _target)
-				:target(_target),source(_source)
+			PDAEdge(const ActionWrap& wrap, PDANode* _source,PDANode* _target,int _number)
+				:target(_target),source(_source),number(_number)
 			{
 				actions.emplace_back(wrap);
 			}
-			PDAEdge(PDANode* _source, PDANode* _target)
-				: target(_target), source(_source)
+			PDAEdge(PDANode* _source, PDANode* _target, int _number)
+				: target(_target), source(_source), number(_number)
 			{
 			}
 			const vector<ActionWrap>& GetActions()const
@@ -120,6 +120,10 @@ namespace ztl
 			PDANode* GetSource()const
 			{
 				return source;
+			}
+			int GetNumber()const
+			{
+				return number;
 			}
 			bool HasNonTermActionType()const
 			{
@@ -163,6 +167,7 @@ namespace ztl
 				}) != actions.end();
 			}
 		private:
+			int number;
 			PDANode* target;
 			PDANode* source;
 			vector<ActionWrap> actions;

@@ -75,7 +75,8 @@ rule Comment XComment
         = COMMENT : content as Comment
         ;
 rule Element XElement
-        = "<" NAME : name { XAttribute : attributes } ( "/>" | ">" { XSubNode : subNodes } "</" NAME : closingName ">" ) as Element
+        = "<" NAME : name { XAttribute : attributes }  "/>" as Element
+		=  "<" NAME : name { XAttribute : attributes } ">" { XSubNode : subNodes } "</" NAME : closingName ">" as Element
         ;
 rule Node XSubNode
         = !XText | !XCData | !XComment | !XElement

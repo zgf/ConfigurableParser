@@ -160,9 +160,56 @@ namespace ztl
 				}
 			});
 		}
-		auto FindRightRecursionPosition(const vector<wstring>&ruleInfos)
+		vector<wstring>::const_iterator FindRightRecursionPosition(const vector<wstring>&ruleInfos)
 		{
 			return FindRightRecursionPosition(ruleInfos.begin(), ruleInfos.end());
+		}
+		//end是超尾
+		RightRecursionInfo FindRightRecursionArea(vector<wstring>::const_iterator& begin, vector<wstring>::const_iterator end)
+		{
+			RightRecursionInfo result;
+			auto back = FindRightRecursionPosition(begin,end);
+			if(back == end)
+			{
+				result.isRecursion = false;
+			}
+			else
+			{
+				result.back = back - begin;
+				result.isRecursion = true;
+				auto first = find_if(begin, back, [&back](const wstring& value)
+				{
+					return value == *back;
+				});
+				assert(first != back);
+				result.begin = first - begin;
+			}
+			return result;
+		}
+		vector<RightRecursionInfo> FindRightRecursionArea(const vector<wstring>&ruleInfos)
+		{
+			vector<RightRecursionInfo> result;
+			for(auto ruleInfosBegin = ruleInfos.begin(); ruleInfosBegin < ruleInfos.end();++ruleInfosBegin)
+			{
+				auto back = FindRightRecursionPosition(ruleInfosBegin, ruleInfos.end());
+				if(back != ruleInfos.end())
+				{
+					RightRecursionInfo temp;
+					temp.back = back - ruleInfos.begin();
+					temp.isRecursion = true;
+					auto first = find_if(ruleInfos.begin(), back, [&back](const wstring& value)
+					{
+						return value == *back;
+					});
+					assert(first != back&&first != ruleInfos.end());
+					temp.begin = first - ruleInfos.begin();
+					result.emplace_back(move(temp));
+					ruleInfosBegin = ruleInfos.begin()+result.back().back;
+				}
+			}
+			
+			return result;
+
 		}
 		bool IsRightRecursionGrammar(const vector<wstring>&ruleInfos)
 		{
@@ -180,13 +227,12 @@ namespace ztl
 			{
 				auto&& iter = edges->operator[](i);
 				auto&& ruleRequire = jumpInfos->GetRuleRequires(iter);
-				auto position = FindRightRecursionPosition(ruleRequire);
-				if (position == ruleRequire.end())
+				auto rightRecursionPositions = FindRightRecursionArea(ruleRequire);
+				if (rightRecursionPositions.size() == 0)
 				{
 					if(rulePathStack.size() >= ruleRequire.size())
 					{
-						auto test = std::equal(ruleRequire.begin(), ruleRequire.end(), rulePathStack.rbegin(), rulePathStack.rbegin()+ruleRequire.size());
-						if (test)
+						if(std::equal(rulePathStack.rbegin(), rulePathStack.rbegin() + ruleRequire.size(),ruleRequire.begin(), ruleRequire.end()))
 						{
 							result.emplace_back(iter, false);
 						}
@@ -194,9 +240,35 @@ namespace ztl
 				}
 				else
 				{
-					candicate.emplace_back(iter);
+					//TODO 这块代码写的很挫,待修改,应该缓存到JumpTableInfo里面
+					//包括正常边要求,和去除了右递归之后的边要求.
+					//ABA ->A
+					//CABA ->CA
+					//CAAB ->CAB
+					auto rulePathIter = rulePathStack.rbegin();
+					vector<wstring> nonRightRecursionList;
+					auto lastPosition = 0;
+					for (auto&&rightIter:rightRecursionPositions)
+					{
+						for(auto j = lastPosition; j < rightIter.begin;++j)
+						{
+							nonRightRecursionList.emplace_back(ruleRequire[j]);
+						}
+						lastPosition = rightIter.back;
+					}
+					for(; lastPosition < ruleRequire.size();++lastPosition)
+					{
+						nonRightRecursionList.emplace_back(ruleRequire[lastPosition]);
+					}
+					if(rulePathStack.size() >= nonRightRecursionList.size())
+					{
+						if(std::equal(rulePathStack.rbegin(), rulePathStack.rbegin() + nonRightRecursionList.size(), nonRightRecursionList.begin(), nonRightRecursionList.end()))
+						{
+							candicate.emplace_back(iter);
+						}
+					}
+					//在右递归区域内的失配加入候选
 				}
-				
 			}
 			if(result.empty())
 			{

@@ -188,7 +188,7 @@ namespace ztl
 		//可合并节点含义
 
 		//同一个起点,包含同样信息的边,到达不同的节点,那么这个不同节点可以合并成同一个节点
-		void MergeNodeByEdge(vector<PDAEdge*>& edges, PushDownAutoMachine& machine)
+		void MergeNodeByEdge(vector<PDAEdge*>& edges, vector<PDANode*>& nodeList, PushDownAutoMachine& machine)
 		{
 			assert(!edges.empty());
 			assert(is_sorted(edges.begin(), edges.end(), [](const PDAEdge* left, const PDAEdge* right)
@@ -209,16 +209,20 @@ namespace ztl
 				if(distance(startIter, endIter) > 1)
 				{
 					auto&& save = (*startIter)->GetTarget();
-					for_each(startIter + 1, endIter, [&save, &machine](PDAEdge* element)
+					for_each(startIter + 1, endIter, [&save,&nodeList, &machine](PDAEdge* element)
 					{
 						machine.MergeIndependentNodes(save, element->GetTarget());
 						machine.DeleteEdge(element);
+						if (save->GetNexts().size()>1)
+						{
+							nodeList.emplace_back(save);
+						}
 					});
 				}
 				startIter = endIter;
 			}
 		}
-		void MergeCommonNode(PDANode* nodeIter, PushDownAutoMachine& machine)
+		void MergeCommonNode(PDANode* nodeIter, vector<PDANode*>& nodeList, PushDownAutoMachine& machine)
 		{
 			vector<PDAEdge*> edges(nodeIter->GetNexts().begin(), nodeIter->GetNexts().end());
 
@@ -231,7 +235,7 @@ namespace ztl
 
 			if(!edges.empty())
 			{
-				MergeNodeByEdge(edges, machine);
+				MergeNodeByEdge(edges, nodeList, machine);
 			}
 		}
 
@@ -297,22 +301,24 @@ namespace ztl
 		{
 			unordered_set<PDANode*> sign;
 			vector<PDAEdge*> edges;
-			auto&& nodeList = CollectGraphNode(machine, [](PDANode* element)
+			vector<PDANode*>nodeList;
+			//收集最左的边>2的节点
+			for (auto&&iter:machine.GetPDAMap())
 			{
-				return element->GetNexts().size() > 1;
-			});
-			assert(std::accumulate(nodeList.begin(), nodeList.end(), 0, [](int val, const PDANode* element)
-			{
-				return val + element->GetNexts().size() <= 1;
-			}) == 0);
+				auto nodeIter = iter.second.first;
+				if (nodeIter->GetNexts().size() > 1)
+				{
+					nodeList.emplace_back(nodeIter);
+				}
+			}
 
 			for(size_t i = 0; i < nodeList.size(); ++i)
 			{
 				auto&& iter = nodeList[i];
-				if(!iter->GetNexts().empty())
-				{
-					MergeCommonNode(iter, machine);
-				}
+				
+				assert(iter->GetNexts().size()>1);
+				MergeCommonNode(iter, nodeList, machine);
+				
 			}
 		}
 		unordered_map<wstring, vector<PDAEdge*>> CollectNontermiateEdge(PushDownAutoMachine& machine)

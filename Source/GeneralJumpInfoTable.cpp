@@ -59,15 +59,17 @@ namespace ztl
 		}
 		void GeneralJumpInfoTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
-			for(size_t i = 0; i < ruleStack.size();++i)
+			if (!ruleStack.empty())
 			{
-				auto&& wrap = ruleStack[i];
-				assert(wrap.GetActionType() == ActionType::Assign || wrap.GetActionType() == ActionType::Using);
-				ruleInfos.emplace_back(wrap.GetFrom());
-				if (i == ruleStack.size() - 1)
+			
+
+				for(size_t i = 0; i < ruleStack.size(); ++i)
 				{
-					ruleInfos.emplace_back(wrap.GetTo());
+					auto&& wrap = ruleStack[i];
+					assert(wrap.GetActionType() == ActionType::Assign || wrap.GetActionType() == ActionType::Using);
+					ruleInfos.emplace_back(wrap.GetFrom());
 				}
+				ruleInfos.emplace_back(ruleStack.back().GetTo());
 			}
 			if(!ruleInfos.empty())
 			{

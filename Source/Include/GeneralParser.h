@@ -16,7 +16,12 @@ namespace ztl
 		struct CreateInfo;
 		struct GeneralTokenDefine;
 		PAIR_BUILDER(EdgeInfo, PDAEdge*, edge, bool, rightRecursion);
-
+		struct RightRecursionInfo
+		{
+			bool isRecursion = false;
+			int begin;
+			int back;
+		};
 		struct ParserState
 		{
 		public:

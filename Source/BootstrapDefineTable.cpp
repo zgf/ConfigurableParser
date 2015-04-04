@@ -405,6 +405,9 @@ namespace ztl
 							| 
 								(GrammarSymbol(L"NAME")[L"name"])
 							  .Create(Normal(L"GeneralGrammarNormalTypeDefine"))
+							| Text(L"(") +
+							  !GrammarSymbol(L"Grammar") +
+							  Text(L")")
 						)
 						.Rule
 						(
@@ -412,7 +415,7 @@ namespace ztl
 							.Name(L"AssginGrammar")
 							.ReturnType(Normal(L"GeneralGrammarTypeDefine"))
 							|	(
-									GrammarSymbol(L"NormalGrammar")[L"grammar"] +
+									GrammarSymbol(L"AssginGrammar")[L"grammar"] +
 									Text(L":") +
 									GrammarSymbol(L"NAME")[L"name"]
 								).Create(Normal(L"GeneralGrammarAssignTypeDefine"))
@@ -421,9 +424,8 @@ namespace ztl
 									GrammarSymbol(L"STRING")[L"text"]
 								)
 							  .Create(Normal(L"GeneralGrammarTextTypeDefine"))
-							| Text(L"(") +
-								 !GrammarSymbol(L"Grammar") +
-							  Text(L")")
+							  | !GrammarSymbol(L"NormalGrammar")
+						
 						)
 						.Rule
 						(

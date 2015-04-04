@@ -443,7 +443,11 @@
 						
 						( 
 						( 
+						( 
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"content"]
+					 | 
+						ztl::general_parser::GrammarSymbol(L"EQUAL")[L"content"]
+					 )
 					 | 
 						ztl::general_parser::GrammarSymbol(L"ATTVALUE")[L"content"]
 					 )

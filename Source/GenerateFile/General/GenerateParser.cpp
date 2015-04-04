@@ -1134,7 +1134,7 @@
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
 					+ztl::general_parser::GrammarSymbol(L"OPEN")+*(
 						ztl::general_parser::GrammarSymbol(L"EnumMember")[L"members"]
-					)+ztl::general_parser::GrammarSymbol(L"CLOSE")
+					)+ztl::general_parser::GrammarSymbol(L"CLOSE")+ztl::general_parser::GrammarSymbol(L"SEMICOLON")
 					)
 					.Create(ztl::general_parser::Normal(L"GeneralEnumTypeDefine"))
 					
@@ -1182,13 +1182,13 @@
 					(
 						
 						( 
-						( ztl::general_parser::GrammarSymbol(L"STRUCT") | ztl::general_parser::GrammarSymbol(L"CLASS")+
+						( ztl::general_parser::GrammarSymbol(L"STRUCT") | ztl::general_parser::GrammarSymbol(L"CLASS") )
+					+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
 					+ztl::general_parser::GrammarSymbol(L"COLON")+~(
 						ztl::general_parser::GrammarSymbol(L"Type")[L"parent"]
 					)+ztl::general_parser::GrammarSymbol(L"OPEN")+
 						ztl::general_parser::GrammarSymbol(L"ClassMember")[L"members"]
-					 )
 					 | *(
 						ztl::general_parser::GrammarSymbol(L"TypeDecl")[L"subTypes"]
 					)+ztl::general_parser::GrammarSymbol(L"CLOSE")+ztl::general_parser::GrammarSymbol(L"SEMICOLON") )
@@ -1290,6 +1290,8 @@
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarNormalTypeDefine"))
 					
 				
+						|ztl::general_parser::GrammarSymbol(L"PREOPEN")+!(ztl::general_parser::GrammarSymbol(L"Grammar"))+ztl::general_parser::GrammarSymbol(L"PRECLOSE")
+				
 						)
 				
 						.Rule
@@ -1301,7 +1303,7 @@
 						|
 					(
 						
-						ztl::general_parser::GrammarSymbol(L"NormalGrammar")[L"grammar"]
+						ztl::general_parser::GrammarSymbol(L"AssginGrammar")[L"grammar"]
 					+ztl::general_parser::GrammarSymbol(L"COLON")+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
 					
@@ -1318,7 +1320,7 @@
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarTextTypeDefine"))
 					
 				
-						|ztl::general_parser::GrammarSymbol(L"PREOPEN")+!(ztl::general_parser::GrammarSymbol(L"Grammar"))+ztl::general_parser::GrammarSymbol(L"PRECLOSE")
+						|!(ztl::general_parser::GrammarSymbol(L"NormalGrammar"))
 				
 						)
 				

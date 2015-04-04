@@ -80,11 +80,13 @@ ExRegex的解析,添加上对平衡组的支持,替换掉原先的正则核心.
 XML解析器有问题 待解决
 
 根据dirname 调整Include路径 已解决
-对XML的合并左公因子有问题,待解决
+对XML的合并左公因子有问题,已解决
 赶紧补上单元测试-.-........添加更多的断言
 
 Gen的General解析器的boostrap定义有问题
 ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GeneralClassTypeDefine
 冒号出了循环 members也不在循环内
 Gen的Xml解析器的boosttrap定义语法树长的也些有问题- -
-貌似是()和|一起用在文法中间的优先级问题
+是()和|一起用在文法中间的优先级问题 待解决 百撕不得骑姐啊- -等补了单元测试再分析这个问题了.
+//XML的解析bug已经发现.ChoiceMap的问题.应该每条路径的create都有自己的要求.待分析,在CreateNode的决议上,XML因为termMap是否可选导致挂掉
+//包括正常边要求,和去除了右递归之后的边要求.缓存到JumpTableInfo里面 待解决

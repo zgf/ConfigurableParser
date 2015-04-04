@@ -204,13 +204,15 @@ rule GeneralGrammarTypeDefine Grammar
 		;
 rule GeneralGrammarTypeDefine NormalGrammar
         = NAME : name as GeneralGrammarNormalTypeDefine
+		=  "(" !Grammar ")"
 		;
 
 rule GeneralGrammarTypeDefine AssginGrammar
-		= NormalGrammar : grammar ":" NAME : name as GeneralGrammarAssignTypeDefine
+		= AssginGrammar : grammar ":" NAME : name as GeneralGrammarAssignTypeDefine
 		= STRING : text as GeneralGrammarTextTypeDefine
-		= "(" !Grammar ")"
+		= !NormalGrammar
 		;
+
 
 rule GeneralGrammarTypeDefine PrimitiveGrammar
         =  !AssginGrammar
