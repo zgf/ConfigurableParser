@@ -1,0 +1,460 @@
+currenIndex: 120
+ targetIndex: 111
+			action:Shift : XDocument:XInstruction : XDocument:XInstruction;
+			action:Terminate : INSTRUCTION_OPEN:<\? : XInstruction:;
+ targetIndex: 74
+			action:Shift : XDocument:XComment : XDocument:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Shift : XDocument:XElement : XDocument:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 111
+ targetIndex: 113
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XInstruction:;
+			action:Assign : name:NAME : XInstruction:;
+currenIndex: 74
+ targetIndex: 111
+			action:Create : Comment:11 : XComment:;
+			action:Assign : prologs:Node : XComment:XDocument;
+			action:Shift : XDocument:XInstruction : XDocument:XInstruction;
+			action:Terminate : INSTRUCTION_OPEN:<\? : XInstruction:;
+ targetIndex: 74
+			action:Create : Comment:11 : XComment:;
+			action:Assign : prologs:Node : XComment:XDocument;
+			action:Shift : XDocument:XComment : XDocument:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Create : Comment:11 : XComment:;
+			action:Assign : prologs:Node : XComment:XDocument;
+			action:Shift : XDocument:XElement : XDocument:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+ targetIndex: 96
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Terminate : COMPLEX_ELEMENT_OPEN:</ : XElement:;
+ targetIndex: 62
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XText:;
+			action:Assign : content:NAME : XText:;
+ targetIndex: 62
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : EQUAL:= : XText:;
+			action:Assign : content:EQUAL : XText:;
+ targetIndex: 62
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : ATTVALUE:"[^<>"]*"|'[^<>']*' : XText:;
+			action:Assign : content:ATTVALUE : XText:;
+ targetIndex: 62
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : TEXT:([^<>="' \r\n\ta-zA-Z0-9:._\-])+|"|' : XText:;
+			action:Assign : content:TEXT : XText:;
+ targetIndex: 71
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XCData : XSubNode:XCData;
+			action:Terminate : CDATA:<!\[CDATA\[([^\]]|\][^\]]|\]\][^>])*\]\]> : XCData:;
+			action:Assign : content:CDATA : XCData:;
+ targetIndex: 74
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XComment : XSubNode:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Create : Comment:11 : XComment:;
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XElement : XSubNode:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 77
+ targetIndex: 79
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XElement:;
+			action:Assign : name:NAME : XElement:;
+currenIndex: 113
+ targetIndex: 117
+			action:Terminate : INSTRUCTION_CLOSE:\?> : XInstruction:;
+ targetIndex: 55
+			action:Shift : XInstruction:XAttribute : XInstruction:XAttribute;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XAttribute:;
+			action:Assign : name:NAME : XAttribute:;
+currenIndex: 96
+ targetIndex: 98
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XElement:;
+			action:Assign : closingName:NAME : XElement:;
+currenIndex: 62
+ targetIndex: 96
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Terminate : COMPLEX_ELEMENT_OPEN:</ : XElement:;
+ targetIndex: 62
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XText:;
+			action:Assign : content:NAME : XText:;
+ targetIndex: 62
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : EQUAL:= : XText:;
+			action:Assign : content:EQUAL : XText:;
+ targetIndex: 62
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : ATTVALUE:"[^<>"]*"|'[^<>']*' : XText:;
+			action:Assign : content:ATTVALUE : XText:;
+ targetIndex: 62
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : TEXT:([^<>="' \r\n\ta-zA-Z0-9:._\-])+|"|' : XText:;
+			action:Assign : content:TEXT : XText:;
+ targetIndex: 71
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XCData : XSubNode:XCData;
+			action:Terminate : CDATA:<!\[CDATA\[([^\]]|\][^\]]|\]\][^>])*\]\]> : XCData:;
+			action:Assign : content:CDATA : XCData:;
+ targetIndex: 74
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XComment : XSubNode:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Create : Text:9 : XText:;
+			action:Using : XText:XSubNode : XText:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XElement : XSubNode:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 71
+ targetIndex: 96
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Terminate : COMPLEX_ELEMENT_OPEN:</ : XElement:;
+ targetIndex: 62
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XText:;
+			action:Assign : content:NAME : XText:;
+ targetIndex: 62
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : EQUAL:= : XText:;
+			action:Assign : content:EQUAL : XText:;
+ targetIndex: 62
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : ATTVALUE:"[^<>"]*"|'[^<>']*' : XText:;
+			action:Assign : content:ATTVALUE : XText:;
+ targetIndex: 62
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : TEXT:([^<>="' \r\n\ta-zA-Z0-9:._\-])+|"|' : XText:;
+			action:Assign : content:TEXT : XText:;
+ targetIndex: 71
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XCData : XSubNode:XCData;
+			action:Terminate : CDATA:<!\[CDATA\[([^\]]|\][^\]]|\]\][^>])*\]\]> : XCData:;
+			action:Assign : content:CDATA : XCData:;
+ targetIndex: 74
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XComment : XSubNode:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Create : CData:10 : XCData:;
+			action:Using : XCData:XSubNode : XCData:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XElement : XSubNode:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 79
+ targetIndex: 83
+			action:Terminate : SINGLE_ELEMENT_CLOSE:/> : XElement:;
+ targetIndex: 92
+			action:Terminate : ELEMENT_CLOSE:> : XElement:;
+ targetIndex: 55
+			action:Shift : XElement:XAttribute : XElement:XAttribute;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XAttribute:;
+			action:Assign : name:NAME : XAttribute:;
+currenIndex: 117
+ targetIndex: 111
+			action:Create : Instruction:14 : XInstruction:;
+			action:Assign : prologs:Node : XInstruction:XDocument;
+			action:Shift : XDocument:XInstruction : XDocument:XInstruction;
+			action:Terminate : INSTRUCTION_OPEN:<\? : XInstruction:;
+ targetIndex: 74
+			action:Create : Instruction:14 : XInstruction:;
+			action:Assign : prologs:Node : XInstruction:XDocument;
+			action:Shift : XDocument:XComment : XDocument:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Create : Instruction:14 : XInstruction:;
+			action:Assign : prologs:Node : XInstruction:XDocument;
+			action:Shift : XDocument:XElement : XDocument:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 55
+ targetIndex: 57
+			action:Terminate : EQUAL:= : XAttribute:;
+currenIndex: 98
+ targetIndex: 100
+			action:Terminate : ELEMENT_CLOSE:> : XElement:;
+currenIndex: 83
+ targetIndex: 126
+			action:Create : Element:12 : XElement:;
+			action:Assign : rootElement:Element : XElement:XDocument;
+			action:Create : Document:15 : XDocument:;
+			action:Terminate : FINISH:XDocument : XDocument:;
+ targetIndex: 96
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Terminate : COMPLEX_ELEMENT_OPEN:</ : XElement:;
+ targetIndex: 62
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XText:;
+			action:Assign : content:NAME : XText:;
+ targetIndex: 62
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : EQUAL:= : XText:;
+			action:Assign : content:EQUAL : XText:;
+ targetIndex: 62
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : ATTVALUE:"[^<>"]*"|'[^<>']*' : XText:;
+			action:Assign : content:ATTVALUE : XText:;
+ targetIndex: 62
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : TEXT:([^<>="' \r\n\ta-zA-Z0-9:._\-])+|"|' : XText:;
+			action:Assign : content:TEXT : XText:;
+ targetIndex: 71
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XCData : XSubNode:XCData;
+			action:Terminate : CDATA:<!\[CDATA\[([^\]]|\][^\]]|\]\][^>])*\]\]> : XCData:;
+			action:Assign : content:CDATA : XCData:;
+ targetIndex: 74
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XComment : XSubNode:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Create : Element:12 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XElement : XSubNode:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 92
+ targetIndex: 96
+			action:Terminate : COMPLEX_ELEMENT_OPEN:</ : XElement:;
+ targetIndex: 62
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XText:;
+			action:Assign : content:NAME : XText:;
+ targetIndex: 62
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : EQUAL:= : XText:;
+			action:Assign : content:EQUAL : XText:;
+ targetIndex: 62
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : ATTVALUE:"[^<>"]*"|'[^<>']*' : XText:;
+			action:Assign : content:ATTVALUE : XText:;
+ targetIndex: 62
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : TEXT:([^<>="' \r\n\ta-zA-Z0-9:._\-])+|"|' : XText:;
+			action:Assign : content:TEXT : XText:;
+ targetIndex: 71
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XCData : XSubNode:XCData;
+			action:Terminate : CDATA:<!\[CDATA\[([^\]]|\][^\]]|\]\][^>])*\]\]> : XCData:;
+			action:Assign : content:CDATA : XCData:;
+ targetIndex: 74
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XComment : XSubNode:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XElement : XSubNode:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 57
+ targetIndex: 59
+			action:Terminate : ATTVALUE:"[^<>"]*"|'[^<>']*' : XAttribute:;
+			action:Assign : value:ATTVALUE : XAttribute:;
+currenIndex: 100
+ targetIndex: 126
+			action:Create : Element:13 : XElement:;
+			action:Assign : rootElement:Element : XElement:XDocument;
+			action:Create : Document:15 : XDocument:;
+			action:Terminate : FINISH:XDocument : XDocument:;
+ targetIndex: 96
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Terminate : COMPLEX_ELEMENT_OPEN:</ : XElement:;
+ targetIndex: 62
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XText:;
+			action:Assign : content:NAME : XText:;
+ targetIndex: 62
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : EQUAL:= : XText:;
+			action:Assign : content:EQUAL : XText:;
+ targetIndex: 62
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : ATTVALUE:"[^<>"]*"|'[^<>']*' : XText:;
+			action:Assign : content:ATTVALUE : XText:;
+ targetIndex: 62
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XText : XSubNode:XText;
+			action:Terminate : TEXT:([^<>="' \r\n\ta-zA-Z0-9:._\-])+|"|' : XText:;
+			action:Assign : content:TEXT : XText:;
+ targetIndex: 71
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XCData : XSubNode:XCData;
+			action:Terminate : CDATA:<!\[CDATA\[([^\]]|\][^\]]|\]\][^>])*\]\]> : XCData:;
+			action:Assign : content:CDATA : XCData:;
+ targetIndex: 74
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XComment : XSubNode:XComment;
+			action:Terminate : COMMENT:<!--([^\->]|-[^\->]|--[^>])*--> : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+ targetIndex: 77
+			action:Create : Element:13 : XElement:;
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+			action:Assign : subNodes:Node : XSubNode:XElement;
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+			action:Shift : XSubNode:XElement : XSubNode:XElement;
+			action:Terminate : ELEMENT_OPEN:< : XElement:;
+currenIndex: 126
+currenIndex: 59
+ targetIndex: 117
+			action:Create : Attribute:8 : XAttribute:;
+			action:Assign : attributes:Attribute : XAttribute:XInstruction;
+			action:Terminate : INSTRUCTION_CLOSE:\?> : XInstruction:;
+ targetIndex: 55
+			action:Create : Attribute:8 : XAttribute:;
+			action:Assign : attributes:Attribute : XAttribute:XInstruction;
+			action:Shift : XInstruction:XAttribute : XInstruction:XAttribute;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XAttribute:;
+			action:Assign : name:NAME : XAttribute:;
+ targetIndex: 83
+			action:Create : Attribute:8 : XAttribute:;
+			action:Assign : attributes:Attribute : XAttribute:XElement;
+			action:Terminate : SINGLE_ELEMENT_CLOSE:/> : XElement:;
+ targetIndex: 92
+			action:Create : Attribute:8 : XAttribute:;
+			action:Assign : attributes:Attribute : XAttribute:XElement;
+			action:Terminate : ELEMENT_CLOSE:> : XElement:;
+ targetIndex: 55
+			action:Create : Attribute:8 : XAttribute:;
+			action:Assign : attributes:Attribute : XAttribute:XElement;
+			action:Shift : XElement:XAttribute : XElement:XAttribute;
+			action:Terminate : NAME:[a-zA-Z0-9:._\-]+ : XAttribute:;
+			action:Assign : name:NAME : XAttribute:;

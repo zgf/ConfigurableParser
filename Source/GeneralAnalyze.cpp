@@ -1191,25 +1191,6 @@ namespace ztl
 				}
 			}
 		}
-		void CollectChoiceFieldMap(SymbolManager*manager)
-		{
-			for(auto&& iter : manager->GetTypeDefSymbolMap())
-			{
-				ParserSymbol* typeDefSymbol = iter.second;
-				if(typeDefSymbol->IsClassType())
-				{
-					auto fieldSymbol = typeDefSymbol->GetClassAllFieldDefSymbol();
-					for(auto&& symbol : fieldSymbol)
-					{
-						if(symbol->IsChoiceFieldDef())
-						{
-							manager->CacheChoiceFieldMap(typeDefSymbol->GetName(), symbol->GetName());
-						}
-					}
-				}
-				assert(typeDefSymbol->IsClassType() || typeDefSymbol->IsEnumType());
-			}
-		}
 		void ValidateGeneratorCoreSemantic(SymbolManager* manager)
 		{
 			CollectHeadInfo(manager);
@@ -1220,7 +1201,6 @@ namespace ztl
 			ValidateGeneratePathStructure(manager, pathMap);
 			AnalyzeClassChoiceField(manager);
 			GetStartSymbol(manager);
-			CollectChoiceFieldMap(manager);
 			//LogGeneratePath(L"test.txt", pathMap);
 		}
 	}

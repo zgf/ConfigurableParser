@@ -10,7 +10,7 @@ namespace ztl
 			:machine(_machine),
 			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
 			terminateMap(make_shared<TerminateMapType>()),
-			rightRecursionMap(make_shared<unordered_map<PDAEdge*,vector<wstring>>>()),
+			rightRecursionMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
 			rootNumber(-1)
 		{
 			assert(machine->GetRoot() != nullptr);
@@ -23,6 +23,11 @@ namespace ztl
 		PDANode* GeneralJumpInfo::GetRoot()const
 		{
 			return machine->GetRoot();
+		}
+
+		PushDownAutoMachine * GeneralJumpInfo::GetMachine() const
+		{
+			return machine;
 		}
 
 		void GeneralJumpInfo::CacheJumpInfo()
@@ -46,8 +51,8 @@ namespace ztl
 				}
 			}
 		}
-	
-		vector<wstring>::const_iterator FindRightRecursionPosition( vector<wstring>::const_iterator begin, vector<wstring>::const_iterator end)
+
+		vector<wstring>::const_iterator FindRightRecursionPosition(vector<wstring>::const_iterator begin, vector<wstring>::const_iterator end)
 		{
 			unordered_set<wstring> sign;
 			return find_if(begin, end, [&sign](const wstring& value)
@@ -113,7 +118,6 @@ namespace ztl
 			}
 
 			return result;
-
 		}
 		bool IsRightRecursionGrammar(const vector<wstring>&ruleInfos)
 		{
@@ -121,7 +125,7 @@ namespace ztl
 			return end != ruleInfos.end();
 		}
 		//右递归的ruleRquire转成非右递归的形式用来匹配RuleStack.
-		vector<wstring>	rightRecursionToNormalRules(const vector<RightRecursionInfo>&rightRecursionPositions,const vector<wstring>& ruleRequire)
+		vector<wstring>	rightRecursionToNormalRules(const vector<RightRecursionInfo>&rightRecursionPositions, const vector<wstring>& ruleRequire)
 		{
 			vector<wstring> nonRightRecursionList;
 			ptrdiff_t lastPosition = 0;
@@ -133,7 +137,7 @@ namespace ztl
 				}
 				lastPosition = rightIter.back;
 			}
-			for(; lastPosition < (ptrdiff_t)ruleRequire.size(); ++lastPosition)
+			for(; lastPosition < (ptrdiff_t) ruleRequire.size(); ++lastPosition)
 			{
 				nonRightRecursionList.emplace_back(ruleRequire[lastPosition]);
 			}
@@ -141,10 +145,8 @@ namespace ztl
 		}
 		void GeneralJumpInfo::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
-			if (!ruleStack.empty())
+			if(!ruleStack.empty())
 			{
-			
-
 				for(size_t i = 0; i < ruleStack.size(); ++i)
 				{
 					auto&& wrap = ruleStack[i];
@@ -156,13 +158,12 @@ namespace ztl
 			if(!ruleInfos.empty())
 			{
 				auto areas = FindRightRecursionArea(ruleInfos);
-				if (areas.size()!=0)
+				if(areas.size() != 0)
 				{
 					//有右递归
 					this->rightRecursionMap->insert({ edge,ruleInfos });
 
 					this->ruleRequiresMap->insert({ edge,rightRecursionToNormalRules(areas,ruleInfos) });
-
 				}
 				else
 				{
@@ -257,7 +258,7 @@ namespace ztl
 			assert(ruleRequiresMap->find(edge) != ruleRequiresMap->end());
 			return (*ruleRequiresMap)[edge];
 		}
-		
+
 		void GeneralJumpInfo::CacheEdgeInfo(PDAEdge * edge)
 		{
 			auto&& actions = edge->GetActions();
@@ -291,11 +292,10 @@ namespace ztl
 						assert(false);
 						break;
 					case ztl::general_parser::ActionType::Assign:
-						if (!iter.GetTo().empty())
+						if(!iter.GetTo().empty())
 						{
 							ruleStack.emplace_back(iter);
 							nodeStack.emplace_back(iter);
-
 						}
 						break;
 					case ztl::general_parser::ActionType::Using:
@@ -311,10 +311,153 @@ namespace ztl
 			CacheTerminateMap(edge);
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
 		}
-	
+		wstring ActionTypeToWString(ActionType type)
+		{
+			wstring result;
+			switch(type)
+			{
+				case ztl::general_parser::ActionType::Using:
+					result = L"Using";
+					break;
+				case ztl::general_parser::ActionType::Shift:
+					result = L"Shift";
+
+					break;
+				case ztl::general_parser::ActionType::Reduce:
+					result = L"Reduce";
+
+					break;
+				case ztl::general_parser::ActionType::Terminate:
+					result = L"Terminate";
+
+					break;
+				case ztl::general_parser::ActionType::NonTerminate:
+					result = L"NonTerminate";
+
+					break;
+				case ztl::general_parser::ActionType::Create:
+					result = L"Create";
+
+					break;
+				case ztl::general_parser::ActionType::Assign:
+					result = L"Assign";
+
+					break;
+				case ztl::general_parser::ActionType::Setter:
+					result = L"Setter";
+					break;
+				case ztl::general_parser::ActionType::Epsilon:
+					result = L"Epsilon";
+					break;
+				default:
+					assert(false);
+					break;
+			}
+			return result;
+		}
+		
+		using lambdaType = wstring(*)(const ActionWrap&);
+		unordered_map<ActionType, lambdaType> InitActionTypeAndGrammarLogMap()
+		{
+			unordered_map<ActionType, lambdaType> actionMap;
+			auto functor = [](const ActionWrap& wrap)->wstring
+			{
+				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue() +
+					L" : " + wrap.GetFrom() + L":" + wrap.GetTo();
+			};
+			vector<ActionType> ActionTypeList = {
+				ActionType::Assign,
+				ActionType::Create,
+				ActionType::Epsilon,
+				ActionType::NonTerminate,
+				ActionType::Reduce,
+				ActionType::Setter,
+				ActionType::Shift,
+				ActionType::Terminate,
+				ActionType::Using
+			};
+			for(auto&& iter : ActionTypeList)
+			{
+				actionMap.insert(make_pair(iter, functor));
+			}
+			return actionMap;
+		}
+		vector<wstring> ActionWrapStringList(const vector<ActionWrap>& wrapList, unordered_map<ActionType, lambdaType>& actionMap)
+		{
+			vector<wstring> result;
+			std::for_each(wrapList.begin(), wrapList.end(), [&result, &actionMap](auto&& element)
+			{
+				result.emplace_back(L"action:" + actionMap[element.GetActionType()](element) + L";");
+			});
+			return result;
+		}
+		void LogGraphInfo(const wstring& fileName,PushDownAutoMachine& machine)
+		{
+			unordered_set<PDANode*>sign;
+			deque<PDANode*> queue;
+			wofstream output(fileName);
+			auto actionMap = InitActionTypeAndGrammarLogMap();
+			queue.emplace_back(machine.GetRoot());
+			while(!queue.empty())
+			{
+				PDANode* front = queue.front();
+				queue.pop_front();
+				if(sign.find(front) == sign.end())
+				{
+					sign.insert(front);
+					auto edges = front->GetNexts();
+					output << L"currenIndex: " << front->GetNumber()<<endl;
+					for(auto&& colsIter : edges)
+					{
+						output << L" targetIndex: " << to_wstring(colsIter->GetTarget()->GetNumber()) << endl;
+
+						auto&& actionWrapList = colsIter->GetActions();
+						auto&& actionWrapStringList = ActionWrapStringList(actionWrapList, actionMap);
+						for(auto&& iter : actionWrapStringList)
+						{
+							output << L"			" << iter << endl;
+						}
+					}
+					for(auto&& edgeIter : front->GetNexts())
+					{
+						queue.emplace_back(edgeIter->GetTarget());
+					}
+				}
+			}
+		}
 		void CreateJumpInfo(GeneralJumpInfo& jumpTable)
 		{
 			jumpTable.CacheJumpInfo();
 		}
 	}
 }
+/*
+
+auto actionMap = InitActionTypeAndGrammarLogMap();
+auto&& table = jumpTable.GetJumpTable();
+wofstream output(fileName);
+for(auto rowsIter : table)
+{
+auto&& nodeIndex = rowsIter.first;
+auto&&  edges = rowsIter.second;
+sort(edges.begin(), edges.end(), [](const JumpItem& left, const JumpItem& right)
+{
+return left.targetIndex < right.targetIndex;
+});
+output << L"NodeIndex:" + to_wstring(nodeIndex) << endl;
+
+for(auto&& colsIter : edges)
+{
+auto&& targetNodeIndex = colsIter.targetIndex;
+output << L" targetIndex: " << to_wstring(targetNodeIndex) << endl;
+
+auto&& actionWrapList = colsIter.edges->GetActions();
+auto&& actionWrapStringList = ActionWrapStringList(actionWrapList, actionMap);
+for(auto&& iter : actionWrapStringList)
+{
+output << L"			" << iter << endl;
+}
+}
+}
+
+*/

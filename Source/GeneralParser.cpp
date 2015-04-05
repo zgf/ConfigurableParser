@@ -84,6 +84,10 @@ namespace ztl
 				throw ztl_exception(L"Parser Result Can't convergence!" + GetParserInfo(parserStates.front()));
 			}
 		}
+		PushDownAutoMachine&  GeneralParser::GetMachine()const
+		{
+			return *machine;
+		}
 		void GeneralParser::SaveHeterogeneousNode(const shared_ptr<void>& node)
 		{
 			pools.SetHeterogeneousPool(node);
@@ -99,6 +103,10 @@ namespace ztl
 			{
 				while(parserStates.front().tokenIndex != (int) pools.GetTokenPool().size())
 				{
+					if (parserStates.front().tokenIndex==50)
+					{
+						int a = 0;
+					}
 					auto edges = EdgeResolve(parserStates.front());
 					SaveEdge(parserStates, edges);
 					HandleRightRecursionEdge(parserStates.front());
@@ -234,7 +242,6 @@ namespace ztl
 			EdgeInfo& iter, const vector<GeneralTreeNode*>& createdNodeStack)
 		{
 			auto& signMap = wstringToTreeNodeMap;
-			auto& chioceFiledMap = manager->GetChoiceFieldMap();
 			auto actions = iter.edge->GetActions();
 
 			GeneralTreeNode current = *createdNodeStack.back();

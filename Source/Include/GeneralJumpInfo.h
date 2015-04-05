@@ -37,7 +37,7 @@ namespace ztl
 		public:
 			SymbolManager*  GetSymbolManager()const;
 			PDANode*		GetRoot()const;
-			
+			PushDownAutoMachine* GetMachine()const;
 			void													CacheJumpInfo();
 			void												    CacheEdgeInfo(PDAEdge* edge);
 			void													CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos);
@@ -60,6 +60,7 @@ namespace ztl
 		};
 		void CreateJumpInfo(GeneralJumpInfo& jumpTable);
 		vector<RightRecursionInfo> FindRightRecursionArea(const vector<wstring>&ruleInfos);
+		void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine);
 
 	}
 }

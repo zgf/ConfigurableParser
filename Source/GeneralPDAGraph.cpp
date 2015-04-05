@@ -46,7 +46,7 @@ namespace ztl
 				}
 				else
 				{
-					ActionWrap wrap(ActionType::Terminate, node->name, ruleName, ruleName, L"");
+					ActionWrap wrap(ActionType::Terminate, node->name , machine->GetSymbolManager()->GetGlobalSymbol()->GetSubSymbolByName(node->name)->GetDescriptorSymbol()->GetName(), ruleName, L"");
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 			}
@@ -183,82 +183,7 @@ namespace ztl
 			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second, rootRuleName);
 		}
 
-		void DirectAddGrammarNumberOnPathEdge(PDAEdge* root, int count, unordered_set<PDAEdge*>& sign, unordered_map<int, PDAEdge*>& numberToRootMap)
-		{
-			sign.insert(root);
-			root->SetGrammarNumber(count);
-			for(auto&&edgeIter : root->GetTarget()->GetNexts())
-			{
-				if(sign.find(edgeIter) == sign.end())
-				{
-					DirectAddGrammarNumberOnPathEdge(edgeIter, count, sign, numberToRootMap);
-				}
-			}
-		}
-		void AddGrammarNumberOnPathEdge(PDAEdge* root, int count, unordered_set<PDAEdge*>& sign, unordered_map<int, PDAEdge*>& numberToRootMap)
-		{
-			sign.insert(root);
-			if(root->GetGrammarNumber() == -1)
-			{
-				root->SetGrammarNumber(count);
-				for(auto&&edgeIter : root->GetTarget()->GetNexts())
-				{
-					if(sign.find(edgeIter) == sign.end())
-					{
-						AddGrammarNumberOnPathEdge(edgeIter, count, sign, numberToRootMap);
-					}
-				}
-			}
-			else
-			{
-				assert(numberToRootMap.find(root->GetGrammarNumber()) != numberToRootMap.end());
-				unordered_set<PDAEdge*> signSet;
-				DirectAddGrammarNumberOnPathEdge(numberToRootMap[root->GetGrammarNumber()], count, signSet, numberToRootMap);
-			}
-		}
-		void AddGrammarNumberToEdge(PushDownAutoMachine& machine)
-		{
-			auto count = 0;
-			unordered_map<int, PDAEdge*> numberToRootMap;
-			for(auto&& ruleIter : machine.GetPDAMap())
-			{
-				for(auto&& grammarIter : ruleIter.second.first->GetNexts())
-				{
-					unordered_set<PDAEdge*> sign;
-					AddGrammarNumberOnPathEdge(grammarIter, count, sign, numberToRootMap);
-					numberToRootMap.insert(make_pair(count, grammarIter));
-					++count;
-				}
-			}
-		}
-		void AddGrammarNumberToAction(PDAEdge* root, unordered_set<PDAEdge*>& sign, PushDownAutoMachine& machine)
-		{
-			if(sign.find(root) == sign.end())
-			{
-				sign.insert(root);
-				machine.SetEdgeGrammarNumberToAction(root);
-			}
-
-			for(auto&&edgeIter : root->GetTarget()->GetNexts())
-			{
-				if(sign.find(edgeIter) == sign.end())
-				{
-					AddGrammarNumberToAction(edgeIter, sign, machine);
-				}
-			}
-		}
-		void AddGrammarNumberToAction(PushDownAutoMachine& machine)
-		{
-			unordered_set<PDAEdge*> sign;
-			for(auto&& ruleIter : machine.GetPDAMap())
-			{
-				for(auto&& grammarIter : ruleIter.second.first->GetNexts())
-				{
-					AddGrammarNumberToAction(grammarIter, sign, machine);
-				}
-			}
-		}
-
+	
 		//可合并节点含义
 
 		//同一个起点,包含同样信息的边,到达不同的节点,那么这个不同节点可以合并成同一个节点
@@ -457,14 +382,13 @@ namespace ztl
 					auto actions = edgeIter->GetActions();
 					auto&& nonTermiateIter = actions.begin();
 					auto nonTerminateName = nonTermiateIter->GetName();
-					auto number = edgeIter->GetGrammarNumber();
 					machine.DeleteEdge(edgeIter);
 					auto findIter = machine.GetPDAMap().find(nonTerminateName);
 					assert(findIter != machine.GetPDAMap().end());
 					assert(actions[0].GetActionType() == ActionType::NonTerminate);
 					actions.erase(nonTermiateIter);
-					machine.AddEdge(findIter->second.second, target, actions, number);
-					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName, nonTerminateName, ruleName, nonTerminateName, number), number);
+					machine.AddEdge(findIter->second.second, target, actions);
+					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName, nonTerminateName, ruleName, nonTerminateName));
 				}
 			}
 		}
@@ -490,8 +414,6 @@ namespace ztl
 					{
 						if(i->GetName() == newActions[index].GetValue() && i != end)
 						{
-							//newActions.clear();
-							//return;
 							auto count = 0;
 							for_each(i, end, [&count, type](const ActionWrap& wrap)
 							{
@@ -531,7 +453,6 @@ namespace ztl
 				{
 					assert(iter.GetActionType() != ActionType::Epsilon&&iter.GetActionType() != ActionType::NonTerminate);
 					newActions.emplace_back(iter);
-				//	assert(iter.GetGrammarNumber() != -1);
 				}
 			});
 
@@ -682,64 +603,6 @@ namespace ztl
 				machine.DeleteEdge(iter);
 			}
 		}
-		//void CollectCreateNodeRequires(PushDownAutoMachine& machine)
-		//{
-		//	//合并左公因子动作附加文法之后调用
-		//	unordered_map<int, vector<PDAEdge*>> startMap;
-		//	unordered_set<PDAEdge*> sign;
-		//	//从Root表达式开始
-		//	for(auto&& ruleIter : machine.GetPDAMap())
-		//	{
-		//		for(auto&&edgeIter : ruleIter.second.first->GetNexts())
-		//		{
-		//			auto number = edgeIter->GetGrammarNumber();
-		//			if(startMap.find(number) == startMap.end())
-		//			{
-		//				startMap[number];
-		//			}
-		//			startMap[number].emplace_back(edgeIter);
-		//			if(machine.GetCreatedNodeRequiresMap().find(number) == machine.GetCreatedNodeRequiresMap().end())
-		//			{
-		//				machine.GetCreatedNodeRequiresMap()[number];
-		//			}
-		//		}
-		//	}
-		//	for(auto&&iter : startMap)
-		//	{
-		//		if(iter.second.size() == 1)
-		//		{
-		//			machine.CacheCrreatNodeInfoFromLeft(iter.second[0], sign);
-		//		}
-		//		//空间留着,后面从右往左搜
-		//		iter.second.clear();
-		//	}
-		//	for(auto&& ruleIter : machine.GetPDAMap())
-		//	{
-		//		for(auto&&edgeIter : ruleIter.second.second->GetFronts())
-		//		{
-		//			auto number = edgeIter->GetGrammarNumber();
-		//			startMap[number].emplace_back(edgeIter);
-		//		}
-		//	}
-		//	for(auto&&iter : startMap)
-		//	{
-		//		if(iter.second.size() == 1)
-		//		{
-		//			machine.CacheCrreatNodeInfoFromRight(iter.second[0], sign);
-		//		}
-		//	}
-		//}
-		//void CheckAllActionHasGrammarNumber(PushDownAutoMachine& machine)
-		//{
-		//	CollcetGraphEdgeByRoot(machine, [](PDAEdge* edge)
-		//	{
-		//		for (auto&&iter :edge->GetActions())
-		//		{
-		//			assert(iter.GetGrammarNumber() != -1);
-		//		}
-		//		return false;
-		//	});
-		//}
 		void CollcetPathNodeFieldInfo(PushDownAutoMachine& machine, PDAEdge* edge,
 			unordered_set<PDAEdge*>&sign, vector<PDAEdge*>& signList, vector<PDAEdge*>& edgeList, vector<wstring>& fields)
 		{
@@ -823,17 +686,10 @@ namespace ztl
 			AddPDAToPDAMachine(machine, PDAMap);
 			MergeGrammarCommonFactor(machine);
 			CollcetPathNodeFieldInfo(machine);
-			//添加文法编号
-			//AddGrammarNumberToEdge(machine);
-			//添加动作编号
-			//AddGrammarNumberToAction(machine);
-			//收集每条路径的节点要求
-			//CollectCreateNodeRequires(machine);
 			MergeEpsilonPDAGraph(machine);
 			//添加结束节点.
 			AddFinishNode(machine);
 			MergePDAEpsilonSymbol(machine);
-			//	CheckAllActionHasGrammarNumber(machine);
 		}
 	}
 }

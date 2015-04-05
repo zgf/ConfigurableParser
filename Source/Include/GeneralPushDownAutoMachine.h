@@ -32,27 +32,15 @@ namespace ztl
 			wstring value;//setter value assgin ruleName
 			wstring current;//当前文法
 			wstring next;//下一个文法
-			int		grammarNumber = -1;
 		public:
 			ActionWrap() = default;
 
 			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value, const wstring& _current, const wstring& _next)
-				: ActionWrap(_action, _name, _value, _current, _next, -1)
-			{
-			}
-			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value, const wstring& _current, const wstring& _next, int number)
-				: action(_action), name(_name), value(_value), current(_current), next(_next), grammarNumber(number)
+				: action(_action),name( _name),value( _value), current(_current), next(_next)
 			{
 			}
 			~ActionWrap() = default;
-			int GetGrammarNumber() const
-			{
-				return grammarNumber;
-			}
-			void SetGrammarNumber(int val)
-			{
-				grammarNumber = val;
-			}
+		
 			ActionType GetActionType()const
 			{
 				return action;
@@ -114,23 +102,16 @@ namespace ztl
 			PDAEdge(const PDAEdge&) = default;
 			PDAEdge& operator=(PDAEdge&&) = default;
 			PDAEdge& operator=(const PDAEdge&) = default;
-			PDAEdge(const ActionWrap& wrap, PDANode* _source, PDANode* _target, int _number)
+			PDAEdge(const ActionWrap& wrap, PDANode* _source, PDANode* _target,int _number)
 				:target(_target), source(_source), number(_number)
 			{
 				actions.emplace_back(wrap);
 			}
-			PDAEdge(PDANode* _source, PDANode* _target, int _number)
-				: target(_target), source(_source), number(_number)
+			PDAEdge(PDANode* _source, PDANode* _target,int _number)
+				: target(_target), source(_source),number(_number)
 			{
 			}
-			int GetGrammarNumber() const
-			{
-				return grammarNumber;
-			}
-			void SetGrammarNumber(int val)
-			{
-				grammarNumber = val;
-			}
+			
 			const vector<ActionWrap>& GetActions()const
 			{
 				return actions;
@@ -192,7 +173,6 @@ namespace ztl
 			PDANode* target;
 			PDANode* source;
 			vector<ActionWrap> actions;
-			int grammarNumber = -1;
 		};
 		class PDANode
 		{
@@ -246,9 +226,7 @@ namespace ztl
 			PDANode*					NewNode();
 			PDANode*					GetRoot() const;
 			void						AddEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
-			void						AddEdge(PDANode* source, PDANode* target, const ActionWrap& wrap, int number);
 			void						AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList);
-			void						AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList, int number);
 			void						DeleteEdge(PDAEdge* target);
 
 			void						AddGeneratePDA(wstring ruleName, const pair<PDANode *, PDANode*>& pairNode);
@@ -263,7 +241,6 @@ namespace ztl
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-			void						SetEdgeGrammarNumberToAction(PDAEdge* edge);
 			void CacheCrreatNodeInfoFromLeft(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			void CacheCrreatNodeInfoFromRight(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			unordered_map<wstring, CreateInfo>& GetCreatedNodeRequiresMap();

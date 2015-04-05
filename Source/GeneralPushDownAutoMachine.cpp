@@ -30,29 +30,21 @@ namespace ztl
 			return PDAMap;
 		}
 
-		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap& wrap)
-		{
-			AddEdge(source, target, wrap, -1);
-		}
-		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap & wrap, int number)
+		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap & wrap)
 		{
 			auto edge = NewEdge(source, target, wrap);
-			edge->SetGrammarNumber(number);
 			source->nexts->push_back(edge);
 			target->fronts->push_back(edge);
 		}
-		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const vector<ActionWrap>& wrapList)
-		{
-			AddEdge(source, target, wrapList, -1);
-		}
-		void PushDownAutoMachine::AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList, int number)
+
+		void PushDownAutoMachine::AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList)
 		{
 			auto edge = NewEdge(source, target);
 			edge->actions = wrapList;
-			edge->SetGrammarNumber(number);
 			source->nexts->push_back(edge);
 			target->fronts->push_back(edge);
 		}
+
 		void PushDownAutoMachine::DeleteEdge(PDAEdge* target)
 		{
 			auto frontNode = target->GetSource();
@@ -96,16 +88,6 @@ namespace ztl
 			return findIter->second.first;
 		}
 
-		void PushDownAutoMachine::SetEdgeGrammarNumberToAction(PDAEdge * edge)
-		{
-			for(auto&& actionIter : edge->actions)
-			{
-				assert(edge->GetGrammarNumber() != -1);
-				assert(actionIter.GetGrammarNumber() == -1);
-				actionIter.SetGrammarNumber(edge->GetGrammarNumber());
-			}
-		}
-
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
 			auto mergeNode = MergeIndependentNodes(left.second, right.first);
@@ -127,9 +109,9 @@ namespace ztl
 					return wrap.GetActionType() == ActionType::Create || wrap.GetActionType() == ActionType::Using;
 				}) != frontIter->GetActions().end())
 				{
-				//	assert(frontIter->GetGrammarNumber() != -1);
-				//	assert(frontIter->GetActions().front().GetGrammarNumber() == frontIter->GetGrammarNumber());
-					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName, L"", frontIter->GetGrammarNumber()));
+					//	assert(frontIter->GetGrammarNumber() != -1);
+					//	assert(frontIter->GetActions().front().GetGrammarNumber() == frontIter->GetGrammarNumber());
+					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName, L""));
 				}
 			}
 		}
@@ -215,108 +197,12 @@ namespace ztl
 			assert(!this->GetSymbolManager()->GetStartRuleList().empty());
 			return this->GetSymbolManager()->GetStartRuleList()[0];
 		}
-		//void PushDownAutoMachine::CacheCrreatNodeInfoFromLeft(PDAEdge*edge, unordered_set<PDAEdge*>& sign)
-		//{
-		//	if(sign.find(edge) == sign.end())
-		//	{
-		//		sign.insert(edge);
-		//		auto node = edge->GetTarget();
-		//		auto number = edge->GetGrammarNumber();
-		//		auto& info = createdNodeRequiresMap[number];
-		//		//处理action
-		//		for(auto&&action : edge->GetActions())
-		//		{
-		//			if(action.GetActionType() == ActionType::Create)
-		//			{
-		//				info.createType = action.GetName();
-		//			}
-		//			else if(action.GetActionType() == ActionType::Assign || action.GetActionType() == ActionType::Setter)
-		//			{
-		//				info.fieldNames.insert(action.GetName());
-		//			}
-		//		}
-		//		if(node->GetNexts().size() == 1)
-		//		{
-		//			CacheCrreatNodeInfoFromLeft(node->GetNexts()[0], sign);
-		//		}
-		//	}
 
-		//}
-		//void PushDownAutoMachine::CacheCrreatNodeInfoFromRight(PDAEdge*edge, unordered_set<PDAEdge*>& sign)
-		//{
-		//	if(sign.find(edge) == sign.end())
-		//	{
-		//		sign.insert(edge);
-		//		auto node = edge->GetSource();
-		//		auto number = edge->GetGrammarNumber();
-		//		auto& info = createdNodeRequiresMap[number];
-		//		//处理action
-		//		for(auto&&action : edge->GetActions())
-		//		{
-		//			if(action.GetActionType() == ActionType::Create)
-		//			{
-		//				info.createType = action.GetName();
-		//			}
-		//			else if(action.GetActionType() == ActionType::Assign || action.GetActionType() == ActionType::Setter)
-		//			{
-		//				info.fieldNames.insert(action.GetName());
-		//			}
-		//		}
-		//		if(node->GetFronts().size() == 1)
-		//		{
-		//			CacheCrreatNodeInfoFromRight(node->GetFronts()[0], sign);
-		//		}
-		//	}
-
-		//}
 		unordered_map<wstring, CreateInfo>& PushDownAutoMachine::GetCreatedNodeRequiresMap()
 		{
 			return createdNodeRequiresMap;
 		}
+
 		
-		wstring ActionTypeToWString(ActionType type)
-		{
-			wstring result;
-			switch(type)
-			{
-				case ztl::general_parser::ActionType::Using:
-					result = L"Using";
-					break;
-				case ztl::general_parser::ActionType::Shift:
-					result = L"Shift";
-
-					break;
-				case ztl::general_parser::ActionType::Reduce:
-					result = L"Reduce";
-
-					break;
-				case ztl::general_parser::ActionType::Terminate:
-					result = L"Terminate";
-
-					break;
-				case ztl::general_parser::ActionType::NonTerminate:
-					result = L"NonTerminate";
-
-					break;
-				case ztl::general_parser::ActionType::Create:
-					result = L"Create";
-
-					break;
-				case ztl::general_parser::ActionType::Assign:
-					result = L"Assign";
-
-					break;
-				case ztl::general_parser::ActionType::Setter:
-					result = L"Setter";
-					break;
-				case ztl::general_parser::ActionType::Epsilon:
-					result = L"Epsilon";
-					break;
-				default:
-					assert(false);
-					break;
-			}
-			return result;
-		}
 	}
 }

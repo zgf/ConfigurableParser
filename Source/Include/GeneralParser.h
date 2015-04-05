@@ -16,7 +16,7 @@ namespace ztl
 		struct CreateInfo;
 		struct GeneralTokenDefine;
 		PAIR_BUILDER(EdgeInfo, PDAEdge*, edge, bool, rightRecursion);
-	
+
 		struct ParserState
 		{
 		public:
@@ -65,13 +65,13 @@ namespace ztl
 		class GeneralNodePools
 		{
 		public:
-			GeneralNodePools()  = default;
+			GeneralNodePools() = default;
 			~GeneralNodePools() noexcept = default;
-			GeneralNodePools(GeneralNodePools&&)  = default;
-			GeneralNodePools(const GeneralNodePools&)  = default;
-			GeneralNodePools& operator=(GeneralNodePools&&)  = default;
-			GeneralNodePools& operator=(const GeneralNodePools&)   = default;
-			
+			GeneralNodePools(GeneralNodePools&&) = default;
+			GeneralNodePools(const GeneralNodePools&) = default;
+			GeneralNodePools& operator=(GeneralNodePools&&) = default;
+			GeneralNodePools& operator=(const GeneralNodePools&) = default;
+
 		public:
 			const vector<shared_ptr<GeneralTreeNode>>& GetGeneralNodePool()const
 			{
@@ -93,7 +93,7 @@ namespace ztl
 			{
 				tokenPool = move(tokens);
 			}
-			const vector<shared_ptr<TokenInfo>>& GetTerminatePool()const 
+			const vector<shared_ptr<TokenInfo>>& GetTerminatePool()const
 			{
 				return terminatePool;
 			}
@@ -101,7 +101,7 @@ namespace ztl
 			{
 				terminatePool.emplace_back(infos);
 			}
-			
+
 			void SetHeterogeneousPool(const shared_ptr<void>& element)
 			{
 				heterogeneousPool.emplace_back(element);
@@ -112,7 +112,6 @@ namespace ztl
 			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
 			vector<shared_ptr<TokenInfo>>		 terminatePool;
 			vector<shared_ptr<void>>			 heterogeneousPool;
-
 		};
 		class GeneralParser
 		{
@@ -134,6 +133,8 @@ namespace ztl
 			void SaveHeterogeneousNode(const shared_ptr<void>& node);
 			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
 			shared_ptr<TokenInfo> GetTermNodeByIndex(int index)const;
+			PushDownAutoMachine&  GetMachine()const;
+
 		private:
 			vector<EdgeInfo> EdgeResolve(ParserState& state);
 			vector<EdgeInfo> TerminateResolve(ParserState& state);
@@ -157,14 +158,13 @@ namespace ztl
 
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
 			void CheckParserResultConvergence();
-
 		private:
 			GeneralNodePools					 pools;
 			GeneralTreeNode*					 generalTreeRoot;
 			deque<ParserState>					 parserStates;
 
 			shared_ptr<PushDownAutoMachine>		 machine;
-			shared_ptr<GeneralJumpInfo>	 jumpInfos;
+			shared_ptr<GeneralJumpInfo>			jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
 			unordered_map<wstring, shared_ptr<GeneralTreeNode>> wstringToTreeNodeMap;
 		};
