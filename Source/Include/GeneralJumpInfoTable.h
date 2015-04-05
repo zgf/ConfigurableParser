@@ -13,7 +13,12 @@ namespace ztl
 	
 		PAIR_BUILDER(JumpItem, int, targetIndex, PDAEdge*, edges);
 		PAIR_BUILDER(CreateInfo, wstring, createType, wstring, fieldName);
-
+		struct RightRecursionInfo
+		{
+			bool isRecursion = false;
+			int begin;
+			int back;
+		};
 		struct TerminateToEdgesMapType
 		{
 			unordered_map<wstring, vector<PDAEdge*>> termnateToEdgesMap;
@@ -42,16 +47,20 @@ namespace ztl
 			vector<PDAEdge*>*										GetPDAEdgeByTerminate(const int number, const wstring& terminate)const;
 			int														GetRootNumber()const;
 			const vector<wstring>&									GetRuleRequires(PDAEdge* edge)const;
+			bool													IsRightRecursionEdge(PDAEdge* edge)const;
+			const  vector<wstring>&									GetRightRecursionRuleRequires(PDAEdge* edge)const;
 			const vector<CreateInfo>*								GetCreateNodeRequires(PDAEdge* edge)const;
 		private:
 			PushDownAutoMachine*															 machine;
 			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 ruleRequiresMap;
+			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 rightRecursionMap;
 			shared_ptr<unordered_map<PDAEdge*, vector<CreateInfo>>>							 createdNodeRequiresMap;
 			shared_ptr<TerminateMapType>													 terminateMap;
 			int																				 rootNumber;
 		
 		};
 		void CreateJumpInfoTable(GeneralJumpInfoTable& jumpTable);
+		vector<RightRecursionInfo> FindRightRecursionArea(const vector<wstring>&ruleInfos);
 
 	}
 }

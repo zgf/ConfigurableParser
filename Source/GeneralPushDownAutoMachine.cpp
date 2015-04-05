@@ -87,14 +87,13 @@ namespace ztl
 
 		PDANode * PushDownAutoMachine::GetRoot() const
 		{
-			assert(root != nullptr);
-			return root;
+			assert(!PDAMap.empty());
+			auto findIter = PDAMap.find(this->GetRootRuleName());
+			assert(findIter != PDAMap.end());
+			return findIter->second.first;
 		}
 
-		void PushDownAutoMachine::SetRoot(PDANode * val)
-		{
-			root = val;
-		}
+		
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
@@ -194,12 +193,6 @@ namespace ztl
 		}
 
 
-
-		void PushDownAutoMachine::CreateRoot()
-		{
-			assert(GetPDAMap().size() != 0);
-			root = this->GetPDAMap()[this->GetRootRuleName()].first;
-		}
 
 
 

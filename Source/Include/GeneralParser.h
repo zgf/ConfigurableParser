@@ -16,12 +16,7 @@ namespace ztl
 		struct CreateInfo;
 		struct GeneralTokenDefine;
 		PAIR_BUILDER(EdgeInfo, PDAEdge*, edge, bool, rightRecursion);
-		struct RightRecursionInfo
-		{
-			bool isRecursion = false;
-			int begin;
-			int back;
-		};
+	
 		struct ParserState
 		{
 		public:
@@ -124,7 +119,6 @@ namespace ztl
 			shared_ptr<GeneralJumpInfoTable>	 jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
 			shared_ptr<GeneralTableDefine>		 tableDefine;
-
 			unordered_map<wstring, shared_ptr<GeneralTreeNode>> wstringToTreeNodeMap;
 		};
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root);

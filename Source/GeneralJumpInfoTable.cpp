@@ -11,6 +11,7 @@ namespace ztl
 			createdNodeRequiresMap(make_shared<unordered_map<PDAEdge*, vector<CreateInfo>>>()),
 			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
 			terminateMap(make_shared<TerminateMapType>()),
+			rightRecursionMap(make_shared<unordered_map<PDAEdge*,vector<wstring>>>()),
 			rootNumber(-1)
 		{
 			assert(machine->GetRoot() != nullptr);
@@ -57,6 +58,98 @@ namespace ztl
 				this->createdNodeRequiresMap->insert(make_pair(edge, createInfos));
 			}
 		}
+		vector<wstring>::const_iterator FindRightRecursionPosition( vector<wstring>::const_iterator begin, vector<wstring>::const_iterator end)
+		{
+			unordered_set<wstring> sign;
+			return find_if(begin, end, [&sign](const wstring& value)
+			{
+				if(sign.find(value) == sign.end())
+				{
+					sign.insert(value);
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			});
+		}
+		vector<wstring>::const_iterator FindRightRecursionPosition(const vector<wstring>&ruleInfos)
+		{
+			return FindRightRecursionPosition(ruleInfos.begin(), ruleInfos.end());
+		}
+		//end是超尾
+
+		RightRecursionInfo FindRightRecursionArea(vector<wstring>::const_iterator& begin, vector<wstring>::const_iterator end)
+		{
+			RightRecursionInfo result;
+			auto back = FindRightRecursionPosition(begin, end);
+			if(back == end)
+			{
+				result.isRecursion = false;
+			}
+			else
+			{
+				result.back = back - begin;
+				result.isRecursion = true;
+				auto first = find_if(begin, back, [&back](const wstring& value)
+				{
+					return value == *back;
+				});
+				assert(first != back);
+				result.begin = first - begin;
+			}
+			return result;
+		}
+		vector<RightRecursionInfo> FindRightRecursionArea(const vector<wstring>&ruleInfos)
+		{
+			vector<RightRecursionInfo> result;
+			for(auto ruleInfosBegin = ruleInfos.begin(); ruleInfosBegin < ruleInfos.end(); ++ruleInfosBegin)
+			{
+				auto back = FindRightRecursionPosition(ruleInfosBegin, ruleInfos.end());
+				if(back != ruleInfos.end())
+				{
+					RightRecursionInfo temp;
+					temp.back = back - ruleInfos.begin();
+					temp.isRecursion = true;
+					auto first = find_if(ruleInfos.begin(), back, [&back](const wstring& value)
+					{
+						return value == *back;
+					});
+					assert(first != back&&first != ruleInfos.end());
+					temp.begin = first - ruleInfos.begin();
+					result.emplace_back(move(temp));
+					ruleInfosBegin = ruleInfos.begin() + result.back().back;
+				}
+			}
+
+			return result;
+
+		}
+		bool IsRightRecursionGrammar(const vector<wstring>&ruleInfos)
+		{
+			auto end = FindRightRecursionPosition(ruleInfos);
+			return end != ruleInfos.end();
+		}
+		//右递归的ruleRquire转成非右递归的形式用来匹配RuleStack.
+		vector<wstring>	rightRecursionToNormalRules(const vector<RightRecursionInfo>&rightRecursionPositions,const vector<wstring>& ruleRequire)
+		{
+			vector<wstring> nonRightRecursionList;
+			auto lastPosition = 0;
+			for(auto&&rightIter : rightRecursionPositions)
+			{
+				for(auto j = lastPosition; j < rightIter.begin; ++j)
+				{
+					nonRightRecursionList.emplace_back(ruleRequire[j]);
+				}
+				lastPosition = rightIter.back;
+			}
+			for(; lastPosition < ruleRequire.size(); ++lastPosition)
+			{
+				nonRightRecursionList.emplace_back(ruleRequire[lastPosition]);
+			}
+			return nonRightRecursionList;
+		}
 		void GeneralJumpInfoTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
 			if (!ruleStack.empty())
@@ -73,12 +166,35 @@ namespace ztl
 			}
 			if(!ruleInfos.empty())
 			{
-				this->ruleRequiresMap->insert({ edge,ruleInfos });
+				auto areas = FindRightRecursionArea(ruleInfos);
+				if (areas.size()!=0)
+				{
+					//有右递归
+					this->rightRecursionMap->insert({ edge,ruleInfos });
+
+					this->ruleRequiresMap->insert({ edge,rightRecursionToNormalRules(areas,ruleInfos) });
+
+				}
+				else
+				{
+					this->ruleRequiresMap->insert({ edge,ruleInfos });
+				}
 			}
 			else
 			{
 				CacheEnterRule(edge);
 			}
+		}
+		bool  GeneralJumpInfoTable::IsRightRecursionEdge(PDAEdge* edge)const
+		{
+			auto findIter = rightRecursionMap->find(edge);
+			return findIter != rightRecursionMap->end();
+		}
+		const  vector<wstring>&		GeneralJumpInfoTable::GetRightRecursionRuleRequires(PDAEdge* edge)const
+		{
+			auto findIter = rightRecursionMap->find(edge);
+			assert(findIter != rightRecursionMap->end());
+			return findIter->second;
 		}
 		void GeneralJumpInfoTable::CacheEnterRule(PDAEdge* edge)
 		{

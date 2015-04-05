@@ -13,10 +13,7 @@ namespace ztl
 		{
 			return startRuleList;
 		}
-		void SymbolManager::SetStartRuleList(vector<wstring> val)
-		{
-			startRuleList = val;
-		}
+	
 		GeneralTableDefine * SymbolManager::GetTable()
 		{
 			return table.get();

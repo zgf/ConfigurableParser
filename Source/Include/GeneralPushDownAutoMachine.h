@@ -94,7 +94,7 @@ namespace ztl
 			friend PushDownAutoMachine;
 			
 		public:
-			PDAEdge() = default;
+			PDAEdge() = delete;
 			~PDAEdge()noexcept = default;
 			PDAEdge(PDAEdge&&)  = default;
 			PDAEdge(const PDAEdge&)  = default;
@@ -238,7 +238,6 @@ namespace ztl
 			pair<PDANode*, PDANode*>	NewNodePair();
 			PDANode*					NewNode();
 			PDANode*					GetRoot() const;
-			void						SetRoot(PDANode* val);
 			void						AddEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 
 			void						AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList);
@@ -257,7 +256,6 @@ namespace ztl
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-			void CreateRoot();
 
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
@@ -268,7 +266,6 @@ namespace ztl
 			vector<shared_ptr<PDANode>>											 nodes;
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*,PDANode*>>						 PDAMap;
-			PDANode*															 root;
 
 		public:
 

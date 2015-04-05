@@ -80,7 +80,7 @@ namespace ztl
 			}) << endl;
 		}
 		void GeneralParser::CheckParserResultConvergence()
-{
+		{
 			if(parserStates.front().createdNodeStack.size() != 1)
 			{
 				throw ztl_exception(L"Parser Result Can't convergence!" + GetParserInfo(parserStates.front()));
@@ -115,7 +115,7 @@ namespace ztl
 					parserStates.pop_front();
 				}
 			}
-			if (!ambiguityRoots.empty())
+			if(!ambiguityRoots.empty())
 			{
 				generalTreeRoot = ambiguityRoots.front();
 			}
@@ -143,79 +143,7 @@ namespace ztl
 			}
 			return RuleResolve(edges, state);
 		}
-		template<typename iterator_type>
-		auto FindRightRecursionPosition(iterator_type begin, iterator_type end)
-		{
-			unordered_set<wstring> sign;
-			return find_if(begin, end, [&sign](const wstring& value)
-			{
-				if(sign.find(value) == sign.end())
-				{
-					sign.insert(value);
-					return false;
-				}
-				else
-				{
-					return true;
-				}
-			});
-		}
-		vector<wstring>::const_iterator FindRightRecursionPosition(const vector<wstring>&ruleInfos)
-		{
-			return FindRightRecursionPosition(ruleInfos.begin(), ruleInfos.end());
-		}
-		//end是超尾
-		RightRecursionInfo FindRightRecursionArea(vector<wstring>::const_iterator& begin, vector<wstring>::const_iterator end)
-		{
-			RightRecursionInfo result;
-			auto back = FindRightRecursionPosition(begin,end);
-			if(back == end)
-			{
-				result.isRecursion = false;
-			}
-			else
-			{
-				result.back = back - begin;
-				result.isRecursion = true;
-				auto first = find_if(begin, back, [&back](const wstring& value)
-				{
-					return value == *back;
-				});
-				assert(first != back);
-				result.begin = first - begin;
-			}
-			return result;
-		}
-		vector<RightRecursionInfo> FindRightRecursionArea(const vector<wstring>&ruleInfos)
-		{
-			vector<RightRecursionInfo> result;
-			for(auto ruleInfosBegin = ruleInfos.begin(); ruleInfosBegin < ruleInfos.end();++ruleInfosBegin)
-			{
-				auto back = FindRightRecursionPosition(ruleInfosBegin, ruleInfos.end());
-				if(back != ruleInfos.end())
-				{
-					RightRecursionInfo temp;
-					temp.back = back - ruleInfos.begin();
-					temp.isRecursion = true;
-					auto first = find_if(ruleInfos.begin(), back, [&back](const wstring& value)
-					{
-						return value == *back;
-					});
-					assert(first != back&&first != ruleInfos.end());
-					temp.begin = first - ruleInfos.begin();
-					result.emplace_back(move(temp));
-					ruleInfosBegin = ruleInfos.begin()+result.back().back;
-				}
-			}
-			
-			return result;
 
-		}
-		bool IsRightRecursionGrammar(const vector<wstring>&ruleInfos)
-		{
-			auto end = FindRightRecursionPosition(ruleInfos);
-			return end != ruleInfos.end();
-		}
 		vector<EdgeInfo> GeneralParser::RuleResolve(vector<PDAEdge*>* edges, ParserState& state)
 		{
 			auto& rulePathStack = state.rulePathStack;
@@ -225,49 +153,22 @@ namespace ztl
 			vector<PDAEdge*> candicate;
 			for(size_t i = 0; i < edges->size(); ++i)
 			{
-				auto&& iter = edges->operator[](i);
+				PDAEdge* iter = (*edges)[i];
 				auto&& ruleRequire = jumpInfos->GetRuleRequires(iter);
-				auto rightRecursionPositions = FindRightRecursionArea(ruleRequire);
-				if (rightRecursionPositions.size() == 0)
+
+				if(rulePathStack.size() >= ruleRequire.size())
 				{
-					if(rulePathStack.size() >= ruleRequire.size())
+					if(std::equal(rulePathStack.rbegin(), rulePathStack.rbegin() + ruleRequire.size(), ruleRequire.begin(), ruleRequire.end()))
 					{
-						if(std::equal(rulePathStack.rbegin(), rulePathStack.rbegin() + ruleRequire.size(),ruleRequire.begin(), ruleRequire.end()))
+						if(jumpInfos->IsRightRecursionEdge(iter))
+						{
+							candicate.emplace_back(iter);
+						}
+						else
 						{
 							result.emplace_back(iter, false);
 						}
 					}
-				}
-				else
-				{
-					//TODO 这块代码写的很挫,待修改,应该缓存到JumpTableInfo里面
-					//包括正常边要求,和去除了右递归之后的边要求.
-					//ABA ->A
-					//CABA ->CA
-					//CAAB ->CAB
-					auto rulePathIter = rulePathStack.rbegin();
-					vector<wstring> nonRightRecursionList;
-					auto lastPosition = 0;
-					for (auto&&rightIter:rightRecursionPositions)
-					{
-						for(auto j = lastPosition; j < rightIter.begin;++j)
-						{
-							nonRightRecursionList.emplace_back(ruleRequire[j]);
-						}
-						lastPosition = rightIter.back;
-					}
-					for(; lastPosition < ruleRequire.size();++lastPosition)
-					{
-						nonRightRecursionList.emplace_back(ruleRequire[lastPosition]);
-					}
-					if(rulePathStack.size() >= nonRightRecursionList.size())
-					{
-						if(std::equal(rulePathStack.rbegin(), rulePathStack.rbegin() + nonRightRecursionList.size(), nonRightRecursionList.begin(), nonRightRecursionList.end()))
-						{
-							candicate.emplace_back(iter);
-						}
-					}
-					//在右递归区域内的失配加入候选
 				}
 			}
 			if(result.empty())
@@ -295,30 +196,20 @@ namespace ztl
 		{
 			if(isRightRecursionEdge)
 			{
-				auto&& ruleRequire = jumpInfos->GetRuleRequires(edge);
-				for(auto ruleRequireBegin = ruleRequire.begin(); ruleRequireBegin < ruleRequire.end();)
+				auto&& ruleRequire = jumpInfos->GetRightRecursionRuleRequires(edge);
+				auto rightRecursionAreas = FindRightRecursionArea(ruleRequire);
+				for(auto&&iter : rightRecursionAreas)
 				{
-					auto end = FindRightRecursionPosition(ruleRequireBegin, ruleRequire.end());
-					if(end != ruleRequire.end())
+					if(iter.begin != iter.back)
 					{
-						auto first = find_if(ruleRequireBegin, end, [&end](const wstring& value)
-						{
-							return value == *end;
-						});
-						ruleRequireBegin = end;
-						if(first != end)
-						{
-							auto offset = first - ruleRequire.begin();
-							auto pathOffset = rulePathStack.size() - 1 - offset;
-							assert(rulePathStack[pathOffset] == ruleRequire[offset]);
-							auto number = end - first;
-							createdNodeStack.insert(createdNodeStack.begin() + pathOffset, number, MakeEmptyTreeNode());
-							rulePathStack.insert(rulePathStack.begin() + pathOffset + 1, make_reverse_iterator(end), make_reverse_iterator(first));
-						}
-					}
-					else
-					{
-						break;
+						auto offset = iter.begin;
+						auto pathOffset = rulePathStack.size() - 1 - offset;
+						assert(rulePathStack[pathOffset] == ruleRequire[offset]);
+						auto number = iter.back - iter.begin;
+						createdNodeStack.insert(createdNodeStack.begin() + pathOffset, number, MakeEmptyTreeNode());
+						rulePathStack.insert(rulePathStack.begin() + pathOffset + 1, 
+							make_reverse_iterator(ruleRequire.begin() + iter.back), 
+							make_reverse_iterator(ruleRequire.begin() + iter.begin));
 					}
 				}
 			}
@@ -399,7 +290,6 @@ namespace ztl
 
 		vector<EdgeInfo> GeneralParser::CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state)
 		{
-
 			assert(!edges.empty());
 			vector<EdgeInfo> result;
 
@@ -553,11 +443,9 @@ namespace ztl
 			}
 			return result;
 		}
-		
 
 		GeneralTreeNode* GeneralParser::MakeTreeNode(const wstring & nodeName)
 		{
-			
 			auto&& findIter = wstringToTreeNodeMap.find(nodeName);
 			if(findIter == wstringToTreeNodeMap.end())
 			{
@@ -597,6 +485,5 @@ namespace ztl
 		{
 			return terminatePool[index];
 		}
-
 	}
 }

@@ -59,7 +59,6 @@ namespace ztl
 			const vector<shared_ptr<GeneralTokenDefine>>& GetTokens() const;
 			const vector<shared_ptr<GeneralTypeDefine>>& GetTypes() const;
 			vector<wstring>& GetStartRuleList();
-			void SetStartRuleList(vector<wstring> val);
 			GeneralTableDefine* GetTable();
 			ParserSymbol* GetGlobalSymbol();
 			ParserSymbol* GetTokenTypeSymbol();

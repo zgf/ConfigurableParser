@@ -173,7 +173,6 @@ namespace ztl
 				assert(ruleIter.second.size() > 0);
 				machine.AddGeneratePDA(ruleIter.first, *ruleIter.second.begin());
 			}
-			//HelpLogJumpTable(L"LogJumpTable_MergeFactorTable.txt", machine);
 		}
 
 		void AddFinishNode(PushDownAutoMachine& machine)
@@ -615,7 +614,6 @@ namespace ztl
 			auto PDAMap = CreateEpsilonPDA(machine);
 			MergeStartAndEndNode(machine, PDAMap);
 			AddPDAToPDAMachine(machine, PDAMap);
-			machine.CreateRoot();
 			MergeGrammarCommonFactor(machine);
 			MergeEpsilonPDAGraph(machine);
 			//添加结束节点.
