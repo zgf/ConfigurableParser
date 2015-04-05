@@ -62,6 +62,58 @@ namespace ztl
 			int									 currentNodeIndex;
 			EdgeInfo							 edgeInfo;
 		};
+		class GeneralNodePools
+		{
+		public:
+			GeneralNodePools()  = default;
+			~GeneralNodePools() noexcept = default;
+			GeneralNodePools(GeneralNodePools&&)  = default;
+			GeneralNodePools(const GeneralNodePools&)  = default;
+			GeneralNodePools& operator=(GeneralNodePools&&)  = default;
+			GeneralNodePools& operator=(const GeneralNodePools&)   = default;
+			
+		public:
+			const vector<shared_ptr<GeneralTreeNode>>& GetGeneralNodePool()const
+			{
+				return generalNodePool;
+			}
+			void SetGeneralNodePool(const shared_ptr<GeneralTreeNode>& node)
+			{
+				generalNodePool.emplace_back(node);
+			}
+			const vector<shared_ptr<TokenInfo>>& GetTokenPool()const
+			{
+				return tokenPool;
+			}
+			void SetTokenPool(const vector<shared_ptr<TokenInfo>>& tokens)
+			{
+				tokenPool = tokens;
+			}
+			void SetTokenPool(vector<shared_ptr<TokenInfo>>&& tokens)
+			{
+				tokenPool = move(tokens);
+			}
+			const vector<shared_ptr<TokenInfo>>& GetTerminatePool()const 
+			{
+				return terminatePool;
+			}
+			void SetTerminatePool(const shared_ptr<TokenInfo>& infos)
+			{
+				terminatePool.emplace_back(infos);
+			}
+			
+			void SetHeterogeneousPool(const shared_ptr<void>& element)
+			{
+				heterogeneousPool.emplace_back(element);
+			}
+		private:
+			vector<shared_ptr<GeneralTreeNode>>  generalNodePool;
+			vector<shared_ptr<TokenInfo>>		 tokenPool;
+			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
+			vector<shared_ptr<TokenInfo>>		 terminatePool;
+			vector<shared_ptr<void>>			 heterogeneousPool;
+
+		};
 		class GeneralParser
 		{
 		public:
@@ -106,19 +158,13 @@ namespace ztl
 			void CheckParserResultConvergence();
 
 		private:
-			vector<shared_ptr<GeneralTreeNode>>  nodePool;
-			vector<shared_ptr<TokenInfo>>		 tokenPool;
-			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
-			vector<shared_ptr<TokenInfo>>		 terminatePool;
-
+			GeneralNodePools					 pools;
 			GeneralTreeNode*					 generalTreeRoot;
 			deque<ParserState>					 parserStates;
-			vector<shared_ptr<void>>			 heterogeneousNodePool;
 
 			shared_ptr<PushDownAutoMachine>		 machine;
 			shared_ptr<GeneralJumpInfoTable>	 jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
-			shared_ptr<GeneralTableDefine>		 tableDefine;
 			unordered_map<wstring, shared_ptr<GeneralTreeNode>> wstringToTreeNodeMap;
 		};
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root);

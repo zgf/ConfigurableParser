@@ -16,8 +16,8 @@ namespace ztl
 		struct RightRecursionInfo
 		{
 			bool isRecursion = false;
-			int begin;
-			int back;
+			ptrdiff_t begin;
+			ptrdiff_t back;
 		};
 		struct TerminateToEdgesMapType
 		{

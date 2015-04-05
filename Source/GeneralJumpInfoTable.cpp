@@ -135,7 +135,7 @@ namespace ztl
 		vector<wstring>	rightRecursionToNormalRules(const vector<RightRecursionInfo>&rightRecursionPositions,const vector<wstring>& ruleRequire)
 		{
 			vector<wstring> nonRightRecursionList;
-			auto lastPosition = 0;
+			ptrdiff_t lastPosition = 0;
 			for(auto&&rightIter : rightRecursionPositions)
 			{
 				for(auto j = lastPosition; j < rightIter.begin; ++j)

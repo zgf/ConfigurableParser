@@ -70,7 +70,6 @@ namespace ztl
 			}
 			void								Visit(GeneralGrammarSetterTypeDefine* node)
 			{
-				
 				node->grammar->Accept(this);
 				//Setter前一条边是Create
 				assert(find_if(result.second->GetFronts().begin(), result.second->GetFronts().end(), [](PDAEdge*edge)
@@ -113,7 +112,7 @@ namespace ztl
 				ActionWrap wrap;
 				if(ruleSymbol->IsTokenDef())
 				{
-					wrap = ActionWrap(ActionType::Assign, node->name, ruleSymbol->GetName(), ruleName,L"" );
+					wrap = ActionWrap(ActionType::Assign, node->name, ruleSymbol->GetName(), ruleName, L"");
 				}
 				else
 				{
@@ -184,6 +183,98 @@ namespace ztl
 			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second, rootRuleName);
 		}
 
+		void DirectAddGrammarNumberOnPathEdge(PDAEdge* root, int count, unordered_set<PDAEdge*>& sign, unordered_map<int, PDAEdge*>& numberToRootMap)
+		{
+			if(root->GetNumber() == 31)
+			{
+				int a = 0;
+			}
+			sign.insert(root);
+			root->SetGrammarNumber(count);
+			for(auto&&edgeIter : root->GetTarget()->GetNexts())
+			{
+				if(root->GetNumber() == 31)
+				{
+					int a = 0;
+				}
+				if(sign.find(edgeIter) == sign.end())
+				{
+					DirectAddGrammarNumberOnPathEdge(edgeIter, count, sign, numberToRootMap);
+				}
+			}
+		}
+		void AddGrammarNumberOnPathEdge(PDAEdge* root, int count, unordered_set<PDAEdge*>& sign, unordered_map<int, PDAEdge*>& numberToRootMap)
+		{
+			sign.insert(root);
+			if (root->GetNumber() == 31)
+			{
+				int a = 0;
+			}
+			if(root->GetGrammarNumber() == -1)
+			{
+				root->SetGrammarNumber(count);
+				for(auto&&edgeIter : root->GetTarget()->GetNexts())
+				{
+					if(root->GetNumber() == 31)
+					{
+						int a = 0;
+					}
+					if(sign.find(edgeIter) == sign.end())
+					{
+						AddGrammarNumberOnPathEdge(edgeIter, count, sign, numberToRootMap);
+					}
+				}
+			}
+			else
+			{
+				assert(numberToRootMap.find(root->GetGrammarNumber()) != numberToRootMap.end());
+				unordered_set<PDAEdge*> signSet;
+				DirectAddGrammarNumberOnPathEdge(numberToRootMap[root->GetGrammarNumber()], count, signSet, numberToRootMap);
+			}
+		}
+		void AddGrammarNumberToEdge(PushDownAutoMachine& machine)
+		{
+			auto count = 0;
+			unordered_map<int, PDAEdge*> numberToRootMap;
+			for(auto&& ruleIter : machine.GetPDAMap())
+			{
+				for(auto&& grammarIter : ruleIter.second.first->GetNexts())
+				{
+					unordered_set<PDAEdge*> sign;
+					AddGrammarNumberOnPathEdge(grammarIter, count, sign, numberToRootMap);
+					numberToRootMap.insert(make_pair(count, grammarIter));
+					++count;
+				}
+			}
+		}
+		void AddGrammarNumberToAction(PDAEdge* root, unordered_set<PDAEdge*>& sign, PushDownAutoMachine& machine)
+		{
+			if(sign.find(root) == sign.end())
+			{
+				sign.insert(root);
+				machine.SetEdgeGrammarNumberToAction(root);
+			}
+
+			for(auto&&edgeIter : root->GetTarget()->GetNexts())
+			{
+				if(sign.find(edgeIter) == sign.end())
+				{
+					AddGrammarNumberToAction(edgeIter, sign, machine);
+				}
+			}
+		}
+		void AddGrammarNumberToAction(PushDownAutoMachine& machine)
+		{
+			unordered_set<PDAEdge*> sign;
+			for(auto&& ruleIter : machine.GetPDAMap())
+			{
+				for(auto&& grammarIter : ruleIter.second.first->GetNexts())
+				{
+					AddGrammarNumberToAction(grammarIter, sign, machine);
+				}
+			}
+		}
+
 		//可合并节点含义
 
 		//同一个起点,包含同样信息的边,到达不同的节点,那么这个不同节点可以合并成同一个节点
@@ -208,11 +299,11 @@ namespace ztl
 				if(distance(startIter, endIter) > 1)
 				{
 					auto&& save = (*startIter)->GetTarget();
-					for_each(startIter + 1, endIter, [&save,&nodeList, &machine](PDAEdge* element)
+					for_each(startIter + 1, endIter, [&save, &nodeList, &machine](PDAEdge* element)
 					{
 						machine.MergeIndependentNodes(save, element->GetTarget());
 						machine.DeleteEdge(element);
-						if (save->GetNexts().size()>1)
+						if(save->GetNexts().size() > 1)
 						{
 							nodeList.emplace_back(save);
 						}
@@ -284,7 +375,7 @@ namespace ztl
 					if(sign.find(edgeIter) == sign.end())
 					{
 						sign.insert(edgeIter);
-						if (pred(edgeIter))
+						if(pred(edgeIter))
 						{
 							result.emplace_back(edgeIter);
 						}
@@ -302,10 +393,10 @@ namespace ztl
 			vector<PDAEdge*> edges;
 			vector<PDANode*>nodeList;
 			//收集最左的边>2的节点
-			for (auto&&iter:machine.GetPDAMap())
+			for(auto&&iter : machine.GetPDAMap())
 			{
 				auto nodeIter = iter.second.first;
-				if (nodeIter->GetNexts().size() > 1)
+				if(nodeIter->GetNexts().size() > 1)
 				{
 					nodeList.emplace_back(nodeIter);
 				}
@@ -314,10 +405,9 @@ namespace ztl
 			for(size_t i = 0; i < nodeList.size(); ++i)
 			{
 				auto&& iter = nodeList[i];
-				
+
 				assert(iter->GetNexts().size()>1);
 				MergeCommonNode(iter, nodeList, machine);
-				
 			}
 		}
 		unordered_map<wstring, vector<PDAEdge*>> CollectNontermiateEdge(PushDownAutoMachine& machine)
@@ -383,13 +473,14 @@ namespace ztl
 					auto actions = edgeIter->GetActions();
 					auto&& nonTermiateIter = actions.begin();
 					auto nonTerminateName = nonTermiateIter->GetName();
+					auto number = edgeIter->GetGrammarNumber();
 					machine.DeleteEdge(edgeIter);
 					auto findIter = machine.GetPDAMap().find(nonTerminateName);
 					assert(findIter != machine.GetPDAMap().end());
 					assert(actions[0].GetActionType() == ActionType::NonTerminate);
 					actions.erase(nonTermiateIter);
-					machine.AddEdge(findIter->second.second, target, actions);
-					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName, nonTerminateName, ruleName, nonTerminateName));
+					machine.AddEdge(findIter->second.second, target, actions, number);
+					machine.AddEdge(source, findIter->second.first, ActionWrap(ActionType::Shift, ruleName, nonTerminateName, ruleName, nonTerminateName, number), number);
 				}
 			}
 		}
@@ -425,7 +516,7 @@ namespace ztl
 									++count;
 								}
 							});
-							if (count ==0)
+							if(count == 0)
 							{
 								auto number = end - i;
 								newActions.erase(i, end);
@@ -452,11 +543,11 @@ namespace ztl
 			vector<ActionWrap> newActions;
 			for_each(save.begin(), save.end(), [&newActions](PDAEdge* edge)
 			{
-				for(auto&& iter: edge->GetActions())
+				for(auto&& iter : edge->GetActions())
 				{
-					assert(iter.GetActionType() != ActionType::Epsilon&&iter.GetActionType()!=ActionType::NonTerminate);
+					assert(iter.GetActionType() != ActionType::Epsilon&&iter.GetActionType() != ActionType::NonTerminate);
 					newActions.emplace_back(iter);
-
+					assert(iter.GetGrammarNumber() != -1);
 				}
 			});
 
@@ -516,9 +607,9 @@ namespace ztl
 				allNode.emplace_back(target);
 			}
 		}
-		bool IsCorrectEdge(const vector<PDAEdge*>& path,const PDAEdge* edge)
+		bool IsCorrectEdge(const vector<PDAEdge*>& path, const PDAEdge* edge)
 		{
-			if (path.empty())
+			if(path.empty())
 			{
 				return true;
 			}
@@ -533,7 +624,7 @@ namespace ztl
 				return grammr == edge->GetActions().front().GetFrom();
 			}
 		}
-	
+
 		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine)
 		{
 			//当前路径上遇到的边
@@ -566,7 +657,7 @@ namespace ztl
 				{
 					auto&& edgeIter = nexts[i];
 					auto target = edgeIter->GetTarget();
-					if(sign.find(edgeIter) == sign.end()&& IsCorrectEdge(path,edgeIter))
+					if(sign.find(edgeIter) == sign.end() && IsCorrectEdge(path, edgeIter))
 					{
 						path.emplace_back(edgeIter);
 						sign.insert(edgeIter);
@@ -582,7 +673,7 @@ namespace ztl
 							assert(edgeIter->HasTermActionType());
 							RecordNewNode(target, allNode, noNeed);
 						}
-						else 
+						else
 						{
 							DFS(target);
 						}
@@ -608,19 +699,22 @@ namespace ztl
 			}
 		}
 
-	
 		void CreateDPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto PDAMap = CreateEpsilonPDA(machine);
 			MergeStartAndEndNode(machine, PDAMap);
 			AddPDAToPDAMachine(machine, PDAMap);
 			MergeGrammarCommonFactor(machine);
+			//添加文法编号
+			AddGrammarNumberToEdge(machine);
+			//添加动作编号
+			AddGrammarNumberToAction(machine);
 			MergeEpsilonPDAGraph(machine);
 			//添加结束节点.
 			AddFinishNode(machine);
-			
+
 			MergePDAEpsilonSymbol(machine);
-		//	MergeGrammarCommonFactor(machine);
+			//	MergeGrammarCommonFactor(machine);
 		}
 		wstring ActionTypeToWString(ActionType type)
 		{

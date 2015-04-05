@@ -30,9 +30,9 @@ namespace ztl
 		}
 		vector<shared_ptr<TokenInfo>> GeneralParser::ParseToken(const wstring& fileName)
 		{
-			assert(tableDefine != nullptr);
+			assert(manager->GetTable() != nullptr);
 			unordered_map<wstring, GeneralTokenDefine::TokenOptional> infos;
-			for_each(tableDefine->tokens.begin(), tableDefine->tokens.end(), [&infos](const shared_ptr<GeneralTokenDefine>& token)
+			for_each(manager->GetTable()->tokens.begin(), manager->GetTable()->tokens.end(), [&infos](const shared_ptr<GeneralTokenDefine>& token)
 			{
 				infos.insert({ token->name, token->ignore });
 			});
@@ -45,7 +45,7 @@ namespace ztl
 			vector<shared_ptr<TokenInfo>> stream;
 			std::wstring content((std::istreambuf_iterator<wchar_t>(input)),
 				std::istreambuf_iterator<wchar_t>());
-			auto pattern = accumulate(tableDefine->tokens.begin(), tableDefine->tokens.end(),
+			auto pattern = accumulate(manager->GetTable()->tokens.begin(), manager->GetTable()->tokens.end(),
 				wstring(), [](const wstring& sum, const shared_ptr<GeneralTokenDefine>& token)
 			{
 				return sum + L"(<" + token->name + L">" + DealWithWord(token->regex) + L")|";

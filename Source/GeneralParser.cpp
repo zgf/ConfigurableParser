@@ -10,17 +10,15 @@ namespace ztl
 	namespace general_parser
 	{
 		GeneralParser::GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :
-			tableDefine(_tableDefine),
+			manager(make_shared<SymbolManager>(_tableDefine)),
 			jumpInfos(nullptr),
-			machine(nullptr),
-			manager(nullptr)
+			machine(nullptr)
 		{
-			tokenPool = move(ParseToken(fileName));
+			pools.SetTokenPool(move(ParseToken(fileName)));
 		}
 
 		void GeneralParser::BuildParser()
 		{
-			manager = make_shared<SymbolManager>(this->tableDefine);
 			ValidateGeneratorCoreSemantic(manager.get());
 			machine = make_shared<PushDownAutoMachine >(manager.get());
 			CreateDPDAGraph(*machine.get());
@@ -88,18 +86,18 @@ namespace ztl
 		}
 		void GeneralParser::SaveHeterogeneousNode(const shared_ptr<void>& node)
 		{
-			heterogeneousNodePool.emplace_back(node);
+			pools.SetHeterogeneousPool(node);
 		}
 		vector<GeneralTreeNode*> GeneralParser::GenerateIsomorphismParserTree()
 		{
-			assert(!this->tokenPool.empty());
+			assert(!this->pools.GetTokenPool().empty());
 			auto rootRule = machine->GetRootRuleName();
 			assert(!rootRule.empty());
 			this->parserStates.emplace_back(0, jumpInfos->GetRootNumber(), rootRule, MakeEmptyTreeNode());
 			vector<GeneralTreeNode*> ambiguityRoots;
 			while(!parserStates.empty())
 			{
-				while(parserStates.front().tokenIndex != (int) tokenPool.size())
+				while(parserStates.front().tokenIndex != (int) pools.GetTokenPool().size())
 				{
 					auto edges = EdgeResolve(parserStates.front());
 					SaveEdge(parserStates, edges);
@@ -134,7 +132,7 @@ namespace ztl
 		{
 			auto& tokenIndex = state.tokenIndex;
 			auto& number = state.currentNodeIndex;
-			auto&& token = this->tokenPool[tokenIndex];
+			auto&& token = this->pools.GetTokenPool()[tokenIndex];
 
 			auto edges = jumpInfos->GetPDAEdgeByTerminate(number, token->tag);
 			if(edges == nullptr || edges->empty())
@@ -347,7 +345,7 @@ namespace ztl
 						break;
 					case ztl::general_parser::ActionType::Terminate:
 						assert(actionIter.GetValue() == rulePathStack.back());
-						assert(actionIter.GetName() == tokenPool[tokenIndex]->tag);
+						assert(actionIter.GetName() == pools.GetTokenPool()[tokenIndex]->tag);
 						IsTerminate = true;
 						break;
 
@@ -359,8 +357,8 @@ namespace ztl
 					case ztl::general_parser::ActionType::Assign:
 						if(IsTerminate)
 						{
-							terminatePool.emplace_back(tokenPool[tokenIndex]);
-							createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int) terminatePool.size() - 1);
+							pools.SetTerminatePool(pools.GetTokenPool()[tokenIndex]);
+							createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int) pools.GetTerminatePool().size() - 1);
 						}
 						else
 						{
@@ -373,8 +371,8 @@ namespace ztl
 						}
 						break;
 					case ztl::general_parser::ActionType::Setter:
-						terminatePool.emplace_back(make_shared<TokenInfo>(actionIter.GetValue(), L"Setter", -1, -1));
-						createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int) terminatePool.size() - 1);
+						pools.SetTerminatePool(make_shared<TokenInfo>(actionIter.GetValue(), L"Setter", -1, -1));
+						createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int) pools.GetTerminatePool().size() - 1);
 						break;
 					case ztl::general_parser::ActionType::Epsilon:
 					case ztl::general_parser::ActionType::Reduce:
@@ -403,13 +401,13 @@ namespace ztl
 		wstring GeneralParser::GetParserInfo(ParserState& state) const
 		{
 			wcout << L"nodeIndex:" << parserStates.front().currentNodeIndex << endl;
-			wcout << L"tokenIndex:" << parserStates.front().tokenIndex << L" token: " << tokenPool[parserStates.front().tokenIndex]->GetTokenInfo() << endl;
+			wcout << L"tokenIndex:" << parserStates.front().tokenIndex << L" token: " << pools.GetTokenPool()[parserStates.front().tokenIndex]->GetTokenInfo() << endl;
 			wcout << L"currentStack:" << accumulate(parserStates.front().rulePathStack.begin(), parserStates.front().rulePathStack.end(), wstring(), [](const wstring& sum, const wstring& value)
 			{
 				return sum + L" " + value;
 			}) << endl;
 			return L" current rule Path" + GetRulePathInfo(state) +
-				L"current token info" + tokenPool[state.tokenIndex]->GetTokenInfo() +
+				L"current token info" + pools.GetTokenPool()[state.tokenIndex]->GetTokenInfo() +
 				L"current creatNodeStack: " + GetCreatNodeStackInfo(state);
 		}
 		unordered_map<wstring, shared_ptr<GeneralTreeNode>> GeneralParser::InitTreeNodeMap()
@@ -451,15 +449,15 @@ namespace ztl
 			{
 				throw ztl_exception(L"error!" + nodeName + L" isn't a vaild TreeNode's name");
 			}
-			this->nodePool.emplace_back(make_shared<GeneralTreeNode>(*findIter->second));
-			nodePool.back()->SetNumber((int) nodePool.size() - 1);
-			return nodePool.back().get();
+			pools.SetGeneralNodePool(make_shared<GeneralTreeNode>(*findIter->second));
+			pools.GetGeneralNodePool().back()->SetNumber((int) pools.GetGeneralNodePool().size() - 1);
+			return  pools.GetGeneralNodePool().back().get();
 		}
 		GeneralTreeNode*	GeneralParser::MakeEmptyTreeNode()
 		{
-			this->nodePool.emplace_back(new GeneralTreeNode());
-			nodePool.back()->SetNumber((int) nodePool.size() - 1);
-			return nodePool.back().get();
+			this->pools.SetGeneralNodePool(make_shared<GeneralTreeNode>());
+			pools.GetGeneralNodePool().back()->SetNumber((int) pools.GetGeneralNodePool().size() - 1);
+			return pools.GetGeneralNodePool().back().get();
 		}
 		GeneralTreeNode*	GeneralParser::CopyTreeNode(GeneralTreeNode* target)
 		{
@@ -479,11 +477,11 @@ namespace ztl
 		}
 		GeneralTreeNode* GeneralParser::GetNonTermNodeByIndex(int index) const
 		{
-			return this->nodePool[index].get();
+			return pools.GetGeneralNodePool()[index].get();
 		}
 		shared_ptr<TokenInfo> GeneralParser::GetTermNodeByIndex(int index) const
 		{
-			return terminatePool[index];
+			return pools.GetTerminatePool()[index];
 		}
 	}
 }

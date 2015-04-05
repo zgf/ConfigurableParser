@@ -3,19 +3,16 @@
 #include "Include/GeneralPushDownAutoMachine.h"
 #include "Include/SymbolManager.h"
 
-
 namespace ztl
 {
 	namespace general_parser
 	{
-		
 		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr)
 		{
 		}
 		PushDownAutoMachine::PushDownAutoMachine(SymbolManager* _manager)
-			:manager(_manager)
+			: manager(_manager)
 		{
-			
 		}
 
 		SymbolManager * PushDownAutoMachine::GetSymbolManager() const
@@ -28,28 +25,34 @@ namespace ztl
 			return GetSymbolManager()->GetTable();
 		}
 
-		unordered_map<wstring, pair<PDANode*,PDANode*>>& PushDownAutoMachine::GetPDAMap()
+		unordered_map<wstring, pair<PDANode*, PDANode*>>& PushDownAutoMachine::GetPDAMap()
 		{
 			return PDAMap;
 		}
 
 		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap& wrap)
 		{
+			AddEdge(source, target, wrap, -1);
+		}
+		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap & wrap, int number)
+		{
 			auto edge = NewEdge(source, target, wrap);
+			edge->SetGrammarNumber(number);
 			source->nexts->push_back(edge);
 			target->fronts->push_back(edge);
 		}
-
-		
-
 		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const vector<ActionWrap>& wrapList)
+		{
+			AddEdge(source, target, wrapList, -1);
+		}
+		void PushDownAutoMachine::AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList, int number)
 		{
 			auto edge = NewEdge(source, target);
 			edge->actions = wrapList;
+			edge->SetGrammarNumber(number);
 			source->nexts->push_back(edge);
 			target->fronts->push_back(edge);
 		}
-	
 		void PushDownAutoMachine::DeleteEdge(PDAEdge* target)
 		{
 			auto frontNode = target->GetSource();
@@ -64,7 +67,7 @@ namespace ztl
 			nextNode->fronts->erase(nextIter);
 		}
 
-		void PushDownAutoMachine::AddGeneratePDA(wstring ruleName,const pair<PDANode *,PDANode*>& pairNode)
+		void PushDownAutoMachine::AddGeneratePDA(wstring ruleName, const pair<PDANode *, PDANode*>& pairNode)
 		{
 			auto findIter = PDAMap.find(ruleName);
 			assert(findIter == PDAMap.end());
@@ -93,12 +96,20 @@ namespace ztl
 			return findIter->second.first;
 		}
 
-		
+		void PushDownAutoMachine::SetEdgeGrammarNumberToAction(PDAEdge * edge)
+		{
+			for(auto&& actionIter : edge->actions)
+			{
+				assert(edge->GetGrammarNumber() != -1);
+				assert(actionIter.GetGrammarNumber() == -1);
+				actionIter.SetGrammarNumber(edge->GetGrammarNumber());
+			}
+		}
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
 			auto mergeNode = MergeIndependentNodes(left.second, right.first);
-			if (right.first == right.second)
+			if(right.first == right.second)
 			{
 				return pair<PDANode*, PDANode*>(left.first, mergeNode);
 			}
@@ -109,14 +120,15 @@ namespace ztl
 		}
 		void	PushDownAutoMachine::AddFinishNodeFollowTarget(PDANode* target, const wstring&ruleName)
 		{
-			for (auto&& frontIter:target->GetFronts())
+			for(auto&& frontIter : target->GetFronts())
 			{
 				if(find_if(frontIter->GetActions().begin(), frontIter->GetActions().end(), [](const ActionWrap& wrap)
 				{
-					return wrap.GetActionType() == ActionType::Create||wrap.GetActionType()==ActionType::Using;
+					return wrap.GetActionType() == ActionType::Create || wrap.GetActionType() == ActionType::Using;
 				}) != frontIter->GetActions().end())
 				{
-					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName,L""));
+					assert(frontIter->GetGrammarNumber() != -1);
+					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName, L"", frontIter->GetGrammarNumber()));
 				}
 			}
 		}
@@ -128,9 +140,9 @@ namespace ztl
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
-			MergeIndependentNodes(left.first,right.first );
+			MergeIndependentNodes(left.first, right.first);
 			MergeIndependentNodes(left.second, right.second);
-			return{left.first,left.second};
+			return{ left.first,left.second };
 		}
 
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd)
@@ -142,7 +154,7 @@ namespace ztl
 
 		void PushDownAutoMachine::FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap)
 		{
-			for (auto&& edgeIter: *targetNode->fronts)
+			for(auto&& edgeIter : *targetNode->fronts)
 			{
 				this->BackInsertAction(edgeIter, wrap);
 			}
@@ -154,16 +166,11 @@ namespace ztl
 			{
 				swap(edgeIter->actions.back(), edgeIter->actions[edgeIter->actions.size() - 2]);
 			}
-
 		}
-
-
-	
-
 
 		PDANode * PushDownAutoMachine::MergeIndependentNodes(PDANode * left, PDANode * right)
 		{
-			if (left!=right)
+			if(left != right)
 			{
 				for(size_t i = 0; i < right->nexts->size(); i++)
 				{
@@ -179,33 +186,26 @@ namespace ztl
 					auto iter = right->fronts->at(i);
 					iter->target = left;
 					left->fronts->emplace_back(iter);
-
 				}
 				right->fronts->clear();
-				left->SetMergeFlag();
 			}
 			return left;
 		}
 
-		void PushDownAutoMachine::BackInsertAction(PDAEdge* edge,const ActionWrap& wrap)
+		void PushDownAutoMachine::BackInsertAction(PDAEdge* edge, const ActionWrap& wrap)
 		{
 			edge->actions.emplace_back(wrap);
 		}
 
-
-
-
-
-
 		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
 		{
-			edges.emplace_back(make_shared<PDAEdge>(wrap, source,target, (int) edges.size()));
+			edges.emplace_back(make_shared<PDAEdge>(wrap, source, target, (int) edges.size()));
 			return edges.back().get();
 		}
 
 		PDAEdge * PushDownAutoMachine::NewEdge(PDANode * source, PDANode * target)
 		{
-			edges.emplace_back(make_shared<PDAEdge>(source, target, (int)edges.size()));
+			edges.emplace_back(make_shared<PDAEdge>(source, target, (int) edges.size()));
 			return edges.back().get();
 		}
 
@@ -215,5 +215,4 @@ namespace ztl
 			return this->GetSymbolManager()->GetStartRuleList()[0];
 		}
 	}
-
 }
