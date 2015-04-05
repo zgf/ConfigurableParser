@@ -78,7 +78,7 @@ namespace ztl
 		bool GeneralTreeNode::HaveThisField(const wstring & fieldName)
 		{
 			if(this->fieldMap.find(fieldName) != fieldMap.end() ||
-				this->termMap.find(fieldName) != fieldMap.end())
+				this->termMap.find(fieldName) != termMap.end())
 			{
 				return true;
 			}

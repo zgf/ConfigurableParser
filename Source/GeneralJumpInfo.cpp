@@ -1,14 +1,13 @@
 #include "Include/stdafx.h"
-#include "Include/GeneralJumpInfoTable.h"
+#include "Include/GeneralJumpInfo.h"
 #include "Include/GeneralPushDownAutoMachine.h"
 
 namespace ztl
 {
 	namespace general_parser
 	{
-		GeneralJumpInfoTable::GeneralJumpInfoTable(PushDownAutoMachine * _machine)
+		GeneralJumpInfo::GeneralJumpInfo(PushDownAutoMachine * _machine)
 			:machine(_machine),
-			createdNodeRequiresMap(make_shared<unordered_map<PDAEdge*, vector<CreateInfo>>>()),
 			ruleRequiresMap(make_shared<unordered_map<PDAEdge*, vector<wstring>>>()),
 			terminateMap(make_shared<TerminateMapType>()),
 			rightRecursionMap(make_shared<unordered_map<PDAEdge*,vector<wstring>>>()),
@@ -17,16 +16,16 @@ namespace ztl
 			assert(machine->GetRoot() != nullptr);
 			rootNumber = machine->GetRoot()->GetNumber();
 		}
-		SymbolManager* GeneralJumpInfoTable::GetSymbolManager()const
+		SymbolManager* GeneralJumpInfo::GetSymbolManager()const
 		{
 			return machine->GetSymbolManager();
 		}
-		PDANode* GeneralJumpInfoTable::GetRoot()const
+		PDANode* GeneralJumpInfo::GetRoot()const
 		{
 			return machine->GetRoot();
 		}
 
-		void GeneralJumpInfoTable::CreateJumpInfoTable()
+		void GeneralJumpInfo::CacheJumpInfo()
 		{
 			unordered_set<PDAEdge*> sign;
 			deque<PDANode*> queue;
@@ -47,17 +46,7 @@ namespace ztl
 				}
 			}
 		}
-		void GeneralJumpInfoTable::CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos)
-		{
-			for_each(nodeStack.begin(), nodeStack.end(), [&createInfos](const ActionWrap& wrap)
-			{
-				createInfos.emplace_back(wrap.GetValue(), wrap.GetName());
-			});
-			if(!createInfos.empty())
-			{
-				this->createdNodeRequiresMap->insert(make_pair(edge, createInfos));
-			}
-		}
+	
 		vector<wstring>::const_iterator FindRightRecursionPosition( vector<wstring>::const_iterator begin, vector<wstring>::const_iterator end)
 		{
 			unordered_set<wstring> sign;
@@ -144,13 +133,13 @@ namespace ztl
 				}
 				lastPosition = rightIter.back;
 			}
-			for(; lastPosition < ruleRequire.size(); ++lastPosition)
+			for(; lastPosition < (ptrdiff_t)ruleRequire.size(); ++lastPosition)
 			{
 				nonRightRecursionList.emplace_back(ruleRequire[lastPosition]);
 			}
 			return nonRightRecursionList;
 		}
-		void GeneralJumpInfoTable::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
+		void GeneralJumpInfo::CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos)
 		{
 			if (!ruleStack.empty())
 			{
@@ -185,18 +174,19 @@ namespace ztl
 				CacheEnterRule(edge);
 			}
 		}
-		bool  GeneralJumpInfoTable::IsRightRecursionEdge(PDAEdge* edge)const
+
+		bool  GeneralJumpInfo::IsRightRecursionEdge(PDAEdge* edge)const
 		{
 			auto findIter = rightRecursionMap->find(edge);
 			return findIter != rightRecursionMap->end();
 		}
-		const  vector<wstring>&		GeneralJumpInfoTable::GetRightRecursionRuleRequires(PDAEdge* edge)const
+		const  vector<wstring>&		GeneralJumpInfo::GetRightRecursionRuleRequires(PDAEdge* edge)const
 		{
 			auto findIter = rightRecursionMap->find(edge);
 			assert(findIter != rightRecursionMap->end());
 			return findIter->second;
 		}
-		void GeneralJumpInfoTable::CacheEnterRule(PDAEdge* edge)
+		void GeneralJumpInfo::CacheEnterRule(PDAEdge* edge)
 		{
 			assert(!edge->GetActions().empty());
 			auto actions = edge->GetActions();
@@ -227,7 +217,7 @@ namespace ztl
 			this->ruleRequiresMap->insert({ edge,vector<wstring>() });
 			(*ruleRequiresMap)[edge].emplace_back(name);
 		}
-		void GeneralJumpInfoTable::CacheTerminateMap(PDAEdge* edge)
+		void GeneralJumpInfo::CacheTerminateMap(PDAEdge* edge)
 		{
 			auto findTermIter = find_if(make_reverse_iterator(edge->GetActions().end()), make_reverse_iterator(edge->GetActions().begin()), [](const ActionWrap& wrap)
 			{
@@ -248,7 +238,7 @@ namespace ztl
 			}
 			(*terminateMap)[number].termnateToEdgesMap[terminate].emplace_back(edge);
 		}
-		vector<PDAEdge*>* GeneralJumpInfoTable::GetPDAEdgeByTerminate(const int number, const wstring & terminate)const
+		vector<PDAEdge*>* GeneralJumpInfo::GetPDAEdgeByTerminate(const int number, const wstring & terminate)const
 		{
 			auto findIter = terminateMap->find(number);
 			assert(findIter != terminateMap->end());
@@ -256,23 +246,19 @@ namespace ztl
 			return (findTerminateIter == findIter->second.termnateToEdgesMap.end()) ? nullptr : std::addressof(findTerminateIter->second);
 		}
 
-		int GeneralJumpInfoTable::GetRootNumber()const
+		int GeneralJumpInfo::GetRootNumber()const
 		{
 			assert(rootNumber != -1);
 			return rootNumber;
 		}
 
-		const vector<wstring>& GeneralJumpInfoTable::GetRuleRequires(PDAEdge* edge) const
+		const vector<wstring>& GeneralJumpInfo::GetRuleRequires(PDAEdge* edge) const
 		{
 			assert(ruleRequiresMap->find(edge) != ruleRequiresMap->end());
 			return (*ruleRequiresMap)[edge];
 		}
-		const vector<CreateInfo>* GeneralJumpInfoTable::GetCreateNodeRequires(PDAEdge * edge) const
-		{
-			auto findIter = createdNodeRequiresMap->find(edge);
-			return (findIter != createdNodeRequiresMap->end()) ? std::addressof(findIter->second) : nullptr;
-		}
-		void GeneralJumpInfoTable::CacheEdgeInfo(PDAEdge * edge)
+		
+		void GeneralJumpInfo::CacheEdgeInfo(PDAEdge * edge)
 		{
 			auto&& actions = edge->GetActions();
 
@@ -322,17 +308,13 @@ namespace ztl
 						break;
 				}
 			}
-			if(!nodeStack.empty())
-			{
-				CacheCreatedNodeRequiresMap(edge, nodeStack, createInfos);
-			}
 			CacheTerminateMap(edge);
 			CacheRuleRequiresMap(edge, ruleStack, ruleInfos);
 		}
 	
-		void CreateJumpInfoTable(GeneralJumpInfoTable& jumpTable)
+		void CreateJumpInfo(GeneralJumpInfo& jumpTable)
 		{
-			jumpTable.CreateJumpInfoTable();
+			jumpTable.CacheJumpInfo();
 		}
 	}
 }

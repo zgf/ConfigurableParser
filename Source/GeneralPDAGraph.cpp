@@ -18,8 +18,8 @@ namespace ztl
 			CreateEpsilonPDAVisitor(const CreateEpsilonPDAVisitor&) = default;
 			CreateEpsilonPDAVisitor& operator=(CreateEpsilonPDAVisitor&&) noexcept = default;
 			CreateEpsilonPDAVisitor& operator=(const CreateEpsilonPDAVisitor&) = default;
-			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine, GeneralRuleDefine* _rule, const wstring& _ruleName)noexcept
-				:machine(_machine), rule(_rule), ruleName(_ruleName)
+			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine, const wstring& _ruleName)noexcept
+				:machine(_machine), ruleName(_ruleName)
 			{
 			}
 		public:
@@ -92,7 +92,7 @@ namespace ztl
 				auto manager = machine->GetSymbolManager();
 				createTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
 				node->grammar->Accept(this);
-				ActionWrap wrap(ActionType::Create, createTypeSymbol->GetName(), ruleName, ruleName, L"");
+				ActionWrap wrap(ActionType::Create, createTypeSymbol->GetName(), to_wstring(uniqueId++), ruleName, L"");
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
 				machine->AddEdge(result.second, newNode, move(wrap));
@@ -131,12 +131,12 @@ namespace ztl
 			}
 		private:
 			PushDownAutoMachine* machine;
-			GeneralRuleDefine* rule;
 			pair<PDANode*, PDANode*> result;
 			wstring ruleName;
 			ParserSymbol* createTypeSymbol = nullptr;
+			static int uniqueId;
 		};
-
+		int CreateEpsilonPDAVisitor::uniqueId = 0;
 		void AddGeneratePDA(unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap, wstring ruleName, PDANode * start, PDANode* end)
 		{
 			auto findIter = PDAMap.find(ruleName);
@@ -155,7 +155,7 @@ namespace ztl
 				auto rulePointer = ruleIter.get();
 				for(auto&& grammarIter : ruleIter->grammars)
 				{
-					CreateEpsilonPDAVisitor visitor(&machine, rulePointer, ruleIter->name);
+					CreateEpsilonPDAVisitor visitor(&machine, ruleIter->name);
 					grammarIter->Accept(&visitor);
 					assert(visitor.GetResult().first != visitor.GetResult().second);
 
@@ -185,18 +185,10 @@ namespace ztl
 
 		void DirectAddGrammarNumberOnPathEdge(PDAEdge* root, int count, unordered_set<PDAEdge*>& sign, unordered_map<int, PDAEdge*>& numberToRootMap)
 		{
-			if(root->GetNumber() == 31)
-			{
-				int a = 0;
-			}
 			sign.insert(root);
 			root->SetGrammarNumber(count);
 			for(auto&&edgeIter : root->GetTarget()->GetNexts())
 			{
-				if(root->GetNumber() == 31)
-				{
-					int a = 0;
-				}
 				if(sign.find(edgeIter) == sign.end())
 				{
 					DirectAddGrammarNumberOnPathEdge(edgeIter, count, sign, numberToRootMap);
@@ -206,19 +198,11 @@ namespace ztl
 		void AddGrammarNumberOnPathEdge(PDAEdge* root, int count, unordered_set<PDAEdge*>& sign, unordered_map<int, PDAEdge*>& numberToRootMap)
 		{
 			sign.insert(root);
-			if (root->GetNumber() == 31)
-			{
-				int a = 0;
-			}
 			if(root->GetGrammarNumber() == -1)
 			{
 				root->SetGrammarNumber(count);
 				for(auto&&edgeIter : root->GetTarget()->GetNexts())
 				{
-					if(root->GetNumber() == 31)
-					{
-						int a = 0;
-					}
 					if(sign.find(edgeIter) == sign.end())
 					{
 						AddGrammarNumberOnPathEdge(edgeIter, count, sign, numberToRootMap);
@@ -328,7 +312,6 @@ namespace ztl
 				MergeNodeByEdge(edges, nodeList, machine);
 			}
 		}
-
 		template<typename prediction_type>
 		vector<PDANode*> CollectGraphNode(PushDownAutoMachine& machine, prediction_type pred)
 		{
@@ -359,6 +342,7 @@ namespace ztl
 			}
 			return result;
 		}
+
 		template<typename prediction_type>
 		vector<PDAEdge*> CollcetGraphEdgeByRoot(PushDownAutoMachine& machine, prediction_type pred)
 		{
@@ -486,11 +470,11 @@ namespace ztl
 		}
 		void CheckAndDeleteReCursionRing(vector<ActionWrap>& newActions, ActionType type)
 		{
-			int lastIndex = find_if(make_reverse_iterator(newActions.end()), make_reverse_iterator(newActions.begin()), [type](const ActionWrap& wrap)
+			auto lastIndex = find_if(make_reverse_iterator(newActions.end()), make_reverse_iterator(newActions.begin()), [type](const ActionWrap& wrap)
 			{
 				return wrap.GetActionType() == type;
 			}).base() - newActions.begin();
-			int firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
+			auto firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
 			{
 				return wrap.GetActionType() == type;
 			}) - newActions.begin();
@@ -547,7 +531,7 @@ namespace ztl
 				{
 					assert(iter.GetActionType() != ActionType::Epsilon&&iter.GetActionType() != ActionType::NonTerminate);
 					newActions.emplace_back(iter);
-					assert(iter.GetGrammarNumber() != -1);
+				//	assert(iter.GetGrammarNumber() != -1);
 				}
 			});
 
@@ -642,7 +626,7 @@ namespace ztl
 			//edgeCountMap收集完毕
 			CollectGraphNode(machine, [&edgeCountMap](PDANode* element)
 			{
-				edgeCountMap.insert({ element,element->GetNexts().size() });
+				edgeCountMap.insert({ element,(int) element->GetNexts().size() });
 				return true;
 			});
 			auto root = machine.GetRoot();
@@ -698,67 +682,158 @@ namespace ztl
 				machine.DeleteEdge(iter);
 			}
 		}
-
+		//void CollectCreateNodeRequires(PushDownAutoMachine& machine)
+		//{
+		//	//合并左公因子动作附加文法之后调用
+		//	unordered_map<int, vector<PDAEdge*>> startMap;
+		//	unordered_set<PDAEdge*> sign;
+		//	//从Root表达式开始
+		//	for(auto&& ruleIter : machine.GetPDAMap())
+		//	{
+		//		for(auto&&edgeIter : ruleIter.second.first->GetNexts())
+		//		{
+		//			auto number = edgeIter->GetGrammarNumber();
+		//			if(startMap.find(number) == startMap.end())
+		//			{
+		//				startMap[number];
+		//			}
+		//			startMap[number].emplace_back(edgeIter);
+		//			if(machine.GetCreatedNodeRequiresMap().find(number) == machine.GetCreatedNodeRequiresMap().end())
+		//			{
+		//				machine.GetCreatedNodeRequiresMap()[number];
+		//			}
+		//		}
+		//	}
+		//	for(auto&&iter : startMap)
+		//	{
+		//		if(iter.second.size() == 1)
+		//		{
+		//			machine.CacheCrreatNodeInfoFromLeft(iter.second[0], sign);
+		//		}
+		//		//空间留着,后面从右往左搜
+		//		iter.second.clear();
+		//	}
+		//	for(auto&& ruleIter : machine.GetPDAMap())
+		//	{
+		//		for(auto&&edgeIter : ruleIter.second.second->GetFronts())
+		//		{
+		//			auto number = edgeIter->GetGrammarNumber();
+		//			startMap[number].emplace_back(edgeIter);
+		//		}
+		//	}
+		//	for(auto&&iter : startMap)
+		//	{
+		//		if(iter.second.size() == 1)
+		//		{
+		//			machine.CacheCrreatNodeInfoFromRight(iter.second[0], sign);
+		//		}
+		//	}
+		//}
+		//void CheckAllActionHasGrammarNumber(PushDownAutoMachine& machine)
+		//{
+		//	CollcetGraphEdgeByRoot(machine, [](PDAEdge* edge)
+		//	{
+		//		for (auto&&iter :edge->GetActions())
+		//		{
+		//			assert(iter.GetGrammarNumber() != -1);
+		//		}
+		//		return false;
+		//	});
+		//}
+		void CollcetPathNodeFieldInfo(PushDownAutoMachine& machine, PDAEdge* edge,
+			unordered_set<PDAEdge*>&sign, vector<PDAEdge*>& signList, vector<PDAEdge*>& edgeList, vector<wstring>& fields)
+		{
+			if(sign.find(edge) == sign.end())
+			{
+				sign.insert(edge);
+				signList.emplace_back(edge);
+				for(auto&&action : edge->GetActions())
+				{
+					if(action.GetActionType() == ActionType::Create)
+					{
+					
+						auto findIter = machine.GetCreatedNodeRequiresMap().find(action.GetValue());
+						if (findIter == machine.GetCreatedNodeRequiresMap().end())
+						{
+							CreateInfo info;
+							info.createType = action.GetName();
+							info.fieldNames = fields;
+							std::sort(info.fieldNames.begin(), info.fieldNames.end());
+							machine.GetCreatedNodeRequiresMap().insert({ action.GetValue(),info });
+						}
+						else
+						{
+							auto& origin = machine.GetCreatedNodeRequiresMap()[action.GetValue()].fieldNames;
+							assert(is_sorted(origin.begin(),origin.end()));
+							vector<wstring> fieldCopy(fields.size() + origin.size());
+							fieldCopy = fields;
+							sort(fieldCopy.begin(), fieldCopy.end());
+							auto num = fieldCopy.size();
+							
+							std::set_intersection(fieldCopy.begin(), fieldCopy.end(), origin.begin(), origin.end(),back_inserter(fieldCopy) );
+							fieldCopy.erase(fieldCopy.begin(), fieldCopy.begin() + num);
+							sort(fieldCopy.begin(), fieldCopy.end());
+							origin = move(fieldCopy);
+						}
+						assert(edge->GetTarget()->GetNexts().size() == 0);
+					}
+					else if(action.GetActionType() == ActionType::Assign || action.GetActionType() == ActionType::Setter)
+					{
+						fields.emplace_back(action.GetName());
+						edgeList.emplace_back(edge);
+					}
+				}
+				for(auto&&iter : edge->GetTarget()->GetNexts())
+				{
+					CollcetPathNodeFieldInfo(machine, iter, sign,signList, edgeList, fields);
+				}
+				sign.erase(signList.back());
+				signList.pop_back();
+				while(!edgeList.empty() && edgeList.back() == edge)
+				{
+					edgeList.pop_back();
+					fields.pop_back();
+				}
+			}
+			
+		}
+		void CollcetPathNodeFieldInfo(PushDownAutoMachine& machine)
+		{
+			unordered_set<PDAEdge*>sign;
+			vector<PDAEdge*> edgeList;
+			vector<PDAEdge*> signList;
+			vector<wstring>	fields;
+			for(auto&& ruleIter : machine.GetPDAMap())
+			{
+				for(auto&&edgeIter : ruleIter.second.first->GetNexts())
+				{
+					
+					CollcetPathNodeFieldInfo(machine, edgeIter, sign,signList, edgeList, fields);
+					assert(fields.empty());
+					assert(edgeList.empty());
+					assert(sign.empty());
+					assert(signList.empty());
+				}
+			}
+		}
 		void CreateDPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto PDAMap = CreateEpsilonPDA(machine);
 			MergeStartAndEndNode(machine, PDAMap);
 			AddPDAToPDAMachine(machine, PDAMap);
 			MergeGrammarCommonFactor(machine);
+			CollcetPathNodeFieldInfo(machine);
 			//添加文法编号
-			AddGrammarNumberToEdge(machine);
+			//AddGrammarNumberToEdge(machine);
 			//添加动作编号
-			AddGrammarNumberToAction(machine);
+			//AddGrammarNumberToAction(machine);
+			//收集每条路径的节点要求
+			//CollectCreateNodeRequires(machine);
 			MergeEpsilonPDAGraph(machine);
 			//添加结束节点.
 			AddFinishNode(machine);
-
 			MergePDAEpsilonSymbol(machine);
-			//	MergeGrammarCommonFactor(machine);
-		}
-		wstring ActionTypeToWString(ActionType type)
-		{
-			wstring result;
-			switch(type)
-			{
-				case ztl::general_parser::ActionType::Using:
-					result = L"Using";
-					break;
-				case ztl::general_parser::ActionType::Shift:
-					result = L"Shift";
-
-					break;
-				case ztl::general_parser::ActionType::Reduce:
-					result = L"Reduce";
-
-					break;
-				case ztl::general_parser::ActionType::Terminate:
-					result = L"Terminate";
-
-					break;
-				case ztl::general_parser::ActionType::NonTerminate:
-					result = L"NonTerminate";
-
-					break;
-				case ztl::general_parser::ActionType::Create:
-					result = L"Create";
-
-					break;
-				case ztl::general_parser::ActionType::Assign:
-					result = L"Assign";
-
-					break;
-				case ztl::general_parser::ActionType::Setter:
-					result = L"Setter";
-					break;
-				case ztl::general_parser::ActionType::Epsilon:
-					result = L"Epsilon";
-					break;
-				default:
-					assert(false);
-					break;
-			}
-			return result;
+			//	CheckAllActionHasGrammarNumber(machine);
 		}
 	}
 }

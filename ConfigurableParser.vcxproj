@@ -174,7 +174,7 @@
     <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp" />
     <ClCompile Include="Source\BootstrapDefineTable.cpp" />
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
-    <ClCompile Include="Source\GeneralJumpInfoTable.cpp" />
+    <ClCompile Include="Source\GeneralJumpInfo.cpp" />
     <ClCompile Include="Source\GeneralParser.cpp" />
     <ClCompile Include="Source\GeneralParserFile.cpp" />
     <ClCompile Include="Source\GeneralParserLexer.cpp" />
@@ -218,7 +218,7 @@
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h" />
     <ClInclude Include="Source\Include\GeneralParserFile.h" />
-    <ClInclude Include="Source\Include\GeneralJumpInfoTable.h" />
+    <ClInclude Include="Source\Include\GeneralJumpInfo.h" />
     <ClInclude Include="Source\Include\GeneralParser.h" />
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
     <ClInclude Include="Source\Include\GeneralTreeNode.h" />

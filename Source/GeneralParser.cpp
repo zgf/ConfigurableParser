@@ -2,7 +2,7 @@
 #include "Include\GeneralParser.h"
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
-#include "Include\GeneralJumpInfoTable.h"
+#include "Include\GeneralJumpInfo.h"
 #include "Include\GeneralTreeNode.h"
 #include "Include\ParserSymbol.h"
 namespace ztl
@@ -22,8 +22,8 @@ namespace ztl
 			ValidateGeneratorCoreSemantic(manager.get());
 			machine = make_shared<PushDownAutoMachine >(manager.get());
 			CreateDPDAGraph(*machine.get());
-			jumpInfos = make_shared<GeneralJumpInfoTable>(machine.get());
-			CreateJumpInfoTable(*jumpInfos.get());
+			jumpInfos = make_shared<GeneralJumpInfo>(machine.get());
+			CreateJumpInfo(*jumpInfos.get());
 			wstringToTreeNodeMap = move(InitTreeNodeMap());
 			//	HelpLogJumpTable(L"LogJumpTable_MergeNoTermGraphTable.txt", *jumpTable);
 		}
@@ -212,6 +212,24 @@ namespace ztl
 				}
 			}
 		}
+		bool GeneralParser::IsCorrectNode(GeneralTreeNode& node, const wstring& value) const
+		{
+			auto& nodeMap = machine->GetCreatedNodeRequiresMap();
+			assert(nodeMap.find(value) != nodeMap.end());
+			auto& fields = nodeMap[value].fieldNames;
+			if (nodeMap[value].createType != node.GetName())
+			{
+				return false;
+			}
+			for(auto&&fieldName : fields)
+			{
+				if(!node.HaveThisField(fieldName))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
 		pair<bool, EdgeInfo> GeneralParser::CreateNodeResolve(const
 			EdgeInfo& iter, const vector<GeneralTreeNode*>& createdNodeStack)
 		{
@@ -238,21 +256,10 @@ namespace ztl
 					case ztl::general_parser::ActionType::Create:
 						isTerminate = false;
 						current.SetName(actionIter.GetName());
-						if(chioceFiledMap.find(actionIter.GetName()) == chioceFiledMap.end())
+						if (!IsCorrectNode(current, actionIter.GetValue()))
 						{
-							if(!current.IsTheSameType(*signMap[actionIter.GetName()]))
-							{
-								goto TestNextEdge;
-							}
+							goto TestNextEdge;
 						}
-						else
-						{
-							if(!current.IsTheSameType(*signMap[actionIter.GetName()], chioceFiledMap[actionIter.GetName()]))
-							{
-								goto TestNextEdge;
-							}
-						}
-
 						break;
 					case ztl::general_parser::ActionType::Assign:
 						--currentIndex;
@@ -344,13 +351,13 @@ namespace ztl
 						IsTerminate = false;
 						break;
 					case ztl::general_parser::ActionType::Terminate:
-						assert(actionIter.GetValue() == rulePathStack.back());
+						assert(actionIter.GetFrom() == rulePathStack.back());
 						assert(actionIter.GetName() == pools.GetTokenPool()[tokenIndex]->tag);
 						IsTerminate = true;
 						break;
 
 					case ztl::general_parser::ActionType::Create:
-						assert(actionIter.GetValue() == rulePathStack.back());
+						assert(actionIter.GetFrom() == rulePathStack.back());
 						createdNodeStack.back()->SetName(actionIter.GetName());
 
 						break;

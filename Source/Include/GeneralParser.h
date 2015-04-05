@@ -10,7 +10,7 @@ namespace ztl
 		struct TokenInfo;
 		class SymbolManager;
 		class ActionWrap;
-		class GeneralJumpInfoTable;
+		class GeneralJumpInfo;
 		struct GeneralTableDefine;
 		class PushDownAutoMachine;
 		struct CreateInfo;
@@ -127,6 +127,7 @@ namespace ztl
 		public:
 			void				BuildParser();
 			vector<GeneralTreeNode*> GenerateIsomorphismParserTree();
+			bool IsCorrectNode(GeneralTreeNode& node, const wstring& value)const;
 
 			GeneralTreeNode* GetGeneralTreeRoot() const;
 			SymbolManager* GetManager() const;
@@ -163,7 +164,7 @@ namespace ztl
 			deque<ParserState>					 parserStates;
 
 			shared_ptr<PushDownAutoMachine>		 machine;
-			shared_ptr<GeneralJumpInfoTable>	 jumpInfos;
+			shared_ptr<GeneralJumpInfo>	 jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
 			unordered_map<wstring, shared_ptr<GeneralTreeNode>> wstringToTreeNodeMap;
 		};

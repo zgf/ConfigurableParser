@@ -1,5 +1,7 @@
 #pragma once
 #include "stdafx.h"
+#include "../Lib/ZTL/ztl_pair_builder.hpp"
+
 namespace ztl
 {
 	namespace general_parser
@@ -224,6 +226,7 @@ namespace ztl
 			unique_ptr<vector<PDAEdge*>> nexts;
 			unique_ptr<vector<PDAEdge*>> fronts;
 		};
+		PAIR_BUILDER(CreateInfo, wstring, createType, vector<wstring>, fieldNames);
 
 		class PushDownAutoMachine
 		{
@@ -261,6 +264,9 @@ namespace ztl
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 			void						SetEdgeGrammarNumberToAction(PDAEdge* edge);
+			void CacheCrreatNodeInfoFromLeft(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
+			void CacheCrreatNodeInfoFromRight(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
+			unordered_map<wstring, CreateInfo>& GetCreatedNodeRequiresMap();
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
@@ -269,7 +275,9 @@ namespace ztl
 			vector<shared_ptr<PDAEdge>>											 edges;
 			vector<shared_ptr<PDANode>>											 nodes;
 			SymbolManager*														 manager;
-			unordered_map<wstring, pair<PDANode*, PDANode*>>						 PDAMap;
+			unordered_map<wstring, pair<PDANode*, PDANode*>>					 PDAMap;
+			unordered_map<wstring, CreateInfo>									 createdNodeRequiresMap;
+
 
 		public:
 		};
@@ -277,7 +285,7 @@ namespace ztl
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine);
 		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine);
-
+		void CollectCreateNodeRequires(PushDownAutoMachine& machine);
 		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
 		void AddFinishNode(PushDownAutoMachine& machine);
 	}

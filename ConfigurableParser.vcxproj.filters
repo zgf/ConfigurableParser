@@ -130,9 +130,6 @@
     <ClCompile Include="Source\GeneralParserLexer.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralJumpInfoTable.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralParserFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
@@ -155,6 +152,9 @@
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GeneralParserReflection.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralJumpInfo.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
   </ItemGroup>
@@ -219,9 +219,6 @@
     <ClInclude Include="Source\Include\GeneralTreeNode.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralJumpInfoTable.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Include\GeneralParserFile.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
@@ -230,6 +227,9 @@
     </ClInclude>
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h">
       <Filter>Source\GenerateFile\Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralJumpInfo.h">
+      <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

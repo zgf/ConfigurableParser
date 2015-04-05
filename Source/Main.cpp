@@ -4,7 +4,7 @@
 #include "Include\stdafx.h"
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
-#include "Include\GeneralJumpInfoTable.h"
+#include "Include\GeneralJumpInfo.h"
 #include "Include\GeneralParser.h"
 #include "Include\GeneralParserFile.h"
 #include "GenerateFile\Json\JsonParser.h"
@@ -41,9 +41,9 @@ void GenerateJsonParserFile()
 }
 int main()
 {
-	//GenerateGeneralParserFile();
-//	GenerateXmlParserFile();
-	//GenerateJsonParserFile();
+	GenerateGeneralParserFile();
+	GenerateXmlParserFile();
+	GenerateJsonParserFile();
 	TestJson();
 	//TestXml();
 	return 0;

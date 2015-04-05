@@ -200,8 +200,8 @@ namespace ztl
 		}
 		wstring GeneralParserFile::GetFileLeafName(const wstring & fileName)
 		{
-			int backslashResult = fileName.rfind(L"/");
-			int slashResult = fileName.rfind(L"\\");
+			int backslashResult = (int)fileName.rfind(L"/");
+			int slashResult = (int)fileName.rfind(L"\\");
 			assert(backslashResult != slashResult || ((backslashResult == slashResult) && (backslashResult == -1)));
 			int slashPosition = std::max(backslashResult, slashResult);
 			auto leaf = fileName.substr(slashPosition + 1);

@@ -12,7 +12,7 @@ namespace ztl
 		class PDAEdge;
 	
 		PAIR_BUILDER(JumpItem, int, targetIndex, PDAEdge*, edges);
-		PAIR_BUILDER(CreateInfo, wstring, createType, wstring, fieldName);
+		//当前路径下创建的节点类型和一定赋值了的字段名
 		struct RightRecursionInfo
 		{
 			bool isRecursion = false;
@@ -23,25 +23,26 @@ namespace ztl
 		{
 			unordered_map<wstring, vector<PDAEdge*>> termnateToEdgesMap;
 		};
-		class GeneralJumpInfoTable
+		class GeneralJumpInfo
 		{
 			using TerminateMapType = unordered_map<int, TerminateToEdgesMapType>;
 		public:
-			GeneralJumpInfoTable()  = delete;
-			GeneralJumpInfoTable(PushDownAutoMachine* _machine);
-			~GeneralJumpInfoTable() noexcept = default;
-			GeneralJumpInfoTable(GeneralJumpInfoTable&&)  = default;
-			GeneralJumpInfoTable(const GeneralJumpInfoTable&)  = default;
-			GeneralJumpInfoTable& operator=(GeneralJumpInfoTable&&)  = default;
-			GeneralJumpInfoTable& operator=(const GeneralJumpInfoTable&)   = default;
+			GeneralJumpInfo()  = delete;
+			GeneralJumpInfo(PushDownAutoMachine* _machine);
+			~GeneralJumpInfo() noexcept = default;
+			GeneralJumpInfo(GeneralJumpInfo&&)  = default;
+			GeneralJumpInfo(const GeneralJumpInfo&)  = default;
+			GeneralJumpInfo& operator=(GeneralJumpInfo&&)  = default;
+			GeneralJumpInfo& operator=(const GeneralJumpInfo&)   = default;
 		public:
 			SymbolManager*  GetSymbolManager()const;
 			PDANode*		GetRoot()const;
 			
-			void													CreateJumpInfoTable();
+			void													CacheJumpInfo();
 			void												    CacheEdgeInfo(PDAEdge* edge);
-			void													CacheCreatedNodeRequiresMap(PDAEdge * edge, const vector<ActionWrap>& nodeStack, vector<CreateInfo>& createInfos);
 			void													CacheRuleRequiresMap(PDAEdge* edge, const vector< ActionWrap>& ruleStack, vector<wstring>&ruleInfos);
+
+
 			void													CacheEnterRule(PDAEdge* edge);
 			void													CacheTerminateMap(PDAEdge* edge);
 			vector<PDAEdge*>*										GetPDAEdgeByTerminate(const int number, const wstring& terminate)const;
@@ -49,17 +50,15 @@ namespace ztl
 			const vector<wstring>&									GetRuleRequires(PDAEdge* edge)const;
 			bool													IsRightRecursionEdge(PDAEdge* edge)const;
 			const  vector<wstring>&									GetRightRecursionRuleRequires(PDAEdge* edge)const;
-			const vector<CreateInfo>*								GetCreateNodeRequires(PDAEdge* edge)const;
 		private:
 			PushDownAutoMachine*															 machine;
 			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 ruleRequiresMap;
 			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 rightRecursionMap;
-			shared_ptr<unordered_map<PDAEdge*, vector<CreateInfo>>>							 createdNodeRequiresMap;
 			shared_ptr<TerminateMapType>													 terminateMap;
 			int																				 rootNumber;
 		
 		};
-		void CreateJumpInfoTable(GeneralJumpInfoTable& jumpTable);
+		void CreateJumpInfo(GeneralJumpInfo& jumpTable);
 		vector<RightRecursionInfo> FindRightRecursionArea(const vector<wstring>&ruleInfos);
 
 	}
