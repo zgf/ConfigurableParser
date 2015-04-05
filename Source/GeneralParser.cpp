@@ -62,10 +62,7 @@ namespace ztl
 			{
 				states.pop_front();
 			}
-			if(states.empty())
-			{
-				throw ztl_exception(L"Can't find vaild Parser Tree");
-			}
+			
 		}
 
 		void PrintRuntimeInfo(const deque<ParserState>& parserStates, const vector<shared_ptr<TokenInfo>>& tokenPool)
@@ -103,12 +100,13 @@ namespace ztl
 			{
 				while(parserStates.front().tokenIndex != (int) pools.GetTokenPool().size())
 				{
-					if (parserStates.front().tokenIndex==50)
+					
+					auto edges = EdgeResolve(parserStates.front());
+					SaveEdge(parserStates, edges);
+					if(parserStates.front().tokenIndex == 460)
 					{
 						int a = 0;
 					}
-					auto edges = EdgeResolve(parserStates.front());
-					SaveEdge(parserStates, edges);
 					HandleRightRecursionEdge(parserStates.front());
 					ExecuteEdgeActions(parserStates.front());
 					++parserStates.front().tokenIndex;
@@ -160,7 +158,18 @@ namespace ztl
 			for(size_t i = 0; i < edges->size(); ++i)
 			{
 				PDAEdge* iter = (*edges)[i];
-				auto&& ruleRequire = jumpInfos->GetRuleRequires(iter);
+				vector<wstring> ruleRequire;
+				if (jumpInfos->IsRightRecursionEdge(iter))
+				{
+					ruleRequire = jumpInfos->GetRightRecursionRuleRequires(iter);
+
+
+				}
+				else
+				{
+					ruleRequire = jumpInfos->GetRuleRequires(iter);
+
+				}
 
 				if(rulePathStack.size() >= ruleRequire.size())
 				{
@@ -202,7 +211,7 @@ namespace ztl
 		{
 			if(isRightRecursionEdge)
 			{
-				auto&& ruleRequire = jumpInfos->GetRightRecursionRuleRequires(edge);
+			/*	auto&& ruleRequire = jumpInfos->GetRightRecursionRuleRequires(edge);
 				auto rightRecursionAreas = FindRightRecursionArea(ruleRequire);
 				for(auto&&iter : rightRecursionAreas)
 				{
@@ -217,7 +226,7 @@ namespace ztl
 							make_reverse_iterator(ruleRequire.begin() + iter.back), 
 							make_reverse_iterator(ruleRequire.begin() + iter.begin));
 					}
-				}
+				}*/
 			}
 		}
 		bool GeneralParser::IsCorrectNode(GeneralTreeNode& node, const wstring& value) const

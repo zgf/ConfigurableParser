@@ -6,6 +6,7 @@ namespace ztl
 	{
 		class GeneralParser;
 		struct GeneralTableDefine;
+		class PushDownAutoMachine;
 		class SymbolManager;
 		//节点定义文件的生成,节点反射函数的生成.
 		//要生成的,节点定义,节点反射 节点序列化三个模块.放到同一个.hpp文件里面去
@@ -24,6 +25,7 @@ namespace ztl
 			void				GenerateSpecialParserFile();
 			void CreateFile(const wstring& fileName, const wstring& content);
 			wstring GetFileLeafName(const wstring& fileName);
+			GeneralParser&	GetParser();
 		private:
 			wstring GetGenerateImpModuleBody(GeneralTableDefine* table, SymbolManager*manager);
 			wstring GetGenerateHeadModuleBody(GeneralTableDefine* table, SymbolManager*manager);
@@ -49,6 +51,7 @@ namespace ztl
 			
 
 		};
+		extern void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine);
 		wstring GetNodeDefineFileInclude(SymbolManager* manager);
 		wstring GetReflectionModuleImp(SymbolManager* manager);
 		wstring SerializeEBNFCoreModuleHead();

@@ -456,7 +456,7 @@ namespace ztl
 				}
 			});
 
-			CheckAndDeleteLeftReCursionRing(newActions);
+		//	CheckAndDeleteLeftReCursionRing(newActions);
 			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
 			return newActions;
 		}

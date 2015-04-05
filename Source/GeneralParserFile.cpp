@@ -12,6 +12,8 @@ namespace ztl
 		shared_ptr<GeneralTableDefine> GeneralParserFile::GetGenerateParserTableDefine()
 		{
 			generalParser->BuildParser();
+			LogGraphInfo(L"LogParserDefineInfo.txt", GetParser().GetMachine());
+
 			auto result = generalParser->GenerateIsomorphismParserTree();
 			assert(result.size() == 1);
 			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
@@ -206,6 +208,11 @@ namespace ztl
 			int slashPosition = std::max(backslashResult, slashResult);
 			auto leaf = fileName.substr(slashPosition + 1);
 			return leaf;
+		}
+		GeneralParser & ztl::general_parser::GeneralParserFile::GetParser()
+		{
+			// TODO: insert return statement here
+			return *generalParser;
 		}
 	}
 }

@@ -31,6 +31,7 @@ void TestXml()
 void GenerateGeneralParserFile()
 {
 	ztl::general_parser::GeneralParserFile parserGen(L"ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
+
 	parserGen.GenerateSpecialParserFile();
 }
 void GenerateXmlParserFile()
@@ -45,10 +46,10 @@ void GenerateJsonParserFile()
 }
 int main()
 {
-	//GenerateGeneralParserFile();
+	GenerateGeneralParserFile();
 	//GenerateXmlParserFile();
 	//GenerateJsonParserFile();
-	TestJson();
-	TestXml();
+	//TestJson();
+	//TestXml();
 	return 0;
 }
