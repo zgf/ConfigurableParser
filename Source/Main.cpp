@@ -13,8 +13,8 @@ void TestJson()
 {
 	ztl::general_parser::GeneralParser parser(L"TestJson.txt", ztl::json::BootStrapDefineTable());
 	parser.BuildParser();
-	parser.GenerateIsomorphismParserTree();
 	LogGraphInfo(L"LogJsonInfo.txt", parser.GetMachine());
+	parser.GenerateIsomorphismParserTree();
 
 	auto tree = ztl::json::GeneralHeterogeneousParserTree(parser);
 }
@@ -22,8 +22,8 @@ void TestXml()
 {
 	ztl::general_parser::GeneralParser parser(L"TestXml.txt", ztl::xml::BootStrapDefineTable());
 	parser.BuildParser();
-	parser.GenerateIsomorphismParserTree();
 	LogGraphInfo(L"LogXmlInfo.txt", parser.GetMachine());
+	parser.GenerateIsomorphismParserTree();
 
 	auto tree = ztl::xml::GeneralHeterogeneousParserTree(parser);
 }
@@ -47,9 +47,9 @@ void GenerateJsonParserFile()
 int main()
 {
 	GenerateGeneralParserFile();
-	//GenerateXmlParserFile();
-	//GenerateJsonParserFile();
-	//TestJson();
+	GenerateXmlParserFile();
+	GenerateJsonParserFile();
+	TestJson();
 	//TestXml();
 	return 0;
 }

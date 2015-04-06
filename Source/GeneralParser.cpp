@@ -103,10 +103,6 @@ namespace ztl
 					
 					auto edges = EdgeResolve(parserStates.front());
 					SaveEdge(parserStates, edges);
-					if(parserStates.front().tokenIndex == 460)
-					{
-						int a = 0;
-					}
 					HandleRightRecursionEdge(parserStates.front());
 					ExecuteEdgeActions(parserStates.front());
 					++parserStates.front().tokenIndex;
@@ -158,19 +154,7 @@ namespace ztl
 			for(size_t i = 0; i < edges->size(); ++i)
 			{
 				PDAEdge* iter = (*edges)[i];
-				vector<wstring> ruleRequire;
-				if (jumpInfos->IsRightRecursionEdge(iter))
-				{
-					ruleRequire = jumpInfos->GetRightRecursionRuleRequires(iter);
-
-
-				}
-				else
-				{
-					ruleRequire = jumpInfos->GetRuleRequires(iter);
-
-				}
-
+				const vector<wstring>& ruleRequire = jumpInfos->GetRuleRequires(iter);
 				if(rulePathStack.size() >= ruleRequire.size())
 				{
 					if(std::equal(rulePathStack.rbegin(), rulePathStack.rbegin() + ruleRequire.size(), ruleRequire.begin(), ruleRequire.end()))
@@ -211,7 +195,7 @@ namespace ztl
 		{
 			if(isRightRecursionEdge)
 			{
-			/*	auto&& ruleRequire = jumpInfos->GetRightRecursionRuleRequires(edge);
+				auto&& ruleRequire = jumpInfos->GetRightRecursionRuleRequires(edge);
 				auto rightRecursionAreas = FindRightRecursionArea(ruleRequire);
 				for(auto&&iter : rightRecursionAreas)
 				{
@@ -226,7 +210,7 @@ namespace ztl
 							make_reverse_iterator(ruleRequire.begin() + iter.back), 
 							make_reverse_iterator(ruleRequire.begin() + iter.begin));
 					}
-				}*/
+				}
 			}
 		}
 		bool GeneralParser::IsCorrectNode(GeneralTreeNode& node, const wstring& value) const
