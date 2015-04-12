@@ -204,6 +204,7 @@ namespace ztl
 				case ztl::general_parser::ActionType::Create:
 				case ztl::general_parser::ActionType::Setter:
 				case ztl::general_parser::ActionType::Assign:
+				case ztl::general_parser::ActionType::GrammarBegin:
 					name = first->GetFrom();
 					break;
 				case ztl::general_parser::ActionType::Reduce:
@@ -220,6 +221,7 @@ namespace ztl
 		}
 		void GeneralJumpInfo::CacheTerminateMap(PDAEdge* edge)
 		{
+
 			auto findTermIter = find_if(make_reverse_iterator(edge->GetActions().end()), make_reverse_iterator(edge->GetActions().begin()), [](const ActionWrap& wrap)
 			{
 				return wrap.GetActionType() == ActionType::Terminate;
@@ -262,7 +264,6 @@ namespace ztl
 		void GeneralJumpInfo::CacheEdgeInfo(PDAEdge * edge)
 		{
 			auto&& actions = edge->GetActions();
-
 			assert(!actions.empty());
 			assert(accumulate(actions.begin(), actions.end(), 0, [](int sum, const ActionWrap& wrap)
 			{
@@ -304,6 +305,8 @@ namespace ztl
 					case ztl::general_parser::ActionType::Setter:
 						break;
 					case ztl::general_parser::ActionType::Create:
+					case ztl::general_parser::ActionType::GrammarBegin:
+					case ztl::general_parser::ActionType::Terminate:
 					default:
 						break;
 				}
@@ -349,6 +352,9 @@ namespace ztl
 				case ztl::general_parser::ActionType::Epsilon:
 					result = L"Epsilon";
 					break;
+				case ztl::general_parser::ActionType::GrammarBegin:
+					result = L"GrammarBegin";
+					break;
 				default:
 					assert(false);
 					break;
@@ -374,7 +380,8 @@ namespace ztl
 				ActionType::Setter,
 				ActionType::Shift,
 				ActionType::Terminate,
-				ActionType::Using
+				ActionType::Using,
+				ActionType::GrammarBegin,
 			};
 			for(auto&& iter : ActionTypeList)
 			{
@@ -431,33 +438,3 @@ namespace ztl
 		}
 	}
 }
-/*
-
-auto actionMap = InitActionTypeAndGrammarLogMap();
-auto&& table = jumpTable.GetJumpTable();
-wofstream output(fileName);
-for(auto rowsIter : table)
-{
-auto&& nodeIndex = rowsIter.first;
-auto&&  edges = rowsIter.second;
-sort(edges.begin(), edges.end(), [](const JumpItem& left, const JumpItem& right)
-{
-return left.targetIndex < right.targetIndex;
-});
-output << L"NodeIndex:" + to_wstring(nodeIndex) << endl;
-
-for(auto&& colsIter : edges)
-{
-auto&& targetNodeIndex = colsIter.targetIndex;
-output << L" targetIndex: " << to_wstring(targetNodeIndex) << endl;
-
-auto&& actionWrapList = colsIter.edges->GetActions();
-auto&& actionWrapStringList = ActionWrapStringList(actionWrapList, actionMap);
-for(auto&& iter : actionWrapStringList)
-{
-output << L"			" << iter << endl;
-}
-}
-}
-
-*/

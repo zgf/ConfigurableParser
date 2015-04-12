@@ -6,6 +6,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
+		class ParserSymbol;
 		struct GeneralRuleDefine;
 		struct GeneralGrammarTypeDefine;
 		class SymbolManager;
@@ -24,19 +25,28 @@ namespace ztl
 			Create,
 			Assign,
 			Setter,
+			GrammarBegin,
 		};
 		class ActionWrap
 		{
 			ActionType action;
-			wstring name;//setter key using ruleNmae create className nonterm ruleName term tokenName assgin fieldName
+		//	wstring name;//setter key using ruleNmae create className nonterm ruleName term tokenName assgin fieldName
+			//Assgin ParserSymbol FiledDef,
+			//Setter  ParserSymbol FiledDef,
+			//Noterminate ParserSymbol RuleDef
+			//Terminate ParserSymbol TokenDef
+			//Create ParserSymbol ClassDef
+			//Shift ParserSymbol From RuleDef
+			//Using ParserSymbol From RuleDef
+			ParserSymbol* data;
 			wstring value;//setter value assgin ruleName
 			wstring current;//当前文法
 			wstring next;//下一个文法
 		public:
 			ActionWrap() = default;
 
-			ActionWrap(ActionType _action, const wstring& _name, const wstring& _value, const wstring& _current, const wstring& _next)
-				: action(_action),name( _name),value( _value), current(_current), next(_next)
+			ActionWrap(ActionType _action, ParserSymbol* _data, const wstring& _value, const wstring& _current, const wstring& _next)
+				: action(_action), data(_data),value( _value), current(_current), next(_next)
 			{
 			}
 			~ActionWrap() = default;
@@ -45,10 +55,7 @@ namespace ztl
 			{
 				return action;
 			}
-			const wstring& GetName()const
-			{
-				return name;
-			}
+			const wstring& GetName()const;
 			const wstring& GetValue()const
 			{
 				return value;
@@ -64,7 +71,7 @@ namespace ztl
 			bool operator==(const ActionWrap& target)const
 			{
 				return target.action == action&&
-					target.name == name&&
+					target.GetName() == GetName()&&
 					target.value == value;
 			}
 			friend bool operator!=(const ActionWrap& left, const ActionWrap& target)
@@ -75,13 +82,13 @@ namespace ztl
 			{
 				if(left.action == right.action)
 				{
-					if(left.name == right.name)
+					if(left.GetName() == right.GetName())
 					{
-						return left.value < right.value;
+						return left.GetValue() < right.GetValue();
 					}
 					else
 					{
-						return left.name < right.name;
+						return left.GetName() < right.GetName();
 					}
 				}
 				else
@@ -241,6 +248,7 @@ namespace ztl
 			//保留Left节点合并left right
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
+			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 			void CacheCrreatNodeInfoFromLeft(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			void CacheCrreatNodeInfoFromRight(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			unordered_map<wstring, CreateInfo>& GetCreatedNodeRequiresMap();

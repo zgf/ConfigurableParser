@@ -260,15 +260,17 @@ namespace ztl
 		private:
 			void CheckGrammarUseDisTokenNameError(const wstring& name)
 			{
-				auto disTokensymbol = manager->GetCacheDisTokenNameSymbol(name);
-				if(!disTokensymbol)
+				auto disTokensymbol = manager->GetTokenSymbolByName(name);
+				assert(disTokensymbol == nullptr || disTokensymbol->IsTokenDef());
+				if(disTokensymbol==nullptr||disTokensymbol->IsIgnore())
 				{
 					ztl_exception(L"can' use the distoken name in grammar");
 				}
 			}
 			ParserSymbol* CheckRuleNameDisExistError(const wstring& name)
 			{
-				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(name);
+				auto ruleSymbol = manager->GetRuleSymbolByName(name);
+				assert(ruleSymbol == nullptr || ruleSymbol->IsRuleDef());
 				if(!ruleSymbol)
 				{
 					throw ztl_exception(L"This rule name not exist");
@@ -279,18 +281,20 @@ namespace ztl
 			void								Visit(GeneralGrammarTextTypeDefine* node)
 			{
 				auto regex = LinearStringToRegex(node->text);
-				auto tokenSymbol = manager->GetCacheRegexStringToSymbol(regex);
-				if(!tokenSymbol)
+				auto ruleSymbol = manager->GetRegexSymbolByName(regex);
+				if(!ruleSymbol)
 				{
 					throw ztl_exception(L"This text" + node->text + L" not exist");
 				}
+				auto tokenSymbol = ruleSymbol->GetDescriptorSymbol();
+				assert(tokenSymbol->IsTokenDef());
 				node->text = tokenSymbol->GetName();
 				manager->CacheTextGrammarToTokenDefSymbol(node, tokenSymbol);
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
 			{
 				CheckGrammarUseDisTokenNameError(node->name);
-				auto tokenSymbol = manager->GetCacheTokenNameToSymbol(node->name);
+				auto tokenSymbol = manager->GetTokenSymbolByName(node->name);
 				if(!tokenSymbol)
 				{
 					auto ruleSymbol = CheckRuleNameDisExistError(node->name);
@@ -774,7 +778,7 @@ namespace ztl
 				}
 				else
 				{
-					auto ruleSymbol = manager->GetCacheRuleNameToSymbol(normalTypeNodeDefine->name);
+					auto ruleSymbol = manager->GetRuleSymbolByName(normalTypeNodeDefine->name);
 					if(!ruleSymbol)
 					{
 						throw ztl_exception(L"This rule name or token name not exist");
@@ -1066,116 +1070,19 @@ namespace ztl
 				node->right->Accept(this);
 			}
 		};
-		//处在循环范围内的也是可选的,处在|范围内也是可选的
-		//class AnalyzeClassChoiceFieldVisitor:public GeneralGrammarTypeDefine::IVisitor
-		//{
-		//private:
-		//	SymbolManager*										manager;
-		//	bool												inOptional=false;
-		//	
-		//public:
-		//	AnalyzeClassChoiceFieldVisitor(SymbolManager*_manager) :manager(_manager)
-		//	{
-
-		//	}
-		//	AnalyzeClassChoiceFieldVisitor() = default;
-		//	~AnalyzeClassChoiceFieldVisitor() noexcept = default;
-		//	AnalyzeClassChoiceFieldVisitor(AnalyzeClassChoiceFieldVisitor&&) = default;
-		//	AnalyzeClassChoiceFieldVisitor(const AnalyzeClassChoiceFieldVisitor&) = default;
-		//	AnalyzeClassChoiceFieldVisitor& operator=(AnalyzeClassChoiceFieldVisitor&&) = default;
-		//	AnalyzeClassChoiceFieldVisitor& operator=(const AnalyzeClassChoiceFieldVisitor&) = default;
-		//public:
-		//	bool InOptional() const
-		//	{
-		//		return inOptional;
-		//	}
-		//	void InOptional(bool val)
-		//	{
-		//		inOptional = val;
-		//	}
-		//public:
-		//	void								Visit(GeneralGrammarTextTypeDefine*)
-		//	{
-		//	}
-		//	void								Visit(GeneralGrammarNormalTypeDefine* )
-		//	{
-	
-		//	}
-		//	void								Visit(GeneralGrammarSequenceTypeDefine* node)
-		//	{
-		//		node->first->Accept(this);
-		//		node->second->Accept(this);
-		//	}
-		//	void								Visit(GeneralGrammarLoopTypeDefine*node)
-		//	{
-		//		this->InOptional(true);
-		//		node->grammar->Accept(this);
-		//		this->InOptional(false);
-		//	}
-		//	void								Visit(GeneralGrammarOptionalTypeDefine*node)
-		//	{
-		//		this->InOptional(true);
-		//		node->grammar->Accept(this);
-		//		this->InOptional(false);
-		//	}
-
-		//	void								Visit(GeneralGrammarSetterTypeDefine* node)
-		//	{
-		//		node->grammar->Accept(this);
-		//	}
-		//	void								Visit(GeneralGrammarAssignTypeDefine* node)
-		//	{
-		//		auto fieldDefSymbol = manager->GetCacheFieldDefSymbolByGrammar(node);
-		//		assert(fieldDefSymbol != nullptr&&fieldDefSymbol->IsFieldDef());
-		//		if(!InOptional())
-		//		{
-		//			fieldDefSymbol->SetFieldEssential();
-		//		}
-		//		node->grammar->Accept(this);
-		//		
-
-		//	}
-		//	void								Visit(GeneralGrammarUsingTypeDefine* node)
-		//	{
-		//		node->grammar->Accept(this);
-		//	}
-		//	void								Visit(GeneralGrammarCreateTypeDefine* node)
-		//	{
-		//		node->grammar->Accept(this);
-		//	}
-		//	void								Visit(GeneralGrammarAlternationTypeDefine*node)
-		//	{
-		//		this->InOptional(true);
-		//		node->left->Accept(this);
-		//		node->right->Accept(this);
-		//		this->InOptional(false);
-		//	}
-		//};
-		//void AnalyzeClassChoiceField(SymbolManager* manager)
-		//{
-		//	auto&& table = manager->GetTable();
-		//	for (auto&& ruleIter:table->rules)
-		//	{
-		//		for(auto&& grammarIter : ruleIter->grammars)
-		//		{
-		//			AnalyzeClassChoiceFieldVisitor visitor(manager);
-		//			grammarIter->Accept(&visitor);
-		//		}
-		//	}
-		//}
-
+		
 		void GetStartSymbol(SymbolManager * manager)
 		{
 			auto&& table = manager->GetTable();
 			unordered_map<ParserSymbol*, bool> rules;
 			for(auto&& ruleIter : table->rules)
 			{
-				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(ruleIter->name);
+				auto ruleSymbol = manager->GetRuleSymbolByName(ruleIter->name);
 				rules[ruleSymbol] = false;
 			}
 			for(auto&& ruleIter : table->rules)
 			{
-				auto ruleSymbol = manager->GetCacheRuleNameToSymbol(ruleIter->name);
+				auto ruleSymbol = manager->GetRuleSymbolByName(ruleIter->name);
 				rules[ruleSymbol] = true;
 				manager->GetStartRuleList().emplace_back(ruleSymbol->GetName());
 				GetStartSymbolVisitor visitor(manager, rules, 1);
@@ -1199,9 +1106,7 @@ namespace ztl
 			ValidateGrammarNode(manager);
 			auto&& pathMap = CollectGeneratePath(manager);
 			ValidateGeneratePathStructure(manager, pathMap);
-			//AnalyzeClassChoiceField(manager);
 			GetStartSymbol(manager);
-			//LogGeneratePath(L"test.txt", pathMap);
 		}
 	}
 }

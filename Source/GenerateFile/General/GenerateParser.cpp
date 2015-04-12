@@ -697,7 +697,8 @@
 						.Token
 						(
 							ztl::general_parser::GeneralTokenWriter()
-							.Token(L"CLASS",LR"(class)")
+													.Token(L"FINISH",L"<\\$>")
+			.Token(L"CLASS",LR"(class)")
 .Token(L"STRUCT",LR"(struct)")
 .Token(L"ENUM",LR"(enum)")
 .Token(L"TOKEN",LR"(token)")

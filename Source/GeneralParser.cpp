@@ -100,7 +100,10 @@ namespace ztl
 			{
 				while(parserStates.front().tokenIndex != (int) pools.GetTokenPool().size())
 				{
-					
+					if (parserStates.front().tokenIndex == 520)
+					{
+						int a = 0;
+					}
 					auto edges = EdgeResolve(parserStates.front());
 					SaveEdge(parserStates, edges);
 					HandleRightRecursionEdge(parserStates.front());
@@ -151,6 +154,7 @@ namespace ztl
 			assert(edges != nullptr && !edges->empty());
 			vector<EdgeInfo> result;
 			vector<PDAEdge*> candicate;
+			
 			for(size_t i = 0; i < edges->size(); ++i)
 			{
 				PDAEdge* iter = (*edges)[i];
@@ -279,6 +283,8 @@ namespace ztl
 					case ztl::general_parser::ActionType::Terminate:
 						isTerminate = true;
 						break;
+					case ztl::general_parser::ActionType::GrammarBegin:
+						break;
 					case ztl::general_parser::ActionType::Shift:
 					case ztl::general_parser::ActionType::NonTerminate:
 					case ztl::general_parser::ActionType::Epsilon:
@@ -380,6 +386,8 @@ namespace ztl
 					case ztl::general_parser::ActionType::Setter:
 						pools.SetTerminatePool(make_shared<TokenInfo>(actionIter.GetValue(), L"Setter", -1, -1));
 						createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int) pools.GetTerminatePool().size() - 1);
+						break;
+					case ztl::general_parser::ActionType::GrammarBegin:
 						break;
 					case ztl::general_parser::ActionType::Epsilon:
 					case ztl::general_parser::ActionType::Reduce:

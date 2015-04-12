@@ -289,7 +289,8 @@
 						.Token
 						(
 							ztl::general_parser::GeneralTokenWriter()
-							.Token(L"INSTRUCTION_OPEN",LR"(<\?)")
+													.Token(L"FINISH",L"<\\$>")
+			.Token(L"INSTRUCTION_OPEN",LR"(<\?)")
 .Token(L"INSTRUCTION_CLOSE",LR"(\?>)")
 .Token(L"COMPLEX_ELEMENT_OPEN",LR"(</)")
 .Token(L"SINGLE_ELEMENT_CLOSE",LR"(/>)")

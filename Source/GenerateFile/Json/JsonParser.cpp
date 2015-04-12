@@ -247,7 +247,8 @@
 						.Token
 						(
 							ztl::general_parser::GeneralTokenWriter()
-							.Token(L"TRUEVALUE",LR"(true)")
+													.Token(L"FINISH",L"<\\$>")
+			.Token(L"TRUEVALUE",LR"(true)")
 .Token(L"FALSEVALUE",LR"(false)")
 .Token(L"NULLVALUE",LR"(null)")
 .Token(L"OBJOPEN",LR"(\{)")

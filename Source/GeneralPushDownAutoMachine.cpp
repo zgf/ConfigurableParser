@@ -2,11 +2,15 @@
 #include "Include/GeneralTableDefine.h"
 #include "Include/GeneralPushDownAutoMachine.h"
 #include "Include/SymbolManager.h"
-
+#include "Include/ParserSymbol.h"
 namespace ztl
 {
 	namespace general_parser
 	{
+		const wstring& ActionWrap::GetName()const
+		{
+			return data->GetName();
+		}
 		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr)
 		{
 		}
@@ -111,7 +115,9 @@ namespace ztl
 				{
 					//	assert(frontIter->GetGrammarNumber() != -1);
 					//	assert(frontIter->GetActions().front().GetGrammarNumber() == frontIter->GetGrammarNumber());
-					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, L"FINISH", ruleName, ruleName, L""));
+					auto tokenSymbol = manager->GetTokenSymbolByName(L"FINISH");
+					assert(tokenSymbol != nullptr&&tokenSymbol->IsTokenDef() && !tokenSymbol->IsIgnore());
+					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, tokenSymbol,  ruleName, ruleName, L""));
 				}
 			}
 		}
@@ -178,6 +184,11 @@ namespace ztl
 		void PushDownAutoMachine::BackInsertAction(PDAEdge* edge, const ActionWrap& wrap)
 		{
 			edge->actions.emplace_back(wrap);
+		}
+
+		void PushDownAutoMachine::FrontInsertAction(PDAEdge * edge, const ActionWrap & wrap)
+		{
+			edge->actions.emplace(edge->actions.begin(),wrap);
 		}
 
 		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)

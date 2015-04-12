@@ -42,6 +42,43 @@ namespace ztl
 			auto findIter = symbolRuleDefineMap.find(symbol);
 			return (findIter == symbolRuleDefineMap.end()) ? nullptr : findIter->second;
 		}
+		template<typename predicate_type>
+		ParserSymbol * SymbolManager::GetSymbolByName(const wstring & name, predicate_type predicator) const
+		{
+			auto symbol = globalSymbol->GetSubSymbolByName(name);
+			if(predicator(symbol))
+			{
+				return symbol;
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+		ParserSymbol* SymbolManager::GetRuleSymbolByName(const wstring& name) const
+		{
+			return GetSymbolByName(name, [](ParserSymbol* symbol)
+			{
+				return symbol->IsRuleDef();
+			});
+		}
+	
+		ParserSymbol * SymbolManager::GetTokenSymbolByName(const wstring & name) const
+		{
+			return GetSymbolByName(name, [](ParserSymbol* symbol)
+			{
+				return symbol->IsTokenDef();
+			});
+		}
+
+		ParserSymbol* SymbolManager::GetRegexSymbolByName(const wstring& name) const
+		{
+			return GetSymbolByName(name, [](ParserSymbol* symbol)
+			{
+				return symbol->IsRegexDef();
+			});
+		}
+
 		ParserSymbol * SymbolManager::AddClass(const wstring & name, ParserSymbol * baseType, ParserSymbol * parentType)
 		{
 			assert(parentType->IsClassType() || parentType->IsGlobal());
@@ -107,8 +144,6 @@ namespace ztl
 			CheckNameReDefineError(name, GetGlobalSymbol());
 			auto ruleSymbol = CreatASymbol(SymbolType::RuleDef, name, GetGlobalSymbol(), ruleType);
 			TryAddSubSymbol(ruleSymbol, GetGlobalSymbol());
-			CacheRuleNameToSymbolMap(name, ruleSymbol);
-
 			return ruleSymbol;
 		}
 		void CheckRegexError(const wstring& regex)
@@ -130,20 +165,11 @@ namespace ztl
 					L"token regex: " + regex +
 					L"can't creat correct regex string! the regex error message is:" + ex.Message());
 			}
-			auto regexSymbol = CreatASymbol(SymbolType::RegexDef, regex, nullptr, nullptr, ignore);
+			ParserSymbol* regexSymbol = nullptr;
 			auto tokenSymbol = CreatASymbol(SymbolType::TokenDef, name, GetGlobalSymbol(), regexSymbol, ignore);
-
+			regexSymbol = CreatASymbol(SymbolType::RegexDef, regex, GetGlobalSymbol(), tokenSymbol, ignore);
+			TryAddSubSymbol(regexSymbol, GetGlobalSymbol());
 			TryAddSubSymbol(tokenSymbol, GetGlobalSymbol());
-			if(tokenSymbol->IsIgnore())
-			{
-				CacheDisTokenNameSymbolMap(name, tokenSymbol);
-			}
-			else
-			{
-				CacheTokenNameToSymbolMap(name, tokenSymbol);
-				CacheRegexStringToSymbolMap(regex, tokenSymbol);
-			}
-
 			return tokenSymbol;
 		}
 
@@ -204,62 +230,10 @@ namespace ztl
 			return (findIter == symbolTypeDefMap.end()) ? nullptr : findIter->second;
 		}
 
-		void SymbolManager::CacheRuleNameToSymbolMap(const wstring & name, ParserSymbol * symbol)
-		{
-			assert(symbol->IsRuleDef());
 
-			assert(ruleNameSymbolMap.find(name) == ruleNameSymbolMap.end());
-			this->ruleNameSymbolMap.insert({ name, symbol });
-		}
 
-		void SymbolManager::CacheTokenNameToSymbolMap(const wstring & name, ParserSymbol * symbol)
-		{
-			assert(symbol->IsTokenDef());
-			assert(tokenNameSymbolMap.find(name) == tokenNameSymbolMap.end());
-			this->tokenNameSymbolMap.insert({ name, symbol });
-		}
-
-		void SymbolManager::CacheDisTokenNameSymbolMap(const wstring & name, ParserSymbol * symbol)
-		{
-			assert(symbol->IsTokenDef());
-			assert(disTokenNameSymbolMap.find(name) == disTokenNameSymbolMap.end());
-			this->disTokenNameSymbolMap.insert({ name, symbol });
-		}
-
-		void SymbolManager::CacheRegexStringToSymbolMap(const wstring & name, ParserSymbol * symbol)
-		{
-			if(regexSymbolMap.find(name) == regexSymbolMap.end())
-			{
-				this->regexSymbolMap.insert({ name, symbol });
-			}
-			else
-			{
-				throw ztl_exception(L"token's regex need unique!");
-			}
-		}
-		ParserSymbol* SymbolManager::GetCacheRuleNameToSymbol(const wstring& name) const
-		{
-			auto findIter = ruleNameSymbolMap.find(name);
-			return (findIter == ruleNameSymbolMap.end()) ? nullptr : findIter->second;
-		}
-
-		ParserSymbol* SymbolManager::GetCacheTokenNameToSymbol(const wstring& name) const
-		{
-			auto findIter = tokenNameSymbolMap.find(name);
-			return (findIter == tokenNameSymbolMap.end()) ? nullptr : findIter->second;
-		}
-
-		ParserSymbol* SymbolManager::GetCacheRegexStringToSymbol(const wstring& name) const
-		{
-			auto findIter = regexSymbolMap.find(name);
-			return (findIter == regexSymbolMap.end()) ? nullptr : findIter->second;
-		}
-
-		ParserSymbol * SymbolManager::GetCacheDisTokenNameSymbol(const wstring & name) const
-		{
-			auto findIter = disTokenNameSymbolMap.find(name);
-			return (findIter == disTokenNameSymbolMap.end()) ? nullptr : findIter->second;
-		}
+	
+	
 
 		void SymbolManager::CacheGrammarToFieldDefSymbol(GeneralGrammarTypeDefine * grammar, ParserSymbol * fieldDefSymbol)
 		{

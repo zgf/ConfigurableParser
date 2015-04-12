@@ -28,7 +28,9 @@ namespace ztl
 		{
 			wstring templateString =
 				L".$<TokenType>(L\"$<TokenName>\",LR\"($<Value>)\")\n";
-			return accumulate(tokens.begin(), tokens.end(), wstring(), [&templateString](const wstring& sum, const shared_ptr<GeneralTokenDefine>& token)
+			wstring headString = LR"(						.Token(L"FINISH",L"<\\$>")
+			)";
+			return accumulate(tokens.begin(), tokens.end(), headString, [&templateString](const wstring& sum, const shared_ptr<GeneralTokenDefine>& token)
 			{
 				ztl::generator::MarcoGenerator generator(templateString, { L"$<TokenType>",LR"($<TokenName>)",LR"($<Value>)" });
 				wstring tokenType = (token->ignore == GeneralTokenDefine::TokenOptional::True) ? L"IgnoreToken" : L"Token";
