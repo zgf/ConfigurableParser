@@ -214,6 +214,13 @@ namespace ztl
 			return createdNodeRequiresMap;
 		}
 
+		unordered_map<wstring, PDAEdge*>& PushDownAutoMachine::GetCreateDFA()
+		{
+			return createdDFA;
+		}
+
+
+
 		
 	}
 }

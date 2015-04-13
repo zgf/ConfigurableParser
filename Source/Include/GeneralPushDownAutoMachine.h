@@ -143,6 +143,7 @@ namespace ztl
 			{
 				return HasThisActionType(ActionType::Terminate);
 			}
+			
 			bool IsNullPropertyAction(ActionType type)
 			{
 				assert(type != ActionType::NonTerminate);
@@ -214,7 +215,6 @@ namespace ztl
 			unique_ptr<vector<PDAEdge*>> fronts;
 		};
 		PAIR_BUILDER(CreateInfo, wstring, createType, vector<wstring>, fieldNames);
-
 		class PushDownAutoMachine
 		{
 		public:
@@ -252,6 +252,7 @@ namespace ztl
 			void CacheCrreatNodeInfoFromLeft(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			void CacheCrreatNodeInfoFromRight(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			unordered_map<wstring, CreateInfo>& GetCreatedNodeRequiresMap();
+			unordered_map<wstring, PDAEdge*>& GetCreateDFA();
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
@@ -262,7 +263,7 @@ namespace ztl
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*, PDANode*>>					 PDAMap;
 			unordered_map<wstring, CreateInfo>									 createdNodeRequiresMap;
-
+			unordered_map<wstring, PDAEdge*>									 createdDFA;
 
 		public:
 		};

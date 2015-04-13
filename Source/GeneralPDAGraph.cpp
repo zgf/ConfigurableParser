@@ -197,7 +197,7 @@ namespace ztl
 		//可合并节点含义
 
 		//同一个起点,包含同样信息的边,到达不同的节点,那么这个不同节点可以合并成同一个节点
-		void MergeNodeByEdge(vector<PDAEdge*>& edges, vector<PDANode*>& nodeList, PushDownAutoMachine& machine)
+		void MergeNodeByEdge(const vector<PDAEdge*>& edges, vector<PDANode*>& nodeList, PushDownAutoMachine& machine)
 		{
 			assert(!edges.empty());
 			assert(is_sorted(edges.begin(), edges.end(), [](const PDAEdge* left, const PDAEdge* right)
@@ -248,7 +248,36 @@ namespace ztl
 			}
 		}
 		template<typename prediction_type>
-		vector<PDANode*> CollectGraphNode(PushDownAutoMachine& machine, prediction_type pred)
+		vector<PDANode*> CollectGraphNode(const vector<PDANode*>& nodeList, const prediction_type& pred)
+		{
+			unordered_set<PDANode*>sign;
+			deque<PDANode*> queue;
+			vector<PDANode*> result;
+			for(auto&&iter : nodeList)
+			{
+				queue.emplace_back(iter);
+				while(!queue.empty())
+				{
+					PDANode* front = queue.front();
+					queue.pop_front();
+					if(sign.find(front) == sign.end())
+					{
+						sign.insert(front);
+						if(pred(front))
+						{
+							result.emplace_back(front);
+						}
+						for(auto&& edgeIter : front->GetNexts())
+						{
+							queue.emplace_back(edgeIter->GetTarget());
+						}
+					}
+				}
+			}
+			return result;
+		}
+		/*template<typename prediction_type>
+		vector<PDANode*> CollectGraphNode(PushDownAutoMachine& machine, const prediction_type& pred)
 		{
 			unordered_set<PDANode*>sign;
 			deque<PDANode*> queue;
@@ -277,15 +306,15 @@ namespace ztl
 			}
 			return result;
 		}
-
+		*/
 		template<typename prediction_type>
-		vector<PDAEdge*> CollcetGraphEdgeByRoot(PushDownAutoMachine& machine, prediction_type pred)
+		vector<PDAEdge*> CollcetGraphEdgeByRoot(PDANode*root, prediction_type pred)
 		{
 			vector<PDAEdge*> result;
 			unordered_set<PDAEdge*> sign;
 			//从Root表达式开始
 			deque<PDANode*> queue;
-			queue.emplace_back(machine.GetRoot());
+			queue.emplace_back(root);
 			while(!queue.empty())
 			{
 				auto&& front = queue.front();
@@ -308,8 +337,6 @@ namespace ztl
 		}
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine)
 		{
-			unordered_set<PDANode*> sign;
-			vector<PDAEdge*> edges;
 			vector<PDANode*>nodeList;
 			//收集最左的边>2的节点
 			for(auto&&iter : machine.GetPDAMap())
@@ -568,7 +595,13 @@ namespace ztl
 			//每个节点上旧边的数量
 			unordered_map<PDANode*, int> edgeCountMap;
 			//edgeCountMap收集完毕
-			CollectGraphNode(machine, [&edgeCountMap](PDANode* element)
+			auto& startList = machine.GetSymbolManager()->GetStartRuleList();
+			vector<PDANode*>nodeList;
+			std::transform(startList.begin(), startList.end(), back_inserter(nodeList), [&machine](const wstring& ruleName)
+			{
+				return machine.GetPDAMap()[ruleName].first;
+			});
+			CollectGraphNode(nodeList, [&edgeCountMap](PDANode* element)
 			{
 				edgeCountMap.insert({ element,(int) element->GetNexts().size() });
 				return true;
@@ -699,12 +732,200 @@ namespace ztl
 				}
 			}
 		}
+		int FindNodeActionType(const vector<ActionWrap>& actions)
+		{
+			for(auto i = 0; i < actions.size(); ++i)
+			{
+				auto&&iter = actions[i];
+				if(iter.GetActionType() == ActionType::Assign ||
+					iter.GetActionType() == ActionType::Create ||
+					iter.GetActionType() == ActionType::Terminate ||
+					iter.GetActionType() == ActionType::Setter)
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		PDANode* FindMapNode(PDANode* origin, unordered_map<PDANode*, PDANode*>& nodeMap, PushDownAutoMachine& machine)
+		{
+			auto findIter = nodeMap.find(origin);
+			if(findIter == nodeMap.end())
+			{
+				auto node = machine.NewNode();
+				nodeMap.insert({ origin,node });
+				return node;
+			}
+			else
+			{
+				return findIter->second;
+			}
+		}
+
+		void GenerateDFANode(const vector<PDAEdge*>& save, unordered_map<PDANode*, PDANode*>& nodeMap, PushDownAutoMachine& machine)
+		{
+			assert(!save.empty());
+			auto source = save.front()->GetSource();
+			auto target = save.back()->GetTarget();
+			source = FindMapNode(source, nodeMap, machine);
+			target = FindMapNode(target, nodeMap, machine);
+			machine.AddEdge(source, target, save.back()->GetActions());
+		}
+		void SeparateActions(PDANode* root, PushDownAutoMachine& machine)
+		{
+			auto edges = CollcetGraphEdgeByRoot(root, [](PDAEdge* edge)
+			{
+				return edge->GetActions().size() > 1;
+			});
+
+			for(auto&&edgeIter : edges)
+			{
+				if (edgeIter->GetActions().size()>1)
+				{
+					auto source = edgeIter->GetSource();
+					auto target = edgeIter->GetTarget();
+					auto actions = edgeIter->GetActions();
+					machine.DeleteEdge(edgeIter);
+					assert(actions.size() > 1);
+					vector<PDANode*> nodeList(actions.size() + 1);
+					nodeList[0] = source;
+					generate_n(nodeList.begin()+1, actions.size()-1, [&machine]()
+					{
+						return machine.NewNode();
+					});
+					nodeList[nodeList.size() - 1] = target;
+					assert(nodeList.size() == actions.size() + 1);
+					int sourceIter = 0;
+					int targetIter = 1;
+					for(auto&&actionIter : actions)
+					{
+						machine.AddEdge(nodeList[sourceIter], nodeList[targetIter], actionIter);
+						++sourceIter;
+						++targetIter;
+					}
+				}
+			}
+		}
+		void MergeCreatedDFA(vector<PDANode*>&queue, PDANode* root, unordered_set<PDANode*>&sign, PushDownAutoMachine& machine)
+		{
+			if(root->GetNexts().size() > 1)
+			{
+				assert(sign.find(root) == sign.end());
+				auto nexts = root->GetNexts();
+				sort(nexts.begin(), nexts.end(), [](const PDAEdge* left, const PDAEdge* right)
+				{
+					return left->GetActions().size() == right->GetActions().size() ?
+						left->GetActions() < right->GetActions() :
+						left->GetActions().size() < right->GetActions().size();
+				});
+				MergeNodeByEdge(nexts, queue, machine);
+				sign.insert(root);
+			}
+		}
+		void MergeCreatedDFA(PDANode* root, PushDownAutoMachine& machine)
+		{
+			vector<PDANode*>queue;
+			unordered_set<PDANode*>sign;
+			sign.emplace(root);
+			queue.emplace_back(root);
+			queue = CollectGraphNode(queue, [](PDANode*node)
+			{
+				return node->GetNexts().size() > 1;
+			});
+			for(size_t i = 0; i < queue.size(); ++i)
+			{
+				auto&& iter = queue[i];
+				if(sign.find(iter) == sign.end())
+				{
+					MergeCreatedDFA(queue, iter, sign, machine);
+				}
+			}
+		}
+		vector<PDAEdge*> GetAllCreateTagNode( PDANode* dfaRoot)
+		{
+			return CollcetGraphEdgeByRoot(dfaRoot, [](PDAEdge* edge)
+			{
+				assert(edge->GetActions().size() == 1);
+				return edge->GetActions().begin()->GetActionType() == ActionType::Create;
+			});
+		}
+		vector<PDAEdge*> CreateResolveDFA(PushDownAutoMachine& machine,PDANode* root)
+		{
+			//当前路径上遇到的边
+			vector<PDAEdge*> path;
+			//当前路径上遇到的边的hash
+			unordered_set<PDAEdge*> sign;
+			//待处理的点队列
+			vector<PDANode*> queue;
+			//已进队列或者处理结束的点
+			unordered_set<PDANode*> noNeed;
+			queue.emplace_back(root);
+			noNeed.insert(root);
+			//DFA节点和原图节点的映射
+			unordered_map<PDANode*, PDANode*> nodeMap;
+			auto dfaRoot = FindMapNode(root, nodeMap, machine);
+			function<void(PDANode*)> DFS = [&noNeed, &queue, &nodeMap, &DFS, &sign, &path, &machine](PDANode* node)
+			{
+				for(size_t i = 0; i < node->GetNexts().size(); ++i)
+				{
+					auto&& edgeIter = node->GetNexts()[i];
+					auto target = edgeIter->GetTarget();
+					if(sign.find(edgeIter) == sign.end() && IsCorrectEdge(path, edgeIter))
+					{
+						path.emplace_back(edgeIter);
+						sign.insert(edgeIter);
+						auto index = FindNodeActionType(edgeIter->GetActions());
+						if(index != -1)
+						{
+							//遇到需要的节点了,当前路径可以终止搜索了.
+							GenerateDFANode(path, nodeMap, machine);
+							assert(!path.empty());
+							//记录待处理的节点
+							RecordNewNode(target, queue, noNeed);
+						}
+						else
+						{
+							DFS(target);
+						}
+						sign.erase(edgeIter);
+						assert(path.back() == edgeIter);
+						path.pop_back();
+					}
+				}
+			};
+			for(size_t i = 0; i < queue.size(); ++i)
+			{
+				auto nodeIter = queue[i];
+				DFS(nodeIter);
+			}
+			SeparateActions(dfaRoot, machine);
+			MergeCreatedDFA(dfaRoot, machine);
+			return  GetAllCreateTagNode(dfaRoot);
+		}
+		void CreateResolveDFA(PushDownAutoMachine& machine)
+		{
+			for (auto&&iter:machine.GetPDAMap())
+			{
+				auto root = iter.second.first;
+				for (auto&&edge: CreateResolveDFA(machine, root))
+				{
+					assert(edge->GetActions().size() == 1);
+					auto value = edge->GetActions().begin()->GetValue();
+					assert(edge->GetActions().begin()->GetActionType() == ActionType::Create);
+					assert(machine.GetCreateDFA().find(value) == machine.GetCreateDFA().end());
+					machine.GetCreateDFA().emplace(value,edge);
+				}
+			}
+		}
+		
 		void CreateDPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto PDAMap = CreateEpsilonPDA(machine);
 			MergeStartAndEndNode(machine, PDAMap);
 			AddPDAToPDAMachine(machine, PDAMap);
 			MergeGrammarCommonFactor(machine);
+			CreateResolveDFA(machine);
 			CollcetPathNodeFieldInfo(machine);
 			MergeEpsilonPDAGraph(machine);
 			//添加结束节点.
