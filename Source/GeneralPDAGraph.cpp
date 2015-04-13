@@ -699,25 +699,6 @@ namespace ztl
 				}
 			}
 		}
-		/*void AddGrammarBegin(PushDownAutoMachine& machine)
-		{
-			unordered_set<PDAEdge*>sign;
-			for(auto&& ruleIter : machine.GetPDAMap())
-			{
-				for(auto&&edgeIter : ruleIter.second.first->GetNexts())
-				{
-					if(sign.find(edgeIter) == sign.end())
-					{
-						sign.insert(edgeIter);
-						machine.FrontInsertAction(edgeIter, ActionWrap(ActionType::GrammarBegin, L"", L"", ruleIter.first, L""));
-					}
-					else
-					{
-						assert(false);
-					}
-				}
-			}
-		}*/
 		void CreateDPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto PDAMap = CreateEpsilonPDA(machine);
