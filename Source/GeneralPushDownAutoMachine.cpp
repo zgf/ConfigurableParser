@@ -117,7 +117,7 @@ namespace ztl
 					//	assert(frontIter->GetActions().front().GetGrammarNumber() == frontIter->GetGrammarNumber());
 					auto tokenSymbol = manager->GetTokenSymbolByName(L"FINISH");
 					assert(tokenSymbol != nullptr&&tokenSymbol->IsTokenDef() && !tokenSymbol->IsIgnore());
-					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, tokenSymbol,  ruleName, ruleName, L""));
+					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, tokenSymbol, ruleName, ruleName, L""));
 				}
 			}
 		}
@@ -188,7 +188,7 @@ namespace ztl
 
 		void PushDownAutoMachine::FrontInsertAction(PDAEdge * edge, const ActionWrap & wrap)
 		{
-			edge->actions.emplace(edge->actions.begin(),wrap);
+			edge->actions.emplace(edge->actions.begin(), wrap);
 		}
 
 		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
@@ -209,18 +209,16 @@ namespace ztl
 			return this->GetSymbolManager()->GetStartRuleList()[0];
 		}
 
-		unordered_map<wstring, CreateInfo>& PushDownAutoMachine::GetCreatedNodeRequiresMap()
+
+		unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>& PushDownAutoMachine::GetDFAMap()
 		{
-			return createdNodeRequiresMap;
+			// TODO: insert return statement here
+			return DFAMap;
 		}
 
-		unordered_map<wstring, PDAEdge*>& PushDownAutoMachine::GetCreateDFA()
+		unordered_map<wstring, PDANode*>& PushDownAutoMachine::GetCreateDFA()
 		{
 			return createdDFA;
 		}
-
-
-
-		
 	}
 }

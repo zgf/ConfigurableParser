@@ -55,6 +55,10 @@ namespace ztl
 			{
 				return action;
 			}
+			ParserSymbol* GetParserSymbol()const
+			{
+				return data;
+			}
 			const wstring& GetName()const;
 			const wstring& GetValue()const
 			{
@@ -251,8 +255,8 @@ namespace ztl
 			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 			void CacheCrreatNodeInfoFromLeft(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			void CacheCrreatNodeInfoFromRight(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
-			unordered_map<wstring, CreateInfo>& GetCreatedNodeRequiresMap();
-			unordered_map<wstring, PDAEdge*>& GetCreateDFA();
+			unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>	& GetDFAMap();
+			unordered_map<wstring,PDANode*>& GetCreateDFA();
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
@@ -262,9 +266,8 @@ namespace ztl
 			vector<shared_ptr<PDANode>>											 nodes;
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*, PDANode*>>					 PDAMap;
-			unordered_map<wstring, CreateInfo>									 createdNodeRequiresMap;
-			unordered_map<wstring, PDAEdge*>									 createdDFA;
-
+			unordered_map<wstring, PDANode*>									 createdDFA;
+			unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>		 DFAMap;
 		public:
 		};
 		void CreateDPDAGraph(PushDownAutoMachine& machine);
@@ -274,5 +277,6 @@ namespace ztl
 		void CollectCreateNodeRequires(PushDownAutoMachine& machine);
 		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
 		void AddFinishNode(PushDownAutoMachine& machine);
+		extern void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine);
 	}
 }

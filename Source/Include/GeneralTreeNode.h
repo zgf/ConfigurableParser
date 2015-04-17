@@ -5,6 +5,7 @@ namespace ztl
 	namespace general_parser
 	{
 		class GeneralTokenInfo;
+		class ParserSymbol;
 		class GeneralTreeNode
 		{
 		public:
@@ -14,8 +15,7 @@ namespace ztl
 			GeneralTreeNode(const GeneralTreeNode&) = default;
 			GeneralTreeNode& operator=(GeneralTreeNode&&) = default;
 			GeneralTreeNode& operator=(const GeneralTreeNode&) = default;
-			GeneralTreeNode(const int number,const wstring& name);
-			GeneralTreeNode(const wstring& _name);
+			GeneralTreeNode(const int number,ParserSymbol* symbol);
 			void SetField(const wstring& fieldName, const int nodeIndex);
 			void SetFieldMap(const wstring& fieldName, const int nodeIndex);
 
@@ -27,20 +27,15 @@ namespace ztl
 			void InitFieldMap(const vector<wstring>&  fieldName);
 			bool HaveThisField(const wstring& fieldName);
 			const wstring& GetName()const;
-			void	  SetName(const wstring& _name);
+			void SetParserSymbol(ParserSymbol* symbol);
 			const int GetNumber()const;
 			void	  SetNumber(int number);
 			wstring GetNodeInfo() const;
-			bool	IsEmpty()const;
-			bool IsMayDeriveType(const GeneralTreeNode& node)const;
-			bool IsMayDeriveType(const GeneralTreeNode & node, const vector<wstring>& exclude) const;
-			bool IsTheSameType(const GeneralTreeNode&node)const;
-			bool IsTheSameType(const GeneralTreeNode&node, const vector<wstring>& exclude) const;
 			const unordered_map<wstring, vector<int>> GetFieldMap()const;
 			const unordered_map<wstring, vector<int>> GetTermMap()const;
 		private:
 			int nodeNumber;//nodeÔÚnodePoolµÄindex
-			wstring name;
+			ParserSymbol* symbol;//classDef
 			unordered_map<wstring, vector<int>> fieldMap;
 			unordered_map<wstring, vector<int>> termMap;
 		};

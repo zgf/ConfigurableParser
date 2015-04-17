@@ -1,16 +1,10 @@
 #include "Include\stdafx.h"
 #include "Include\GeneralTreeNode.h"
+#include "Include\ParserSymbol.h"
 namespace ztl
 {
 	namespace general_parser
 	{
-		GeneralTreeNode::GeneralTreeNode(const int number, const wstring & _name) :name(_name), nodeNumber(number)
-		{
-		}
-
-		GeneralTreeNode::GeneralTreeNode(const wstring & _name) : name(_name)
-		{
-		}
 		void GeneralTreeNode::SetFieldMap(const wstring& fieldName, const int nodeIndex)
 		{
 			auto findIter = fieldMap.find(fieldName);
@@ -29,6 +23,9 @@ namespace ztl
 				termMap[fieldName];
 			}
 			termMap[fieldName].emplace_back(nodeIndex);
+		}
+		GeneralTreeNode::GeneralTreeNode(const int number, ParserSymbol * _symbol) :symbol(_symbol), nodeNumber(number)
+		{
 		}
 		void GeneralTreeNode::SetField(const wstring& fieldName, const int nodeIndex)
 		{
@@ -113,63 +110,21 @@ namespace ztl
 		}
 		const wstring & GeneralTreeNode::GetName() const
 		{
-			return name;
+			return symbol->GetName();
 		}
 
 		const int GeneralTreeNode::GetNumber() const
 		{
 			return nodeNumber;
 		}
-		void GeneralTreeNode::SetName(const wstring& _name)
+		void GeneralTreeNode::SetParserSymbol(ParserSymbol* _symbol)
 		{
-			assert(name.empty());
-			name = _name;
+			assert(symbol!=nullptr);
+			this->symbol = _symbol;
 		}
 		void GeneralTreeNode::SetNumber(int number)
 		{
 			nodeNumber = number;
-		}
-		bool	GeneralTreeNode::IsEmpty()const
-		{
-			return name.empty() && this->fieldMap.empty() && this->termMap.empty();
-		}
-		bool HasSameField(const unordered_map<wstring, vector< int>>& left, const unordered_map<wstring, vector<int>>& right)
-		{
-			return find_if(left.begin(), left.end(), [&right](const pair<const wstring, vector< int>>& element)
-			{
-				return right.find(element.first) == right.end();
-			}) == left.end();
-		}
-		bool HasSameField(const unordered_map<wstring, vector< int>>& left, const unordered_map<wstring, vector<int>>& right,const vector<wstring>& exclude)
-		{
-			for (auto&& element:left)
-			{
-				if(right.find(element.first) == right.end())
-				{
-					auto findResult = find(exclude.begin(), exclude.end(), element.first);
-					if(findResult == exclude.end())
-					{
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-		bool GeneralTreeNode::IsMayDeriveType(const GeneralTreeNode & node) const
-		{
-			return HasSameField(termMap, node.termMap) && HasSameField(fieldMap, node.fieldMap);
-		}
-		bool GeneralTreeNode::IsMayDeriveType(const GeneralTreeNode & node, const vector<wstring>& exclude) const
-		{
-			return HasSameField(termMap, node.termMap, exclude) && HasSameField(fieldMap, node.fieldMap, exclude);
-		}
-		bool GeneralTreeNode::IsTheSameType(const GeneralTreeNode&node)const
-		{
-			return name == node.GetName()&&IsMayDeriveType(node) && node.IsMayDeriveType(*this);
-		}
-		bool GeneralTreeNode::IsTheSameType(const GeneralTreeNode & node, const vector<wstring>& exclude) const
-		{
-			return name == node.GetName() && IsMayDeriveType(node,exclude) && node.IsMayDeriveType(*this,exclude);
 		}
 		const unordered_map<wstring, vector<int>> GeneralTreeNode::GetFieldMap()const
 		{

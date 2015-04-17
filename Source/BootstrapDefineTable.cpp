@@ -355,8 +355,8 @@ namespace ztl
 							.ReturnType(Normal(L"GeneralGrammarTypeDefine"))
 							| !GrammarSymbol(L"PrimitiveGrammar")
 							| (
-								GrammarSymbol(L"SequenceGrammar")[L"first"]+
-								GrammarSymbol(L"PrimitiveGrammar")[L"second"]
+								GrammarSymbol(L"PrimitiveGrammar")[L"first"]+
+								GrammarSymbol(L"SequenceGrammar")[L"second"]
 							  )
 							  .Create(Normal(L"GeneralGrammarSequenceTypeDefine"))
 						)
@@ -367,9 +367,9 @@ namespace ztl
 							.ReturnType(Normal(L"GeneralGrammarTypeDefine"))
 							| !GrammarSymbol(L"SequenceGrammar")
 							| (
-								GrammarSymbol(L"AlternativeGrammar")[L"left"] +
+								GrammarSymbol(L"SequenceGrammar")[L"left"] +
 								Text(L"|") +
-								GrammarSymbol(L"SequenceGrammar")[L"right"]
+								GrammarSymbol(L"AlternativeGrammar")[L"right"]
 							)
 							.Create(Normal(L"GeneralGrammarAlternationTypeDefine"))
 						)
@@ -397,46 +397,28 @@ namespace ztl
 							).Create(Normal(L"GeneralGrammarSetterTypeDefine"))
 							|!GrammarSymbol(L"AlternativeGrammar")
 						)
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"NormalGrammar")
-							.ReturnType(Normal(L"GeneralGrammarTypeDefine"))
-							| 
-								(GrammarSymbol(L"NAME")[L"name"])
-							  .Create(Normal(L"GeneralGrammarNormalTypeDefine"))
-							| Text(L"(") +
-							  !GrammarSymbol(L"Grammar") +
-							  Text(L")")
-						)
-						.Rule
-						(
-							GeneralRuleWriter()
-							.Name(L"AssginGrammar")
-							.ReturnType(Normal(L"GeneralGrammarTypeDefine"))
-							|	(
-									GrammarSymbol(L"AssginGrammar")[L"grammar"] +
-									Text(L":") +
-									GrammarSymbol(L"NAME")[L"name"]
-								).Create(Normal(L"GeneralGrammarAssignTypeDefine"))
-							| 
-								(
-									GrammarSymbol(L"STRING")[L"text"]
-								)
-							  .Create(Normal(L"GeneralGrammarTextTypeDefine"))
-							  | !GrammarSymbol(L"NormalGrammar")
-						
-						)
+	
 						.Rule
 						(
 							GeneralRuleWriter()
 							.Name(L"PrimitiveGrammar")
 							.ReturnType(Normal(L"GeneralGrammarTypeDefine"))
 							|
-								!GrammarSymbol(L"AssginGrammar")
+							(GrammarSymbol(L"NAME")[L"name"])
+							.Create(Normal(L"GeneralGrammarNormalTypeDefine"))
+							| (
+							GrammarSymbol(L"PrimitiveGrammar")[L"grammar"] +
+							Text(L":") +
+							GrammarSymbol(L"NAME")[L"name"]
+							).Create(Normal(L"GeneralGrammarAssignTypeDefine"))
+							|
+								(
+								GrammarSymbol(L"STRING")[L"text"]
+								)
+								.Create(Normal(L"GeneralGrammarTextTypeDefine"))
 							| (
 								Text(L"!") + 
-								GrammarSymbol(L"NormalGrammar")[L"grammar"]
+								GrammarSymbol(L"PrimitiveGrammar")[L"grammar"]
 								).Create(Normal(L"GeneralGrammarUsingTypeDefine"))
 							| (
 								Text(L"[") + 

@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "..\..\Lib\ZTL\ztl_pair_builder.hpp"
 namespace ztl
 {
@@ -15,8 +14,32 @@ namespace ztl
 		class PushDownAutoMachine;
 		struct CreateInfo;
 		struct GeneralTokenDefine;
+		class ParserSymbol;
+		enum class ActionType:int;
 		PAIR_BUILDER(EdgeInfo, PDAEdge*, edge, bool, rightRecursion);
 
+		class CreateNode
+		{
+		public:
+			CreateNode(const ActionType& _type, int _nodeIndex, int _tokenIndex, ParserSymbol* _symbol);
+			CreateNode() noexcept = default;
+			~CreateNode() noexcept = default;
+			CreateNode(CreateNode&&) noexcept = default;
+			CreateNode(const CreateNode&) noexcept = default;
+			CreateNode& operator=(CreateNode&&) noexcept = default;
+			CreateNode& operator=(const CreateNode&) noexcept = default;
+			ActionType CreateNode::GetType()const;
+			int CreateNode::GetTokenIndex()const;
+			int CreateNode::GetTermIndex()const;
+			void CreateNode::SetNodeIndex(int index);
+			void SetTokenIndex(int index);
+			ParserSymbol* GetSymbol()const;
+		private:
+			ActionType type;//assgin setter create terminate
+			int nodeIndex = -1;// generalNodeIndex
+			int tokenIndex = -1;// tokenIndex
+			ParserSymbol*	symbol = nullptr;//assgin setter create GetInfo
+		};
 		struct ParserState
 		{
 		public:
@@ -26,26 +49,21 @@ namespace ztl
 			ParserState(const ParserState&) = default;
 			ParserState& operator=(ParserState&&) = default;
 			ParserState& operator=(const ParserState&) = default;
-			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule, GeneralTreeNode* initCreateNode, const EdgeInfo& _edgeInfo) :
+			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule, const EdgeInfo& _edgeInfo) :
 				tokenIndex(_tokenIndex), currentNodeIndex(_currentNodeIndex), edgeInfo(_edgeInfo)
 			{
-				createdNodeStack.emplace_back(initCreateNode);
 				rulePathStack.emplace_back(initRule);
 			}
-			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule, GeneralTreeNode* initCreateNode)
+			ParserState(int _tokenIndex, int _currentNodeIndex, const wstring& initRule)
 				:tokenIndex(_tokenIndex), currentNodeIndex(_currentNodeIndex)
 			{
-				createdNodeStack.emplace_back(initCreateNode);
 				rulePathStack.emplace_back(initRule);
 			}
 			void SaveEdgeInfo(const EdgeInfo& _edgeInfo)
 			{
 				this->edgeInfo = _edgeInfo;
 			}
-			void SaveNodeStackInFo(const vector<GeneralTreeNode*>& info)
-			{
-				createdNodeStack = info;
-			}
+		
 			PDAEdge* GetEdge()const
 			{
 				return edgeInfo.edge;
@@ -56,7 +74,7 @@ namespace ztl
 			}
 
 		public:
-			vector<GeneralTreeNode*>			 createdNodeStack;
+			vector<CreateNode>					 fieldsList;
 			vector<wstring>						 rulePathStack;
 			int									 tokenIndex;
 			int									 currentNodeIndex;
@@ -126,7 +144,6 @@ namespace ztl
 		public:
 			void				BuildParser();
 			vector<GeneralTreeNode*> GenerateIsomorphismParserTree();
-			bool IsCorrectNode(GeneralTreeNode& node, const wstring& value)const;
 
 			GeneralTreeNode* GetGeneralTreeRoot() const;
 			SymbolManager* GetManager() const;
@@ -140,33 +157,35 @@ namespace ztl
 			vector<EdgeInfo> TerminateResolve(ParserState& state);
 			vector<EdgeInfo>RuleResolve(vector<PDAEdge*>* edges, ParserState& state);
 			void HandleRightRecursionEdge(ParserState& state);
-			void HandleRightRecursionEdge(PDAEdge* edge, vector<wstring>& rulePathStack, vector<GeneralTreeNode*>& createdNodeStack, bool isRightRecursionEdge);
+			void HandleRightRecursionEdge(PDAEdge* edge, vector<wstring>& rulePathStack,bool isRightRecursionEdge);
 			vector<EdgeInfo> CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state);
-			pair<bool, EdgeInfo> CreateNodeResolve(const EdgeInfo& iter, const vector<GeneralTreeNode*>& createdNodeStack);
+			pair<bool, EdgeInfo> CreateNodeResolve(int tokenIndex,const EdgeInfo& iter, vector<CreateNode>& fieldsList);
 
 			void ExecuteEdgeActions(ParserState& state);
 			wstring GetRulePathInfo(ParserState& state)const;
-			wstring GetCreatNodeStackInfo(ParserState& state)const;
-			GeneralTreeNode*	MakeTreeNode(const wstring& nodeName);
-			GeneralTreeNode*	MakeEmptyTreeNode();
+			wstring GetFieldListInfo(ParserState& state)const;
+			GeneralTreeNode*	MakeTreeNode(ParserSymbol* symbol);
 			GeneralTreeNode*	CopyTreeNode(GeneralTreeNode*);
 			void	SaveEdge(deque<ParserState>& states, const vector<EdgeInfo>& edges);
 			wstring GetParserInfo(ParserState& state)const;
-			unordered_map<wstring, shared_ptr<GeneralTreeNode>> InitTreeNodeMap();
-			unordered_map<wstring, vector<wstring>> InintChoiceFiledMap();
 			vector<GeneralTreeNode*> SaveCurrentStack(const vector<GeneralTreeNode*>& current);
 
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
 			void CheckParserResultConvergence();
+		public:
+			void CreateNodeTerminateAction(int tokenIndex, vector<CreateNode>& fieldsList, const ActionWrap& wrap);
+			void CreateNodeSetterAction(vector<CreateNode>& fieldsList, const ActionWrap& wrap);
+			void CreateNodeAssignAction(bool isTerminate, vector<CreateNode>& fieldsList, const ActionWrap& wrap);
+			bool CreateNodeCreateAction(vector<CreateNode>& fieldsList, const ActionWrap& wrap);
+			int RunDFA(vector<CreateNode>& fieldsList, const wstring& createIndex);
 		private:
 			GeneralNodePools					 pools;
 			GeneralTreeNode*					 generalTreeRoot;
 			deque<ParserState>					 parserStates;
 
 			shared_ptr<PushDownAutoMachine>		 machine;
-			shared_ptr<GeneralJumpInfo>			jumpInfos;
+			shared_ptr<GeneralJumpInfo>			 jumpInfos;
 			shared_ptr<SymbolManager>			 manager;
-			unordered_map<wstring, shared_ptr<GeneralTreeNode>> wstringToTreeNodeMap;
 		};
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root);
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser);

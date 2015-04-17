@@ -190,11 +190,11 @@ rule GeneralClassTypeDefine Class
         ;
 rule GeneralGrammarTypeDefine SequenceGrammar
         = !PrimitiveGrammar
-        = SequenceGrammar : first PrimitiveGrammar : second as GeneralGrammarSequenceTypeDefine
+        = PrimitiveGrammar : first SequenceGrammar : second as GeneralGrammarSequenceTypeDefine
         ;
 rule GeneralGrammarTypeDefine AlternativeGrammar
         = !SequenceGrammar
-        = AlternativeGrammar : left "|" SequenceGrammar : right as GeneralGrammarAlternationTypeDefine
+        = SequenceGrammar  : left "|" AlternativeGrammar : right as GeneralGrammarAlternationTypeDefine
         ;
 
 rule GeneralGrammarTypeDefine Grammar
@@ -202,23 +202,13 @@ rule GeneralGrammarTypeDefine Grammar
         = Grammar : grammar "as" Type : type as GeneralGrammarCreateTypeDefine
         = Grammar : grammar "with" "{" NAME : name "=" STRING : value  "}"  as GeneralGrammarSetterTypeDefine
 		;
-rule GeneralGrammarTypeDefine NormalGrammar
-        = NAME : name as GeneralGrammarNormalTypeDefine
-		=  "(" !Grammar ")"
-		;
-
-rule GeneralGrammarTypeDefine AssginGrammar
-		= AssginGrammar : grammar ":" NAME : name as GeneralGrammarAssignTypeDefine
-		= STRING : text as GeneralGrammarTextTypeDefine
-		= !NormalGrammar
-		;
-
-
 rule GeneralGrammarTypeDefine PrimitiveGrammar
-        =  !AssginGrammar
-        = "!" NormalGrammar : grammar as GeneralGrammarUsingTypeDefine
+        =  NAME : name as GeneralGrammarNormalTypeDefine
+		=  STRING : text as GeneralGrammarTextTypeDefine
+        = "!" PrimitiveGrammar : grammar as GeneralGrammarUsingTypeDefine
         = "[" Grammar : grammar "]" as GeneralGrammarOptionalTypeDefine
         = "{" Grammar : grammar "}" as GeneralGrammarLoopTypeDefine
+		=  "(" !Grammar ")"
         ;
 
 rule GeneralTokenDefine TokenDecl
