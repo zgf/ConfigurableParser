@@ -953,7 +953,7 @@ namespace ztl
 			MergeEpsilonPDAGraph(machine);
 			//添加结束节点.
 			AddFinishNode(machine);
-			LogGraphInfo(L"NonMergeParserDefine.txt",machine);
+		//	LogGraphInfo(L"NonMergeParserDefine.txt",machine);
 			MergePDAEpsilonSymbol(machine);
 		}
 	}
