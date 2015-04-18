@@ -97,6 +97,8 @@ namespace ztl
 			vector<ParserSymbol*>		  GetCacheDeriveByBaseSymbol(ParserSymbol* baseSymbol)const;
 			vector<ParserSymbol*>		  GetCacheAllDeriveByBaseSymbol(ParserSymbol* baseSymbol)const;
 			unordered_map<wstring, vector<wstring>>& GetPropertyToValueMap();
+			wstring GetGenerateUniqueProperty(const wstring& property, const wstring& default = wstring());
+			vector<wstring> GetGenerateArrayProperty(const wstring& property);
 			const TypeDefineToSymbolMapType& GetTypeDefSymbolMap()const;
 			const BaseSymbolToDeriveSymbolMapType&	GetbaseSymbolToDeriveMap()const;
 		private:

@@ -356,7 +356,22 @@ namespace ztl
 		{
 			return propertyToValueMap;
 		}
+		wstring SymbolManager::GetGenerateUniqueProperty( const wstring & property, const wstring & default)
+		{
+			assert(table != nullptr);
+			auto result = this->GetCacheValueByProperty(property);
+			assert(result.size() <= 1);
+			return result.empty() ? default: result[0];
+		}
 
+		vector<wstring> SymbolManager::GetGenerateArrayProperty( const wstring & property)
+		{
+			assert(table != nullptr);
+			auto result = this->GetCacheValueByProperty(property);
+			return result;
+		}
+
+	
 		const SymbolManager::TypeDefineToSymbolMapType & SymbolManager::GetTypeDefSymbolMap()const
 		{
 			return typeDefSymbolMap;

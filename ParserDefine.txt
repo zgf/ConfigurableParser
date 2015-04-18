@@ -165,7 +165,9 @@ token STRING = "\"(\\\"|[^\"])*\"";
 ignoretoken SPACE = "\s+";
 ignoretoken LINENOTE = "//[^\n]*\n";
 ignoretoken BLOCKNOTE = "/\*.*?\*/";
-
+rule GeneralTypeDefine TypeDecl
+        = !Enum | !Class
+        ;
 rule GeneralTypeObject Type
         = NAME : name as GeneralNormalTypeObject
         = "token" as GeneralTokenTypeObject
@@ -181,9 +183,7 @@ rule GeneralEnumTypeDefine Enum
 rule GeneralClassMemberTypeDefine ClassMember
         = Type : type NAME : name ";" as GeneralClassMemberTypeDefine
         ;
-rule GeneralTypeDefine TypeDecl
-        = !Enum | !Class
-        ;
+
 
 rule GeneralClassTypeDefine Class
         = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GeneralClassTypeDefine

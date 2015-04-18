@@ -10,7 +10,7 @@ namespace ztl
 		class PDANode;
 		class ActionWrap;
 		class PDAEdge;
-	
+		class CreatedNodeResolve;
 		PAIR_BUILDER(JumpItem, int, targetIndex, PDAEdge*, edges);
 		//当前路径下创建的节点类型和一定赋值了的字段名
 		struct RightRecursionInfo
@@ -56,7 +56,8 @@ namespace ztl
 			shared_ptr<unordered_map<PDAEdge*, vector<wstring>>>							 rightRecursionMap;
 			shared_ptr<TerminateMapType>													 terminateMap;
 			int																				 rootNumber;
-		
+			CreatedNodeResolve*																 resolve;
+
 		};
 		void CreateJumpInfo(GeneralJumpInfo& jumpTable);
 		vector<RightRecursionInfo> FindRightRecursionArea(const vector<wstring>&ruleInfos);

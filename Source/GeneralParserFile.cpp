@@ -183,16 +183,13 @@ namespace ztl
 		wstring GeneralParserFile::GetGenerateUniqueProperty(SymbolManager * manager, const wstring & property, const wstring & default)
 		{
 			assert(generalParser != nullptr);
-			auto result = manager->GetCacheValueByProperty(property);
-			assert(result.size() <= 1);
-			return result.empty() ? default: result[0];
+			return manager->GetGenerateUniqueProperty(property,default);
 		}
 
 		vector<wstring> GeneralParserFile::GetGenerateArrayProperty(SymbolManager * manager, const wstring & property)
 		{
 			assert(generalParser != nullptr);
-			auto result = manager->GetCacheValueByProperty(property);
-			return result;
+			return manager->GetGenerateArrayProperty(property);
 		}
 
 		void GeneralParserFile::CreateFile(const wstring& fileName, const wstring& content)

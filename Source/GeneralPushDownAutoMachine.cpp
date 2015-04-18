@@ -3,6 +3,7 @@
 #include "Include/GeneralPushDownAutoMachine.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
+#include "Include/CreatedNodeResolve.h"
 namespace ztl
 {
 	namespace general_parser
@@ -11,11 +12,11 @@ namespace ztl
 		{
 			return data->GetName();
 		}
-		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr)
+		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr), resolve(make_shared<CreatedNodeResolve>())
 		{
 		}
 		PushDownAutoMachine::PushDownAutoMachine(SymbolManager* _manager)
-			: manager(_manager)
+			: manager(_manager),resolve(make_shared<CreatedNodeResolve>())
 		{
 		}
 
@@ -27,6 +28,11 @@ namespace ztl
 		GeneralTableDefine * PushDownAutoMachine::GetTable() const
 		{
 			return GetSymbolManager()->GetTable();
+		}
+
+		CreatedNodeResolve * PushDownAutoMachine::GetCreateNodeResolve()
+		{
+			return resolve.get();
 		}
 
 		unordered_map<wstring, pair<PDANode*, PDANode*>>& PushDownAutoMachine::GetPDAMap()
@@ -154,6 +160,7 @@ namespace ztl
 			for(auto&& edgeIter : *targetNode->fronts)
 			{
 				swap(edgeIter->actions.back(), edgeIter->actions[edgeIter->actions.size() - 2]);
+				assert(edgeIter->actions.back().GetActionType() == ActionType::Create);
 			}
 		}
 
@@ -210,15 +217,6 @@ namespace ztl
 		}
 
 
-		unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>& PushDownAutoMachine::GetDFAMap()
-		{
-			// TODO: insert return statement here
-			return DFAMap;
-		}
-
-		unordered_map<wstring, PDANode*>& PushDownAutoMachine::GetCreateDFA()
-		{
-			return createdDFA;
-		}
+	
 	}
 }

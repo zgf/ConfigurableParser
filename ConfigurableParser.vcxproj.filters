@@ -157,6 +157,9 @@
     <ClCompile Include="Source\GeneralJumpInfo.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CreatedNodeResolve.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -229,6 +232,9 @@
       <Filter>Source\GenerateFile\Xml</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralJumpInfo.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\CreatedNodeResolve.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

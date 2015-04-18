@@ -179,6 +179,7 @@
     <ClCompile Include="Lib\Regex\ztl_regex_lex.cpp" />
     <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp" />
     <ClCompile Include="Source\BootstrapDefineTable.cpp" />
+    <ClCompile Include="Source\CreatedNodeResolve.cpp" />
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
     <ClCompile Include="Source\GeneralJumpInfo.cpp" />
     <ClCompile Include="Source\GeneralParser.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h" />
+    <ClInclude Include="Source\Include\CreatedNodeResolve.h" />
     <ClInclude Include="Source\Include\GeneralParserFile.h" />
     <ClInclude Include="Source\Include\GeneralJumpInfo.h" />
     <ClInclude Include="Source\Include\GeneralParser.h" />

@@ -14,7 +14,7 @@
 				, KEY2_NAME(_##KEY2_NAME)\
 			{\
 			}\
-			int Compare(const PAIR_NAME& pair)\
+			int Compare(const PAIR_NAME& pair) const\
 			{\
 				if(KEY1_NAME<pair.KEY1_NAME) return -1;\
 				if(KEY1_NAME>pair.KEY1_NAME) return 1;\
@@ -22,27 +22,27 @@
 				if(KEY2_NAME>pair.KEY2_NAME) return 1;\
 				return 0;\
 			}\
-			bool operator==(const PAIR_NAME& pair)\
+			bool operator==(const PAIR_NAME& pair)const\
 			{\
 				return Compare(pair) == 0;\
 			}\
-			bool operator!=(const PAIR_NAME& pair)\
+			bool operator!=(const PAIR_NAME& pair)const\
 			{\
 				return Compare(pair) != 0;\
 			}\
-			bool operator>(const PAIR_NAME& pair)\
+			bool operator>(const PAIR_NAME& pair)const\
 			{\
 				return Compare(pair)>0;\
 			}\
-			bool operator>=(const PAIR_NAME& pair)\
+			bool operator>=(const PAIR_NAME& pair)const\
 			{\
 				return Compare(pair) >= 0;\
 			}\
-			bool operator<(const PAIR_NAME& pair)\
+			bool operator<(const PAIR_NAME& pair)const\
 			{\
 				return Compare(pair)<0;\
 			}\
-			bool operator<=(const PAIR_NAME& pair)\
+			bool operator<=(const PAIR_NAME& pair)const\
 			{\
 				return Compare(pair) <= 0;\
 			}\

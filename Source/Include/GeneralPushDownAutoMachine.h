@@ -14,6 +14,7 @@ namespace ztl
 		struct GeneralTableDefine;
 		class PDANode;
 		class PDAEdge;
+		class CreatedNodeResolve;
 		enum class ActionType
 		{
 			Epsilon,
@@ -232,6 +233,7 @@ namespace ztl
 		public:
 			SymbolManager*				GetSymbolManager()const;
 			GeneralTableDefine*			GetTable()const;
+			CreatedNodeResolve*			GetCreateNodeResolve();
 			unordered_map<wstring, pair<PDANode*, PDANode*>>& GetPDAMap();
 			pair<PDANode*, PDANode*>	NewNodePair();
 			PDANode*					NewNode();
@@ -253,10 +255,7 @@ namespace ztl
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-			void CacheCrreatNodeInfoFromLeft(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
-			void CacheCrreatNodeInfoFromRight(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
-			unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>	& GetDFAMap();
-			unordered_map<wstring,PDANode*>& GetCreateDFA();
+
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
@@ -266,10 +265,11 @@ namespace ztl
 			vector<shared_ptr<PDANode>>											 nodes;
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*, PDANode*>>					 PDAMap;
-			unordered_map<wstring, PDANode*>									 createdDFA;
-			unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>		 DFAMap;
+
+			shared_ptr<CreatedNodeResolve>										 resolve;
 		public:
 		};
+	
 		void CreateDPDAGraph(PushDownAutoMachine& machine);
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine);
@@ -278,5 +278,6 @@ namespace ztl
 		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
 		void AddFinishNode(PushDownAutoMachine& machine);
 		extern void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine);
+		void RecordNewNode(PDANode* target, vector<PDANode*>& allNode, unordered_set<PDANode*>& noNeed);
 	}
 }

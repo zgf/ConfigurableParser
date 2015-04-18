@@ -5,6 +5,7 @@ namespace ztl
 	namespace general_parser
 	{
 		class PDAEdge;
+		class PDANode;
 		class GeneralTreeNode;
 		struct TokenInfo;
 		class SymbolManager;
@@ -15,6 +16,7 @@ namespace ztl
 		struct CreateInfo;
 		struct GeneralTokenDefine;
 		class ParserSymbol;
+		class CreatedNodeResolve;
 		enum class ActionType:int;
 		PAIR_BUILDER(EdgeInfo, PDAEdge*, edge, bool, rightRecursion);
 
@@ -34,6 +36,17 @@ namespace ztl
 			void CreateNode::SetNodeIndex(int index);
 			void SetTokenIndex(int index);
 			ParserSymbol* GetSymbol()const;
+			friend bool operator==(const CreateNode& left, const CreateNode& right)
+			{
+				return left.type == right.type&&
+					left.nodeIndex == right.nodeIndex &&
+					left.tokenIndex == right.tokenIndex &&
+					left.symbol == right.symbol;
+			}
+			friend bool operator!=(const CreateNode& left, const CreateNode& right)
+			{
+				return !(left == right);
+			}
 		private:
 			ActionType type;//assgin setter create terminate
 			int nodeIndex = -1;// generalNodeIndex
@@ -72,8 +85,10 @@ namespace ztl
 			{
 				return edgeInfo.rightRecursion;
 			}
-
+		
 		public:
+			wstring								 currentRule;
+			vector<PDANode*>					 stateStack;
 			vector<CreateNode>					 fieldsList;
 			vector<wstring>						 rulePathStack;
 			int									 tokenIndex;
@@ -159,7 +174,8 @@ namespace ztl
 			void HandleRightRecursionEdge(ParserState& state);
 			void HandleRightRecursionEdge(PDAEdge* edge, vector<wstring>& rulePathStack,bool isRightRecursionEdge);
 			vector<EdgeInfo> CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state);
-			pair<bool, EdgeInfo> CreateNodeResolve(int tokenIndex,const EdgeInfo& iter, vector<CreateNode>& fieldsList);
+			bool CreateNodeResolve(int tokenIndex, const vector<ActionWrap>& actions, vector<CreateNode>& fieldsList);
+			PDANode* MoveOnDFA(const vector<ActionWrap>& steps, PDANode* start);
 
 			void ExecuteEdgeActions(ParserState& state);
 			wstring GetRulePathInfo(ParserState& state)const;
@@ -176,8 +192,10 @@ namespace ztl
 			void CreateNodeTerminateAction(int tokenIndex, vector<CreateNode>& fieldsList, const ActionWrap& wrap);
 			void CreateNodeSetterAction(vector<CreateNode>& fieldsList, const ActionWrap& wrap);
 			void CreateNodeAssignAction(bool isTerminate, vector<CreateNode>& fieldsList, const ActionWrap& wrap);
-			bool CreateNodeCreateAction(vector<CreateNode>& fieldsList, const ActionWrap& wrap);
-			int RunDFA(vector<CreateNode>& fieldsList, const wstring& createIndex);
+			bool CreateNodeCreateAction(int tokenIndex, vector<CreateNode>& fieldsList, const ActionWrap& wrap);
+			int RunCreatedDFA(vector<CreateNode>& fieldsList, const wstring& createIndex);
+			int RunCreatedDFA(vector<CreateNode>& fieldsList, CreatedNodeResolve* resolve, PDANode* dfaStart,int moveNumber = 0);
+
 		private:
 			GeneralNodePools					 pools;
 			GeneralTreeNode*					 generalTreeRoot;

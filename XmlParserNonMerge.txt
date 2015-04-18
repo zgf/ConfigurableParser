@@ -1,0 +1,139 @@
+currenIndex: 147
+ targetIndex: 139
+			action:Shift : XDocument:XInstruction : XDocument:XInstruction;
+ targetIndex: 102
+			action:Shift : XDocument:XComment : XDocument:XComment;
+ targetIndex: 105
+			action:Shift : XDocument:XElement : XDocument:XElement;
+currenIndex: 139
+ targetIndex: 138
+			action:Terminate : INSTRUCTION_OPEN:XInstruction : XInstruction:;
+currenIndex: 102
+ targetIndex: 101
+			action:Terminate : COMMENT:XComment : XComment:;
+			action:Assign : content:COMMENT : XComment:;
+currenIndex: 105
+ targetIndex: 104
+			action:Terminate : ELEMENT_OPEN:XElement : XElement:;
+currenIndex: 138
+ targetIndex: 140
+			action:Terminate : NAME:XInstruction : XInstruction:;
+			action:Assign : name:NAME : XInstruction:;
+currenIndex: 101
+ targetIndex: 103
+			action:Create : Comment:11 : XComment:;
+currenIndex: 104
+ targetIndex: 106
+			action:Terminate : NAME:XElement : XElement:;
+			action:Assign : name:NAME : XElement:;
+currenIndex: 140
+ targetIndex: 144
+			action:Terminate : INSTRUCTION_CLOSE:XInstruction : XInstruction:;
+ targetIndex: 83
+			action:Shift : XInstruction:XAttribute : XInstruction:XAttribute;
+currenIndex: 103
+ targetIndex: 147
+			action:Assign : prologs:Node : XComment:XDocument;
+ targetIndex: 130
+			action:Using : XComment:XSubNode : XComment:XSubNode;
+currenIndex: 106
+ targetIndex: 110
+			action:Terminate : SINGLE_ELEMENT_CLOSE:XElement : XElement:;
+ targetIndex: 119
+			action:Terminate : ELEMENT_CLOSE:XElement : XElement:;
+ targetIndex: 83
+			action:Shift : XElement:XAttribute : XElement:XAttribute;
+currenIndex: 144
+ targetIndex: 146
+			action:Create : Instruction:14 : XInstruction:;
+currenIndex: 83
+ targetIndex: 82
+			action:Terminate : NAME:XAttribute : XAttribute:;
+			action:Assign : name:NAME : XAttribute:;
+currenIndex: 130
+ targetIndex: 119
+			action:Assign : subNodes:Node : XSubNode:XElement;
+currenIndex: 110
+ targetIndex: 112
+			action:Create : Element:12 : XElement:;
+currenIndex: 119
+ targetIndex: 123
+			action:Terminate : COMPLEX_ELEMENT_OPEN:XElement : XElement:;
+ targetIndex: 131
+			action:Shift : XElement:XSubNode : XElement:XSubNode;
+currenIndex: 146
+ targetIndex: 147
+			action:Assign : prologs:Node : XInstruction:XDocument;
+currenIndex: 82
+ targetIndex: 84
+			action:Terminate : EQUAL:XAttribute : XAttribute:;
+currenIndex: 112
+ targetIndex: 151
+			action:Assign : rootElement:Element : XElement:XDocument;
+ targetIndex: 130
+			action:Using : XElement:XSubNode : XElement:XSubNode;
+currenIndex: 123
+ targetIndex: 125
+			action:Terminate : NAME:XElement : XElement:;
+			action:Assign : closingName:NAME : XElement:;
+currenIndex: 131
+ targetIndex: 90
+			action:Shift : XSubNode:XText : XSubNode:XText;
+ targetIndex: 99
+			action:Shift : XSubNode:XCData : XSubNode:XCData;
+ targetIndex: 102
+			action:Shift : XSubNode:XComment : XSubNode:XComment;
+ targetIndex: 105
+			action:Shift : XSubNode:XElement : XSubNode:XElement;
+currenIndex: 84
+ targetIndex: 86
+			action:Terminate : ATTVALUE:XAttribute : XAttribute:;
+			action:Assign : value:ATTVALUE : XAttribute:;
+currenIndex: 151
+ targetIndex: 153
+			action:Create : Document:15 : XDocument:;
+			action:Terminate : FINISH:XDocument : XDocument:;
+currenIndex: 125
+ targetIndex: 127
+			action:Terminate : ELEMENT_CLOSE:XElement : XElement:;
+currenIndex: 90
+ targetIndex: 89
+			action:Terminate : NAME:XText : XText:;
+			action:Assign : content:NAME : XText:;
+ targetIndex: 89
+			action:Terminate : EQUAL:XText : XText:;
+			action:Assign : content:EQUAL : XText:;
+ targetIndex: 89
+			action:Terminate : ATTVALUE:XText : XText:;
+			action:Assign : content:ATTVALUE : XText:;
+ targetIndex: 89
+			action:Terminate : TEXT:XText : XText:;
+			action:Assign : content:TEXT : XText:;
+currenIndex: 99
+ targetIndex: 98
+			action:Terminate : CDATA:XCData : XCData:;
+			action:Assign : content:CDATA : XCData:;
+currenIndex: 86
+ targetIndex: 88
+			action:Create : Attribute:8 : XAttribute:;
+currenIndex: 153
+currenIndex: 127
+ targetIndex: 112
+			action:Create : Element:13 : XElement:;
+currenIndex: 89
+ targetIndex: 97
+			action:Create : Text:9 : XText:;
+currenIndex: 98
+ targetIndex: 100
+			action:Create : CData:10 : XCData:;
+currenIndex: 88
+ targetIndex: 140
+			action:Assign : attributes:Attribute : XAttribute:XInstruction;
+ targetIndex: 106
+			action:Assign : attributes:Attribute : XAttribute:XElement;
+currenIndex: 97
+ targetIndex: 130
+			action:Using : XText:XSubNode : XText:XSubNode;
+currenIndex: 100
+ targetIndex: 130
+			action:Using : XCData:XSubNode : XCData:XSubNode;

@@ -5,14 +5,14 @@
 #include "Include\GeneralJumpInfo.h"
 #include "Include\GeneralTreeNode.h"
 #include "Include\ParserSymbol.h"
+#include "Include\CreatedNodeResolve.h"
 namespace ztl
 {
 	namespace general_parser
 	{
 		CreateNode::CreateNode(const ActionType& _type, int _nodeIndex, int _tokenIndex, ParserSymbol* _symbol)
-		:type(_type), nodeIndex(_nodeIndex), symbol(_symbol), tokenIndex(_tokenIndex)
+			:type(_type), nodeIndex(_nodeIndex), symbol(_symbol), tokenIndex(_tokenIndex)
 		{
-
 		}
 		ActionType CreateNode::GetType()const
 		{
@@ -20,12 +20,12 @@ namespace ztl
 		}
 		int CreateNode::GetTokenIndex()const
 		{
-			assert(type == ActionType::Terminate|| type == ActionType::Assign || type == ActionType::Setter);
+			assert(type == ActionType::Terminate || type == ActionType::Assign || type == ActionType::Setter);
 			return tokenIndex;
 		}
 		int CreateNode::GetTermIndex()const
 		{
-			assert(type == ActionType::Assign||type == ActionType::Create);
+			assert(type == ActionType::Assign || type == ActionType::Create);
 			return nodeIndex;
 		}
 		void CreateNode::SetNodeIndex(int index)
@@ -37,7 +37,6 @@ namespace ztl
 		{
 			assert(type == ActionType::Assign || type == ActionType::Setter);
 			tokenIndex = index;
-			
 		}
 		ParserSymbol * CreateNode::GetSymbol() const
 		{
@@ -82,12 +81,38 @@ namespace ztl
 
 				for(size_t i = 1; i < edges.size(); ++i)
 				{
-					if(sign.find(make_pair(edges[i].edge, states.front().tokenIndex)) == sign.end())
+					if (sign.find(make_pair(edges[i].edge, states.front().tokenIndex)) == sign.end())
 					{
 						sign.insert(make_pair(edges[i].edge, states.front().tokenIndex));
 						states.emplace_back(states.front());
 						states.back().SaveEdgeInfo(edges[i]);
 						states.back().fieldsList = states.front().fieldsList;
+					}
+					else if(sign.find(make_pair(edges[i].edge, states.front().tokenIndex)) != sign.end())
+					{
+						auto findIter = std::find_if(states.begin() + 1, states.end(), [&edge = edges[i],&states](const ParserState& state)
+						{
+							if (states.front().currentNodeIndex == state.currentNodeIndex&&
+								state.rulePathStack == states.front().rulePathStack&&
+								states.front().fieldsList== state.fieldsList&&
+								0 == edge.Compare(state.edgeInfo) &&
+								state.tokenIndex ==states.front().tokenIndex
+								)
+							{
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						});
+						if (findIter == states.end())
+						{
+							sign.insert(make_pair(edges[i].edge, states.front().tokenIndex));
+							states.emplace_back(states.front());
+							states.back().SaveEdgeInfo(edges[i]);
+							states.back().fieldsList = states.front().fieldsList;
+						}
 					}
 				}
 			}
@@ -95,7 +120,6 @@ namespace ztl
 			{
 				states.pop_front();
 			}
-			
 		}
 
 		void PrintRuntimeInfo(const deque<ParserState>& parserStates, const vector<shared_ptr<TokenInfo>>& tokenPool)
@@ -133,7 +157,7 @@ namespace ztl
 			{
 				while(parserStates.front().tokenIndex != (int) pools.GetTokenPool().size())
 				{
-					if (parserStates.front().tokenIndex == 480)
+					if(parserStates.front().tokenIndex == 468)
 					{
 						int a = 0;
 					}
@@ -187,7 +211,7 @@ namespace ztl
 			assert(edges != nullptr && !edges->empty());
 			vector<EdgeInfo> result;
 			vector<PDAEdge*> candicate;
-			
+
 			for(size_t i = 0; i < edges->size(); ++i)
 			{
 				PDAEdge* iter = (*edges)[i];
@@ -225,9 +249,9 @@ namespace ztl
 			auto& edge = state.edgeInfo.edge;
 			auto& rulePathStack = state.rulePathStack;
 			auto& isRightRecursionEdge = state.edgeInfo.rightRecursion;
-			HandleRightRecursionEdge(edge, rulePathStack,isRightRecursionEdge);
+			HandleRightRecursionEdge(edge, rulePathStack, isRightRecursionEdge);
 		}
-		void GeneralParser::HandleRightRecursionEdge(PDAEdge* edge, vector<wstring>& rulePathStack,bool isRightRecursionEdge)
+		void GeneralParser::HandleRightRecursionEdge(PDAEdge* edge, vector<wstring>& rulePathStack, bool isRightRecursionEdge)
 		{
 			if(isRightRecursionEdge)
 			{
@@ -241,44 +265,50 @@ namespace ztl
 						auto pathOffset = rulePathStack.size() - 1 - offset;
 						assert(rulePathStack[pathOffset] == ruleRequire[offset]);
 						auto number = iter.back - iter.begin;
-						rulePathStack.insert(rulePathStack.begin() + pathOffset + 1, 
-							make_reverse_iterator(ruleRequire.begin() + iter.back), 
+						rulePathStack.insert(rulePathStack.begin() + pathOffset + 1,
+							make_reverse_iterator(ruleRequire.begin() + iter.back),
 							make_reverse_iterator(ruleRequire.begin() + iter.begin));
 					}
 				}
 			}
 		}
-	
+
 		int GeneralParser::RunDFA(vector<CreateNode>& fieldsList, const wstring& createIndex)
 		{
-			assert(machine->GetCreateDFA().find(createIndex) != machine->GetCreateDFA().end());
-			auto& dfaStart = machine->GetCreateDFA()[createIndex];
+			auto resolve = machine->GetCreateNodeResolve();
+			assert(resolve->GetCreatedDFA().find(createIndex) != resolve->GetCreatedDFA().end());
+			return RunDFA(fieldsList, resolve, resolve->GetCreatedDFA()[createIndex]);
+		}
+		int GeneralParser::RunDFA(vector<CreateNode>& fieldsList, CreatedNodeResolve* resolve, PDANode * dfaStart, int moveNumber)
+		{
+			assert(fieldsList.size() > moveNumber);
 			auto currentNode = dfaStart;
-			assert(machine->GetDFAMap().find(currentNode) != machine->GetDFAMap().end());
-			size_t i = 0;
-			for(; i < fieldsList.size();++i)
+			assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
+			int i = 0;
+			for(; i < (int) fieldsList.size(); ++i)
 			{
-				auto current = fieldsList[fieldsList.size() - 1 - i];
+				auto current = fieldsList[fieldsList.size() - 1- moveNumber - i];
 				auto currentSymbol = current.GetSymbol();
-				if (currentNode->GetFronts().size() ==0)
+				if(currentNode->GetFronts().size() == 0)
 				{
 					return i;
 				}
-				assert(machine->GetDFAMap().find(currentNode) != machine->GetDFAMap().end());
+				assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
 
-				auto findIter = machine->GetDFAMap()[currentNode].find(currentSymbol);
-				if(findIter == machine->GetDFAMap()[currentNode].end())
+				auto findIter = resolve->GetDFAMap()[currentNode].find(currentSymbol);
+				if(findIter == resolve->GetDFAMap()[currentNode].end())
 				{
 					return 0;
 				}
-				currentNode = machine->GetDFAMap()[currentNode][currentSymbol];
+				currentNode = resolve->GetDFAMap()[currentNode][currentSymbol];
 			}
+
 			return i;
 		}
 		void CreateNodeActionTypeMapFunction(const CreateNode& current, GeneralTreeNode* node)
 		{
 			auto type = current.GetType();
-			if (ActionType::Assign == type)
+			if(ActionType::Assign == type)
 			{
 				auto index = current.GetTermIndex();
 				auto fieldName = current.GetSymbol()->GetName();
@@ -293,50 +323,89 @@ namespace ztl
 					node->SetFieldMap(fieldName, index);
 				}
 			}
-			else if(ActionType::Setter == type)
-			{
-				node->SetTermMap(current.GetSymbol()->GetName(), current.GetTokenIndex());
-			}
 			else
 			{
-				assert(false);
+				assert(ActionType::Setter == type);
+				node->SetTermMap(current.GetSymbol()->GetName(), current.GetTokenIndex());
+				return;
 			}
 		}
-		bool GeneralParser::CreateNodeCreateAction(vector<CreateNode>& fieldsList,const ActionWrap& wrap)
+		PDANode* GeneralParser::MoveOnDFA(const vector<ActionWrap>& steps, PDANode* start)
 		{
+			auto resolve = machine->GetCreateNodeResolve();
+			auto currentNode = start;
+			assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
+			int i = 0;
+			for(; i < (int) steps.size(); ++i)
+			{
+				auto current = steps[i];
+				auto currentSymbol = current.GetParserSymbol();
 
-			
-			auto count = RunDFA(fieldsList, wrap.GetValue());
+				assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
+
+				auto findIter = resolve->GetDFAMap()[currentNode].find(currentSymbol);
+
+				currentNode = resolve->GetDFAMap()[currentNode][currentSymbol];
+			}
+			return currentNode;
+		}
+		bool GeneralParser::CreateNodeCreateAction(int tokenIndex, vector<CreateNode>& fieldsList, const ActionWrap& wrap)
+		{
+			assert(wrap.GetActionType() == ActionType::Create);
+			auto&& number = wrap.GetValue();
+			auto count = RunDFA(fieldsList, number);
 			//这里需要生成节点和判断是否路径正确.
 			//然后设置create的NodeIndex
 			//再清除掉前面的一串内容.
-			if (count != 0)
+			if(count != 0)
 			{
-				assert((int)fieldsList.size() >= count);
-				//构建节点,清除前面的元素,挂在create上
-				auto node = MakeTreeNode(wrap.GetParserSymbol());
-				for(auto i = 0; i < count;++i)
+				while(count != 0)
 				{
-					auto current = fieldsList[fieldsList.size() - 1 - i];
-					if (current.GetType()!=ActionType::Terminate)
+					count = RunDFA(fieldsList, number);
+					if (count ==0)
 					{
-						assert(current.GetType() == ActionType::Setter || current.GetType() == ActionType::Assign);
-						CreateNodeActionTypeMapFunction(current, node);
+						break;
+					}
+					assert((int) fieldsList.size() >= count);
+					//构建节点,清除前面的元素,挂在create上
+					auto node = MakeTreeNode(wrap.GetParserSymbol());
+					for(auto i = 0; i < count; ++i)
+					{
+						auto current = fieldsList[fieldsList.size() - 1 - i];
+						if(current.GetType() != ActionType::Terminate)
+						{
+							assert(current.GetType() == ActionType::Setter || current.GetType() == ActionType::Assign);
+							CreateNodeActionTypeMapFunction(current, node);
+						}
+					}
+					fieldsList.erase(fieldsList.end() - count, fieldsList.end());
+					fieldsList.emplace_back(ActionType::Create, node->GetNumber(), -1, wrap.GetParserSymbol());
+					count = 0;
+					if(machine->GetCreateNodeResolve()->IsNullRightRecursionAreas(number))
+					{
+						auto&& actions = machine->GetCreateNodeResolve()->GetNullRightRecursionAreas(number);
+						assert(!actions.empty());
+						auto resolve = machine->GetCreateNodeResolve();
+						assert(resolve->GetCreatedDFA().find(number) != resolve->GetCreatedDFA().end());
+						auto start = MoveOnDFA(actions, resolve->GetCreatedDFA()[number]);
+						count = RunDFA(fieldsList, resolve, start,(int)actions.size());
+						if (count !=0)
+						{
+							CreateNodeResolve(tokenIndex, actions, fieldsList);
+						}
 					}
 				}
-				fieldsList.erase(fieldsList.end() - count, fieldsList.end());
-				fieldsList.emplace_back(ActionType::Create, node->GetNumber(), -1, wrap.GetParserSymbol());
-
 				return true;
 			}
 			else
 			{
 				return false;
 			}
-			
 		}
 		void GeneralParser::CreateNodeAssignAction(bool isTerminate, vector<CreateNode>& fieldsList, const ActionWrap& wrap)
 		{
+			assert(wrap.GetActionType() == ActionType::Assign);
+
 			//清除最后的Create,获得index,挂在assgin上.
 			if(isTerminate)
 			{
@@ -345,31 +414,32 @@ namespace ztl
 				this->pools.SetTerminatePool(pools.GetTokenPool()[index]);
 				index = (int) pools.GetTerminatePool().size() - 1;
 				fieldsList.pop_back();
-				fieldsList.emplace_back(ActionType::Assign,-1, index,wrap.GetParserSymbol());
+				fieldsList.emplace_back(ActionType::Assign, -1, index, wrap.GetParserSymbol());
 			}
 			else
 			{
 				auto index = fieldsList.back().GetTermIndex();
 				fieldsList.pop_back();
-				fieldsList.emplace_back(ActionType::Assign, index ,-1, wrap.GetParserSymbol());
+				fieldsList.emplace_back(ActionType::Assign, index, -1, wrap.GetParserSymbol());
 			}
 		}
 		void GeneralParser::CreateNodeSetterAction(vector<CreateNode>& fieldsList, const ActionWrap& wrap)
 		{
+			assert(wrap.GetActionType() == ActionType::Setter);
+
 			pools.SetTerminatePool(make_shared<TokenInfo>(wrap.GetValue(), L"Setter", -1, -1));
-			int index = (int)pools.GetTerminatePool().size() - 1;
+			int index = (int) pools.GetTerminatePool().size() - 1;
 			fieldsList.emplace_back(ActionType::Setter, -1, index, wrap.GetParserSymbol());
 		}
 		void GeneralParser::CreateNodeTerminateAction(int tokenIndex, vector<CreateNode>& fieldsList, const ActionWrap& wrap)
 		{
-			fieldsList.emplace_back(ActionType::Terminate, -1, tokenIndex, wrap.GetParserSymbol());
+			assert(wrap.GetActionType() == ActionType::Terminate);
 
+			fieldsList.emplace_back(ActionType::Terminate, -1, tokenIndex, wrap.GetParserSymbol());
 		}
-		pair<bool, EdgeInfo> GeneralParser::CreateNodeResolve(int tokenIndex,const
-			EdgeInfo& iter,vector<CreateNode>& fieldsList)
+		bool GeneralParser::CreateNodeResolve(int tokenIndex, const
+			vector<ActionWrap>& actions, vector<CreateNode>& fieldsList)
 		{
-			auto actions = iter.edge->GetActions();
-			
 			bool isTerminate = false;
 			for(size_t i = 0; i < actions.size() && actions[i].GetActionType() != ActionType::Shift; ++i)
 			{
@@ -381,11 +451,11 @@ namespace ztl
 						break;
 					case ztl::general_parser::ActionType::Create:
 						isTerminate = false;
-						if(!CreateNodeCreateAction(fieldsList, actionIter))
+						if(!CreateNodeCreateAction(tokenIndex, fieldsList, actionIter))
 						{
 							goto TestNextEdge;
 						}
-					
+
 						break;
 					case ztl::general_parser::ActionType::Assign:
 						CreateNodeAssignAction(isTerminate, fieldsList, actionIter);
@@ -395,7 +465,7 @@ namespace ztl
 
 						break;
 					case ztl::general_parser::ActionType::Terminate:
-						CreateNodeTerminateAction(tokenIndex,fieldsList, actionIter);
+						CreateNodeTerminateAction(tokenIndex, fieldsList, actionIter);
 						isTerminate = true;
 						break;
 					case ztl::general_parser::ActionType::GrammarBegin:
@@ -409,9 +479,9 @@ namespace ztl
 						break;
 				}
 			}
-			return{ true, iter };
+			return true;
 		TestNextEdge:
-			return{ false,{} };
+			return false;
 		}
 
 		vector<EdgeInfo> GeneralParser::CreateNodeResolve(const vector<EdgeInfo>& edges, ParserState& state)
@@ -421,22 +491,20 @@ namespace ztl
 
 			for(auto&& iter : edges)
 			{
-				pair<bool, EdgeInfo> resolve;
+				bool resolve;
 				auto rulePathStack = state.rulePathStack;
 				auto fieldsList = state.fieldsList;
 				auto tokenIndex = state.tokenIndex;
 				if(iter.rightRecursion)
 				{
-				
 					HandleRightRecursionEdge(iter.edge, rulePathStack, iter.rightRecursion);
-					resolve = CreateNodeResolve(tokenIndex,iter, fieldsList);
+					resolve = CreateNodeResolve(tokenIndex, iter.edge->GetActions(), fieldsList);
 				}
 				else
 				{
-
-					resolve = CreateNodeResolve(tokenIndex,iter, fieldsList);
+					resolve = CreateNodeResolve(tokenIndex, iter.edge->GetActions(), fieldsList);
 				}
-				if(resolve.first)
+				if(resolve)
 				{
 					result.emplace_back(iter);
 				}
@@ -460,17 +528,12 @@ namespace ztl
 					case ztl::general_parser::ActionType::Shift:
 						assert(rulePathStack.back() == actionIter.GetName());
 						rulePathStack.emplace_back(actionIter.GetValue());
-				//		createdNodeStack.emplace_back(MakeEmptyTreeNode());
 						break;
 					case ztl::general_parser::ActionType::Using:
 						assert(rulePathStack.size() > 1);
 						assert(rulePathStack.back() == actionIter.GetName() &&
 							rulePathStack[rulePathStack.size() - 2] == actionIter.GetValue());
 						rulePathStack.pop_back();
-					//	assert(createdNodeStack.size() > 1);
-					//	assert(createdNodeStack[createdNodeStack.size() - 2]->IsEmpty());
-					//	swap(createdNodeStack[createdNodeStack.size() - 2], createdNodeStack[createdNodeStack.size() - 1]);
-					//	createdNodeStack.pop_back();
 						IsTerminate = false;
 						break;
 					case ztl::general_parser::ActionType::Terminate:
@@ -482,21 +545,13 @@ namespace ztl
 
 					case ztl::general_parser::ActionType::Create:
 						assert(actionIter.GetFrom() == rulePathStack.back());
-				//		createdNodeStack.back()->SetParserSymbol(actionIter.GetName());
-						CreateNodeCreateAction(fieldsList, actionIter);
+						CreateNodeCreateAction(tokenIndex, fieldsList, actionIter);
 						break;
 					case ztl::general_parser::ActionType::Assign:
-						if(IsTerminate)
-						{
-				//			pools.SetTerminatePool(pools.GetTokenPool()[tokenIndex]);
-				//			createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int) pools.GetTerminatePool().size() - 1);
-						}
-						else
+						if(!IsTerminate)
 						{
 							assert(actionIter.GetFrom() == rulePathStack.back());
-				//			assert(createdNodeStack.size() > 1);
-				//			createdNodeStack[createdNodeStack.size() - 2]->SetFieldMap(actionIter.GetName(), createdNodeStack.back()->GetNumber());
-				//			createdNodeStack.pop_back();
+
 							rulePathStack.pop_back();
 							assert(actionIter.GetTo() == rulePathStack.back());
 						}
@@ -504,8 +559,7 @@ namespace ztl
 						break;
 					case ztl::general_parser::ActionType::Setter:
 						CreateNodeSetterAction(fieldsList, actionIter);
-						//pools.SetTerminatePool(make_shared<TokenInfo>(actionIter.GetValue(), L"Setter", -1, -1));
-					//	createdNodeStack.back()->SetTermMap(actionIter.GetName(), (int) pools.GetTerminatePool().size() - 1);
+				
 						break;
 					case ztl::general_parser::ActionType::GrammarBegin:
 						break;
@@ -525,11 +579,10 @@ namespace ztl
 				return sum + L" " + value;
 			}) + L"\n";
 		}
-		wstring GeneralParser::GetFieldListInfo(ParserState& ) const
+		wstring GeneralParser::GetFieldListInfo(ParserState&) const
 		{
 			//TODO
 			return{};
-			
 		}
 
 		wstring GeneralParser::GetParserInfo(ParserState& state) const
@@ -544,13 +597,13 @@ namespace ztl
 				L"current token info" + pools.GetTokenPool()[state.tokenIndex]->GetTokenInfo() +
 				L"current creatNodeStack: " + GetFieldListInfo(state);
 		}
-	
+
 		GeneralTreeNode* GeneralParser::MakeTreeNode(ParserSymbol* symbol)
 		{
-			pools.SetGeneralNodePool(make_shared<GeneralTreeNode>((int)pools.GetGeneralNodePool().size(),symbol));
+			pools.SetGeneralNodePool(make_shared<GeneralTreeNode>((int) pools.GetGeneralNodePool().size(), symbol));
 			return  pools.GetGeneralNodePool().back().get();
 		}
-		
+
 		GeneralTreeNode*	GeneralParser::CopyTreeNode(GeneralTreeNode* target)
 		{
 			this->pools.SetGeneralNodePool(make_shared<GeneralTreeNode>());
