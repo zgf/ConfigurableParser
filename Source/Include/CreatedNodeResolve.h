@@ -21,9 +21,12 @@ namespace ztl
 		public:
 			unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>	& GetCreatedDFAMap();
 			unordered_map<wstring, PDANode*>& GetCreatedDFA();
+			PDANode* GetCreatedDFA(const wstring& name)const;
 
 			unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>	& GetRuleDFAMap();
 			unordered_map<wstring, PDANode*>& GetRuleDFA();
+			PDANode* GetRuleDFA(const wstring& name)const;
+
 			void CacheRightRecursionArea(wstring number, const vector<ActionWrap>& wrapList);
 			const vector<ActionWrap>& GetNullRightRecursionAreas(const wstring& number)const;
 			bool IsNullRightRecursionAreas(const wstring& number)const;

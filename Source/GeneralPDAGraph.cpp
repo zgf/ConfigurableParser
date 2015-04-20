@@ -1,5 +1,6 @@
 #include "Include/stdafx.h"
 #include "Include/GeneralPushDownAutoMachine.h"
+#include "Include/GeneralPushDownMachineData.h"
 #include "Include/GeneralTableDefine.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"

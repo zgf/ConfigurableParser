@@ -1,6 +1,7 @@
 #include "Include/stdafx.h"
 #include "Include/GeneralJumpInfo.h"
 #include "Include/GeneralPushDownAutoMachine.h"
+#include "Include/GeneralPushDownMachineData.h"
 namespace ztl
 {
 	namespace general_parser

@@ -4,14 +4,12 @@
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
 #include "Include/CreatedNodeResolve.h"
+#include "Include/GeneralPushDownMachineData.h"
 namespace ztl
 {
 	namespace general_parser
 	{
-		const wstring& ActionWrap::GetName()const
-		{
-			return data->GetName();
-		}
+	
 		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr), resolve(make_shared<CreatedNodeResolve>())
 		{
 		}

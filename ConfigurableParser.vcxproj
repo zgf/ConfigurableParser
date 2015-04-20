@@ -183,9 +183,11 @@
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
     <ClCompile Include="Source\GeneralJumpInfo.cpp" />
     <ClCompile Include="Source\GeneralParser.cpp" />
+    <ClCompile Include="Source\GeneralParserData.cpp" />
     <ClCompile Include="Source\GeneralParserFile.cpp" />
     <ClCompile Include="Source\GeneralParserLexer.cpp" />
     <ClCompile Include="Source\GeneralParserReflection.cpp" />
+    <ClCompile Include="Source\GeneralPushDownMachineDatacpp.cpp" />
     <ClCompile Include="Source\GeneralSerialzeCoreModule.cpp" />
     <ClCompile Include="Source\GeneralPDAGraph.cpp" />
     <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp" />
@@ -225,10 +227,12 @@
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h" />
     <ClInclude Include="Source\Include\CreatedNodeResolve.h" />
+    <ClInclude Include="Source\Include\GeneralParserData.h" />
     <ClInclude Include="Source\Include\GeneralParserFile.h" />
     <ClInclude Include="Source\Include\GeneralJumpInfo.h" />
     <ClInclude Include="Source\Include\GeneralParser.h" />
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
+    <ClInclude Include="Source\Include\GeneralPushDownMachineData.h" />
     <ClInclude Include="Source\Include\GeneralTreeNode.h" />
     <ClInclude Include="Source\Include\GeneralTableDefine.h" />
     <ClInclude Include="Source\Include\GeneralTableWriter.h" />

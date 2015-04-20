@@ -1,7 +1,7 @@
 #include "Include\stdafx.h"
 #include "Include\CreatedNodeResolve.h"
 #include "Include\GeneralPushDownAutoMachine.h"
-
+#include "Include\GeneralPushDownMachineData.h"
 namespace ztl
 {
 	namespace general_parser
@@ -16,6 +16,11 @@ namespace ztl
 		{
 			return createdDFA;
 		}
+		PDANode * CreatedNodeResolve::GetCreatedDFA(const wstring & name) const
+		{
+			auto findIter = createdDFA.find(name);
+			return (findIter == createdDFA.end())?nullptr:findIter->second ;
+		}
 		unordered_map<PDANode*, unordered_map<ParserSymbol*, PDANode*>>& CreatedNodeResolve::GetRuleDFAMap()
 		{
 			return ruleDFAMap;
@@ -24,6 +29,11 @@ namespace ztl
 		unordered_map<wstring, PDANode*>& CreatedNodeResolve::GetRuleDFA()
 		{
 			return ruleDFA;
+		}
+		PDANode * CreatedNodeResolve::GetRuleDFA(const wstring & name) const
+		{
+			auto findIter = ruleDFA.find(name);
+			return (findIter == ruleDFA.end()) ? nullptr : findIter->second;
 		}
 		void CreatedNodeResolve::CacheRightRecursionArea(wstring number, const vector<ActionWrap> & wrapList)
 		{
@@ -379,7 +389,10 @@ namespace ztl
 				auto root = iter.second.first;
 				auto&& solve = *machine.GetCreateNodeResolve();
 				auto result = CreateResolveDFA(machine, root);
-				solve.GetRuleDFA().insert({ iter.first, result.first });
+				if (!result.first->GetNexts().empty())
+				{
+					solve.GetRuleDFA().insert({ iter.first, result.first });
+				}
 				for(auto&&edge : result.second)
 				{
 					assert(edge->GetActions().size() == 1);

@@ -160,6 +160,12 @@
     <ClCompile Include="Source\CreatedNodeResolve.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GeneralParserData.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralPushDownMachineDatacpp.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -235,6 +241,12 @@
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\CreatedNodeResolve.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralParserData.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralPushDownMachineData.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

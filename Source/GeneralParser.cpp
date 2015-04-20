@@ -2,48 +2,20 @@
 #include "Include\GeneralParser.h"
 #include "Include\SymbolManager.h"
 #include "Include\GeneralPushDownAutoMachine.h"
+#include "Include\GeneralPushDownMachineData.h"
 #include "Include\GeneralJumpInfo.h"
 #include "Include\GeneralTreeNode.h"
 #include "Include\ParserSymbol.h"
 #include "Include\CreatedNodeResolve.h"
+#include "Include\GeneralParserData.h"
 namespace ztl
 {
 	namespace general_parser
 	{
-		CreateNode::CreateNode(const ActionType& _type, int _nodeIndex, int _tokenIndex, ParserSymbol* _symbol)
-			:type(_type), nodeIndex(_nodeIndex), symbol(_symbol), tokenIndex(_tokenIndex)
-		{
-		}
-		ActionType CreateNode::GetType()const
-		{
-			return type;
-		}
-		int CreateNode::GetTokenIndex()const
-		{
-			assert(type == ActionType::Terminate || type == ActionType::Assign || type == ActionType::Setter);
-			return tokenIndex;
-		}
-		int CreateNode::GetTermIndex()const
-		{
-			assert(type == ActionType::Assign || type == ActionType::Create);
-			return nodeIndex;
-		}
-		void CreateNode::SetNodeIndex(int index)
-		{
-			assert(type == ActionType::Assign);
-			nodeIndex = index;
-		}
-		void CreateNode::SetTokenIndex(int index)
-		{
-			assert(type == ActionType::Assign || type == ActionType::Setter);
-			tokenIndex = index;
-		}
-		ParserSymbol * CreateNode::GetSymbol() const
-		{
-			return symbol;
-		}
+	
 		GeneralParser::GeneralParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :
 			manager(make_shared<SymbolManager>(_tableDefine)),
+
 			jumpInfos(nullptr),
 			machine(nullptr)
 		{
@@ -151,7 +123,7 @@ namespace ztl
 			assert(!this->pools.GetTokenPool().empty());
 			auto rootRule = machine->GetRootRuleName();
 			assert(!rootRule.empty());
-			this->parserStates.emplace_back(0, jumpInfos->GetRootNumber(), rootRule);
+			this->parserStates.emplace_back(0, jumpInfos->GetRootNumber(), rootRule,machine->GetCreateNodeResolve());
 			vector<GeneralTreeNode*> ambiguityRoots;
 			while(!parserStates.empty())
 			{
@@ -273,17 +245,17 @@ namespace ztl
 			}
 		}
 
-		int GeneralParser::RunDFA(vector<CreateNode>& fieldsList, const wstring& createIndex)
+		int GeneralParser::RunCreatedDFA(vector<CreateNode>& fieldsList, const wstring& createIndex)
 		{
 			auto resolve = machine->GetCreateNodeResolve();
 			assert(resolve->GetCreatedDFA().find(createIndex) != resolve->GetCreatedDFA().end());
-			return RunDFA(fieldsList, resolve, resolve->GetCreatedDFA()[createIndex]);
+			return RunCreatedDFA(fieldsList, resolve, resolve->GetCreatedDFA()[createIndex]);
 		}
-		int GeneralParser::RunDFA(vector<CreateNode>& fieldsList, CreatedNodeResolve* resolve, PDANode * dfaStart, int moveNumber)
+		int GeneralParser::RunCreatedDFA(vector<CreateNode>& fieldsList, CreatedNodeResolve* resolve, PDANode * dfaStart, int moveNumber)
 		{
 			assert(fieldsList.size() > moveNumber);
 			auto currentNode = dfaStart;
-			assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
+			assert(resolve->GetCreatedDFAMap().find(currentNode) != resolve->GetCreatedDFAMap().end());
 			int i = 0;
 			for(; i < (int) fieldsList.size(); ++i)
 			{
@@ -293,14 +265,14 @@ namespace ztl
 				{
 					return i;
 				}
-				assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
+				assert(resolve->GetCreatedDFAMap().find(currentNode) != resolve->GetCreatedDFAMap().end());
 
-				auto findIter = resolve->GetDFAMap()[currentNode].find(currentSymbol);
-				if(findIter == resolve->GetDFAMap()[currentNode].end())
+				auto findIter = resolve->GetCreatedDFAMap()[currentNode].find(currentSymbol);
+				if(findIter == resolve->GetCreatedDFAMap()[currentNode].end())
 				{
 					return 0;
 				}
-				currentNode = resolve->GetDFAMap()[currentNode][currentSymbol];
+				currentNode = resolve->GetCreatedDFAMap()[currentNode][currentSymbol];
 			}
 
 			return i;
@@ -334,18 +306,18 @@ namespace ztl
 		{
 			auto resolve = machine->GetCreateNodeResolve();
 			auto currentNode = start;
-			assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
+			assert(resolve->GetCreatedDFAMap().find(currentNode) != resolve->GetCreatedDFAMap().end());
 			int i = 0;
 			for(; i < (int) steps.size(); ++i)
 			{
 				auto current = steps[i];
 				auto currentSymbol = current.GetParserSymbol();
 
-				assert(resolve->GetDFAMap().find(currentNode) != resolve->GetDFAMap().end());
+				assert(resolve->GetCreatedDFAMap().find(currentNode) != resolve->GetCreatedDFAMap().end());
 
-				auto findIter = resolve->GetDFAMap()[currentNode].find(currentSymbol);
+				auto findIter = resolve->GetCreatedDFAMap()[currentNode].find(currentSymbol);
 
-				currentNode = resolve->GetDFAMap()[currentNode][currentSymbol];
+				currentNode = resolve->GetCreatedDFAMap()[currentNode][currentSymbol];
 			}
 			return currentNode;
 		}
@@ -353,7 +325,7 @@ namespace ztl
 		{
 			assert(wrap.GetActionType() == ActionType::Create);
 			auto&& number = wrap.GetValue();
-			auto count = RunDFA(fieldsList, number);
+			auto count = RunCreatedDFA(fieldsList, number);
 			//这里需要生成节点和判断是否路径正确.
 			//然后设置create的NodeIndex
 			//再清除掉前面的一串内容.
@@ -361,7 +333,7 @@ namespace ztl
 			{
 				while(count != 0)
 				{
-					count = RunDFA(fieldsList, number);
+					count = RunCreatedDFA(fieldsList, number);
 					if (count ==0)
 					{
 						break;
@@ -388,7 +360,7 @@ namespace ztl
 						auto resolve = machine->GetCreateNodeResolve();
 						assert(resolve->GetCreatedDFA().find(number) != resolve->GetCreatedDFA().end());
 						auto start = MoveOnDFA(actions, resolve->GetCreatedDFA()[number]);
-						count = RunDFA(fieldsList, resolve, start,(int)actions.size());
+						count = RunCreatedDFA(fieldsList, resolve, start,(int)actions.size());
 						if (count !=0)
 						{
 							CreateNodeResolve(tokenIndex, actions, fieldsList);
@@ -517,6 +489,8 @@ namespace ztl
 			auto& rulePathStack = state.rulePathStack;
 			auto& fieldsList = state.fieldsList;
 			auto& tokenIndex = state.tokenIndex;
+			auto& satateStack = state.stateStack;
+			auto resolve = state.resolve;
 			auto actions = edge->GetActions();
 			assert(!actions.empty());
 			bool IsTerminate = false;
@@ -528,6 +502,7 @@ namespace ztl
 					case ztl::general_parser::ActionType::Shift:
 						assert(rulePathStack.back() == actionIter.GetName());
 						rulePathStack.emplace_back(actionIter.GetValue());
+						satateStack.emplace_back(resolve->GetRuleDFA()[actionIter.GetTo()]);
 						break;
 					case ztl::general_parser::ActionType::Using:
 						assert(rulePathStack.size() > 1);

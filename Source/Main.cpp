@@ -46,8 +46,8 @@ void GenerateJsonParserFile()
 }
 int main()
 {
-	GenerateGeneralParserFile();
-	//TestJson();
-	//TestXml();
+	//GenerateGeneralParserFile();
+	TestJson();
+	TestXml();
 	return 0;
 }
