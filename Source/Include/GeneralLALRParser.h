@@ -23,6 +23,8 @@ namespace ztl
 			void ExcuteEdgeAdditionAction(const pair<PDAEdge*, int>& grammar, GeneralTreeNode* node);
 			GeneralTreeNode* ExcuteEndAction(const vector<ActionWrap>& acionts);
 			ParserSymbol* ExceteReduceAction(PDANode* currentPDANode, GeneralTreeNode* node, int nodeIndex);
+			ParserSymbol* ExceteReduceWithoutEndAction(PDANode* currentPDANode);
+
 			bool IsParserFinish(size_t tokenIndex,ParserSymbol* node)const;
 		private:
 			vector<int>							 treeNodeStack;

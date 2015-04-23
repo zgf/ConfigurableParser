@@ -11,6 +11,7 @@ namespace ztl
 		}
 		shared_ptr<GeneralTableDefine> GeneralParserFile::GetGenerateParserTableDefine()
 		{
+			generalParser->BuildParser();
 			generalParser->GenerateIsomorphismParserTree();
 			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
 			return shared_ptr<GeneralTableDefine>(*(std::shared_ptr<GeneralTableDefine>*)(&parserResult));
@@ -124,6 +125,7 @@ namespace ztl
 
 		void GeneralParserFile::GenerateSpecialParserFile()
 		{
+			
 			auto table = GetGenerateParserTableDefine();
 			SymbolManager manager(table);
 			ValidateGeneratorCoreSemantic(&manager);

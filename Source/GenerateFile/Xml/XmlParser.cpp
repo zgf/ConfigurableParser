@@ -222,7 +222,7 @@ namespace ztl
 			assert(objectMap.find(name) != objectMap.end());
 			return objectMap[name]();
 		}
-		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 		{
 			assert(classObject != nullptr);
 			assert(classNode != nullptr);
@@ -249,7 +249,7 @@ namespace ztl
 			}
 		}
 
-		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser, ztl::general_parser::GeneralTreeNode* root)
+		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* root)
 		{
 			assert(root != nullptr);
 			auto rootObject = ReflecteObjectByName(root->GetName());
@@ -257,7 +257,7 @@ namespace ztl
 			ztl::xml::GeneralHeterogeneousParserTree(parser, root, rootObject);
 			return rootObject;
 		}
-		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser)
+		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser)
 		{
 			return ztl::xml::GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 		}
@@ -428,9 +428,9 @@ namespace ztl
 				(
 				(
 				(ztl::general_parser::GrammarSymbol(L"NAME")[L"content"]
-				|ztl::general_parser::GrammarSymbol(L"EQUAL")[L"content"])
-				|ztl::general_parser::GrammarSymbol(L"ATTVALUE")[L"content"])
-				|ztl::general_parser::GrammarSymbol(L"TEXT")[L"content"])
+				| ztl::general_parser::GrammarSymbol(L"EQUAL")[L"content"])
+				| ztl::general_parser::GrammarSymbol(L"ATTVALUE")[L"content"])
+				| ztl::general_parser::GrammarSymbol(L"TEXT")[L"content"])
 
 				)
 				.Create(ztl::general_parser::Normal(L"Text"))
@@ -545,7 +545,7 @@ namespace ztl
 
 				(
 				*(ztl::general_parser::GrammarSymbol(L"XInstruction")[L"prologs"]
-				|ztl::general_parser::GrammarSymbol(L"XComment")[L"prologs"]) +
+				| ztl::general_parser::GrammarSymbol(L"XComment")[L"prologs"]) +
 				ztl::general_parser::GrammarSymbol(L"XElement")[L"rootElement"]
 				)
 

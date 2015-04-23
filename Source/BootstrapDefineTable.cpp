@@ -430,6 +430,11 @@ namespace ztl
 								GrammarSymbol(L"Grammar")[L"grammar"] + 
 								Text(L"}")
 							  ).Create(Normal(L"GeneralGrammarLoopTypeDefine"))
+							  | (
+							  Text(L"(") +
+							 !GrammarSymbol(L"Grammar") +
+							  Text(L")")
+							  )
 							  )
 						.Rule
 						(
