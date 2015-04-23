@@ -513,10 +513,6 @@ namespace ztl
 					return wrap.GetActionType() == ActionType::Terminate&&
 						wrap.GetParserSymbol() == LRMachine.GetSymbolManager()->GetTokenSymbolByName(L"FINISH");
 				});
-				if(findIter != actions->end())
-				{
-					LRMachine.AddFinishSet(position);
-				}
 				endAction = move(actions);
 			}
 		}

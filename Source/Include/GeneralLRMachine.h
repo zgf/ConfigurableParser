@@ -124,8 +124,6 @@ namespace ztl
 			bool CheckShiftAndReduceConfilct()const;
 			void LogItems(const wstring& fileName)const;
 			wstring LogPDANode(const wstring & ruleName, PDANode * node) const;
-			void AddFinishSet(PDANode* node);
-			bool IsFinishNode(PDANode*node)const;
 		private:
 			unordered_map<ParserSymbol*, vector<PDAEdge*>> GetGotoInfo(LRNode* node)const;
 
@@ -136,7 +134,6 @@ namespace ztl
 			unordered_set<ParserSymbol*>& FindFirst(PDANode*node, unordered_set<PDAEdge*>& sign);
 			const vector<PDAEdge*>& GetEdgesByNode(PDANode* node)const;
 		private:
-			unordered_set<PDANode*>			finishSet;
 			shared_ptr<PushDownAutoMachine> machine;
 			vector<shared_ptr<LRNode>> nodePool;
 			unordered_map<vector<PDANode*>, int, coreItemHash> coreItemMap;

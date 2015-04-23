@@ -18,8 +18,8 @@ namespace ztl
 			CreateEpsilonPDAVisitor(const CreateEpsilonPDAVisitor&) = default;
 			CreateEpsilonPDAVisitor& operator=(CreateEpsilonPDAVisitor&&) noexcept = default;
 			CreateEpsilonPDAVisitor& operator=(const CreateEpsilonPDAVisitor&) = default;
-			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine, const wstring& _ruleName)noexcept
-				:machine(_machine), ruleName(_ruleName)
+			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine)noexcept
+				:machine(_machine)
 			{
 			}
 		public:
@@ -34,7 +34,7 @@ namespace ztl
 				result = machine->NewNodePair();
 				auto tokenSymbol = machine->GetSymbolManager()->GetTokenSymbolByName(node->text);
 				assert(tokenSymbol != nullptr&&tokenSymbol->IsTokenDef() && !tokenSymbol->IsIgnore());
-				ActionWrap wrap(ActionType::Terminate, tokenSymbol, ruleName, ruleName, L"");
+				ActionWrap wrap(ActionType::Terminate, tokenSymbol);
 				machine->AddEdge(result.first, result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarNormalTypeDefine* node)
@@ -43,7 +43,7 @@ namespace ztl
 				auto ruleSymbol = machine->GetSymbolManager()->GetRuleSymbolByName(node->name);
 				if(ruleSymbol)
 				{
-					ActionWrap wrap(ActionType::NonTerminate, ruleSymbol, L"", L"", L"");
+					ActionWrap wrap(ActionType::NonTerminate, ruleSymbol, L"");
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 				else
@@ -51,7 +51,7 @@ namespace ztl
 					auto tokenSymbol = machine->GetSymbolManager()->GetTokenSymbolByName(node->name);
 					assert(tokenSymbol != nullptr&&tokenSymbol->IsTokenDef() && !tokenSymbol->IsIgnore());
 
-					ActionWrap wrap(ActionType::Terminate, tokenSymbol, ruleName, ruleName, L"");
+					ActionWrap wrap(ActionType::Terminate, tokenSymbol);
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 			}
@@ -84,7 +84,7 @@ namespace ztl
 				assert(createTypeSymbol != nullptr);
 				auto filedSymbol = createTypeSymbol->GetSubSymbolByName(node->name);
 				assert(filedSymbol != nullptr&&filedSymbol->IsFieldDef());
-				ActionWrap wrap(ActionType::Setter, filedSymbol, node->value, ruleName, L"");
+				ActionWrap wrap(ActionType::Setter, filedSymbol, node->value);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
@@ -93,7 +93,7 @@ namespace ztl
 				assert(result.second->GetFronts().size() == 1);
 				auto ruleSymbol = machine->GetSymbolManager()->GetCacheUsingGrammarToRuleDefSymbol(node->grammar.get());
 				assert(ruleSymbol != nullptr&&ruleSymbol->IsRuleDef());
-				ActionWrap wrap(ActionType::Using, ruleSymbol, ruleName, ruleSymbol->GetName(), ruleName);
+				ActionWrap wrap(ActionType::Using, ruleSymbol);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarCreateTypeDefine* node)
@@ -101,7 +101,7 @@ namespace ztl
 				auto manager = machine->GetSymbolManager();
 				createTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
 				node->grammar->Accept(this);
-				ActionWrap wrap(ActionType::Create, createTypeSymbol, to_wstring(uniqueId++), ruleName, L"");
+				ActionWrap wrap(ActionType::Create, createTypeSymbol, L"");
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
 				machine->AddEdge(result.second, newNode, move(wrap));
@@ -123,7 +123,7 @@ namespace ztl
 				{
 					auto fieldSymbol = createTypeSymbol->SearchClassFieldSymbol(node->name);
 					assert(fieldSymbol != nullptr&&fieldSymbol->IsFieldDef());
-					wrap = ActionWrap(ActionType::Assign, fieldSymbol, ruleSymbol->GetName(), ruleName, L"");
+					wrap = ActionWrap(ActionType::Assign, fieldSymbol, ruleSymbol->GetName());
 				}
 				else
 				{
@@ -135,7 +135,7 @@ namespace ztl
 						fieldTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
 					}
 					assert(fieldTypeSymbol->IsType() && !fieldTypeSymbol->IsArrayType());
-					wrap = ActionWrap(ActionType::Assign, fieldSymbol, fieldTypeSymbol->GetName(), ruleSymbol->GetName(), ruleName);
+					wrap = ActionWrap(ActionType::Assign, fieldSymbol, fieldTypeSymbol->GetName());
 				}
 				node->grammar->Accept(this);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
@@ -143,11 +143,8 @@ namespace ztl
 		private:
 			PushDownAutoMachine* machine;
 			pair<PDANode*, PDANode*> result;
-			wstring ruleName;
 			ParserSymbol* createTypeSymbol = nullptr;
-			static int uniqueId;
 		};
-		int CreateEpsilonPDAVisitor::uniqueId = 0;
 		void AddGeneratePDA(unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap, wstring ruleName, PDANode * start, PDANode* end)
 		{
 			auto findIter = PDAMap.find(ruleName);
@@ -166,7 +163,7 @@ namespace ztl
 				auto rulePointer = ruleIter.get();
 				for(auto&& grammarIter : ruleIter->grammars)
 				{
-					CreateEpsilonPDAVisitor visitor(&machine, ruleIter->name);
+					CreateEpsilonPDAVisitor visitor(&machine);
 					grammarIter->Accept(&visitor);
 					assert(visitor.GetResult().first != visitor.GetResult().second);
 
@@ -183,15 +180,6 @@ namespace ztl
 				assert(ruleIter.second.size() > 0);
 				machine.AddGeneratePDA(ruleIter.first, *ruleIter.second.begin());
 			}
-		}
-
-		void AddFinishNode(PushDownAutoMachine& machine)
-		{
-			auto& pdaMap = machine.GetPDAMap();
-			assert(!machine.GetSymbolManager()->GetStartRuleList().empty());
-			auto rootRuleName = machine.GetRootRuleName();
-			assert(machine.GetPDAMap().find(rootRuleName) != machine.GetPDAMap().end());
-			machine.AddFinishNodeFollowTarget(pdaMap[rootRuleName].second, rootRuleName);
 		}
 
 		//可合并节点含义
@@ -322,40 +310,7 @@ namespace ztl
 				MergeCommonNode(iter, nodeList, machine);
 			}
 		}
-		unordered_map<wstring, vector<PDAEdge*>> CollectNontermiateEdge(PushDownAutoMachine& machine)
-		{
-			unordered_map<wstring, vector<PDAEdge*>> result;
-			unordered_set<PDAEdge*> sign;
-			//从Root表达式开始
-			for(auto&& iter : machine.GetSymbolManager()->GetStartRuleList())
-			{
-				result[iter];
-			}
-			for(auto&& iter : machine.GetSymbolManager()->GetStartRuleList())
-			{
-				auto&& ruleIter = machine.GetPDAMap()[iter];
-				deque<PDANode*> queue;
-				queue.emplace_back(ruleIter.first);
-				while(!queue.empty())
-				{
-					auto&& front = queue.front();
-					for(auto&& edgeIter : front->GetNexts())
-					{
-						if(sign.find(edgeIter) == sign.end())
-						{
-							sign.insert(edgeIter);
-							if(edgeIter->HasNonTermActionType())
-							{
-								result[iter].emplace_back(edgeIter);
-							}
-							queue.emplace_back(edgeIter->GetTarget());
-						}
-					}
-					queue.pop_front();
-				}
-			}
-			return result;
-		}
+		
 		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap)
 		{
 			for(auto&& ruleIter : PDAMap)

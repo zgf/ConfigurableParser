@@ -107,14 +107,13 @@ namespace ztl
 				ruleName: $<RuleName>
 				product: $<ProductBody>
 				followToken: $<FollowTokens>
-			    endAction: $<EndActions> $<IsFinish>)";
-			ztl::generator::MarcoGenerator generator(templateString, { L"$<RuleName>",L"$<ProductBody>",L"$<FollowTokens>",L"$<EndActions>",L"$<IsFinish>" });
+			    endAction: $<EndActions>)";
+			ztl::generator::MarcoGenerator generator(templateString, { L"$<RuleName>",L"$<ProductBody>",L"$<FollowTokens>",L"$<EndActions>" });
 			auto&& ruleName = LRMachine.GetRuleNameByIndex(GetRuleIndex());
 			auto&& productBody = LRMachine.LogPDANode(ruleName, GetPosition());
 			auto&& followTokens = LogFollowToken();
 			auto&& endActions = LogEndAction();
-			auto&& isFinish = LRMachine.IsFinishNode(GetPosition()) == true ? L"True" : L"False";
-			return generator.GenerateText({ ruleName ,productBody ,followTokens ,endActions ,isFinish }).GetMacroResult();
+			return generator.GenerateText({ ruleName ,productBody ,followTokens ,endActions  }).GetMacroResult();
 		}
 		wstring ztl::general_parser::ProductPosition::LogFollowToken() const
 		{
@@ -140,17 +139,7 @@ namespace ztl
 		{
 			return machine->LogPDANode(ruleName, node);
 		}
-		void ztl::general_parser::GeneralLRMachine::AddFinishSet(PDANode * node)
-		{
-			if (finishSet.find(node) == finishSet.end())
-			{
-				finishSet.insert(node);
-			}
-		}
-		bool ztl::general_parser::GeneralLRMachine::IsFinishNode(PDANode * node) const
-		{
-			return finishSet.find(node) != finishSet.end();
-		}
+	
 		wstring ProductPosition::LogEndAction() const
 		{
 			wstring result;
@@ -172,8 +161,7 @@ namespace ztl
 			unordered_map<ActionType, lambdaType> actionMap;
 			auto functor = [](const ActionWrap& wrap)->wstring
 			{
-				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue() +
-					L" : " + wrap.GetFrom() + L":" + wrap.GetTo();
+				return ActionTypeToWString(wrap.GetActionType()) + L" : " + wrap.GetName() + L":" + wrap.GetValue();
 			};
 			vector<ActionType> ActionTypeList = {
 				ActionType::Assign,

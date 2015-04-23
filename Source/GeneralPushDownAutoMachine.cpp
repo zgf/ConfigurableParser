@@ -102,23 +102,7 @@ namespace ztl
 				return pair<PDANode*, PDANode*>(left.first, right.second);
 			}
 		}
-		void	PushDownAutoMachine::AddFinishNodeFollowTarget(PDANode* target, const wstring&ruleName)
-		{
-			for(auto&& frontIter : target->GetFronts())
-			{
-				if(find_if(frontIter->GetActions().begin(), frontIter->GetActions().end(), [](const ActionWrap& wrap)
-				{
-					return wrap.GetActionType() == ActionType::Create || wrap.GetActionType() == ActionType::Using;
-				}) != frontIter->GetActions().end())
-				{
-					//	assert(frontIter->GetGrammarNumber() != -1);
-					//	assert(frontIter->GetActions().front().GetGrammarNumber() == frontIter->GetGrammarNumber());
-					auto tokenSymbol = manager->GetTokenSymbolByName(L"FINISH");
-					assert(tokenSymbol != nullptr&&tokenSymbol->IsTokenDef() && !tokenSymbol->IsIgnore());
-					BackInsertAction(frontIter, ActionWrap(ActionType::Terminate, tokenSymbol, ruleName, ruleName, L""));
-				}
-			}
-		}
+		
 		pair<PDANode*, PDANode*> PushDownAutoMachine::AddLoopLinkNode(PDANode * loopStart, PDANode * loopEnd)
 		{
 			auto mergeNode = MergeIndependentNodes(loopEnd, loopStart);

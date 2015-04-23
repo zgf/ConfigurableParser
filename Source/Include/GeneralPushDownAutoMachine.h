@@ -43,7 +43,6 @@ namespace ztl
 			pair<PDANode*, PDANode*>	AddLoopLinkNode(PDANode* loopStart, PDANode* loopEnd);
 			pair<PDANode*, PDANode*>	AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>&right);
 			pair<PDANode*, PDANode*>	AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd);
-			void						AddFinishNodeFollowTarget(PDANode* target, const wstring& ruleName);
 			void						FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap);
 			void						FrontEdgesAdditionSetterAction(PDANode* targetNode, const ActionWrap& wrap);
 			wstring						GetRootRuleName()const;

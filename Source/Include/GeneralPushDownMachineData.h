@@ -42,8 +42,7 @@ namespace ztl
 			//Using ParserSymbol From RuleDef
 			ParserSymbol* data;
 			wstring value;//setter value assgin ruleName
-			wstring current;//当前文法
-			wstring next;//下一个文法
+			
 		public:
 			ActionWrap() = default;
 			~ActionWrap() noexcept = default;
@@ -51,11 +50,14 @@ namespace ztl
 			ActionWrap(const ActionWrap&)  = default;
 			ActionWrap& operator=(ActionWrap&&)  = default;
 			ActionWrap& operator=(const ActionWrap&)  = default;
-			ActionWrap(ActionType _action, ParserSymbol* _data, const wstring& _value, const wstring& _current, const wstring& _next)
-				: action(_action), data(_data), value(_value), current(_current), next(_next)
+			ActionWrap(ActionType _action, ParserSymbol* _data, const wstring& _value)
+				: action(_action), data(_data), value(_value)
 			{
 			}
-
+			ActionWrap(ActionType _action, ParserSymbol* _data)
+				: action(_action), data(_data)
+			{
+			}
 			ActionType GetActionType()const
 			{
 				return action;
@@ -69,14 +71,7 @@ namespace ztl
 			{
 				return value;
 			}
-			const wstring& GetFrom()const
-			{
-				return current;
-			}
-			const wstring& GetTo()const
-			{
-				return next;
-			}
+			
 			bool operator==(const ActionWrap& target)const
 			{
 				return target.action == action&&
@@ -153,29 +148,8 @@ namespace ztl
 				return HasThisActionType(ActionType::Terminate);
 			}
 
-			bool IsNullPropertyAction(ActionType type)
-			{
-				assert(type != ActionType::NonTerminate);
-				return
-					type == ActionType::Reduce ||
-					type == ActionType::Shift ||
-					type == ActionType::Using;
-			}
-			void DeleteNullPropertyAction()
-			{
-				for(size_t i = 0; i < actions.size();)
-				{
-					auto&& iter = actions[i];
-					if(IsNullPropertyAction(iter.GetActionType()))
-					{
-						actions.erase(actions.begin() + i);
-					}
-					else
-					{
-						++i;
-					}
-				}
-			}
+		
+			
 
 		private:
 			bool HasThisActionType(ActionType type)const
