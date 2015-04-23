@@ -31,6 +31,8 @@ namespace ztl
 			ParserSymbol*					 globalSymbol;//根符号
 			ParserSymbol*					 tokenTypeSymbol;//token类型符号
 			vector<wstring>						 startRuleList;
+			unordered_map<wstring, int>			 ruleToIndexMap;//rule to Index的Map
+			vector<wstring>						 indexToruleList;//index to rule List
 			BaseSymbolToDeriveSymbolMapType		 baseSymbolToDeriveMap;//类和类的派生类继承链收集
 			//符号缓存
 			TypeObjectToSymbolMapType			 typeSymbolMap;
@@ -101,6 +103,10 @@ namespace ztl
 			vector<wstring> GetGenerateArrayProperty(const wstring& property);
 			const TypeDefineToSymbolMapType& GetTypeDefSymbolMap()const;
 			const BaseSymbolToDeriveSymbolMapType&	GetbaseSymbolToDeriveMap()const;
+			void AddRuleMap(const wstring& ruleName,int index);
+			int GetRuleIndexByName(const wstring& ruleName)const;
+			const wstring& GetRuleNameByIndex(int index)const;
+			ParserSymbol* GetFinishTokenSymbol()const;
 		private:
 			void TryAddSubSymbol(ParserSymbol* subSymbol, ParserSymbol* parentSymbol);
 			template<typename predicate_type>

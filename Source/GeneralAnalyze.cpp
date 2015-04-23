@@ -220,8 +220,9 @@ namespace ztl
 				auto&& tokenSymbol = manager->AddTokenDefine(iter->name, iter->regex, (iter->ignore == GeneralTokenDefine::TokenOptional::True) ? true : false);
 			}
 
-			for(auto&&iter : table->rules)
+			for(size_t i = 0; i < table->rules.size();++i)
 			{
+				auto&&iter = table->rules[i];
 				//检测rule的type是不是先前已定义过,缓存rule节点与符号表节点的绑定
 				auto ruleType = FindType(manager, manager->GetGlobalSymbol(), iter->type.get());
 				if(ruleType->IsClassType())
@@ -233,6 +234,7 @@ namespace ztl
 				{
 					throw ztl_exception(L"Rule type only is class type");
 				}
+				manager->AddRuleMap(iter->name, (int)i);
 			}
 		}
 

@@ -124,9 +124,6 @@
     <ClCompile Include="Source\GeneralTreeNode.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralParser.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralParserLexer.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
@@ -154,16 +151,19 @@
     <ClCompile Include="Source\GeneralParserReflection.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralJumpInfo.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CreatedNodeResolve.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GeneralParserData.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralPushDownMachineDatacpp.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralLRMachine.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LogParser.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralLALRParser.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralParserBase.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
   </ItemGroup>
@@ -222,9 +222,6 @@
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralParser.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Include\GeneralTreeNode.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
@@ -237,16 +234,16 @@
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h">
       <Filter>Source\GenerateFile\Xml</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralJumpInfo.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\CreatedNodeResolve.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralParserData.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Include\GeneralPushDownMachineData.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralLRMachine.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralLALRParser.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralParserBase.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
   </ItemGroup>

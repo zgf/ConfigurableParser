@@ -383,6 +383,31 @@ namespace ztl
 			return baseSymbolToDeriveMap;
 		}
 
+		void SymbolManager::AddRuleMap(const wstring& ruleName, int index)
+		{
+			assert(ruleToIndexMap.find(ruleName) == ruleToIndexMap.end());
+			ruleToIndexMap.insert({ruleName,index});
+			indexToruleList.emplace_back(ruleName);
+			assert(index == indexToruleList.size() - 1);
+		}
+
+		int SymbolManager::GetRuleIndexByName(const wstring & ruleName) const
+		{
+			auto findIter = ruleToIndexMap.find(ruleName);
+			assert(findIter != ruleToIndexMap.end());
+			return findIter->second;
+		}
+
+		const wstring & SymbolManager::GetRuleNameByIndex(int index) const
+		{
+			return indexToruleList[index];
+		}
+
+		ParserSymbol * SymbolManager::GetFinishTokenSymbol() const
+		{
+			return GetTokenSymbolByName(L"FINISH");
+		}
+
 		void SymbolManager::CheckNameReDefineError(const wstring& name, ParserSymbol * parentSymbol)
 		{
 			auto result = parentSymbol->GetSubSymbolByName(name);

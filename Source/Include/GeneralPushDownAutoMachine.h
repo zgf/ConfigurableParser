@@ -51,7 +51,11 @@ namespace ztl
 			PDANode*					MergeIndependentNodes(PDANode* left, PDANode* right);
 			void BackInsertAction(PDAEdge* edge, const ActionWrap& wrap);
 			void FrontInsertAction(PDAEdge* edge, const ActionWrap& wrap);
-
+			void AddNodeMapElement(PDANode* node, int ruleIndex);
+			int GetRuleIndexByNode(PDANode* node)const;
+			void AddNodeEdgeMapElement(PDANode* node, PDAEdge* edge);
+			const vector<PDAEdge*>& GetEdgesByNode(PDANode* node)const;
+			wstring LogPDANode(const wstring& ruleName,PDANode* node)const;
 		private:
 			PDAEdge* NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap);
 			PDAEdge* NewEdge(PDANode* source, PDANode* target);
@@ -61,11 +65,11 @@ namespace ztl
 			vector<shared_ptr<PDANode>>											 nodes;
 			SymbolManager*														 manager;
 			unordered_map<wstring, pair<PDANode*, PDANode*>>					 PDAMap;
-
-			shared_ptr<CreatedNodeResolve>										 resolve;
+			unordered_map<PDANode*, int>										 nodeMap;
+			unordered_map<PDANode*, vector<PDAEdge*>>							 nodeEdgeMap;
 		public:
 		};
-	
+		vector<PDAEdge*> FindThePath(PDANode* start, PDANode* end);
 		void CreateDPDAGraph(PushDownAutoMachine& machine);
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
 		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine);

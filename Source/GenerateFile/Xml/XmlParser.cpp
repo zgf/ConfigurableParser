@@ -222,7 +222,7 @@ namespace ztl
 			assert(objectMap.find(name) != objectMap.end());
 			return objectMap[name]();
 		}
-		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 		{
 			assert(classObject != nullptr);
 			assert(classNode != nullptr);
@@ -249,7 +249,7 @@ namespace ztl
 			}
 		}
 
-		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root)
+		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser, ztl::general_parser::GeneralTreeNode* root)
 		{
 			assert(root != nullptr);
 			auto rootObject = ReflecteObjectByName(root->GetName());
@@ -257,7 +257,7 @@ namespace ztl
 			ztl::xml::GeneralHeterogeneousParserTree(parser, root, rootObject);
 			return rootObject;
 		}
-		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser)
+		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser)
 		{
 			return ztl::xml::GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 		}

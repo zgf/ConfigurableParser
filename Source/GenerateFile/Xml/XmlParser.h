@@ -15,7 +15,7 @@
 				using std::make_shared;
 				#include "..\..\Include\GeneralTableDefine.h"
 				#include "..\..\Include\GeneralTreeNode.h"
-				#include "..\..\Include\GeneralParser.h"
+				#include "..\..\Include\GeneralLALRParser.h"
 				
 							namespace ztl
 							{
@@ -185,8 +185,8 @@ shared_ptr<Element>    rootElement;
 			
 				shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable();
 				
-			shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser,ztl::general_parser::GeneralTreeNode* root);
-			shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser);
+			shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser,ztl::general_parser::GeneralTreeNode* root);
+			shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralLALRParser& parser);
 			
 							}
 						 

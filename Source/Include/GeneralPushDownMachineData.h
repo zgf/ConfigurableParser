@@ -28,6 +28,7 @@ namespace ztl
 			Setter,
 			GrammarBegin,
 		};
+		
 		class ActionWrap
 		{
 			ActionType action;
@@ -45,18 +46,21 @@ namespace ztl
 			wstring next;//下一个文法
 		public:
 			ActionWrap() = default;
-
+			~ActionWrap() noexcept = default;
+			ActionWrap(ActionWrap&&)  = default;
+			ActionWrap(const ActionWrap&)  = default;
+			ActionWrap& operator=(ActionWrap&&)  = default;
+			ActionWrap& operator=(const ActionWrap&)  = default;
 			ActionWrap(ActionType _action, ParserSymbol* _data, const wstring& _value, const wstring& _current, const wstring& _next)
 				: action(_action), data(_data), value(_value), current(_current), next(_next)
 			{
 			}
-			~ActionWrap() = default;
 
 			ActionType GetActionType()const
 			{
 				return action;
 			}
-			ParserSymbol* GetParserSymbol()const
+			ParserSymbol*const& GetParserSymbol()const
 			{
 				return data;
 			}
@@ -220,5 +224,6 @@ namespace ztl
 			unique_ptr<vector<PDAEdge*>> fronts;
 		};
 		PAIR_BUILDER(CreateInfo, wstring, createType, vector<wstring>, fieldNames);
+		
 	}
 }

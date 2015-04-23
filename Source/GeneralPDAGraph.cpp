@@ -5,7 +5,6 @@
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
 #include "../Lib/ZTL/ztl_pair_builder.hpp"
-#include "Include/CreatedNodeResolve.h"
 namespace ztl
 {
 	namespace general_parser
@@ -86,7 +85,7 @@ namespace ztl
 				auto filedSymbol = createTypeSymbol->GetSubSymbolByName(node->name);
 				assert(filedSymbol != nullptr&&filedSymbol->IsFieldDef());
 				ActionWrap wrap(ActionType::Setter, filedSymbol, node->value, ruleName, L"");
-				machine->FrontEdgesAdditionSetterAction(result.second, move(wrap));
+				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 			void								Visit(GeneralGrammarUsingTypeDefine* node)
 			{
@@ -277,7 +276,30 @@ namespace ztl
 			}
 			return result;
 		}
-	
+		template<typename prediction_type>
+		void TravelGraphNode(const vector<PDANode*>& nodeList, const prediction_type& pred)
+		{
+			unordered_set<PDANode*>sign;
+			deque<PDANode*> queue;
+			for(auto&&iter : nodeList)
+			{
+				queue.emplace_back(iter);
+				while(!queue.empty())
+				{
+					PDANode* front = queue.front();
+					queue.pop_front();
+					if(sign.find(front) == sign.end())
+					{
+						sign.insert(front);
+						pred(front);
+						for(auto&& edgeIter : front->GetNexts())
+						{
+							queue.emplace_back(edgeIter->GetTarget());
+						}
+					}
+				}
+			}
+		}
 
 		void MergeGrammarCommonFactor(PushDownAutoMachine& machine)
 		{
@@ -348,286 +370,74 @@ namespace ztl
 				grammars.erase(grammars.begin() + 1, grammars.end());
 			}
 		}
-
-		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine)
+		void CollectNodeAndEdgeMap(PushDownAutoMachine& machine)
 		{
-			auto&& edgeList = CollectNontermiateEdge(machine);
-
-			for(auto&& iter : edgeList)
+			unordered_set<PDANode*>sign;
+			for(auto&&iter : machine.GetSymbolManager()->GetStartRuleList())
 			{
-				auto&& ruleName = iter.first;
-				for(auto&& edgeIter : iter.second)
+				deque<PDANode*> queue;
+				queue.emplace_back(machine.GetPDAMap()[iter].first);
+				while(!queue.empty())
 				{
-					auto&& source = edgeIter->GetSource();
-					auto&& target = edgeIter->GetTarget();
-					auto actions = edgeIter->GetActions();
-
-					auto&& nextRuleIter = find_if(actions.begin(), actions.end(), [](const ActionWrap& wrap)
+					PDANode* front = queue.front();
+					queue.pop_front();
+					if(sign.find(front) == sign.end())
 					{
-						return wrap.GetActionType() == ActionType::NonTerminate;
-					});
-
-					assert(nextRuleIter != actions.end());
-					auto nextRuleName = nextRuleIter->GetName();
-
-					vector<ActionWrap> leftAction;
-					leftAction.insert(leftAction.end(), actions.begin(), nextRuleIter);
-					auto ruleSymbol = machine.GetSymbolManager()->GetRuleSymbolByName(ruleName);
-					assert(ruleSymbol != nullptr&&ruleSymbol->IsRuleDef());
-					leftAction.emplace_back(ActionWrap(ActionType::Shift, ruleSymbol, nextRuleName, ruleName, nextRuleName));
-
-					vector<ActionWrap> rightAction;
-					rightAction.insert(rightAction.end(), nextRuleIter + 1, actions.end());
-					machine.DeleteEdge(edgeIter);
-					auto findIter = machine.GetPDAMap().find(nextRuleName);
-					assert(findIter != machine.GetPDAMap().end());
-					actions.erase(nextRuleIter);
-
-					if(ruleName == nextRuleName)
-					{
-						CacheNullRightRecursionAreas(machine, target, findIter->second.second, rightAction);
-					}
-
-					machine.AddEdge(findIter->second.second, target, rightAction);
-					machine.AddEdge(source, findIter->second.first, leftAction);
-				}
-			}
-		}
-		void CheckAndDeleteReCursionRing(vector<ActionWrap>& newActions, ActionType type)
-		{
-			auto lastIndex = find_if(make_reverse_iterator(newActions.end()), make_reverse_iterator(newActions.begin()), [type](const ActionWrap& wrap)
-			{
-				return wrap.GetActionType() == type;
-			}).base() - newActions.begin();
-			auto firstIndex = find_if(newActions.begin(), newActions.end(), [type](const ActionWrap& wrap)
-			{
-				return wrap.GetActionType() == type;
-			}) - newActions.begin();
-			firstIndex = (firstIndex == (int) newActions.size()) ? 0 : firstIndex;
-			vector<int> deleter;
-			if(firstIndex != lastIndex)
-			{
-				for(auto index = firstIndex; index != lastIndex; ++index)
-				{
-					auto begin = newActions.begin() + firstIndex;
-					auto end = newActions.begin() + index + 1;
-					for(auto i = begin; i < end; ++i)
-					{
-						if(i->GetName() == newActions[index].GetValue() && i != end)
+						sign.insert(front);
+						machine.AddNodeMapElement(front, machine.GetSymbolManager()->GetRuleIndexByName(iter));
+						for(auto&& edgeIter : front->GetNexts())
 						{
-							auto count = 0;
-							for_each(i, end, [&count, type](const ActionWrap& wrap)
-							{
-								if(wrap.GetActionType() != type)
-								{
-									++count;
-								}
-							});
-							if(count == 0)
-							{
-								auto number = end - i;
-								assert(std::all_of(i, end, [type](const ActionWrap& wrap)
-								{
-									return wrap.GetActionType() == type;
-								}));
-								newActions.erase(i, end);
-								lastIndex = lastIndex - number;
-								index = index - number;
-								break;
-							}
+							machine.AddNodeEdgeMapElement(front, edgeIter);
+							queue.emplace_back(edgeIter->GetTarget());
 						}
 					}
 				}
 			}
 		}
-		void CheckAndDeleteLeftReCursionRing(vector<ActionWrap>& newActions)
+		void FindThePath(PDANode* start, PDANode* end, unordered_set<PDAEdge*>& sign, vector<PDAEdge*>& result, bool& finish)
 		{
-			CheckAndDeleteReCursionRing(newActions, ActionType::Shift);
-		}
-		/*void CheckAndDeleteRightReCursionRing(vector<ActionWrap>& newActions)
-		{
-			CheckAndDeleteReCursionRing(newActions, ActionType::Reduce);
-		}*/
-
-		vector<ActionWrap> GetNewAction(vector<PDAEdge*>& save)
-		{
-			vector<ActionWrap> newActions;
-			for_each(save.begin(), save.end(), [&newActions](PDAEdge* edge)
+			if(start != end)
 			{
-				for(auto&& iter : edge->GetActions())
+				for(auto&&edgeIter : start->GetNexts())
 				{
-					assert(iter.GetActionType() != ActionType::Epsilon&&iter.GetActionType() != ActionType::NonTerminate);
-					newActions.emplace_back(iter);
-				}
-			});
-
-			CheckAndDeleteLeftReCursionRing(newActions);
-			//不处理右递归,右递归会带上assign信息.走的时候查看语法堆栈和节点就可以知道能否走通了
-			return newActions;
-		}
-		void MergePathSymbol(vector<PDAEdge*>& save, PushDownAutoMachine& machine, unordered_map<PDANode*, int>& edgeCountMap)
-		{
-			assert(!save.empty());
-
-			auto source = save.front()->GetSource();
-			auto target = save.back()->GetTarget();
-
-			auto nexts = source->GetNexts();
-			const vector<ActionWrap>* actionPointer = nullptr;
-			auto CheckAndAddEdge = [&nexts, &source, &target, &actionPointer, &edgeCountMap, &machine]()
-			{
-				if(find_if(nexts.begin() + edgeCountMap[source], nexts.end(), [&target, &actionPointer](PDAEdge* edge)
-				{
-					return edge->GetTarget() == target&&
-						edge->GetActions() == *actionPointer;
-				}) == nexts.end())
-				{
-					machine.AddEdge(source, target, *actionPointer);
-				}
-			};
-			if(save.size() == 1)
-			{
-				assert(edgeCountMap[source] != 0);
-				actionPointer = &save[0]->GetActions();
-				CheckAndAddEdge();
-			}
-			else
-			{
-				vector<ActionWrap> newActions = GetNewAction(save);
-				if(!newActions.empty())
-				{
-					if(find_if(nexts.begin(), nexts.end(), [&newActions](PDAEdge* element)
+					if(sign.find(edgeIter) == sign.end())
 					{
-						return element->GetActions() == newActions;
-					}) == nexts.end())
-					{
-						actionPointer = &newActions;
-
-						CheckAndAddEdge();
-					}
-				}
-			}
-		}
-
-		void RecordNewNode(PDANode* target, vector<PDANode*>& allNode, unordered_set<PDANode*>& noNeed)
-		{
-			if(noNeed.find(target) == noNeed.end())
-			{
-				noNeed.insert(target);
-				allNode.emplace_back(target);
-			}
-		}
-		bool IsCorrectEdge(const vector<PDAEdge*>& path, const PDAEdge* edge)
-		{
-			if(path.empty())
-			{
-				return true;
-			}
-			else
-			{
-				assert(!path.empty());
-				auto grammr = path.back()->GetActions().back().GetTo();
-				if(grammr.empty())
-				{
-					grammr = path.back()->GetActions().back().GetFrom();
-				}
-				return grammr == edge->GetActions().front().GetFrom();
-			}
-		}
-
-		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine)
-		{
-			//当前路径上遇到的边
-			vector<PDAEdge*> path;
-			//当前路径上遇到的边的hash
-			unordered_set<PDAEdge*> sign;
-			//待处理的点队列
-			vector<PDANode*> allNode;
-			//已进队列或者处理结束的点
-			unordered_set<PDANode*> noNeed;
-			//待删除的边
-			unordered_set<PDAEdge*> deleter;
-			//每个节点上旧边的数量
-			unordered_map<PDANode*, int> edgeCountMap;
-			//edgeCountMap收集完毕
-			auto& startList = machine.GetSymbolManager()->GetStartRuleList();
-			vector<PDANode*>nodeList;
-			std::transform(startList.begin(), startList.end(), back_inserter(nodeList), [&machine](const wstring& ruleName)
-			{
-				return machine.GetPDAMap()[ruleName].first;
-			});
-			CollectGraphNode(nodeList, [&edgeCountMap](PDANode* element)
-			{
-				edgeCountMap.insert({ element,(int) element->GetNexts().size() });
-				return true;
-			});
-			auto root = machine.GetRoot();
-			allNode.emplace_back(root);
-			noNeed.insert(root);
-
-			function<void(PDANode*)> DFS = [&noNeed, &deleter, &allNode, &DFS, &sign, &path, &edgeCountMap, &machine](PDANode* node)
-			{
-				auto nexts = node->GetNexts();
-				size_t length = edgeCountMap[node];
-				for(size_t i = 0; i < length; ++i)
-				{
-					auto&& edgeIter = nexts[i];
-					auto target = edgeIter->GetTarget();
-					if(sign.find(edgeIter) == sign.end() && IsCorrectEdge(path, edgeIter))
-					{
-						path.emplace_back(edgeIter);
 						sign.insert(edgeIter);
-						if(edgeIter->HasTermActionType())
+						result.emplace_back(edgeIter);
+						FindThePath(edgeIter->GetTarget(), end, sign, result, finish);
+						if(finish == true)
 						{
-							//遇到Term了,当前路径可以终止搜索了.
-
-							MergePathSymbol(path, machine, edgeCountMap);
-							//记录需要删除的边
-							deleter.insert(path.begin(), path.end());
-							assert(!path.empty());
-							//记录待处理的节点
-							assert(edgeIter->HasTermActionType());
-							RecordNewNode(target, allNode, noNeed);
+							return;
 						}
-						else
-						{
-							DFS(target);
-						}
+						result.pop_back();
 						sign.erase(edgeIter);
-						assert(path.back() == edgeIter);
-						path.pop_back();
-					}
-					else
-					{
-						//遇到环了
-						deleter.insert(path.begin(), path.end());
+
 					}
 				}
-			};
-			for(size_t i = 0; i < allNode.size(); ++i)
-			{
-				auto nodeIter = allNode[i];
-				DFS(nodeIter);
 			}
-			for(auto iter : deleter)
+			else
 			{
-				machine.DeleteEdge(iter);
+				assert(start == end);
+				finish = true;
 			}
 		}
-
-
+		vector<PDAEdge*> FindThePath(PDANode* start, PDANode* end)
+		{
+			vector<PDAEdge*> result;
+			unordered_set<PDAEdge*> sign;
+			bool finish = false;
+			FindThePath(start, end, sign, result, finish);
+			return result;
+		}
 		void CreateDPDAGraph(PushDownAutoMachine& machine)
 		{
 			auto PDAMap = CreateEpsilonPDA(machine);
 			MergeStartAndEndNode(machine, PDAMap);
 			AddPDAToPDAMachine(machine, PDAMap);
 			MergeGrammarCommonFactor(machine);
-			CreateResolveDFA(machine);
-			MergeEpsilonPDAGraph(machine);
-			//添加结束节点.
-			AddFinishNode(machine);
+			
+			CollectNodeAndEdgeMap(machine);
 			LogGraphInfo(machine.GetSymbolManager()->GetGenerateUniqueProperty(L"filename") + L"NonMerge.txt", machine);
-			MergePDAEpsilonSymbol(machine);
 		}
 	}
 }

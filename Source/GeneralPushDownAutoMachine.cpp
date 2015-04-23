@@ -3,18 +3,17 @@
 #include "Include/GeneralPushDownAutoMachine.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
-#include "Include/CreatedNodeResolve.h"
 #include "Include/GeneralPushDownMachineData.h"
 namespace ztl
 {
 	namespace general_parser
 	{
 	
-		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr), resolve(make_shared<CreatedNodeResolve>())
+		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr)
 		{
 		}
 		PushDownAutoMachine::PushDownAutoMachine(SymbolManager* _manager)
-			: manager(_manager),resolve(make_shared<CreatedNodeResolve>())
+			: manager(_manager)
 		{
 		}
 
@@ -26,11 +25,6 @@ namespace ztl
 		GeneralTableDefine * PushDownAutoMachine::GetTable() const
 		{
 			return GetSymbolManager()->GetTable();
-		}
-
-		CreatedNodeResolve * PushDownAutoMachine::GetCreateNodeResolve()
-		{
-			return resolve.get();
 		}
 
 		unordered_map<wstring, pair<PDANode*, PDANode*>>& PushDownAutoMachine::GetPDAMap()
@@ -195,6 +189,38 @@ namespace ztl
 		{
 			edge->actions.emplace(edge->actions.begin(), wrap);
 		}
+
+		void PushDownAutoMachine::AddNodeMapElement(PDANode * node, int ruleIndex)
+		{
+			assert(nodeMap.find(node) == nodeMap.end());
+			nodeMap.insert({ node,ruleIndex });
+		}
+
+		int PushDownAutoMachine::GetRuleIndexByNode(PDANode * node) const
+		{
+			auto findIter = nodeMap.find(node);
+			assert(findIter != nodeMap.end());
+			return findIter->second;
+		}
+
+		void PushDownAutoMachine::AddNodeEdgeMapElement(PDANode * node, PDAEdge * edge)
+		{
+			auto&& findIter = nodeEdgeMap.find(node);
+			if (findIter == nodeEdgeMap.end())
+			{
+				nodeEdgeMap[node];
+			}
+			nodeEdgeMap[node].emplace_back(edge);
+		}
+
+		const vector<PDAEdge*>& PushDownAutoMachine::GetEdgesByNode(PDANode * node) const
+		{
+			auto findIter = nodeEdgeMap.find(node);
+			assert(findIter != nodeEdgeMap.end());
+			return findIter->second;
+		}
+
+		
 
 		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
 		{

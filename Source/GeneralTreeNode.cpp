@@ -27,50 +27,6 @@ namespace ztl
 		GeneralTreeNode::GeneralTreeNode(const int number, ParserSymbol * _symbol) :symbol(_symbol), nodeNumber(number)
 		{
 		}
-		void GeneralTreeNode::SetField(const wstring& fieldName, const int nodeIndex)
-		{
-			auto findIter = fieldMap.find(fieldName);
-			if(findIter == fieldMap.end())
-			{
-				findIter = termMap.find(fieldName);
-				if(findIter == termMap.end())
-				{
-					throw ztl_exception(L"error! this Node haven't this field " + fieldName + L"\n");
-				}
-				termMap[fieldName].emplace_back(nodeIndex);
-			}
-			else
-			{
-				assert(termMap.find(fieldName) == termMap.end());
-				fieldMap[fieldName].emplace_back(nodeIndex);
-			}
-		}
-
-		void GeneralTreeNode::InitTermMap(const wstring & fieldName)
-		{
-			termMap.insert({ fieldName,vector<int>() });
-		}
-
-		void GeneralTreeNode::InitTermMap(const vector<wstring>& fileNames)
-		{
-			for(auto&&iter : fileNames)
-			{
-				InitTermMap(iter);
-			}
-		}
-
-		void GeneralTreeNode::InitFieldMap(const wstring & fieldName)
-		{
-			fieldMap.insert({ fieldName,vector<int>() });
-		}
-
-		void GeneralTreeNode::InitFieldMap(const vector<wstring>& fileNames)
-		{
-			for(auto&&iter : fileNames)
-			{
-				InitFieldMap(iter);
-			}
-		}
 
 		bool GeneralTreeNode::HaveThisField(const wstring & fieldName)
 		{
@@ -117,15 +73,7 @@ namespace ztl
 		{
 			return nodeNumber;
 		}
-		void GeneralTreeNode::SetParserSymbol(ParserSymbol* _symbol)
-		{
-			assert(symbol!=nullptr);
-			this->symbol = _symbol;
-		}
-		void GeneralTreeNode::SetNumber(int number)
-		{
-			nodeNumber = number;
-		}
+	
 		const unordered_map<wstring, vector<int>> GeneralTreeNode::GetFieldMap()const
 		{
 			return fieldMap;

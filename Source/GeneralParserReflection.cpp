@@ -1,5 +1,5 @@
 #include "Include\stdafx.h"
-#include "Include\GeneralParser.h"
+#include "Include\GeneralLALRParser.h"
 #include "Include\SymbolManager.h"
 #include "Include\GeneralTreeNode.h"
 namespace ztl
@@ -632,32 +632,6 @@ namespace ztl
 			assert(objectMap.find(name) != objectMap.end());
 			return objectMap[name]();
 		}
-		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
-		{
-			assert(classObject != nullptr);
-			assert(classNode != nullptr);
-			auto className = classNode->GetName();
-			for(auto&& iter : classNode->GetFieldMap())
-			{
-				auto fieldName = iter.first;
-				for(auto&& nodeIter : iter.second)
-				{
-					auto fieldNode = parser.GetNonTermNodeByIndex(nodeIter);
-					auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
-					parser.SaveHeterogeneousNode(fieldObject);
-					ReflectionBuidler(className, fieldName, classObject, fieldObject);
-					ztl::general_parser::GeneralHeterogeneousParserTree(parser, fieldNode, fieldObject);
-				}
-			}
-			for(auto&&iter : classNode->GetTermMap())
-			{
-				auto fieldName = iter.first;
-				for(auto&& nodeIter : iter.second)
-				{
-					ReflectionBuidler(className, fieldName, classObject, parser.GetTermNodeByIndex(nodeIter));
-				}
-			}
-		}
 
 
 		void TrimLeftAndRightOneQuotation(wstring& value)
@@ -751,7 +725,34 @@ namespace ztl
 			}
 		}
 
-		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* root)
+		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+		{
+			assert(classObject != nullptr);
+			assert(classNode != nullptr);
+			auto className = classNode->GetName();
+			for(auto&& iter : classNode->GetFieldMap())
+			{
+				auto fieldName = iter.first;
+				for(auto&& nodeIter : iter.second)
+				{
+					auto fieldNode = parser.GetNonTermNodeByIndex(nodeIter);
+					auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
+					parser.SaveHeterogeneousNode(fieldObject);
+					ReflectionBuidler(className, fieldName, classObject, fieldObject);
+					ztl::general_parser::GeneralHeterogeneousParserTree(parser, fieldNode, fieldObject);
+				}
+			}
+			for(auto&&iter : classNode->GetTermMap())
+			{
+				auto fieldName = iter.first;
+				for(auto&& nodeIter : iter.second)
+				{
+					ReflectionBuidler(className, fieldName, classObject, parser.GetTermNodeByIndex(nodeIter));
+				}
+			}
+		}
+
+		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* root)
 		{
 			assert(root != nullptr);
 			auto rootObject = ReflecteObjectByName(root->GetName());
@@ -760,7 +761,7 @@ namespace ztl
 			DealWithQuotation((GeneralTableDefine*) rootObject.get());
 			return rootObject;
 		}
-		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser)
+		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser)
 		{
 			return ztl::general_parser::GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 		}

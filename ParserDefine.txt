@@ -205,6 +205,7 @@ rule GeneralGrammarTypeDefine Grammar
 rule GeneralGrammarTypeDefine PrimitiveGrammar
         =  NAME : name as GeneralGrammarNormalTypeDefine
 		=  STRING : text as GeneralGrammarTextTypeDefine
+		= PrimitiveGrammar : grammar ":" NAME : name as GeneralGrammarAssignTypeDefine
         = "!" PrimitiveGrammar : grammar as GeneralGrammarUsingTypeDefine
         = "[" Grammar : grammar "]" as GeneralGrammarOptionalTypeDefine
         = "{" Grammar : grammar "}" as GeneralGrammarLoopTypeDefine

@@ -1,21 +1,17 @@
 #include "Include\stdafx.h"
-#include "Include\GeneralParser.h"
+#include "Include\GeneralParserBase.h"
 #include "Include\GeneralParserFile.h"
 #include "Include\SymbolManager.h"
 namespace ztl
 {
 	namespace general_parser
 	{
-		GeneralParserFile::GeneralParserFile(const wstring & fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :generalParser(make_shared<GeneralParser>(fileName, _tableDefine))
+		GeneralParserFile::GeneralParserFile(const shared_ptr<GeneralParserBase>& _generalParser) :generalParser(_generalParser)
 		{
 		}
 		shared_ptr<GeneralTableDefine> GeneralParserFile::GetGenerateParserTableDefine()
 		{
-			generalParser->BuildParser();
-			LogGraphInfo(L"LogParserDefineInfo.txt", GetParser().GetMachine());
-
-			auto result = generalParser->GenerateIsomorphismParserTree();
-			assert(result.size() == 1);
+			generalParser->GenerateIsomorphismParserTree();
 			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
 			return shared_ptr<GeneralTableDefine>(*(std::shared_ptr<GeneralTableDefine>*)(&parserResult));
 		}
@@ -55,7 +51,7 @@ namespace ztl
 				using std::make_shared;
 				#include "$<RelativePath>GeneralTableDefine.h"
 				#include "$<RelativePath>GeneralTreeNode.h"
-				#include "$<RelativePath>GeneralParser.h"
+				#include "$<RelativePath>GeneralLALRParser.h"
 				)";
 		}
 
@@ -206,7 +202,7 @@ namespace ztl
 			auto leaf = fileName.substr(slashPosition + 1);
 			return leaf;
 		}
-		GeneralParser & ztl::general_parser::GeneralParserFile::GetParser()
+		GeneralParserBase & ztl::general_parser::GeneralParserFile::GetParser()
 		{
 			// TODO: insert return statement here
 			return *generalParser;

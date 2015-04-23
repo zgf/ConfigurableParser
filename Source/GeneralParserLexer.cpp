@@ -1,5 +1,5 @@
 #include "Include\stdafx.h"
-#include "Include\GeneralParser.h"
+#include "Include\GeneralParserBase.h"
 #include "Include\SymbolManager.h"
 #include "../Lib/Regex/ztl_regex_interpretor.h"
 namespace ztl
@@ -28,7 +28,7 @@ namespace ztl
 				return DealWithNewLine(value);
 			}
 		}
-		vector<shared_ptr<TokenInfo>> GeneralParser::ParseToken(const wstring& fileName)
+		vector<shared_ptr<TokenInfo>> GeneralParserBase::ParseToken(const wstring& fileName)
 		{
 			assert(manager->GetTable() != nullptr);
 			unordered_map<wstring, GeneralTokenDefine::TokenOptional> infos;

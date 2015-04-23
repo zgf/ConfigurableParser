@@ -179,11 +179,10 @@
     <ClCompile Include="Lib\Regex\ztl_regex_lex.cpp" />
     <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp" />
     <ClCompile Include="Source\BootstrapDefineTable.cpp" />
-    <ClCompile Include="Source\CreatedNodeResolve.cpp" />
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
-    <ClCompile Include="Source\GeneralJumpInfo.cpp" />
-    <ClCompile Include="Source\GeneralParser.cpp" />
-    <ClCompile Include="Source\GeneralParserData.cpp" />
+    <ClCompile Include="Source\GeneralLALRParser.cpp" />
+    <ClCompile Include="Source\GeneralLRMachine.cpp" />
+    <ClCompile Include="Source\GeneralParserBase.cpp" />
     <ClCompile Include="Source\GeneralParserFile.cpp" />
     <ClCompile Include="Source\GeneralParserLexer.cpp" />
     <ClCompile Include="Source\GeneralParserReflection.cpp" />
@@ -197,6 +196,7 @@
     <ClCompile Include="Source\GenerateFile\Xml\XmlParser.cpp" />
     <ClCompile Include="Source\GenerateNodeDefineModule.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />
+    <ClCompile Include="Source\LogParser.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\ParserSymbol.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
@@ -226,11 +226,10 @@
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h" />
-    <ClInclude Include="Source\Include\CreatedNodeResolve.h" />
-    <ClInclude Include="Source\Include\GeneralParserData.h" />
+    <ClInclude Include="Source\Include\GeneralLALRParser.h" />
+    <ClInclude Include="Source\Include\GeneralLRMachine.h" />
     <ClInclude Include="Source\Include\GeneralParserFile.h" />
-    <ClInclude Include="Source\Include\GeneralJumpInfo.h" />
-    <ClInclude Include="Source\Include\GeneralParser.h" />
+    <ClInclude Include="Source\Include\GeneralParserBase.h" />
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h" />
     <ClInclude Include="Source\Include\GeneralPushDownMachineData.h" />
     <ClInclude Include="Source\Include\GeneralTreeNode.h" />

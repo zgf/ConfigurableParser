@@ -1,66 +1,3 @@
-currenIndex: 52
- targetIndex: 24
-			action:Shift : JRoot:JObject : JRoot:JObject;
- targetIndex: 35
-			action:Shift : JRoot:JArray : JRoot:JArray;
-currenIndex: 24
- targetIndex: 23
-			action:Terminate : OBJOPEN:JObject : JObject:;
-currenIndex: 35
- targetIndex: 34
-			action:Terminate : ARROPEN:JArray : JArray:;
-currenIndex: 23
- targetIndex: 27
-			action:Terminate : COMMA:JObject : JObject:;
- targetIndex: 31
-			action:Terminate : OBJCLOSE:JObject : JObject:;
- targetIndex: 17
-			action:Shift : JObject:JField : JObject:JField;
-currenIndex: 34
- targetIndex: 38
-			action:Terminate : COMMA:JArray : JArray:;
- targetIndex: 42
-			action:Terminate : ARRCLOSE:JArray : JArray:;
- targetIndex: 46
-			action:Shift : JArray:JValue : JArray:JValue;
-currenIndex: 27
- targetIndex: 17
-			action:Shift : JObject:JField : JObject:JField;
-currenIndex: 31
- targetIndex: 33
-			action:Create : Object:6 : JObject:;
-currenIndex: 17
- targetIndex: 16
-			action:Terminate : STRING:JField : JField:;
-			action:Assign : name:STRING : JField:;
-currenIndex: 38
- targetIndex: 46
-			action:Shift : JArray:JValue : JArray:JValue;
-currenIndex: 42
- targetIndex: 44
-			action:Create : Array:7 : JArray:;
-currenIndex: 46
- targetIndex: 2
-			action:Shift : JValue:JLiteral : JValue:JLiteral;
- targetIndex: 24
-			action:Shift : JValue:JObject : JValue:JObject;
- targetIndex: 35
-			action:Shift : JValue:JArray : JValue:JArray;
-currenIndex: 33
- targetIndex: 51
-			action:Using : JObject:JRoot : JObject:JRoot;
-			action:Terminate : FINISH:JRoot : JRoot:;
- targetIndex: 45
-			action:Using : JObject:JValue : JObject:JValue;
-currenIndex: 16
- targetIndex: 18
-			action:Terminate : COLON:JField : JField:;
-currenIndex: 44
- targetIndex: 51
-			action:Using : JArray:JRoot : JArray:JRoot;
-			action:Terminate : FINISH:JRoot : JRoot:;
- targetIndex: 45
-			action:Using : JArray:JValue : JArray:JValue;
 currenIndex: 2
  targetIndex: 1
 			action:Terminate : STRING:JLiteral : JLiteral:;
@@ -74,17 +11,6 @@ currenIndex: 2
 			action:Terminate : FALSEVALUE:JLiteral : JLiteral:;
  targetIndex: 13
 			action:Terminate : NULLVALUE:JLiteral : JLiteral:;
-currenIndex: 51
-currenIndex: 45
- targetIndex: 20
-			action:Assign : value:Node : JValue:JField;
- targetIndex: 34
-			action:Assign : items:Node : JValue:JArray;
- targetIndex: 34
-			action:Assign : items:Node : JValue:JArray;
-currenIndex: 18
- targetIndex: 46
-			action:Shift : JField:JValue : JField:JValue;
 currenIndex: 1
  targetIndex: 3
 			action:Create : String:0 : JLiteral:;
@@ -93,24 +19,86 @@ currenIndex: 4
 			action:Create : Number:1 : JLiteral:;
 currenIndex: 7
  targetIndex: 3
-			action:Setter : value:True : JLiteral:;
 			action:Create : Literal:2 : JLiteral:;
+			action:Setter : value:True : JLiteral:;
 currenIndex: 10
  targetIndex: 3
-			action:Setter : value:False : JLiteral:;
 			action:Create : Literal:3 : JLiteral:;
+			action:Setter : value:False : JLiteral:;
 currenIndex: 13
  targetIndex: 3
-			action:Setter : value:Null : JLiteral:;
 			action:Create : Literal:4 : JLiteral:;
+			action:Setter : value:Null : JLiteral:;
+currenIndex: 3
+currenIndex: 46
+ targetIndex: 45
+			action:NonTerminate : JLiteral: : :;
+			action:Using : JLiteral:JValue : JLiteral:JValue;
+ targetIndex: 45
+			action:NonTerminate : JObject: : :;
+			action:Using : JObject:JValue : JObject:JValue;
+ targetIndex: 45
+			action:NonTerminate : JArray: : :;
+			action:Using : JArray:JValue : JArray:JValue;
+currenIndex: 45
+currenIndex: 17
+ targetIndex: 16
+			action:Terminate : STRING:JField : JField:;
+			action:Assign : name:STRING : JField:;
+currenIndex: 16
+ targetIndex: 18
+			action:Terminate : COLON:JField : JField:;
+currenIndex: 18
+ targetIndex: 20
+			action:NonTerminate : JValue: : :;
+			action:Assign : value:Node : JValue:JField;
 currenIndex: 20
  targetIndex: 22
 			action:Create : ObjectField:5 : JField:;
-currenIndex: 3
- targetIndex: 45
-			action:Using : JLiteral:JValue : JLiteral:JValue;
 currenIndex: 22
+currenIndex: 24
  targetIndex: 23
-			action:Assign : fields:ObjectField : JField:JObject;
+			action:Terminate : OBJOPEN:JObject : JObject:;
+currenIndex: 23
  targetIndex: 23
+			action:NonTerminate : JField: : :;
 			action:Assign : fields:ObjectField : JField:JObject;
+ targetIndex: 27
+			action:Terminate : COMMA:JObject : JObject:;
+ targetIndex: 31
+			action:Terminate : OBJCLOSE:JObject : JObject:;
+currenIndex: 27
+ targetIndex: 23
+			action:NonTerminate : JField: : :;
+			action:Assign : fields:ObjectField : JField:JObject;
+currenIndex: 31
+ targetIndex: 33
+			action:Create : Object:6 : JObject:;
+currenIndex: 33
+currenIndex: 35
+ targetIndex: 34
+			action:Terminate : ARROPEN:JArray : JArray:;
+currenIndex: 34
+ targetIndex: 34
+			action:NonTerminate : JValue: : :;
+			action:Assign : items:Node : JValue:JArray;
+ targetIndex: 38
+			action:Terminate : COMMA:JArray : JArray:;
+ targetIndex: 42
+			action:Terminate : ARRCLOSE:JArray : JArray:;
+currenIndex: 38
+ targetIndex: 34
+			action:NonTerminate : JValue: : :;
+			action:Assign : items:Node : JValue:JArray;
+currenIndex: 42
+ targetIndex: 44
+			action:Create : Array:7 : JArray:;
+currenIndex: 44
+currenIndex: 52
+ targetIndex: 51
+			action:NonTerminate : JObject: : :;
+			action:Using : JObject:JRoot : JObject:JRoot;
+ targetIndex: 51
+			action:NonTerminate : JArray: : :;
+			action:Using : JArray:JRoot : JArray:JRoot;
+currenIndex: 51

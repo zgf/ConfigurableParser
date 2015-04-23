@@ -1,0 +1,1143 @@
+
+				NodeNumber: 0
+						
+				ruleName: ParserDecl
+				product: O
+				followToken: TokenInfo 
+			    endAction: Create GeneralTableDefine  False
+		
+				ruleName: HeadDecl
+				product: O
+				followToken: NAME 
+			    endAction:  False
+		
+				ruleName: TypeDecl
+				product: O
+				followToken: ENUM CLASS STRUCT 
+			    endAction:  False
+		
+				ruleName: TokenDecl
+				product: O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+		
+				ruleName: RuleDecl
+				product: O
+				followToken: RULE 
+			    endAction:  False
+		
+				ruleName: Enum
+				product: O
+				followToken: ENUM 
+			    endAction:  False
+		
+				ruleName: Class
+				product: O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+
+				next:
+							9HeadDecl 1
+		9TypeDecl 1
+		8NAME 2
+		9TokenDecl 1
+		9RuleDecl 1
+		8DISCARDTOKEN 3
+		9Enum 4
+		8CLASS 5
+		9Class 4
+		8TOKEN 6
+		8RULE 7
+		8ENUM 8
+		8STRUCT 5
+
+				
+				NodeNumber: 1
+						
+				ruleName: ParserDecl
+				product: O
+				followToken: TokenInfo 
+			    endAction: Create GeneralTableDefine  False
+		
+				ruleName: HeadDecl
+				product: O
+				followToken: NAME 
+			    endAction:  False
+		
+				ruleName: TypeDecl
+				product: O
+				followToken: ENUM CLASS STRUCT 
+			    endAction:  False
+		
+				ruleName: TokenDecl
+				product: O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+		
+				ruleName: RuleDecl
+				product: O
+				followToken: RULE 
+			    endAction:  False
+		
+				ruleName: Enum
+				product: O
+				followToken: ENUM 
+			    endAction:  False
+		
+				ruleName: Class
+				product: O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+
+				next:
+							9HeadDecl 1
+		9TypeDecl 1
+		8NAME 2
+		9TokenDecl 1
+		9RuleDecl 1
+		8DISCARDTOKEN 3
+		9Enum 4
+		8CLASS 5
+		9Class 4
+		8TOKEN 6
+		8RULE 7
+		8ENUM 8
+		8STRUCT 5
+
+				
+				NodeNumber: 2
+						
+				ruleName: HeadDecl
+				product: NAME O
+				followToken: NAME 
+			    endAction:  False
+
+				next:
+							8COLON 9
+
+				
+				NodeNumber: 3
+						
+				ruleName: TokenDecl
+				product: DISCARDTOKEN O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8NAME 10
+
+				
+				NodeNumber: 4
+						
+				ruleName: TypeDecl
+				product: Enum O
+				followToken: ENUM CLASS STRUCT 
+			    endAction:  False
+
+				next:
+					
+				
+				NodeNumber: 5
+						
+				ruleName: Class
+				product: CLASS O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+
+				next:
+							8NAME 11
+
+				
+				NodeNumber: 6
+						
+				ruleName: TokenDecl
+				product: TOKEN O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8NAME 12
+
+				
+				NodeNumber: 7
+						
+				ruleName: RuleDecl
+				product: RULE O
+				followToken: RULE 
+			    endAction:  False
+		
+				ruleName: Type
+				product: O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							9Type 13
+		8NAME 14
+		8TOKEN 15
+
+				
+				NodeNumber: 8
+						
+				ruleName: Enum
+				product: ENUM O
+				followToken: ENUM 
+			    endAction:  False
+
+				next:
+							8NAME 16
+
+				
+				NodeNumber: 9
+						
+				ruleName: HeadDecl
+				product: NAME COLON O
+				followToken: NAME 
+			    endAction:  False
+
+				next:
+							8STRING 17
+
+				
+				NodeNumber: 10
+						
+				ruleName: TokenDecl
+				product: DISCARDTOKEN NAME O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8ASSIGN 18
+
+				
+				NodeNumber: 11
+						
+				ruleName: Class
+				product: CLASS NAME O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+
+				next:
+							8COLON 19
+		8OPEN 20
+
+				
+				NodeNumber: 12
+						
+				ruleName: TokenDecl
+				product: TOKEN NAME O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8ASSIGN 21
+
+				
+				NodeNumber: 13
+						
+				ruleName: RuleDecl
+				product: RULE Type O
+				followToken: RULE 
+			    endAction:  False
+		
+				ruleName: Type
+				product: Type O
+				followToken: NAME TOKEN 
+			    endAction:  False
+		
+				ruleName: Type
+				product: Type O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							8NAME 22
+		8DOT 23
+		8OPTOPEN 24
+
+				
+				NodeNumber: 14
+						
+				ruleName: Type
+				product: NAME O
+				followToken: NAME TOKEN 
+			    endAction: Create GeneralNormalTypeObject  False
+
+				next:
+					
+				
+				NodeNumber: 15
+						
+				ruleName: Type
+				product: TOKEN O
+				followToken: NAME TOKEN 
+			    endAction: Create GeneralTokenTypeObject  False
+
+				next:
+					
+				
+				NodeNumber: 16
+						
+				ruleName: Enum
+				product: ENUM NAME O
+				followToken: ENUM 
+			    endAction:  False
+
+				next:
+							8OPEN 25
+
+				
+				NodeNumber: 17
+						
+				ruleName: HeadDecl
+				product: NAME COLON STRING O
+				followToken: NAME 
+			    endAction:  False
+
+				next:
+							8SEMICOLON 26
+
+				
+				NodeNumber: 18
+						
+				ruleName: TokenDecl
+				product: DISCARDTOKEN NAME ASSIGN O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8STRING 27
+
+				
+				NodeNumber: 19
+						
+				ruleName: Class
+				product: CLASS NAME COLON O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+		
+				ruleName: Type
+				product: O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							9Type 28
+		8NAME 14
+		8TOKEN 15
+
+				
+				NodeNumber: 20
+						
+				ruleName: Class
+				product: CLASS NAME COLON Type OPEN O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+		
+				ruleName: ClassMember
+				product: O
+				followToken: NAME TOKEN 
+			    endAction:  False
+		
+				ruleName: TypeDecl
+				product: O
+				followToken: ENUM CLASS STRUCT 
+			    endAction:  False
+		
+				ruleName: Type
+				product: O
+				followToken: NAME TOKEN 
+			    endAction:  False
+		
+				ruleName: Enum
+				product: O
+				followToken: ENUM 
+			    endAction:  False
+		
+				ruleName: Class
+				product: O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+
+				next:
+							9ClassMember 20
+		9Enum 4
+		9TypeDecl 20
+		8NAME 14
+		8CLOSE 29
+		9Type 30
+		8CLASS 5
+		9Class 4
+		8TOKEN 15
+		8ENUM 8
+		8STRUCT 5
+
+				
+				NodeNumber: 21
+						
+				ruleName: TokenDecl
+				product: TOKEN NAME ASSIGN O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8STRING 31
+
+				
+				NodeNumber: 22
+						
+				ruleName: RuleDecl
+				product: RULE Type NAME O
+				followToken: RULE 
+			    endAction:  False
+
+				next:
+							8ASSIGN 32
+		8SEMICOLON 33
+
+				
+				NodeNumber: 23
+						
+				ruleName: Type
+				product: Type DOT O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							8NAME 34
+
+				
+				NodeNumber: 24
+						
+				ruleName: Type
+				product: Type OPTOPEN O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							8OPTCLOSE 35
+
+				
+				NodeNumber: 25
+						
+				ruleName: Enum
+				product: ENUM NAME OPEN O
+				followToken: ENUM 
+			    endAction:  False
+		
+				ruleName: EnumMember
+				product: O
+				followToken: NAME 
+			    endAction:  False
+
+				next:
+							9EnumMember 25
+		8CLOSE 36
+		8NAME 37
+
+				
+				NodeNumber: 26
+						
+				ruleName: HeadDecl
+				product: NAME COLON STRING SEMICOLON O
+				followToken: NAME 
+			    endAction: Create GeneralHeadInfoDefine  False
+
+				next:
+					
+				
+				NodeNumber: 27
+						
+				ruleName: TokenDecl
+				product: DISCARDTOKEN NAME ASSIGN STRING O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8SEMICOLON 38
+
+				
+				NodeNumber: 28
+						
+				ruleName: Type
+				product: Type O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+		
+				ruleName: Type
+				product: Type O
+				followToken: NAME TOKEN 
+			    endAction:  False
+		
+				ruleName: Class
+				product: CLASS NAME O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							8DOT 23
+		8OPEN 20
+		8OPTOPEN 24
+		8COLON 19
+
+				
+				NodeNumber: 29
+						
+				ruleName: Class
+				product: CLASS NAME COLON Type OPEN ClassMember TypeDecl CLOSE O
+				followToken: CLASS STRUCT 
+			    endAction:  False
+
+				next:
+							8SEMICOLON 39
+
+				
+				NodeNumber: 30
+						
+				ruleName: Type
+				product: Type O
+				followToken: NAME TOKEN 
+			    endAction:  False
+		
+				ruleName: Type
+				product: Type O
+				followToken: NAME TOKEN 
+			    endAction:  False
+		
+				ruleName: ClassMember
+				product: Type O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							8DOT 23
+		8OPTOPEN 24
+		8NAME 40
+
+				
+				NodeNumber: 31
+						
+				ruleName: TokenDecl
+				product: TOKEN NAME ASSIGN STRING O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction:  False
+
+				next:
+							8SEMICOLON 41
+
+				
+				NodeNumber: 32
+						
+				ruleName: RuleDecl
+				product: RULE Type NAME ASSIGN O
+				followToken: RULE 
+			    endAction:  False
+		
+				ruleName: Grammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: AlternativeGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: SequenceGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: PrimitiveGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							9Grammar 43
+		9AlternativeGrammar 42
+		9SequenceGrammar 46
+		8STRING 45
+		8OPTOPEN 44
+		9PrimitiveGrammar 48
+		8OPEN 47
+		8NAME 49
+		8USING 50
+
+				
+				NodeNumber: 33
+						
+				ruleName: RuleDecl
+				product: RULE Type NAME ASSIGN Grammar SEMICOLON O
+				followToken: RULE 
+			    endAction: Create GeneralRuleDefine  False
+
+				next:
+					
+				
+				NodeNumber: 34
+						
+				ruleName: Type
+				product: Type DOT NAME O
+				followToken: NAME TOKEN 
+			    endAction: Create GeneralSubTypeObject  False
+
+				next:
+					
+				
+				NodeNumber: 35
+						
+				ruleName: Type
+				product: Type OPTOPEN OPTCLOSE O
+				followToken: NAME TOKEN 
+			    endAction: Create GeneralArrayTypeObject  False
+
+				next:
+					
+				
+				NodeNumber: 36
+						
+				ruleName: Enum
+				product: ENUM NAME OPEN EnumMember CLOSE O
+				followToken: ENUM 
+			    endAction:  False
+
+				next:
+							8SEMICOLON 51
+
+				
+				NodeNumber: 37
+						
+				ruleName: EnumMember
+				product: NAME O
+				followToken: NAME 
+			    endAction:  False
+
+				next:
+							8COMMA 52
+
+				
+				NodeNumber: 38
+						
+				ruleName: TokenDecl
+				product: DISCARDTOKEN NAME ASSIGN STRING SEMICOLON O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction: Create GeneralTokenDefine Setter ignore  False
+
+				next:
+					
+				
+				NodeNumber: 39
+						
+				ruleName: Class
+				product: CLASS NAME COLON Type OPEN ClassMember TypeDecl CLOSE SEMICOLON O
+				followToken: CLASS STRUCT 
+			    endAction: Create GeneralClassTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 40
+						
+				ruleName: ClassMember
+				product: Type NAME O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							8SEMICOLON 53
+
+				
+				NodeNumber: 41
+						
+				ruleName: TokenDecl
+				product: TOKEN NAME ASSIGN STRING SEMICOLON O
+				followToken: TOKEN DISCARDTOKEN 
+			    endAction: Create GeneralTokenDefine Setter ignore  False
+
+				next:
+					
+				
+				NodeNumber: 42
+						
+				ruleName: Grammar
+				product: Grammar AS Type GeneralGrammarCreateTypeDefine O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+					
+				
+				NodeNumber: 43
+						
+				ruleName: RuleDecl
+				product: RULE Type NAME O
+				followToken: RULE 
+			    endAction:  False
+		
+				ruleName: Grammar
+				product: Grammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+							8ASSIGN 32
+		8SEMICOLON 33
+		8AS 54
+		8WITH 55
+
+				
+				NodeNumber: 44
+						
+				ruleName: PrimitiveGrammar
+				product: OPTOPEN O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: Grammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: AlternativeGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: SequenceGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: PrimitiveGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							9Grammar 56
+		9AlternativeGrammar 42
+		9SequenceGrammar 46
+		8STRING 45
+		8OPTOPEN 44
+		9PrimitiveGrammar 48
+		8OPEN 47
+		8NAME 49
+		8USING 50
+
+				
+				NodeNumber: 45
+						
+				ruleName: PrimitiveGrammar
+				product: STRING O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction: Create GeneralGrammarTextTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 46
+						
+				ruleName: AlternativeGrammar
+				product: SequenceGrammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: AlternativeGrammar
+				product: SequenceGrammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+							8OR 57
+
+				
+				NodeNumber: 47
+						
+				ruleName: PrimitiveGrammar
+				product: OPEN O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: Grammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: AlternativeGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: SequenceGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: PrimitiveGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							9Grammar 58
+		9AlternativeGrammar 42
+		9SequenceGrammar 46
+		8STRING 45
+		8OPTOPEN 44
+		9PrimitiveGrammar 48
+		8OPEN 47
+		8NAME 49
+		8USING 50
+
+				
+				NodeNumber: 48
+						
+				ruleName: PrimitiveGrammar
+				product: PrimitiveGrammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: SequenceGrammar
+				product: PrimitiveGrammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: SequenceGrammar
+				product: PrimitiveGrammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: SequenceGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: PrimitiveGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							8COLON 59
+		9SequenceGrammar 60
+		8STRING 45
+		8OPTOPEN 44
+		9PrimitiveGrammar 48
+		8OPEN 47
+		8NAME 49
+		8USING 50
+
+				
+				NodeNumber: 49
+						
+				ruleName: PrimitiveGrammar
+				product: NAME O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction: Create GeneralGrammarNormalTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 50
+						
+				ruleName: PrimitiveGrammar
+				product: USING O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: PrimitiveGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							9PrimitiveGrammar 61
+		8OPEN 47
+		8NAME 49
+		8STRING 45
+		8OPTOPEN 44
+		8USING 50
+
+				
+				NodeNumber: 51
+						
+				ruleName: Enum
+				product: ENUM NAME OPEN EnumMember CLOSE SEMICOLON O
+				followToken: ENUM 
+			    endAction: Create GeneralEnumTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 52
+						
+				ruleName: EnumMember
+				product: NAME COMMA O
+				followToken: NAME 
+			    endAction: Create GeneralEnumMemberTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 53
+						
+				ruleName: ClassMember
+				product: Type NAME SEMICOLON O
+				followToken: NAME TOKEN 
+			    endAction: Create GeneralClassMemberTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 54
+						
+				ruleName: Grammar
+				product: Grammar AS O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: Type
+				product: O
+				followToken: NAME TOKEN 
+			    endAction:  False
+
+				next:
+							9Type 62
+		8NAME 14
+		8TOKEN 15
+
+				
+				NodeNumber: 55
+						
+				ruleName: Grammar
+				product: Grammar WITH O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							8OPEN 63
+
+				
+				NodeNumber: 56
+						
+				ruleName: PrimitiveGrammar
+				product: OPTOPEN Grammar O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: Grammar
+				product: Grammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+							8OPTCLOSE 64
+		8AS 54
+		8WITH 55
+
+				
+				NodeNumber: 57
+						
+				ruleName: AlternativeGrammar
+				product: SequenceGrammar OR O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: AlternativeGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: SequenceGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: PrimitiveGrammar
+				product: O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							9AlternativeGrammar 65
+		9SequenceGrammar 46
+		8STRING 45
+		8OPTOPEN 44
+		9PrimitiveGrammar 48
+		8OPEN 47
+		8NAME 49
+		8USING 50
+
+				
+				NodeNumber: 58
+						
+				ruleName: PrimitiveGrammar
+				product: OPEN Grammar O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+		
+				ruleName: Grammar
+				product: Grammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+							8CLOSE 66
+		8AS 54
+		8WITH 55
+
+				
+				NodeNumber: 59
+						
+				ruleName: PrimitiveGrammar
+				product: PrimitiveGrammar COLON O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							8NAME 67
+
+				
+				NodeNumber: 60
+						
+				ruleName: SequenceGrammar
+				product: PrimitiveGrammar SequenceGrammar O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction: Create GeneralGrammarSequenceTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 61
+						
+				ruleName: PrimitiveGrammar
+				product: USING PrimitiveGrammar O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction: Create GeneralGrammarUsingTypeDefine  False
+		
+				ruleName: PrimitiveGrammar
+				product: PrimitiveGrammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+							8COLON 59
+
+				
+				NodeNumber: 62
+						
+				ruleName: Type
+				product: Type O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+		
+				ruleName: Type
+				product: Type O
+				followToken: NAME TOKEN 
+			    endAction:  False
+		
+				ruleName: Grammar
+				product: Grammar AS Type O
+				followToken: NAME TOKEN 
+			    endAction: Create GeneralGrammarCreateTypeDefine  False
+
+				next:
+							8DOT 23
+		8OPTOPEN 24
+
+				
+				NodeNumber: 63
+						
+				ruleName: Grammar
+				product: Grammar WITH OPEN O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+							8NAME 68
+
+				
+				NodeNumber: 64
+						
+				ruleName: PrimitiveGrammar
+				product: OPTOPEN Grammar OPTCLOSE O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction: Create GeneralGrammarOptionalTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 65
+						
+				ruleName: AlternativeGrammar
+				product: SequenceGrammar OR AlternativeGrammar O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction: Create GeneralGrammarAlternationTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 66
+						
+				ruleName: PrimitiveGrammar
+				product: OPEN Grammar CLOSE O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction: Create GeneralGrammarLoopTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 67
+						
+				ruleName: PrimitiveGrammar
+				product: PrimitiveGrammar COLON NAME O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction: Create GeneralGrammarAssignTypeDefine  False
+
+				next:
+					
+				
+				NodeNumber: 68
+						
+				ruleName: Grammar
+				product: Grammar WITH OPEN NAME O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							8ASSIGN 69
+
+				
+				NodeNumber: 69
+						
+				ruleName: Grammar
+				product: Grammar WITH OPEN NAME ASSIGN O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction:  False
+
+				next:
+							8STRING 70
+
+				
+				NodeNumber: 70
+						
+				ruleName: Grammar
+				product: Grammar WITH OPEN NAME ASSIGN STRING O
+				followToken: NAME STRING OPTOPEN USING OPEN 
+			    endAction:  False
+
+				next:
+							8CLOSE 71
+
+				
+				NodeNumber: 71
+						
+				ruleName: Grammar
+				product: Grammar WITH OPEN NAME ASSIGN STRING CLOSE O
+				followToken: NAME OPTOPEN STRING USING OPEN 
+			    endAction: Create GeneralGrammarSetterTypeDefine  False
+
+				next:
+					
+				

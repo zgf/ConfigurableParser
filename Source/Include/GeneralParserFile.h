@@ -3,10 +3,11 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		class GeneralParser;
+		class GeneralLALRParser;
 		struct GeneralTableDefine;
 		class PushDownAutoMachine;
 		class SymbolManager;
+		class GeneralParserBase;
 		//节点定义文件的生成,节点反射函数的生成.
 		//要生成的,节点定义,节点反射 节点序列化三个模块.放到同一个.hpp文件里面去
 		//
@@ -14,7 +15,7 @@ namespace ztl
 		{
 		public:
 			GeneralParserFile()  = default;
-			GeneralParserFile(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine);
+			GeneralParserFile(const shared_ptr<GeneralParserBase>& _generalParser);
 			~GeneralParserFile() noexcept = default;
 			GeneralParserFile(GeneralParserFile&&)  = default;
 			GeneralParserFile(const GeneralParserFile&)  = default;
@@ -24,7 +25,7 @@ namespace ztl
 			void				GenerateSpecialParserFile();
 			void CreateFile(const wstring& fileName, const wstring& content);
 			wstring GetFileLeafName(const wstring& fileName);
-			GeneralParser&	GetParser();
+			GeneralParserBase&	GetParser();
 		private:
 			wstring GetGenerateImpModuleBody(GeneralTableDefine* table, SymbolManager*manager);
 			wstring GetGenerateHeadModuleBody(GeneralTableDefine* table, SymbolManager*manager);
@@ -46,7 +47,7 @@ namespace ztl
 			wstring GenerateImpModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& includes, const wstring filename, const vector<wstring>& namespaces);
 
 		private:
-			shared_ptr<GeneralParser>	generalParser;
+			shared_ptr<GeneralParserBase>	generalParser;
 			
 
 		};
