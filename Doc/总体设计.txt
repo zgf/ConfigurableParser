@@ -1,3 +1,35 @@
+待更新
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 目标:可自举通用编译器生成.
 扩展的EBNF文法源码->指定的编译器源码
 输入对象源码->生成的编译器运行->生成语法树
@@ -44,6 +76,6 @@ LALRMachine.h cpp 根据核心构造LALR自动机.
 GeneralParser.h GeneralParser.cpp 根据LALR进行解析,生成满足核心要求的源文件的语法树
 GeneralSemanticAnalysis.h cpp 对生成的语法树做语义分析,构造 使用预定义手写工具实现的语法树核心的字符串.
 GeneralParserFeile.h cpp 生成替换掉核心的编译器文件.构造出了需要的编译器.over.
-
+*/
 
 
