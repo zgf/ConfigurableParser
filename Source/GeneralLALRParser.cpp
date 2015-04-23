@@ -186,25 +186,22 @@ namespace ztl
 				auto&& edge = current.first;
 				auto&& tokenIndex = current.second;
 				assert(edge->GetActions().size() != 0);
-				if (edge->GetActions().size()==2)
+				if(edge->GetActions().size() == 2)
 				{
 					ExcuteEdgeAdditionAction(current, node);
 				}
 
 				currentPDANode = current.first->GetSource();
-				grammarStack.pop_back();
-				LRNodeStack.pop_back();
-				PDANodeStack.pop_back();
+			
 			}
-			/*	this->grammarStack.erase(grammarStack.end() - i,grammarStack.end());
-				this->LRNodeStack.erase(LRNodeStack.end() - i,LRNodeStack.end());
-				this->PDANodeStack.erase(PDANodeStack.end() - (i+1), PDANodeStack.end());*/
-			PDANodeStack.pop_back();
+			this->grammarStack.erase(grammarStack.end() - i, grammarStack.end());
+			this->LRNodeStack.erase(LRNodeStack.end() - i, LRNodeStack.end());
+			this->PDANodeStack.erase(PDANodeStack.end() - (i + 1), PDANodeStack.end());
 			auto ruleIndex = LRNodeStack.back()->GetProductByPDANode(currentPDANode).GetRuleIndex();
 			auto&& ruleName = GetManager()->GetRuleNameByIndex(ruleIndex);
 			auto ruleSymbol = GetManager()->GetRuleSymbolByName(ruleName);
 			assert(ruleSymbol->IsRuleDef());
-
+			node->AdjustFieldSequence();
 			treeNodeStack.emplace_back(nodeIndex);
 
 			assert(grammarStack.empty() || grammarStack.back().first->GetTarget() == PDANodeStack.back());

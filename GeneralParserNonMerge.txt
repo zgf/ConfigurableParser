@@ -1,371 +1,371 @@
-currenIndex: 600
- targetIndex: 599
+currenIndex: 474
+ targetIndex: 473
 			action:NonTerminate : PrimitiveGrammar: : :;
 			action:Using : PrimitiveGrammar:SequenceGrammar : PrimitiveGrammar:SequenceGrammar;
- targetIndex: 601
+ targetIndex: 475
 			action:NonTerminate : PrimitiveGrammar: : :;
 			action:Assign : first:GeneralGrammarTypeDefine : PrimitiveGrammar:SequenceGrammar;
-currenIndex: 599
-currenIndex: 601
- targetIndex: 603
+currenIndex: 473
+currenIndex: 475
+ targetIndex: 477
 			action:NonTerminate : SequenceGrammar: : :;
 			action:Assign : second:GeneralGrammarTypeDefine : SequenceGrammar:SequenceGrammar;
-currenIndex: 603
- targetIndex: 599
-			action:Create : GeneralGrammarSequenceTypeDefine:70 : SequenceGrammar:;
-currenIndex: 530
- targetIndex: 529
+currenIndex: 477
+ targetIndex: 473
+			action:Create : GeneralGrammarSequenceTypeDefine:54 : SequenceGrammar:;
+currenIndex: 404
+ targetIndex: 403
 			action:Terminate : NAME:Type : Type:;
 			action:Assign : name:NAME : Type:;
- targetIndex: 532
+ targetIndex: 406
 			action:Terminate : TOKEN:Type : Type:;
- targetIndex: 535
+ targetIndex: 409
 			action:NonTerminate : Type: : :;
 			action:Assign : parent:GeneralTypeObject : Type:Type;
- targetIndex: 542
+ targetIndex: 416
 			action:NonTerminate : Type: : :;
 			action:Assign : element:GeneralTypeObject : Type:Type;
-currenIndex: 529
- targetIndex: 531
-			action:Create : GeneralNormalTypeObject:62 : Type:;
-currenIndex: 532
- targetIndex: 531
-			action:Create : GeneralTokenTypeObject:63 : Type:;
-currenIndex: 535
- targetIndex: 537
+currenIndex: 403
+ targetIndex: 405
+			action:Create : GeneralNormalTypeObject:46 : Type:;
+currenIndex: 406
+ targetIndex: 405
+			action:Create : GeneralTokenTypeObject:47 : Type:;
+currenIndex: 409
+ targetIndex: 411
 			action:Terminate : DOT:Type : Type:;
-currenIndex: 542
- targetIndex: 544
+currenIndex: 416
+ targetIndex: 418
 			action:Terminate : OPTOPEN:Type : Type:;
-currenIndex: 531
-currenIndex: 537
- targetIndex: 539
+currenIndex: 405
+currenIndex: 411
+ targetIndex: 413
 			action:Terminate : NAME:Type : Type:;
 			action:Assign : name:NAME : Type:;
-currenIndex: 544
- targetIndex: 546
+currenIndex: 418
+ targetIndex: 420
 			action:Terminate : OPTCLOSE:Type : Type:;
-currenIndex: 539
- targetIndex: 531
-			action:Create : GeneralSubTypeObject:64 : Type:;
-currenIndex: 546
- targetIndex: 531
-			action:Create : GeneralArrayTypeObject:65 : Type:;
-currenIndex: 607
- targetIndex: 606
+currenIndex: 413
+ targetIndex: 405
+			action:Create : GeneralSubTypeObject:48 : Type:;
+currenIndex: 420
+ targetIndex: 405
+			action:Create : GeneralArrayTypeObject:49 : Type:;
+currenIndex: 481
+ targetIndex: 480
 			action:NonTerminate : SequenceGrammar: : :;
 			action:Using : SequenceGrammar:AlternativeGrammar : SequenceGrammar:AlternativeGrammar;
- targetIndex: 608
+ targetIndex: 482
 			action:NonTerminate : SequenceGrammar: : :;
 			action:Assign : left:GeneralGrammarTypeDefine : SequenceGrammar:AlternativeGrammar;
-currenIndex: 606
-currenIndex: 608
- targetIndex: 610
+currenIndex: 480
+currenIndex: 482
+ targetIndex: 484
 			action:Terminate : OR:AlternativeGrammar : AlternativeGrammar:;
-currenIndex: 610
- targetIndex: 612
+currenIndex: 484
+ targetIndex: 486
 			action:NonTerminate : AlternativeGrammar: : :;
 			action:Assign : right:GeneralGrammarTypeDefine : AlternativeGrammar:AlternativeGrammar;
-currenIndex: 612
- targetIndex: 606
-			action:Create : GeneralGrammarAlternationTypeDefine:71 : AlternativeGrammar:;
-currenIndex: 550
- targetIndex: 549
+currenIndex: 486
+ targetIndex: 480
+			action:Create : GeneralGrammarAlternationTypeDefine:55 : AlternativeGrammar:;
+currenIndex: 424
+ targetIndex: 423
 			action:Terminate : NAME:EnumMember : EnumMember:;
 			action:Assign : name:NAME : EnumMember:;
-currenIndex: 549
- targetIndex: 551
+currenIndex: 423
+ targetIndex: 425
 			action:Terminate : COMMA:EnumMember : EnumMember:;
-currenIndex: 551
- targetIndex: 553
-			action:Create : GeneralEnumMemberTypeDefine:66 : EnumMember:;
-currenIndex: 553
-currenIndex: 555
- targetIndex: 554
+currenIndex: 425
+ targetIndex: 427
+			action:Create : GeneralEnumMemberTypeDefine:50 : EnumMember:;
+currenIndex: 427
+currenIndex: 429
+ targetIndex: 428
 			action:Terminate : ENUM:Enum : Enum:;
-currenIndex: 554
- targetIndex: 556
+currenIndex: 428
+ targetIndex: 430
 			action:Terminate : NAME:Enum : Enum:;
 			action:Assign : name:NAME : Enum:;
-currenIndex: 556
- targetIndex: 558
+currenIndex: 430
+ targetIndex: 432
 			action:Terminate : OPEN:Enum : Enum:;
-currenIndex: 558
- targetIndex: 558
+currenIndex: 432
+ targetIndex: 432
 			action:NonTerminate : EnumMember: : :;
 			action:Assign : members:GeneralEnumMemberTypeDefine : EnumMember:Enum;
- targetIndex: 562
+ targetIndex: 436
 			action:Terminate : CLOSE:Enum : Enum:;
-currenIndex: 562
- targetIndex: 564
+currenIndex: 436
+ targetIndex: 438
 			action:Terminate : SEMICOLON:Enum : Enum:;
-currenIndex: 564
- targetIndex: 566
-			action:Create : GeneralEnumTypeDefine:67 : Enum:;
-currenIndex: 566
-currenIndex: 568
- targetIndex: 567
+currenIndex: 438
+ targetIndex: 440
+			action:Create : GeneralEnumTypeDefine:51 : Enum:;
+currenIndex: 440
+currenIndex: 442
+ targetIndex: 441
 			action:NonTerminate : Type: : :;
 			action:Assign : type:GeneralTypeObject : Type:ClassMember;
-currenIndex: 567
- targetIndex: 569
+currenIndex: 441
+ targetIndex: 443
 			action:Terminate : NAME:ClassMember : ClassMember:;
 			action:Assign : name:NAME : ClassMember:;
-currenIndex: 569
- targetIndex: 571
+currenIndex: 443
+ targetIndex: 445
 			action:Terminate : SEMICOLON:ClassMember : ClassMember:;
-currenIndex: 571
- targetIndex: 573
-			action:Create : GeneralClassMemberTypeDefine:68 : ClassMember:;
-currenIndex: 573
-currenIndex: 575
- targetIndex: 574
+currenIndex: 445
+ targetIndex: 447
+			action:Create : GeneralClassMemberTypeDefine:52 : ClassMember:;
+currenIndex: 447
+currenIndex: 449
+ targetIndex: 448
 			action:NonTerminate : Enum: : :;
 			action:Using : Enum:TypeDecl : Enum:TypeDecl;
- targetIndex: 574
+ targetIndex: 448
 			action:NonTerminate : Class: : :;
 			action:Using : Class:TypeDecl : Class:TypeDecl;
-currenIndex: 574
-currenIndex: 579
- targetIndex: 578
+currenIndex: 448
+currenIndex: 453
+ targetIndex: 452
 			action:Terminate : CLASS:Class : Class:;
- targetIndex: 578
+ targetIndex: 452
 			action:Terminate : STRUCT:Class : Class:;
-currenIndex: 578
- targetIndex: 582
+currenIndex: 452
+ targetIndex: 456
 			action:Terminate : NAME:Class : Class:;
 			action:Assign : name:NAME : Class:;
-currenIndex: 582
- targetIndex: 584
+currenIndex: 456
+ targetIndex: 458
 			action:Terminate : COLON:Class : Class:;
- targetIndex: 588
+ targetIndex: 462
 			action:Terminate : OPEN:Class : Class:;
-currenIndex: 584
- targetIndex: 582
+currenIndex: 458
+ targetIndex: 456
 			action:NonTerminate : Type: : :;
 			action:Assign : parent:GeneralTypeObject : Type:Class;
-currenIndex: 588
- targetIndex: 588
+currenIndex: 462
+ targetIndex: 462
 			action:NonTerminate : ClassMember: : :;
 			action:Assign : members:GeneralClassMemberTypeDefine : ClassMember:Class;
- targetIndex: 588
+ targetIndex: 462
 			action:NonTerminate : TypeDecl: : :;
 			action:Assign : subTypes:GeneralTypeDefine : TypeDecl:Class;
- targetIndex: 594
+ targetIndex: 468
 			action:Terminate : CLOSE:Class : Class:;
-currenIndex: 594
- targetIndex: 596
+currenIndex: 468
+ targetIndex: 470
 			action:Terminate : SEMICOLON:Class : Class:;
-currenIndex: 596
- targetIndex: 598
-			action:Create : GeneralClassTypeDefine:69 : Class:;
-currenIndex: 598
-currenIndex: 616
- targetIndex: 615
+currenIndex: 470
+ targetIndex: 472
+			action:Create : GeneralClassTypeDefine:53 : Class:;
+currenIndex: 472
+currenIndex: 490
+ targetIndex: 489
 			action:NonTerminate : Grammar: : :;
 			action:Assign : grammar:GeneralGrammarTypeDefine : Grammar:Grammar;
- targetIndex: 621
+ targetIndex: 495
 			action:NonTerminate : AlternativeGrammar: : :;
 			action:Using : AlternativeGrammar:Grammar : AlternativeGrammar:Grammar;
-currenIndex: 615
- targetIndex: 617
+currenIndex: 489
+ targetIndex: 491
 			action:Terminate : AS:Grammar : Grammar:;
- targetIndex: 624
+ targetIndex: 498
 			action:Terminate : WITH:Grammar : Grammar:;
-currenIndex: 621
-currenIndex: 617
- targetIndex: 619
+currenIndex: 495
+currenIndex: 491
+ targetIndex: 493
 			action:NonTerminate : Type: : :;
 			action:Assign : type:GeneralTypeObject : Type:Grammar;
-currenIndex: 624
- targetIndex: 626
+currenIndex: 498
+ targetIndex: 500
 			action:Terminate : OPEN:Grammar : Grammar:;
-currenIndex: 619
- targetIndex: 621
-			action:Create : GeneralGrammarCreateTypeDefine:72 : Grammar:;
-currenIndex: 626
- targetIndex: 628
+currenIndex: 493
+ targetIndex: 495
+			action:Create : GeneralGrammarCreateTypeDefine:56 : Grammar:;
+currenIndex: 500
+ targetIndex: 502
 			action:Terminate : NAME:Grammar : Grammar:;
 			action:Assign : name:NAME : Grammar:;
-currenIndex: 628
- targetIndex: 630
+currenIndex: 502
+ targetIndex: 504
 			action:Terminate : ASSIGN:Grammar : Grammar:;
-currenIndex: 630
- targetIndex: 632
+currenIndex: 504
+ targetIndex: 506
 			action:Terminate : STRING:Grammar : Grammar:;
 			action:Assign : value:STRING : Grammar:;
-currenIndex: 632
- targetIndex: 634
+currenIndex: 506
+ targetIndex: 508
 			action:Terminate : CLOSE:Grammar : Grammar:;
-currenIndex: 634
- targetIndex: 621
-			action:Create : GeneralGrammarSetterTypeDefine:73 : Grammar:;
-currenIndex: 640
- targetIndex: 639
+currenIndex: 508
+ targetIndex: 495
+			action:Create : GeneralGrammarSetterTypeDefine:57 : Grammar:;
+currenIndex: 514
+ targetIndex: 513
 			action:Terminate : NAME:PrimitiveGrammar : PrimitiveGrammar:;
 			action:Assign : name:NAME : PrimitiveGrammar:;
- targetIndex: 642
+ targetIndex: 516
 			action:NonTerminate : PrimitiveGrammar: : :;
 			action:Assign : grammar:GeneralGrammarTypeDefine : PrimitiveGrammar:PrimitiveGrammar;
- targetIndex: 649
+ targetIndex: 523
 			action:Terminate : STRING:PrimitiveGrammar : PrimitiveGrammar:;
 			action:Assign : text:STRING : PrimitiveGrammar:;
- targetIndex: 652
+ targetIndex: 526
 			action:Terminate : USING:PrimitiveGrammar : PrimitiveGrammar:;
- targetIndex: 657
+ targetIndex: 531
 			action:Terminate : OPTOPEN:PrimitiveGrammar : PrimitiveGrammar:;
- targetIndex: 664
+ targetIndex: 538
 			action:Terminate : OPEN:PrimitiveGrammar : PrimitiveGrammar:;
- targetIndex: 671
+ targetIndex: 545
 			action:Terminate : PREOPEN:PrimitiveGrammar : PrimitiveGrammar:;
-currenIndex: 639
- targetIndex: 641
-			action:Create : GeneralGrammarNormalTypeDefine:74 : PrimitiveGrammar:;
-currenIndex: 642
- targetIndex: 644
+currenIndex: 513
+ targetIndex: 515
+			action:Create : GeneralGrammarNormalTypeDefine:58 : PrimitiveGrammar:;
+currenIndex: 516
+ targetIndex: 518
 			action:Terminate : COLON:PrimitiveGrammar : PrimitiveGrammar:;
-currenIndex: 649
- targetIndex: 641
-			action:Create : GeneralGrammarTextTypeDefine:76 : PrimitiveGrammar:;
-currenIndex: 652
- targetIndex: 654
+currenIndex: 523
+ targetIndex: 515
+			action:Create : GeneralGrammarTextTypeDefine:60 : PrimitiveGrammar:;
+currenIndex: 526
+ targetIndex: 528
 			action:NonTerminate : PrimitiveGrammar: : :;
 			action:Assign : grammar:GeneralGrammarTypeDefine : PrimitiveGrammar:PrimitiveGrammar;
-currenIndex: 657
- targetIndex: 659
+currenIndex: 531
+ targetIndex: 533
 			action:NonTerminate : Grammar: : :;
 			action:Assign : grammar:GeneralGrammarTypeDefine : Grammar:PrimitiveGrammar;
-currenIndex: 664
- targetIndex: 666
+currenIndex: 538
+ targetIndex: 540
 			action:NonTerminate : Grammar: : :;
 			action:Assign : grammar:GeneralGrammarTypeDefine : Grammar:PrimitiveGrammar;
-currenIndex: 671
- targetIndex: 673
+currenIndex: 545
+ targetIndex: 547
 			action:NonTerminate : Grammar: : :;
 			action:Using : Grammar:PrimitiveGrammar : Grammar:PrimitiveGrammar;
-currenIndex: 641
-currenIndex: 644
- targetIndex: 646
+currenIndex: 515
+currenIndex: 518
+ targetIndex: 520
 			action:Terminate : NAME:PrimitiveGrammar : PrimitiveGrammar:;
 			action:Assign : name:NAME : PrimitiveGrammar:;
-currenIndex: 654
- targetIndex: 641
-			action:Create : GeneralGrammarUsingTypeDefine:77 : PrimitiveGrammar:;
-currenIndex: 659
- targetIndex: 661
+currenIndex: 528
+ targetIndex: 515
+			action:Create : GeneralGrammarUsingTypeDefine:61 : PrimitiveGrammar:;
+currenIndex: 533
+ targetIndex: 535
 			action:Terminate : OPTCLOSE:PrimitiveGrammar : PrimitiveGrammar:;
-currenIndex: 666
- targetIndex: 668
+currenIndex: 540
+ targetIndex: 542
 			action:Terminate : CLOSE:PrimitiveGrammar : PrimitiveGrammar:;
-currenIndex: 673
- targetIndex: 641
+currenIndex: 547
+ targetIndex: 515
 			action:Terminate : PRECLOSE:PrimitiveGrammar : PrimitiveGrammar:;
-currenIndex: 646
- targetIndex: 641
-			action:Create : GeneralGrammarAssignTypeDefine:75 : PrimitiveGrammar:;
-currenIndex: 661
- targetIndex: 641
-			action:Create : GeneralGrammarOptionalTypeDefine:78 : PrimitiveGrammar:;
-currenIndex: 668
- targetIndex: 641
-			action:Create : GeneralGrammarLoopTypeDefine:79 : PrimitiveGrammar:;
-currenIndex: 678
- targetIndex: 677
+currenIndex: 520
+ targetIndex: 515
+			action:Create : GeneralGrammarAssignTypeDefine:59 : PrimitiveGrammar:;
+currenIndex: 535
+ targetIndex: 515
+			action:Create : GeneralGrammarOptionalTypeDefine:62 : PrimitiveGrammar:;
+currenIndex: 542
+ targetIndex: 515
+			action:Create : GeneralGrammarLoopTypeDefine:63 : PrimitiveGrammar:;
+currenIndex: 552
+ targetIndex: 551
 			action:Terminate : NAME:HeadDecl : HeadDecl:;
 			action:Assign : property:NAME : HeadDecl:;
-currenIndex: 677
- targetIndex: 679
+currenIndex: 551
+ targetIndex: 553
 			action:Terminate : COLON:HeadDecl : HeadDecl:;
-currenIndex: 679
- targetIndex: 681
+currenIndex: 553
+ targetIndex: 555
 			action:Terminate : STRING:HeadDecl : HeadDecl:;
 			action:Assign : value:STRING : HeadDecl:;
-currenIndex: 681
- targetIndex: 683
+currenIndex: 555
+ targetIndex: 557
 			action:Terminate : SEMICOLON:HeadDecl : HeadDecl:;
-currenIndex: 683
- targetIndex: 685
-			action:Create : GeneralHeadInfoDefine:80 : HeadDecl:;
-currenIndex: 685
-currenIndex: 687
- targetIndex: 686
+currenIndex: 557
+ targetIndex: 559
+			action:Create : GeneralHeadInfoDefine:64 : HeadDecl:;
+currenIndex: 559
+currenIndex: 561
+ targetIndex: 560
 			action:Terminate : TOKEN:TokenDecl : TokenDecl:;
- targetIndex: 697
+ targetIndex: 571
 			action:Terminate : DISCARDTOKEN:TokenDecl : TokenDecl:;
-currenIndex: 686
- targetIndex: 688
+currenIndex: 560
+ targetIndex: 562
 			action:Terminate : NAME:TokenDecl : TokenDecl:;
 			action:Assign : name:NAME : TokenDecl:;
-currenIndex: 697
- targetIndex: 699
+currenIndex: 571
+ targetIndex: 573
 			action:Terminate : NAME:TokenDecl : TokenDecl:;
 			action:Assign : name:NAME : TokenDecl:;
-currenIndex: 688
- targetIndex: 690
+currenIndex: 562
+ targetIndex: 564
 			action:Terminate : ASSIGN:TokenDecl : TokenDecl:;
-currenIndex: 699
- targetIndex: 701
+currenIndex: 573
+ targetIndex: 575
 			action:Terminate : ASSIGN:TokenDecl : TokenDecl:;
-currenIndex: 690
- targetIndex: 692
+currenIndex: 564
+ targetIndex: 566
 			action:Terminate : STRING:TokenDecl : TokenDecl:;
 			action:Assign : regex:STRING : TokenDecl:;
-currenIndex: 701
- targetIndex: 703
+currenIndex: 575
+ targetIndex: 577
 			action:Terminate : STRING:TokenDecl : TokenDecl:;
 			action:Assign : regex:STRING : TokenDecl:;
-currenIndex: 692
- targetIndex: 694
+currenIndex: 566
+ targetIndex: 568
 			action:Terminate : SEMICOLON:TokenDecl : TokenDecl:;
-currenIndex: 703
- targetIndex: 705
+currenIndex: 577
+ targetIndex: 579
 			action:Terminate : SEMICOLON:TokenDecl : TokenDecl:;
-currenIndex: 694
- targetIndex: 696
-			action:Create : GeneralTokenDefine:81 : TokenDecl:;
+currenIndex: 568
+ targetIndex: 570
+			action:Create : GeneralTokenDefine:65 : TokenDecl:;
 			action:Setter : ignore:False : TokenDecl:;
-currenIndex: 705
- targetIndex: 696
-			action:Create : GeneralTokenDefine:82 : TokenDecl:;
+currenIndex: 579
+ targetIndex: 570
+			action:Create : GeneralTokenDefine:66 : TokenDecl:;
 			action:Setter : ignore:True : TokenDecl:;
-currenIndex: 696
-currenIndex: 709
- targetIndex: 708
+currenIndex: 570
+currenIndex: 583
+ targetIndex: 582
 			action:Terminate : RULE:RuleDecl : RuleDecl:;
-currenIndex: 708
- targetIndex: 710
+currenIndex: 582
+ targetIndex: 584
 			action:NonTerminate : Type: : :;
 			action:Assign : type:GeneralTypeObject : Type:RuleDecl;
-currenIndex: 710
- targetIndex: 712
+currenIndex: 584
+ targetIndex: 586
 			action:Terminate : NAME:RuleDecl : RuleDecl:;
 			action:Assign : name:NAME : RuleDecl:;
-currenIndex: 712
- targetIndex: 714
+currenIndex: 586
+ targetIndex: 588
 			action:Terminate : ASSIGN:RuleDecl : RuleDecl:;
- targetIndex: 718
+ targetIndex: 592
 			action:Terminate : SEMICOLON:RuleDecl : RuleDecl:;
-currenIndex: 714
- targetIndex: 712
+currenIndex: 588
+ targetIndex: 586
 			action:NonTerminate : Grammar: : :;
 			action:Assign : grammars:GeneralGrammarTypeDefine : Grammar:RuleDecl;
-currenIndex: 718
- targetIndex: 720
-			action:Create : GeneralRuleDefine:83 : RuleDecl:;
-currenIndex: 720
-currenIndex: 721
- targetIndex: 721
+currenIndex: 592
+ targetIndex: 594
+			action:Create : GeneralRuleDefine:67 : RuleDecl:;
+currenIndex: 594
+currenIndex: 595
+ targetIndex: 595
 			action:NonTerminate : HeadDecl: : :;
 			action:Assign : heads:GeneralHeadInfoDefine : HeadDecl:ParserDecl;
- targetIndex: 721
+ targetIndex: 595
 			action:NonTerminate : TypeDecl: : :;
 			action:Assign : types:GeneralTypeDefine : TypeDecl:ParserDecl;
- targetIndex: 721
+ targetIndex: 595
 			action:NonTerminate : TokenDecl: : :;
 			action:Assign : tokens:GeneralTokenDefine : TokenDecl:ParserDecl;
- targetIndex: 721
+ targetIndex: 595
 			action:NonTerminate : RuleDecl: : :;
 			action:Assign : rules:GeneralRuleDefine : RuleDecl:ParserDecl;
- targetIndex: 729
-			action:Create : GeneralTableDefine:84 : ParserDecl:;
-currenIndex: 729
+ targetIndex: 603
+			action:Create : GeneralTableDefine:68 : ParserDecl:;
+currenIndex: 603

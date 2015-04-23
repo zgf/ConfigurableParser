@@ -636,7 +636,7 @@
 				assert(objectMap.find(name) != objectMap.end());
 				return objectMap[name]();
 			}
-				void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+				void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 				{
 					assert(classObject != nullptr);
 					assert(classNode != nullptr);
@@ -663,7 +663,7 @@
 					}
 				}
 	
-				shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser,ztl::general_parser::GeneralTreeNode* root)
+				shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser,ztl::general_parser::GeneralTreeNode* root)
 				{
 					assert(root != nullptr);
 					auto rootObject = ReflecteObjectByName(root->GetName());
@@ -671,7 +671,7 @@
 					ztl::general_parser::GeneralHeterogeneousParserTree(parser,root, rootObject);
 					return rootObject;
 				}
-				shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParser& parser)
+				shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser)
 				{
 					return ztl::general_parser::GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 				}
@@ -1065,6 +1065,18 @@
 						.Rule
 						(
 							ztl::general_parser::GeneralRuleWriter()
+							.Name(L"TypeDecl")
+							.ReturnType(ztl::general_parser::Normal(L"GeneralTypeDefine"))
+							
+						|
+						( !(ztl::general_parser::GrammarSymbol(L"Enum")) | !(ztl::general_parser::GrammarSymbol(L"Class")) )
+					
+				
+						)
+				
+						.Rule
+						(
+							ztl::general_parser::GeneralRuleWriter()
 							.Name(L"Type")
 							.ReturnType(ztl::general_parser::Normal(L"GeneralTypeObject"))
 							
@@ -1164,36 +1176,24 @@
 						.Rule
 						(
 							ztl::general_parser::GeneralRuleWriter()
-							.Name(L"TypeDecl")
-							.ReturnType(ztl::general_parser::Normal(L"GeneralTypeDefine"))
-							
-						|
-						( !(ztl::general_parser::GrammarSymbol(L"Enum")) | !(ztl::general_parser::GrammarSymbol(L"Class")) )
-					
-				
-						)
-				
-						.Rule
-						(
-							ztl::general_parser::GeneralRuleWriter()
 							.Name(L"Class")
 							.ReturnType(ztl::general_parser::Normal(L"GeneralClassTypeDefine"))
 							
 						|
 					(
 						
-						( 
 						( ztl::general_parser::GrammarSymbol(L"STRUCT") | ztl::general_parser::GrammarSymbol(L"CLASS") )
 					+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
-					+ztl::general_parser::GrammarSymbol(L"COLON")+~(
+					+~(ztl::general_parser::GrammarSymbol(L"COLON")+
 						ztl::general_parser::GrammarSymbol(L"Type")[L"parent"]
-					)+ztl::general_parser::GrammarSymbol(L"OPEN")+
+					)+ztl::general_parser::GrammarSymbol(L"OPEN")+*(
+						( 
 						ztl::general_parser::GrammarSymbol(L"ClassMember")[L"members"]
-					 | *(
+					 | 
 						ztl::general_parser::GrammarSymbol(L"TypeDecl")[L"subTypes"]
-					)+ztl::general_parser::GrammarSymbol(L"CLOSE")+ztl::general_parser::GrammarSymbol(L"SEMICOLON") )
-					
+					 )
+					)+ztl::general_parser::GrammarSymbol(L"CLOSE")+ztl::general_parser::GrammarSymbol(L"SEMICOLON")
 					)
 					.Create(ztl::general_parser::Normal(L"GeneralClassTypeDefine"))
 					
@@ -1211,9 +1211,9 @@
 						|
 					(
 						
-						ztl::general_parser::GrammarSymbol(L"SequenceGrammar")[L"first"]
+						ztl::general_parser::GrammarSymbol(L"PrimitiveGrammar")[L"first"]
 					+
-						ztl::general_parser::GrammarSymbol(L"PrimitiveGrammar")[L"second"]
+						ztl::general_parser::GrammarSymbol(L"SequenceGrammar")[L"second"]
 					
 					)
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarSequenceTypeDefine"))
@@ -1232,9 +1232,9 @@
 						|
 					(
 						
-						ztl::general_parser::GrammarSymbol(L"AlternativeGrammar")[L"left"]
+						ztl::general_parser::GrammarSymbol(L"SequenceGrammar")[L"left"]
 					+ztl::general_parser::GrammarSymbol(L"OR")+
-						ztl::general_parser::GrammarSymbol(L"SequenceGrammar")[L"right"]
+						ztl::general_parser::GrammarSymbol(L"AlternativeGrammar")[L"right"]
 					
 					)
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarAlternationTypeDefine"))
@@ -1279,7 +1279,7 @@
 						.Rule
 						(
 							ztl::general_parser::GeneralRuleWriter()
-							.Name(L"NormalGrammar")
+							.Name(L"PrimitiveGrammar")
 							.ReturnType(ztl::general_parser::Normal(L"GeneralGrammarTypeDefine"))
 							
 						|
@@ -1291,27 +1291,6 @@
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarNormalTypeDefine"))
 					
 				
-						|ztl::general_parser::GrammarSymbol(L"PREOPEN")+!(ztl::general_parser::GrammarSymbol(L"Grammar"))+ztl::general_parser::GrammarSymbol(L"PRECLOSE")
-				
-						)
-				
-						.Rule
-						(
-							ztl::general_parser::GeneralRuleWriter()
-							.Name(L"AssginGrammar")
-							.ReturnType(ztl::general_parser::Normal(L"GeneralGrammarTypeDefine"))
-							
-						|
-					(
-						
-						ztl::general_parser::GrammarSymbol(L"AssginGrammar")[L"grammar"]
-					+ztl::general_parser::GrammarSymbol(L"COLON")+
-						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
-					
-					)
-					.Create(ztl::general_parser::Normal(L"GeneralGrammarAssignTypeDefine"))
-					
-				
 						|
 					(
 						
@@ -1321,22 +1300,21 @@
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarTextTypeDefine"))
 					
 				
-						|!(ztl::general_parser::GrammarSymbol(L"NormalGrammar"))
-				
-						)
-				
-						.Rule
-						(
-							ztl::general_parser::GeneralRuleWriter()
-							.Name(L"PrimitiveGrammar")
-							.ReturnType(ztl::general_parser::Normal(L"GeneralGrammarTypeDefine"))
-							
-						|!(ztl::general_parser::GrammarSymbol(L"AssginGrammar"))
+						|
+					(
+						
+						ztl::general_parser::GrammarSymbol(L"PrimitiveGrammar")[L"grammar"]
+					+ztl::general_parser::GrammarSymbol(L"COLON")+
+						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
+					
+					)
+					.Create(ztl::general_parser::Normal(L"GeneralGrammarAssignTypeDefine"))
+					
 				
 						|
 					(
 						ztl::general_parser::GrammarSymbol(L"USING")+
-						ztl::general_parser::GrammarSymbol(L"NormalGrammar")[L"grammar"]
+						ztl::general_parser::GrammarSymbol(L"PrimitiveGrammar")[L"grammar"]
 					
 					)
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarUsingTypeDefine"))
@@ -1359,6 +1337,8 @@
 					)
 					.Create(ztl::general_parser::Normal(L"GeneralGrammarLoopTypeDefine"))
 					
+				
+						|ztl::general_parser::GrammarSymbol(L"PREOPEN")+!(ztl::general_parser::GrammarSymbol(L"Grammar"))+ztl::general_parser::GrammarSymbol(L"PRECLOSE")
 				
 						)
 				
@@ -1427,7 +1407,7 @@
 						ztl::general_parser::GrammarSymbol(L"Type")[L"type"]
 					+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
-					+ztl::general_parser::GrammarSymbol(L"ASSIGN")+*(
+					+*(ztl::general_parser::GrammarSymbol(L"ASSIGN")+
 						ztl::general_parser::GrammarSymbol(L"Grammar")[L"grammars"]
 					)+ztl::general_parser::GrammarSymbol(L"SEMICOLON")
 					)
@@ -1445,19 +1425,19 @@
 						|
 					(
 						
-						( 
-						( 
 						( *(
 						ztl::general_parser::GrammarSymbol(L"HeadDecl")[L"heads"]
-					) | *(
+					) | 
+						( *(
 						ztl::general_parser::GrammarSymbol(L"TypeDecl")[L"types"]
-					) )
-					 | *(
+					) | 
+						( *(
 						ztl::general_parser::GrammarSymbol(L"TokenDecl")[L"tokens"]
-					) )
-					 | *(
+					) | *(
 						ztl::general_parser::GrammarSymbol(L"RuleDecl")[L"rules"]
 					) )
+					 )
+					 )
 					
 					)
 					.Create(ztl::general_parser::Normal(L"GeneralTableDefine"))

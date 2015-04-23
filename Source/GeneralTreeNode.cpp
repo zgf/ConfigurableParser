@@ -64,6 +64,17 @@ namespace ztl
 				L"node Number" + to_wstring(GetNumber()) + L"\n" +
 				fieldMapString + termMapString;
 		}
+		void GeneralTreeNode::AdjustFieldSequence()
+		{
+			for (auto&&iter:fieldMap)
+			{
+				assert(!iter.second.empty());
+				if (iter.second.size()>1)
+				{
+					reverse(iter.second.begin(), iter.second.end());
+				}
+			}
+		}
 		const wstring & GeneralTreeNode::GetName() const
 		{
 			return symbol->GetName();

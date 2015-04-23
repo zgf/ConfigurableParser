@@ -24,6 +24,7 @@ namespace ztl
 			const wstring& GetName()const;
 			const int GetNumber()const;
 			wstring GetNodeInfo() const;
+			void AdjustFieldSequence();
 			const unordered_map<wstring, vector<int>> GetFieldMap()const;
 			const unordered_map<wstring, vector<int>> GetTermMap()const;
 		private:

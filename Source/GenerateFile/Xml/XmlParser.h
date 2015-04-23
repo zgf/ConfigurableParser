@@ -1,130 +1,194 @@
-#pragma once
-#include <memory>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <iostream>
-#include <assert.h>
-using std::pair;
-using std::wstring;
-using std::shared_ptr;
-using std::vector;
-using std::unordered_map;
-using std::wifstream;
-using std::make_shared;
-#include "..\..\Include\GeneralTableDefine.h"
-#include "..\..\Include\GeneralTreeNode.h"
-#include "..\..\Include\GeneralLALRParser.h"
 
-namespace ztl
-{
-	namespace xml
-	{
-		struct Document;
-		struct Instruction;
-		struct Element;
-		struct Comment;
-		struct Attribute;
-		struct CData;
-		struct Text;
+				#pragma once
+				#include <memory>
+				#include <string>
+				#include <vector>
+				#include <unordered_map>
+				#include <iostream>
+				#include <assert.h>
+				using std::pair;
+				using std::wstring;
+				using std::shared_ptr;
+				using std::vector;
+				using std::unordered_map;
+				using std::wifstream;
+				using std::make_shared;
+				#include "..\..\Include\GeneralTableDefine.h"
+				#include "..\..\Include\GeneralTreeNode.h"
+				#include "..\..\Include\GeneralLALRParser.h"
+				
+							namespace ztl
+							{
+								
+							namespace xml
+							{
+								
 
-		struct Node
-		{
-			class IVisitor
+
+			struct Document;
+struct Instruction;
+struct Element;
+struct Comment;
+struct Attribute;
+struct CData;
+struct Text;
+
+			struct Node 
 			{
-			public:
-				virtual void		Visit(Document* node) = 0;
-				virtual void		Visit(Instruction* node) = 0;
-				virtual void		Visit(Element* node) = 0;
-				virtual void		Visit(Comment* node) = 0;
-				virtual void		Visit(Attribute* node) = 0;
-				virtual void		Visit(CData* node) = 0;
-				virtual void		Visit(Text* node) = 0;
+				
+				
+				
+				
+				class IVisitor
+				{
+				public:
+					virtual void		Visit(Document* node) =0;
+virtual void		Visit(Instruction* node) =0;
+virtual void		Visit(Element* node) =0;
+virtual void		Visit(Comment* node) =0;
+virtual void		Visit(Attribute* node) =0;
+virtual void		Visit(CData* node) =0;
+virtual void		Visit(Text* node) =0;
+
+				};
+				virtual void									Accept(IVisitor* )
+				{
+
+				}
+				
 			};
-			virtual void									Accept(IVisitor*)
+			
+
+
+			
+			struct Text : public Node
 			{
-			}
-		};
+				
+				wstring    content;
 
-		struct Text: public Node
-		{
-			wstring    content;
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
+				
+			};
+			
 
-			virtual void									Accept(IVisitor* visitor)override
+
+			
+			struct CData : public Node
 			{
-				visitor->Visit(this);
-			}
-		};
+				
+				wstring    content;
 
-		struct CData: public Node
-		{
-			wstring    content;
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
+				
+			};
+			
 
-			virtual void									Accept(IVisitor* visitor)override
+
+			
+			struct Attribute : public Node
 			{
-				visitor->Visit(this);
-			}
-		};
+				
+				wstring    name;
+wstring    value;
 
-		struct Attribute: public Node
-		{
-			wstring    name;
-			wstring    value;
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
+				
+			};
+			
 
-			virtual void									Accept(IVisitor* visitor)override
+
+			
+			struct Comment : public Node
 			{
-				visitor->Visit(this);
-			}
-		};
+				
+				wstring    content;
 
-		struct Comment: public Node
-		{
-			wstring    content;
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
+				
+			};
+			
 
-			virtual void									Accept(IVisitor* visitor)override
+
+			
+			struct Element : public Node
 			{
-				visitor->Visit(this);
-			}
-		};
+				
+				wstring    name;
+wstring    closingName;
+vector<shared_ptr<Attribute>>    attributes;
+vector<shared_ptr<Node>>    subNodes;
 
-		struct Element: public Node
-		{
-			wstring    name;
-			wstring    closingName;
-			vector<shared_ptr<Attribute>>    attributes;
-			vector<shared_ptr<Node>>    subNodes;
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
+				
+			};
+			
 
-			virtual void									Accept(IVisitor* visitor)override
+
+			
+			struct Instruction : public Node
 			{
-				visitor->Visit(this);
-			}
-		};
+				
+				wstring    name;
+vector<shared_ptr<Attribute>>    attributes;
 
-		struct Instruction: public Node
-		{
-			wstring    name;
-			vector<shared_ptr<Attribute>>    attributes;
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
+				
+			};
+			
 
-			virtual void									Accept(IVisitor* visitor)override
+
+			
+			struct Document : public Node
 			{
-				visitor->Visit(this);
-			}
-		};
+				
+				vector<shared_ptr<Node>>    prologs;
+shared_ptr<Element>    rootElement;
 
-		struct Document: public Node
-		{
-			vector<shared_ptr<Node>>    prologs;
-			shared_ptr<Element>    rootElement;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
-		shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable();
-
-		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* root);
-		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser);
-	}
-}
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
+				
+			};
+			
+				shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable();
+				
+			shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser,ztl::general_parser::GeneralTreeNode* root);
+			shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser);
+			
+							}
+						 
+							}
+						 

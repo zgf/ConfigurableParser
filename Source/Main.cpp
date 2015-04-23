@@ -52,23 +52,25 @@ void GenerateGeneralParserFile()
 	ztl::general_parser::GeneralParserFile parserGen(make_shared<ztl::general_parser::GeneralLALRParser>(L"ParserDefine.txt", ztl::general_parser::BootStrapDefineTable()));
 	parserGen.GenerateSpecialParserFile();
 }
-//void GenerateXmlParserFile()
-//{
-//	ztl::general_parser::GeneralParserFile parserGen(L"Xml.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
-//	parserGen.GenerateSpecialParserFile();
-//}
-//void GenerateJsonParserFile()
-//{
-//	ztl::general_parser::GeneralParserFile parserGen(L"Json.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable());
-//	parserGen.GenerateSpecialParserFile();
-//}
+void GenerateXmlParserFile()
+{
+	ztl::general_parser::GeneralParserFile parserGen(make_shared<ztl::general_parser::GeneralLALRParser>(L"Xml.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable()));
+	parserGen.GenerateSpecialParserFile();
+}
+void GenerateJsonParserFile()
+{
+	ztl::general_parser::GeneralParserFile parserGen(make_shared<ztl::general_parser::GeneralLALRParser>(L"Json.ParserDefine.txt", ztl::general_parser::BootStrapDefineTable()));
+	parserGen.GenerateSpecialParserFile();
+}
 int main()
 {
-	//GenerateGeneralParserFile();
+//	GenerateGeneralParserFile();
+//	GenerateXmlParserFile();
+//	GenerateJsonParserFile();
 	TestJson();
 	TestXml();
-	TestParseXMLDefine();
-	TestParseJsonDefine();
-	TestParseGeneralDefine();
+	//TestParseXMLDefine();
+	//TestParseJsonDefine();
+	//TestParseGeneralDefine();
 	return 0;
 }
