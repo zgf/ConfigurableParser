@@ -73,7 +73,7 @@ int main()
 	QueryPerformanceCounter(&BegainTime);
 
 	//内部调用的regex库 debug模式下拆解token太慢- -debug下性能分析占了90%+的时间- -
-	//release一启动渣本200ms全部执行完了
+	//release一启动200多ms全部执行完了
 	GenerateGeneralParserFile();
 	GenerateXmlParserFile();
 	GenerateJsonParserFile();

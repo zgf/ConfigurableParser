@@ -98,10 +98,9 @@ namespace ztl
 					auto&& oldProduct = LRNode->GetItems()[LRNode->GetItemIndex(node)];
 					auto&& oldGrammarStart = LRMachine->GetRuleStart(LRMachine->GetRuleNameByIndex(oldProduct.GetRuleIndex()));
 					auto&& oldGrammarPosition = node;
-					auto&& newEdgeList = FindThePath(newGrammarStart, newGrammarPosition);
-					assert(FindThePath(newGrammarStart, newGrammarPosition).size() <= FindThePath(oldGrammarStart, oldGrammarPosition).size());
+					auto&& newEdgeList = FindTheNodePathEdges(newGrammarStart, newGrammarPosition);
+					assert(FindTheNodePathEdges(newGrammarStart, newGrammarPosition).size() <= FindTheNodePathEdges(oldGrammarStart, oldGrammarPosition).size());
 					auto grammrIter = grammarStack.end() - newEdgeList.size();
-					auto LRNodeIter = LRNodeStack.end() - newEdgeList.size();
 					for(size_t i = 0; i < newEdgeList.size(); i++)
 					{
 						grammrIter->first = newEdgeList[i];
@@ -109,21 +108,18 @@ namespace ztl
 						++grammrIter;
 					}
 					//这里可以优化
-					if(FindThePath(newGrammarStart, newGrammarPosition).size() < FindThePath(oldGrammarStart, oldGrammarPosition).size())
+					if(FindTheNodePathEdges(newGrammarStart, newGrammarPosition).size() < FindTheNodePathEdges(oldGrammarStart, oldGrammarPosition).size())
 					{
 						//少了新的产生式的头结点如果不多插入一个节点,最后会多覆盖一个节点
 						PDANodeStack.emplace_back(nullptr);
 					}
+					auto&& newNodeList = FindTheNodePathNodes(newGrammarStart, newGrammarPosition);
 					auto PDANodeStackIter = PDANodeStack.end() - newEdgeList.size() - 1;
-					for(size_t i = 0; i < newEdgeList.size(); i++)
+					for(size_t i = 0; i < newNodeList.size(); i++)
 					{
-						*PDANodeStackIter = newEdgeList[i]->GetSource();
-						//assert((*LRNodeIter)->GetItemsMap().find(PDANodeStack.back()) != (*LRNodeIter)->GetItemsMap().end());
+						*PDANodeStackIter = newNodeList[i];
 						++PDANodeStackIter;
-						++LRNodeIter;
 					}
-					*PDANodeStackIter = newEdgeList.back()->GetTarget();
-
 					return{ true,edgeIter };
 				}
 				else if(index >= LRNode->GetCoreNumber())
@@ -242,5 +238,35 @@ namespace ztl
 		GeneralLALRParser::GeneralLALRParser(const wstring & fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :GeneralParserBase(fileName, _tableDefine)
 		{
 		}
+
+		const pair<vector<PDAEdge*>, vector<PDANode*>>& GeneralLALRParser::FindTheNodePath(PDANode* start, PDANode* end)
+		{
+			auto&& key = make_pair(start, end);
+			auto&& findIter = findPathCacheMap.find(key);
+			if (findIter ==findPathCacheMap.end())
+			{
+				auto&& edges = FindThePath(start, end);
+				vector<PDANode*> nodes;
+				//findPathCacheMap.insert({key,make_pair()})
+				for (auto&& edgeIter:edges)
+				{
+					nodes.emplace_back(edgeIter->GetSource());
+				}
+				nodes.emplace_back(edges.back()->GetTarget());
+				findPathCacheMap.insert({make_pair(move(key),make_pair(move(edges),move(nodes)))});
+			}
+			return findPathCacheMap[key];
+		}
+
+		const vector<PDAEdge*>& GeneralLALRParser::FindTheNodePathEdges(PDANode* start, PDANode* end)
+		{
+			return FindTheNodePath(start, end).first;
+		}
+
+		const vector<PDANode*>& GeneralLALRParser::FindTheNodePathNodes(PDANode* start, PDANode* end)
+		{
+			return FindTheNodePath(start, end).second;
+		}
+
 	}
 }

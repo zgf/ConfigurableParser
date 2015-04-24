@@ -22,15 +22,25 @@
 			    endAction: 
 
 				next:
-							9XInstruction 2
-		9XElement 1
-		9XComment 2
-		8ELEMENT_OPEN 3
+							9XInstruction 3
+		9XElement 2
+		8COMMENT 1
+		9XComment 3
 		8INSTRUCTION_OPEN 4
-		8COMMENT 5
+		8ELEMENT_OPEN 5
 
 				
 				NodeNumber: 1
+						
+				ruleName: XComment
+				product: COMMENT O
+				followToken: COMMENT 
+			    endAction: Create Comment 
+
+				next:
+					
+				
+				NodeNumber: 2
 						
 				ruleName: XDocument
 				product: XInstruction XComment XElement O
@@ -40,7 +50,7 @@
 				next:
 					
 				
-				NodeNumber: 2
+				NodeNumber: 3
 						
 				ruleName: XDocument
 				product: O
@@ -63,23 +73,12 @@
 			    endAction: 
 
 				next:
-							9XInstruction 2
-		9XElement 1
-		9XComment 2
-		8ELEMENT_OPEN 3
+							9XInstruction 3
+		9XElement 2
+		8COMMENT 1
+		9XComment 3
 		8INSTRUCTION_OPEN 4
-		8COMMENT 5
-
-				
-				NodeNumber: 3
-						
-				ruleName: XElement
-				product: ELEMENT_OPEN O
-				followToken: ELEMENT_OPEN 
-			    endAction: 
-
-				next:
-							8NAME 6
+		8ELEMENT_OPEN 5
 
 				
 				NodeNumber: 4
@@ -90,39 +89,21 @@
 			    endAction: 
 
 				next:
-							8NAME 7
+							8NAME 6
 
 				
 				NodeNumber: 5
 						
-				ruleName: XComment
-				product: COMMENT O
-				followToken: COMMENT 
-			    endAction: Create Comment 
-
-				next:
-					
-				
-				NodeNumber: 6
-						
 				ruleName: XElement
-				product: ELEMENT_OPEN NAME O
+				product: ELEMENT_OPEN O
 				followToken: ELEMENT_OPEN 
 			    endAction: 
-		
-				ruleName: XAttribute
-				product: O
-				followToken: NAME 
-			    endAction: 
 
 				next:
-							9XAttribute 6
-		8SINGLE_ELEMENT_CLOSE 8
-		8ELEMENT_CLOSE 9
-		8NAME 10
+							8NAME 7
 
 				
-				NodeNumber: 7
+				NodeNumber: 6
 						
 				ruleName: XInstruction
 				product: INSTRUCTION_OPEN NAME O
@@ -135,22 +116,52 @@
 			    endAction: 
 
 				next:
+							9XAttribute 6
+		8NAME 8
+		8INSTRUCTION_CLOSE 9
+
+				
+				NodeNumber: 7
+						
+				ruleName: XElement
+				product: ELEMENT_OPEN NAME O
+				followToken: ELEMENT_OPEN 
+			    endAction: 
+		
+				ruleName: XAttribute
+				product: O
+				followToken: NAME 
+			    endAction: 
+
+				next:
 							9XAttribute 7
-		8INSTRUCTION_CLOSE 11
-		8NAME 10
+		8ELEMENT_CLOSE 10
+		8NAME 8
+		8SINGLE_ELEMENT_CLOSE 11
 
 				
 				NodeNumber: 8
 						
-				ruleName: XElement
-				product: ELEMENT_OPEN NAME XAttribute SINGLE_ELEMENT_CLOSE O
-				followToken: ELEMENT_OPEN 
-			    endAction: Create Element 
+				ruleName: XAttribute
+				product: NAME O
+				followToken: NAME 
+			    endAction: 
+
+				next:
+							8EQUAL 12
+
+				
+				NodeNumber: 9
+						
+				ruleName: XInstruction
+				product: INSTRUCTION_OPEN NAME XAttribute INSTRUCTION_CLOSE O
+				followToken: INSTRUCTION_OPEN 
+			    endAction: Create Instruction 
 
 				next:
 					
 				
-				NodeNumber: 9
+				NodeNumber: 10
 						
 				ruleName: XElement
 				product: ELEMENT_OPEN NAME XAttribute ELEMENT_CLOSE O
@@ -159,7 +170,7 @@
 		
 				ruleName: XSubNode
 				product: O
-				followToken: NAME EQUAL ATTVALUE TEXT CDATA COMMENT ELEMENT_OPEN 
+				followToken: NAME EQUAL ATTVALUE COMMENT TEXT CDATA ELEMENT_OPEN 
 			    endAction: 
 		
 				ruleName: XText
@@ -183,53 +194,63 @@
 			    endAction: 
 
 				next:
-							9XSubNode 9
-		9XComment 12
-		8COMPLEX_ELEMENT_OPEN 13
-		9XText 12
-		8NAME 14
-		9XCData 12
-		9XElement 12
-		8EQUAL 14
-		8ATTVALUE 14
-		8TEXT 14
-		8CDATA 15
-		8COMMENT 5
-		8ELEMENT_OPEN 3
-
-				
-				NodeNumber: 10
-						
-				ruleName: XAttribute
-				product: NAME O
-				followToken: NAME 
-			    endAction: 
-
-				next:
-							8EQUAL 16
+							9XSubNode 10
+		8COMPLEX_ELEMENT_OPEN 15
+		9XText 14
+		8NAME 13
+		8EQUAL 13
+		9XCData 14
+		9XComment 14
+		9XElement 14
+		8ATTVALUE 13
+		8TEXT 13
+		8CDATA 16
+		8COMMENT 1
+		8ELEMENT_OPEN 5
 
 				
 				NodeNumber: 11
 						
-				ruleName: XInstruction
-				product: INSTRUCTION_OPEN NAME XAttribute INSTRUCTION_CLOSE O
-				followToken: INSTRUCTION_OPEN 
-			    endAction: Create Instruction 
+				ruleName: XElement
+				product: ELEMENT_OPEN NAME XAttribute SINGLE_ELEMENT_CLOSE O
+				followToken: ELEMENT_OPEN 
+			    endAction: Create Element 
 
 				next:
 					
 				
 				NodeNumber: 12
 						
+				ruleName: XAttribute
+				product: NAME EQUAL O
+				followToken: NAME 
+			    endAction: 
+
+				next:
+							8ATTVALUE 17
+
+				
+				NodeNumber: 13
+						
+				ruleName: XText
+				product: NAME O
+				followToken: EQUAL NAME ATTVALUE TEXT 
+			    endAction: Create Text 
+
+				next:
+					
+				
+				NodeNumber: 14
+						
 				ruleName: XSubNode
 				product: XText O
-				followToken: NAME EQUAL CDATA TEXT ATTVALUE COMMENT ELEMENT_OPEN 
+				followToken: EQUAL NAME COMMENT ATTVALUE TEXT CDATA ELEMENT_OPEN 
 			    endAction: 
 
 				next:
 					
 				
-				NodeNumber: 13
+				NodeNumber: 15
 						
 				ruleName: XElement
 				product: ELEMENT_OPEN NAME XAttribute ELEMENT_CLOSE XSubNode COMPLEX_ELEMENT_OPEN O
@@ -237,20 +258,10 @@
 			    endAction: 
 
 				next:
-							8NAME 17
+							8NAME 18
 
 				
-				NodeNumber: 14
-						
-				ruleName: XText
-				product: NAME O
-				followToken: NAME EQUAL TEXT ATTVALUE 
-			    endAction: Create Text 
-
-				next:
-					
-				
-				NodeNumber: 15
+				NodeNumber: 16
 						
 				ruleName: XCData
 				product: CDATA O
@@ -260,18 +271,17 @@
 				next:
 					
 				
-				NodeNumber: 16
+				NodeNumber: 17
 						
 				ruleName: XAttribute
-				product: NAME EQUAL O
+				product: NAME EQUAL ATTVALUE O
 				followToken: NAME 
-			    endAction: 
+			    endAction: Create Attribute 
 
 				next:
-							8ATTVALUE 18
-
+					
 				
-				NodeNumber: 17
+				NodeNumber: 18
 						
 				ruleName: XElement
 				product: ELEMENT_OPEN NAME XAttribute ELEMENT_CLOSE XSubNode COMPLEX_ELEMENT_OPEN NAME O
@@ -281,16 +291,6 @@
 				next:
 							8ELEMENT_CLOSE 19
 
-				
-				NodeNumber: 18
-						
-				ruleName: XAttribute
-				product: NAME EQUAL ATTVALUE O
-				followToken: NAME 
-			    endAction: Create Attribute 
-
-				next:
-					
 				
 				NodeNumber: 19
 						

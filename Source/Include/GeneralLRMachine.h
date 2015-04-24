@@ -133,6 +133,7 @@ namespace ztl
 			unordered_set<ParserSymbol*>& FindFirst(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			unordered_set<ParserSymbol*>& FindFirst(PDANode*node, unordered_set<PDAEdge*>& sign);
 			const vector<PDAEdge*>& GetEdgesByNode(PDANode* node)const;
+
 		private:
 			shared_ptr<PushDownAutoMachine> machine;
 			vector<shared_ptr<LRNode>> nodePool;
