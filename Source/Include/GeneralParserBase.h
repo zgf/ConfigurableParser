@@ -103,6 +103,7 @@ namespace ztl
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
 			
 		protected:
+			wstring								 fileName;
 			shared_ptr<SymbolManager>			 manager;
 			GeneralNodePools					 pools;
 			GeneralTreeNode*					 generalTreeRoot;

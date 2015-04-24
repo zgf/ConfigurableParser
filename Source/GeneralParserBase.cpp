@@ -10,14 +10,15 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		GeneralParserBase::GeneralParserBase(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :
-			manager(make_shared<SymbolManager>(_tableDefine))	
+		GeneralParserBase::GeneralParserBase(const wstring& _fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :
+			manager(make_shared<SymbolManager>(_tableDefine)),fileName(_fileName)
 		{
-			pools.SetTokenPool(move(ParseToken(fileName)));
+			
 		}
 
 		void GeneralParserBase::BuildParser()
 		{
+			pools.SetTokenPool(move(ParseToken(fileName)));
 			ValidateGeneratorCoreSemantic(manager.get());
 			auto machine = make_shared<PushDownAutoMachine>(manager.get());
 			CreateDPDAGraph(*machine.get());

@@ -31,6 +31,7 @@ namespace ztl
 			vector<pair<PDAEdge*,int>>			 grammarStack;
 			vector<LRNode*>						 LRNodeStack;
 			vector<PDANode*>					 PDANodeStack;
+			
 		};
 	}
 }

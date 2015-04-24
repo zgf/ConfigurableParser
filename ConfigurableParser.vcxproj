@@ -167,8 +167,6 @@
     <Text Include="Doc\总体设计.txt" />
     <Text Include="Doc\我自己的规范设计.txt" />
     <Text Include="Doc\符号表的设计.txt" />
-    <Text Include="Doc\规范文件模板1.txt" />
-    <Text Include="Doc\规范文件模板2.txt" />
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

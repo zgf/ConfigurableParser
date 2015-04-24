@@ -10,6 +10,8 @@
 #include "GenerateFile\Json\JsonParser.h"
 #include "GenerateFile\Xml\XmlParser.h"
 #include "Include\GeneralLRMachine.h"
+#include <windows.h>     
+
 void TestJson()
 {
 	ztl::general_parser::GeneralLALRParser LALRParser(L"TestJson.txt", ztl::json::BootStrapDefineTable());
@@ -64,12 +66,23 @@ void GenerateJsonParserFile()
 }
 int main()
 {
-	//内部调用的regex库 debug模式下拆解token太慢- -debug下性能分析占了90%+的时间;可以开release版看.release一启动就全部执行完了
+	LARGE_INTEGER BegainTime;
+	LARGE_INTEGER EndTime;
+	LARGE_INTEGER Frequency;
+	QueryPerformanceFrequency(&Frequency);
+	QueryPerformanceCounter(&BegainTime);
+
+	//内部调用的regex库 debug模式下拆解token太慢- -debug下性能分析占了90%+的时间- -
+	//release一启动渣本200ms全部执行完了
 	GenerateGeneralParserFile();
 	GenerateXmlParserFile();
 	GenerateJsonParserFile();
 	TestJson();
 	TestXml();
+	QueryPerformanceCounter(&EndTime);
+
+	//输出运行时间（单位：s）    
+	wcout <<  (double) (EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
 	//TestParseXMLDefine();
 	//TestParseJsonDefine();
 	//TestParseGeneralDefine();

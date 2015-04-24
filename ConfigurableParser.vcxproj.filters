@@ -59,12 +59,6 @@
     <Text Include="Doc\代码规范.txt">
       <Filter>Doc</Filter>
     </Text>
-    <Text Include="Doc\规范文件模板1.txt">
-      <Filter>Doc</Filter>
-    </Text>
-    <Text Include="Doc\规范文件模板2.txt">
-      <Filter>Doc</Filter>
-    </Text>
     <Text Include="Doc\我自己的规范设计.txt">
       <Filter>Doc</Filter>
     </Text>
