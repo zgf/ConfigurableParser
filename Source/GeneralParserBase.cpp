@@ -25,7 +25,7 @@ namespace ztl
 			LRMachine = make_shared<GeneralLRMachine>(machine);
 			LRMachine->BuildFirstTable();
 			LRMachine->BuildLRItems();
-			LRMachine->LogItems(L"LogGeneralLRMchine.txt");
+			//LRMachine->LogItems(L"LogGeneralLRMchine.txt");
 		}
 		SymbolManager* GeneralParserBase::GetManager() const
 		{

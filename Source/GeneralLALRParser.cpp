@@ -32,7 +32,7 @@ namespace ztl
 					auto&& currentProduct = currentLRNode->GetProductByPDANode(currentPDANode);
 					GeneralTreeNode* treeNode = nullptr;
 					if(currentProduct.HasEndAction())
-					{
+					{				
 						treeNode = ExcuteEndAction(currentProduct.GetEndAction());
 						assert(currentPDANode == grammarStack.back().first->GetTarget());
 						auto nodeIndex = GetPools().GetGeneralNodePool().size() - 1;
@@ -46,7 +46,6 @@ namespace ztl
 						currentSymbol = ExceteReduceWithoutEndAction(currentPDANode);
 						assert(currentSymbol->IsRuleDef());
 					}
-					//currentPDANode被修改.
 				}
 				else
 				{
@@ -100,26 +99,23 @@ namespace ztl
 					auto&& oldGrammarPosition = node;
 					auto&& newEdgeList = FindTheNodePathEdges(newGrammarStart, newGrammarPosition);
 					assert(FindTheNodePathEdges(newGrammarStart, newGrammarPosition).size() <= FindTheNodePathEdges(oldGrammarStart, oldGrammarPosition).size());
-					auto grammrIter = grammarStack.end() - newEdgeList.size();
-					for(size_t i = 0; i < newEdgeList.size(); i++)
-					{
-						grammrIter->first = newEdgeList[i];
-						assert(newEdgeList[i]->GetActions() == grammrIter->first->GetActions());
-						++grammrIter;
-					}
 					//这里可以优化
 					if(FindTheNodePathEdges(newGrammarStart, newGrammarPosition).size() < FindTheNodePathEdges(oldGrammarStart, oldGrammarPosition).size())
 					{
 						//少了新的产生式的头结点如果不多插入一个节点,最后会多覆盖一个节点
 						PDANodeStack.emplace_back(nullptr);
 					}
-					auto&& newNodeList = FindTheNodePathNodes(newGrammarStart, newGrammarPosition);
 					auto PDANodeStackIter = PDANodeStack.end() - newEdgeList.size() - 1;
-					for(size_t i = 0; i < newNodeList.size(); i++)
+					auto grammrIter = grammarStack.end() - newEdgeList.size();
+					for(size_t i = 0; i < newEdgeList.size(); i++)
 					{
-						*PDANodeStackIter = newNodeList[i];
+						grammrIter->first = newEdgeList[i];
+						assert(newEdgeList[i]->GetActions() == grammrIter->first->GetActions());
+						*PDANodeStackIter = newEdgeList[i]->GetSource();
 						++PDANodeStackIter;
+						++grammrIter;
 					}
+					*PDANodeStackIter = newEdgeList.back()->GetTarget();
 					return{ true,edgeIter };
 				}
 				else if(index >= LRNode->GetCoreNumber())
@@ -180,13 +176,11 @@ namespace ztl
 			{
 				auto&&current = grammarStack[backIndex - i];
 				auto&& edge = current.first;
-				auto&& tokenIndex = current.second;
 				assert(edge->GetActions().size() != 0);
 				if(edge->GetActions().size() == 2)
 				{
 					ExcuteEdgeAdditionAction(current, node);
 				}
-
 				currentPDANode = current.first->GetSource();
 			
 			}
@@ -215,14 +209,12 @@ namespace ztl
 			{
 				auto&&current = grammarStack[backIndex - i];
 				auto&& edge = current.first;
-				auto&& tokenIndex = current.second;
 				assert(edge->GetActions().size() != 0);
 				currentPDANode = current.first->GetSource();
-				grammarStack.pop_back();
-				LRNodeStack.pop_back();
-				PDANodeStack.pop_back();
 			}
-			PDANodeStack.pop_back();
+			this->grammarStack.erase(grammarStack.end() - i, grammarStack.end());
+			this->LRNodeStack.erase(LRNodeStack.end() - i, LRNodeStack.end());
+			this->PDANodeStack.erase(PDANodeStack.end() - (i + 1), PDANodeStack.end());
 			auto ruleIndex = LRNodeStack.back()->GetProductByPDANode(currentPDANode).GetRuleIndex();
 			auto&& ruleName = GetManager()->GetRuleNameByIndex(ruleIndex);
 			auto ruleSymbol = GetManager()->GetRuleSymbolByName(ruleName);
@@ -231,6 +223,7 @@ namespace ztl
 			assert(PDANodeStack.empty() || LRNodeStack.back()->GetItemsMap().find(PDANodeStack.back()) != LRNodeStack.back()->GetItemsMap().end());
 			return ruleSymbol;
 		}
+	
 		bool GeneralLALRParser::IsParserFinish(size_t tokenIndex, ParserSymbol* symbol) const
 		{
 			return  (tokenIndex == GetPools().GetTokenPool().size() - 1) && GetRootRuleSymbol() == symbol;
@@ -239,34 +232,16 @@ namespace ztl
 		{
 		}
 
-		const pair<vector<PDAEdge*>, vector<PDANode*>>& GeneralLALRParser::FindTheNodePath(PDANode* start, PDANode* end)
+		const vector<PDAEdge*>& GeneralLALRParser::FindTheNodePathEdges(PDANode* start, PDANode* end)
 		{
 			auto&& key = make_pair(start, end);
 			auto&& findIter = findPathCacheMap.find(key);
-			if (findIter ==findPathCacheMap.end())
+			if(findIter == findPathCacheMap.end())
 			{
 				auto&& edges = FindThePath(start, end);
-				vector<PDANode*> nodes;
-				//findPathCacheMap.insert({key,make_pair()})
-				for (auto&& edgeIter:edges)
-				{
-					nodes.emplace_back(edgeIter->GetSource());
-				}
-				nodes.emplace_back(edges.back()->GetTarget());
-				findPathCacheMap.insert({make_pair(move(key),make_pair(move(edges),move(nodes)))});
+				findPathCacheMap.insert({ make_pair(move(key),move(edges)) });
 			}
 			return findPathCacheMap[key];
 		}
-
-		const vector<PDAEdge*>& GeneralLALRParser::FindTheNodePathEdges(PDANode* start, PDANode* end)
-		{
-			return FindTheNodePath(start, end).first;
-		}
-
-		const vector<PDANode*>& GeneralLALRParser::FindTheNodePathNodes(PDANode* start, PDANode* end)
-		{
-			return FindTheNodePath(start, end).second;
-		}
-
 	}
 }

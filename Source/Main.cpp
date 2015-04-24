@@ -71,9 +71,8 @@ int main()
 	LARGE_INTEGER Frequency;
 	QueryPerformanceFrequency(&Frequency);
 	QueryPerformanceCounter(&BegainTime);
-
 	//内部调用的regex库 debug模式下拆解token太慢- -debug下性能分析占了90%+的时间- -
-	//release一启动200多ms全部执行完了
+	//release一启动渣本200ms全部执行完了
 	GenerateGeneralParserFile();
 	GenerateXmlParserFile();
 	GenerateJsonParserFile();
@@ -83,8 +82,6 @@ int main()
 
 	//输出运行时间（单位：s）    
 	wcout <<  (double) (EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
-	//TestParseXMLDefine();
-	//TestParseJsonDefine();
-	//TestParseGeneralDefine();
+	
 	return 0;
 }

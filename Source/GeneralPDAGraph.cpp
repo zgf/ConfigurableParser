@@ -390,9 +390,8 @@ namespace ztl
 			MergeStartAndEndNode(machine, PDAMap);
 			AddPDAToPDAMachine(machine, PDAMap);
 			MergeGrammarCommonFactor(machine);
-			
 			CollectNodeAndEdgeMap(machine);
-			LogGraphInfo(machine.GetSymbolManager()->GetGenerateUniqueProperty(L"filename") + L"NonMerge.txt", machine);
+		//	LogGraphInfo(machine.GetSymbolManager()->GetGenerateUniqueProperty(L"filename") + L"NonMerge.txt", machine);
 		}
 	}
 }

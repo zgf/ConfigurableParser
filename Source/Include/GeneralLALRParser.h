@@ -25,9 +25,7 @@ namespace ztl
 			GeneralTreeNode* ExcuteEndAction(const vector<ActionWrap>& acionts);
 			ParserSymbol* ExceteReduceAction(PDANode* currentPDANode, GeneralTreeNode* node, int nodeIndex);
 			ParserSymbol* ExceteReduceWithoutEndAction(PDANode* currentPDANode);
-			const pair<vector<PDAEdge*>, vector<PDANode*>>& FindTheNodePath(PDANode* start, PDANode* end);
 			const vector<PDAEdge*>& FindTheNodePathEdges(PDANode* start, PDANode* end);
-			const vector<PDANode*>& FindTheNodePathNodes(PDANode* start, PDANode* end);
 
 			bool IsParserFinish(size_t tokenIndex,ParserSymbol* node)const;
 		private:
@@ -35,7 +33,7 @@ namespace ztl
 			vector<pair<PDAEdge*,int>>			 grammarStack;
 			vector<LRNode*>						 LRNodeStack;
 			vector<PDANode*>					 PDANodeStack;
-			unordered_map<pair<PDANode*, PDANode*>, pair<vector<PDAEdge*>, vector<PDANode*>>,ztl_hash<pair<PDANode*, PDANode*>>> findPathCacheMap;
+			unordered_map<pair<PDANode*, PDANode*>,vector<PDAEdge*>,ztl_hash<pair<PDANode*, PDANode*>>> findPathCacheMap;
 		};
 	}
 }
