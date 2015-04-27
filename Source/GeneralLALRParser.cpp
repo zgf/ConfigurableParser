@@ -19,7 +19,7 @@ namespace ztl
 			PDANodeStack.emplace_back(currentPDANode);
 			size_t tokenIndex = 0;
 			auto currentSymbol = GetTokenSymbol(tokenIndex);
-			while(!IsParserFinish(tokenIndex, currentSymbol))
+			while(!IsParserFinish(currentSymbol))
 			{
 				currentLRNode = LRNodeStack.back();
 				currentPDANode = PDANodeStack.back();
@@ -142,9 +142,7 @@ namespace ztl
 			}
 			else if(actions[0].GetActionType() == ActionType::Terminate)
 			{
-				auto setterIndex = GetPools().GetTerminatePool().size();
-				SetTerminatePool(GetPools().GetTokenPool()[tokenIndex]);
-				node->SetTermMap(actionIter.GetName(), setterIndex);
+				node->SetTermMap(actionIter.GetName(), tokenIndex);
 			}
 		}
 		GeneralTreeNode* GeneralLALRParser::ExcuteEndAction(const vector<ActionWrap>& acionts)
@@ -158,9 +156,9 @@ namespace ztl
 				for(size_t i = 1; i < acionts.size(); i++)
 				{
 					assert(acionts[i].GetActionType() == ActionType::Setter);
-					auto setterIndex = GetPools().GetTerminatePool().size();
-					SetTerminatePool(make_shared<TokenInfo>(acionts[i].GetValue(), L"Setter", -1, -1));
-					treeNode->SetTermMap(acionts[i].GetName(), setterIndex);
+					auto tokenIndex = GetPools().GetTokenPool().size();
+					SetTokenPool(make_shared<TokenInfo>(acionts[i].GetValue(), L"Setter", -1, -1));
+					treeNode->SetTermMap(acionts[i].GetName(), tokenIndex);
 				}
 			}
 			return treeNode;
@@ -224,11 +222,11 @@ namespace ztl
 			return ruleSymbol;
 		}
 	
-		bool GeneralLALRParser::IsParserFinish(size_t tokenIndex, ParserSymbol* symbol) const
+		bool GeneralLALRParser::IsParserFinish(ParserSymbol* node) const
 		{
-			return  (tokenIndex == GetPools().GetTokenPool().size() - 1) && GetRootRuleSymbol() == symbol;
+			return  GetRootRuleSymbol() == node;
 		}
-		GeneralLALRParser::GeneralLALRParser(const wstring & fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :GeneralParserBase(fileName, _tableDefine)
+		GeneralLALRParser::GeneralLALRParser(const shared_ptr<GeneralTableDefine>& _tableDefine) :GeneralParserBase(_tableDefine)
 		{
 		}
 

@@ -10,7 +10,6 @@ namespace ztl
 		{
 			static unordered_map<wstring, int> signMap =
 			{
-
 				{
 					L"GeneralTokenDefine::TokenOptional::False",
 					static_cast<int>(GeneralTokenDefine::TokenOptional::False)
@@ -23,7 +22,7 @@ namespace ztl
 			assert(signMap.find(value) != signMap.end());
 			return signMap[value];
 		}
-		void ReflectionBuidler(const wstring& className, const wstring& fieldName, shared_ptr<void> classObject, shared_ptr<void> valueObject)
+		void ReflectionBuidler(const wstring& className, const wstring& fieldName, const shared_ptr<void>& classObject, const shared_ptr<void>& valueObject)
 		{
 			using builderType = void(*)(const shared_ptr<void>&, const shared_ptr<void>&);
 			static unordered_map<wstring, unordered_map<wstring, builderType>> builderMap =
@@ -152,7 +151,6 @@ namespace ztl
 				},{
 					L"GeneralTokenTypeObject",
 					{
-
 					}
 				},{
 					L"GeneralGrammarCreateTypeDefine",
@@ -233,12 +231,10 @@ namespace ztl
 				},{
 					L"GeneralTypeDefine",
 					{
-
 					}
 				},{
 					L"GeneralTypeObject",
 					{
-
 					}
 				},{
 					L"GeneralArrayTypeObject",
@@ -326,7 +322,6 @@ namespace ztl
 				},{
 					L"GeneralGrammarTypeDefine",
 					{
-
 					}
 				},{
 					L"GeneralGrammarTextTypeDefine",
@@ -452,7 +447,6 @@ namespace ztl
 			using reflectObjectType = shared_ptr<void>(*)();
 			static unordered_map < wstring, reflectObjectType> objectMap =
 			{
-
 				{
 					L"GeneralTableDefine",
 					[]()->shared_ptr<void>
@@ -634,6 +628,7 @@ namespace ztl
 		}
 
 
+
 		void TrimLeftAndRightOneQuotation(wstring& value)
 		{
 			if(value.front() == '"')
@@ -759,11 +754,14 @@ namespace ztl
 			parser.SaveHeterogeneousNode(rootObject);
 			ztl::general_parser::GeneralHeterogeneousParserTree(parser, root, rootObject);
 			DealWithQuotation((GeneralTableDefine*) rootObject.get());
+
 			return rootObject;
 		}
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser)
 		{
 			return ztl::general_parser::GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 		}
+
+	
 	}
 }

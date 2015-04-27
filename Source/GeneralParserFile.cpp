@@ -9,9 +9,12 @@ namespace ztl
 		GeneralParserFile::GeneralParserFile(const shared_ptr<GeneralParserBase>& _generalParser) :generalParser(_generalParser)
 		{
 		}
+		GeneralParserFile::GeneralParserFile(const wstring & _fileName, const shared_ptr<GeneralParserBase>& _generalParser) : generalParser(_generalParser), fileName(_fileName)
+		{
+		}
 		shared_ptr<GeneralTableDefine> GeneralParserFile::GetGenerateParserTableDefine()
 		{
-			generalParser->BuildParser();
+			generalParser->BuildParser(fileName);
 			generalParser->GenerateIsomorphismParserTree();
 			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
 			return shared_ptr<GeneralTableDefine>(*(std::shared_ptr<GeneralTableDefine>*)(&parserResult));

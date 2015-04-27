@@ -8,7 +8,7 @@ namespace ztl
 		{
 		public:
 			GeneralLALRParser() = delete;
-			GeneralLALRParser(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine);
+			GeneralLALRParser(const shared_ptr<GeneralTableDefine>& _tableDefine);
 
 			~GeneralLALRParser() noexcept = default;
 			GeneralLALRParser(GeneralLALRParser&&) = default;
@@ -27,7 +27,7 @@ namespace ztl
 			ParserSymbol* ExceteReduceWithoutEndAction(PDANode* currentPDANode);
 			const vector<PDAEdge*>& FindTheNodePathEdges(PDANode* start, PDANode* end);
 
-			bool IsParserFinish(size_t tokenIndex,ParserSymbol* node)const;
+			bool IsParserFinish(ParserSymbol* node)const;
 		private:
 			vector<int>							 treeNodeStack;
 			vector<pair<PDAEdge*,int>>			 grammarStack;

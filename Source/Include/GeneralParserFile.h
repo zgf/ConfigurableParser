@@ -16,6 +16,8 @@ namespace ztl
 		public:
 			GeneralParserFile()  = default;
 			GeneralParserFile(const shared_ptr<GeneralParserBase>& _generalParser);
+			GeneralParserFile(const wstring& fileName,const shared_ptr<GeneralParserBase>& _generalParser);
+
 			~GeneralParserFile() noexcept = default;
 			GeneralParserFile(GeneralParserFile&&)  = default;
 			GeneralParserFile(const GeneralParserFile&)  = default;
@@ -48,7 +50,7 @@ namespace ztl
 
 		private:
 			shared_ptr<GeneralParserBase>	generalParser;
-			
+			wstring fileName;
 
 		};
 		extern void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine);

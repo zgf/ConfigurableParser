@@ -10,29 +10,41 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		GeneralParserBase::GeneralParserBase(const wstring& _fileName, const shared_ptr<GeneralTableDefine>& _tableDefine) :
-			manager(make_shared<SymbolManager>(_tableDefine)),fileName(_fileName)
+		GeneralParserBase::GeneralParserBase(const shared_ptr<GeneralTableDefine>& _tableDefine) :
+			manager(make_shared<SymbolManager>(_tableDefine))
 		{
-			
 		}
 
+		void GeneralParserBase::BuildParser(const wstring& fileName)
+		{
+			assert(!fileName.empty());
+			pools.SetTokenPool(ParseToken(fileName));
+			BuildParser();
+		}
+		void GeneralParserBase::BuildParser(const vector<shared_ptr<TokenInfo>>& tokens)
+		{
+			pools.SetTokenPool(tokens);
+			BuildParser();
+		}
+		void GeneralParserBase::BuildParser(vector<shared_ptr<TokenInfo>>&& tokens)
+		{
+			pools.SetTokenPool(std::forward<vector<shared_ptr<TokenInfo>>&&>(tokens));
+			BuildParser();
+		}
 		void GeneralParserBase::BuildParser()
 		{
-			pools.SetTokenPool(move(ParseToken(fileName)));
 			ValidateGeneratorCoreSemantic(manager.get());
 			auto machine = make_shared<PushDownAutoMachine>(manager.get());
 			CreateDPDAGraph(*machine.get());
 			LRMachine = make_shared<GeneralLRMachine>(machine);
 			LRMachine->BuildFirstTable();
 			LRMachine->BuildLRItems();
-			//LRMachine->LogItems(L"LogGeneralLRMchine.txt");
 		}
 		SymbolManager* GeneralParserBase::GetManager() const
 		{
 			return manager.get();
 		}
-		
-		
+
 		void GeneralParserBase::SaveHeterogeneousNode(const shared_ptr<void>& node)
 		{
 			pools.SetHeterogeneousPool(node);
@@ -69,7 +81,7 @@ namespace ztl
 		}
 
 		const GeneralNodePools& GeneralParserBase::GetPools() const
-{
+		{
 			return pools;
 			// TODO: insert return statement here
 		}
@@ -77,11 +89,12 @@ namespace ztl
 		{
 			return manager->GetRuleSymbolByName(LRMachine->GetMachine().GetRootRuleName());
 		}
-		void GeneralParserBase::SetTerminatePool(const shared_ptr<TokenInfo>& infos)
-		{
-			pools.SetTerminatePool(infos);
-		}
+
 		void GeneralParserBase::SetTokenPool(const vector<shared_ptr<TokenInfo>>& tokens)
+		{
+			pools.SetTokenPool(tokens);
+		}
+		void GeneralParserBase::SetTokenPool(const shared_ptr<TokenInfo>& tokens)
 		{
 			pools.SetTokenPool(tokens);
 		}
@@ -93,6 +106,7 @@ namespace ztl
 		{
 			pools.SetTokenPool(std::forward<vector<shared_ptr<TokenInfo>>&&>(tokens));
 		}
+
 		void GeneralParserBase::SetHeterogeneousPool(const shared_ptr<void>& element)
 		{
 			pools.SetHeterogeneousPool(element);
@@ -103,9 +117,7 @@ namespace ztl
 		}
 		shared_ptr<TokenInfo> GeneralParserBase::GetTermNodeByIndex(int index) const
 		{
-			return pools.GetTerminatePool()[index];
+			return pools.GetTokenPool()[index];
 		}
-		
-	
 	}
 }

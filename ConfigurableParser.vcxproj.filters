@@ -139,9 +139,6 @@
     <ClCompile Include="Source\GenerateFile\Xml\XmlParser.cpp">
       <Filter>Source\GenerateFile\Xml</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BootstrapDefineTable.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralParserReflection.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
@@ -158,6 +155,9 @@
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GeneralParserBase.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BootstrapDefineTable.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
   </ItemGroup>

@@ -37,13 +37,11 @@ namespace ztl
 				return tokenPool;
 			}
 			
-			const vector<shared_ptr<TokenInfo>>& GetTerminatePool()const
+			
+
+			void SetTokenPool(const shared_ptr<TokenInfo>& token)
 			{
-				return terminatePool;
-			}
-			void SetTerminatePool(const shared_ptr<TokenInfo>& infos)
-			{
-				terminatePool.emplace_back(infos);
+				tokenPool.emplace_back(token);
 			}
 			void SetTokenPool(const vector<shared_ptr<TokenInfo>>& tokens)
 			{
@@ -65,14 +63,12 @@ namespace ztl
 			vector<shared_ptr<GeneralTreeNode>>  generalNodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
 			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
-			vector<shared_ptr<TokenInfo>>		 terminatePool;
 			vector<shared_ptr<void>>			 heterogeneousPool;
 		};
 		class GeneralParserBase
 		{
 		public:
-			GeneralParserBase(const wstring& fileName, const shared_ptr<GeneralTableDefine>& _tableDefine);
-
+			GeneralParserBase(const shared_ptr<GeneralTableDefine>& _tableDefine);
 			GeneralParserBase()  = default;
 			~GeneralParserBase() noexcept = default;
 			GeneralParserBase(GeneralParserBase&&)  = default;
@@ -80,12 +76,15 @@ namespace ztl
 			GeneralParserBase& operator=(GeneralParserBase&&)  = default;
 			GeneralParserBase& operator=(const GeneralParserBase&)   = default;
 		public:
-			void SetTerminatePool(const shared_ptr<TokenInfo>& infos);
 			void SetTokenPool(const vector<shared_ptr<TokenInfo>>& tokens);
 			void SetTokenPool(vector<shared_ptr<TokenInfo>>&& tokens);
+			void SetTokenPool(const shared_ptr<TokenInfo>& token);
 			void SetGeneralNodePool(const shared_ptr<GeneralTreeNode>& node);
 			void SetHeterogeneousPool(const shared_ptr<void>& element);
-			void					BuildParser();
+			void BuildParser(const wstring& fileName);
+			void BuildParser(const vector<shared_ptr<TokenInfo>>& tokens);
+			void BuildParser(vector<shared_ptr<TokenInfo>>&& tokens);
+
 			virtual void GenerateIsomorphismParserTree();
 			GeneralTreeNode* GetGeneralTreeRoot() const;
 			SymbolManager* GetManager() const;
@@ -99,11 +98,11 @@ namespace ztl
 		protected:
 			GeneralTreeNode*	MakeTreeNode(ParserSymbol* symbol);
 			GeneralTreeNode*	CopyTreeNode(GeneralTreeNode*);
+			void BuildParser();
 
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
 			
 		protected:
-			wstring								 fileName;
 			shared_ptr<SymbolManager>			 manager;
 			GeneralNodePools					 pools;
 			GeneralTreeNode*					 generalTreeRoot;

@@ -43,7 +43,7 @@ namespace ztl
 				auto ruleSymbol = machine->GetSymbolManager()->GetRuleSymbolByName(node->name);
 				if(ruleSymbol)
 				{
-					ActionWrap wrap(ActionType::NonTerminate, ruleSymbol, L"");
+					ActionWrap wrap(ActionType::NonTerminate, ruleSymbol);
 					machine->AddEdge(result.first, result.second, move(wrap));
 				}
 				else
@@ -101,7 +101,7 @@ namespace ztl
 				auto manager = machine->GetSymbolManager();
 				createTypeSymbol = FindType(manager, manager->GetGlobalSymbol(), node->type.get());
 				node->grammar->Accept(this);
-				ActionWrap wrap(ActionType::Create, createTypeSymbol, L"");
+				ActionWrap wrap(ActionType::Create, createTypeSymbol);
 				//合并的节点可能是循环.直接Addition这样的话会导致create在循环内出现多次
 				auto newNode = machine->NewNode();
 				machine->AddEdge(result.second, newNode, move(wrap));
@@ -123,7 +123,7 @@ namespace ztl
 				{
 					auto fieldSymbol = createTypeSymbol->SearchClassFieldSymbol(node->name);
 					assert(fieldSymbol != nullptr&&fieldSymbol->IsFieldDef());
-					wrap = ActionWrap(ActionType::Assign, fieldSymbol, ruleSymbol->GetName());
+					wrap = ActionWrap(ActionType::Assign, fieldSymbol);
 				}
 				else
 				{
@@ -135,7 +135,7 @@ namespace ztl
 						fieldTypeSymbol = fieldTypeSymbol->GetDescriptorSymbol();
 					}
 					assert(fieldTypeSymbol->IsType() && !fieldTypeSymbol->IsArrayType());
-					wrap = ActionWrap(ActionType::Assign, fieldSymbol, fieldTypeSymbol->GetName());
+					wrap = ActionWrap(ActionType::Assign, fieldSymbol);
 				}
 				node->grammar->Accept(this);
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));

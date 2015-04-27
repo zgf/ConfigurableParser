@@ -41,21 +41,56 @@ namespace ztl
 			//Shift ParserSymbol From RuleDef
 			//Using ParserSymbol From RuleDef
 			ParserSymbol* data;
-			wstring value;//setter value assgin ruleName
+			shared_ptr<wstring> value;//setter value assgin ruleName
 			
 		public:
 			ActionWrap() = default;
-			~ActionWrap() noexcept = default;
-			ActionWrap(ActionWrap&&)  = default;
-			ActionWrap(const ActionWrap&)  = default;
-			ActionWrap& operator=(ActionWrap&&)  = default;
-			ActionWrap& operator=(const ActionWrap&)  = default;
+			~ActionWrap() noexcept
+			{
+			}
+			ActionWrap(ActionWrap&& target):action(target.action),data(target.data),value(target.value)
+			{
+				target.data = nullptr;
+				target.value = nullptr;
+			}
+			ActionWrap(const ActionWrap& target)
+				:action(target.action),data(target.data),
+				value(target.value == nullptr?
+				nullptr: make_shared<wstring>(*target.value))
+			{
+
+			}
+			ActionWrap& operator=(ActionWrap&& target)
+			{
+				if(&target == this)
+				{
+					return *this;
+				}
+				action = target.action;
+				data = target.data;
+				value = target.value;
+				target.data = nullptr;
+				target.value = nullptr;
+				return *this;
+			}
+			ActionWrap& operator=(const ActionWrap&target)
+			{
+				if (&target == this)
+				{
+					return *this;
+				}
+				action = target.action;
+				data = target.data;
+				value = (target.value == nullptr ?
+					nullptr : make_shared<wstring>(*target.value));
+				return *this;
+			}
 			ActionWrap(ActionType _action, ParserSymbol* _data, const wstring& _value)
-				: action(_action), data(_data), value(_value)
+				: action(_action), data(_data), value(make_shared<wstring>(_value))
 			{
 			}
 			ActionWrap(ActionType _action, ParserSymbol* _data)
-				: action(_action), data(_data)
+				: action(_action), data(_data),value(nullptr)
 			{
 			}
 			ActionType GetActionType()const
@@ -69,14 +104,51 @@ namespace ztl
 			const wstring& GetName()const;
 			const wstring& GetValue()const
 			{
-				return value;
+				return *value;
 			}
-			
+			bool LessThanValue(const shared_ptr<wstring>& right)const
+			{
+				if (value == nullptr&&right == nullptr)
+				{
+					return false;
+				}
+				else if(value == nullptr)
+				{
+					return true;
+				}
+				else if(right == nullptr)
+				{
+					return false;
+				}
+				else
+				{
+					return *value < *right;
+				}
+			}
+			bool IsEqualValue(const shared_ptr<wstring>& right)const
+			{
+				if(value == nullptr&&right == nullptr)
+				{
+					return true;
+				}
+				else if(value == nullptr||right == nullptr)
+				{
+					return false;
+				}
+				else
+				{
+					return *value == *right;
+				}
+			}
+			bool HasValue()const
+			{
+				return value != nullptr;
+			}
 			bool operator==(const ActionWrap& target)const
 			{
 				return target.action == action&&
 					target.GetName() == GetName() &&
-					target.value == value;
+					IsEqualValue(target.value);
 			}
 			friend bool operator!=(const ActionWrap& left, const ActionWrap& target)
 			{
@@ -88,7 +160,7 @@ namespace ztl
 				{
 					if(left.GetName() == right.GetName())
 					{
-						return left.GetValue() < right.GetValue();
+						return left.LessThanValue( right.value);
 					}
 					else
 					{

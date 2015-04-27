@@ -7,9 +7,6 @@ namespace ztl
 	namespace hasher
 	{
 
-
-
-
 		// TEMPLATE STRUCT hash
 		template<class _Kty>
 		struct ztl_hash
