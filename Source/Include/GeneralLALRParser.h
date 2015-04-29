@@ -4,7 +4,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		class GeneralLALRParser:public GeneralParserBase
+		 class GeneralLALRParser: public GeneralParserBase
 		{
 		public:
 			GeneralLALRParser() = delete;
