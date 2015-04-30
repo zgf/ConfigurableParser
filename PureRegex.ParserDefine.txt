@@ -1,0 +1,139 @@
+classprefix : "PureRegex";
+filename : "PureRegexParser";
+include : "Include/stdafx.h";
+namespace : "ztl";
+namespace : "pure_regex";
+dirname : "PureRegex";
+
+class Define
+{
+
+};
+
+class Sequence : Define
+{
+	Define first;
+	Define second;
+};
+class Alternate : Define
+{
+	Define left;
+	Define right;
+};
+
+class Repeat : Define
+{
+	enum RepeatType
+	{
+		KLEENEGREEDY,
+		KLEENE,
+		POSITIVEKLEENEGREEDY,
+		POSITIVEKLEENE,
+		CHOCIEKLEENEGREEDY,
+		CHOCIEKLEENE,
+	};
+	RepeatType type;
+};
+class Factor : Define
+{
+	
+};
+
+class NormalFactor : Factor
+{
+	token name;
+};
+class UserDefineFactor : Factor
+{
+	enum UserDefineType
+	{
+		TROPEW,
+		TROPEw,
+		TROPES,
+		TROPEs,
+		TROPED,
+		TROPEd,
+		MatchAll,
+	};
+	UserDefineType type;
+};
+class BinaryFactor : Factor
+{
+	NormalFactor begin;
+	NormalFactor end;
+};
+class CharSet : Define
+{
+	enum CharSetOptional
+	{
+		Positve,
+		Reverse,
+	};
+	CharSetOptional type;
+	Factor[] tokens;
+};
+
+class TokenUnit : Define
+{
+	Define charset;
+	Repeat  repeat;
+};
+
+token CHASETBEGIN = "\[";
+token CHASETREVERSEBEGIN = "\[^";
+token CHASETEND = "\]";
+token PARENTOPEN ="\(";
+token PARENTCLOSE = "\)";
+token KLEENEGREEDY = "\*";
+token KLEENE = "\*\?";
+token POSITIVEKLEENEGREEDY = "\+";
+token POSITIVEKLEENE = "\+\?";
+token CHOCIEKLEENEGREEDY = "\?";
+token CHOCIEKLEENE = "\?\?";
+token CHOCIE = "\|";
+token CONPONENT = "-";
+token TROPE = "\\";
+token TROPEW = "\\W";
+token TROPEw = "\\w";
+token TROPED = "\\D";
+token TROPEd = "\\d";
+token TROPES = "\\S";
+token TROPEs = "\\s";
+token MatchAll = "\.";
+token NORMAL = "...";
+rule NormalFactor NormalFactorRule  =  NORMAL : name as NormalFactor;
+rule Factor BinaryFactorRule  = NormalFactorRule : begin "-" NormalFactorRule : end  as BinaryFactor;
+rule Factor UserDefineFactorRule = "\W" as 	UserDefineFactor with{type = "TROPEW"}
+								 = "\w" as 	UserDefineFactor with{type = "TROPEw"}
+								 = "\D" as 	UserDefineFactor with{type = "TROPED"}
+								 = "\d" as 	UserDefineFactor with{type = "TROPEd"}
+								 = "\S" as 	UserDefineFactor with{type = "TROPES"}
+								 = "\s" as 	UserDefineFactor with{type = "TROPEs"}
+								 ;
+rule Factor FactorRule  = !NormalFactorRule | !BinaryFactorRule|!UserDefineFactorRule
+						;
+						
+rule Define CharSetRule = "[" {FactorRule : tokens} "]" as CharSet with {type="Positve"}
+						= "[^" {FactorRule: tokens}"]" as CharSet with {type="Reverse"}
+						= !FactorRule
+						
+						;
+rule Repeat RepeatRule = "*" as Repeat with {type="KLEENEGREEDY"}
+					   = "*?" as Repeat with {type="KLEENE"}
+					   = "+" as Repeat with {type="POSITIVEKLEENEGREEDY"}
+					   = "+?" as Repeat with {type="POSITIVEKLEENE"}
+					   = "??" as Repeat with {type="CHOCIEKLEENEGREEDY"}
+					   = "?" as Repeat with {type="CHOCIEKLEENE"}
+					   ;
+					   
+rule Define SequenceRule = SequenceRule : first TokenUnitRule : second as Sequence
+						 = !TokenUnitRule
+						 ;
+rule Define TokenUnitRule = CharSetRule : charset RepeatRule : repeat as TokenUnit
+						 = !CharSetRule
+						 = "(" !AlertRule ")"
+						 ;
+						 
+rule Define AlertRule = AlertRule:left SequenceRule : right as Alternate
+					  = !SequenceRule
+					  ;

@@ -543,7 +543,13 @@ namespace ztl
 	wstring LinearStringToRegexString(const wstring& literal)
 	{
 		wstring result;
-		for(int i = 0; i < literal.size(); i++)
+		int begin = 0;
+		if (literal[0] == '^')
+		{
+			result += LR"(\)" + wstring(1, literal[0]);
+			++begin;
+		}
+		for(int i = begin; i < literal.size(); i++)
 		{
 			auto c = literal[i];
 			switch(c)
@@ -560,7 +566,6 @@ namespace ztl
 				case L'\n':
 				case L'\t':
 				case L'\r':
-				case L'^':
 				case L'$':
 				case L'+':
 				case L'*':

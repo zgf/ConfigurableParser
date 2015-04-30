@@ -174,7 +174,11 @@ namespace ztl
 		ParserSymbol * ParserSymbol::SearchClassFieldSymbol(const wstring & _name)
 		{
 			auto result = SearchClassSubSymbol(_name);
-			return (result->IsFieldDef())?result:nullptr;
+			if (result !=nullptr&&result->IsFieldDef())
+			{
+				return result;
+			}
+			return nullptr;
 		}
 
 		

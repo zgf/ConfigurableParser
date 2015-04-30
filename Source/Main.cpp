@@ -86,6 +86,12 @@ void GenerateJsonParserFile()
 	ztl::general_parser::GeneralParserFile parserGen(L"Json.ParserDefine.txt", make_shared<ztl::general_parser::GeneralLALRParser>(ztl::general_parser::BootStrapDefineTable()));
 	parserGen.GenerateSpecialParserFile();
 }
+void GeneratePureRegexParserFile()
+{
+
+	ztl::general_parser::GeneralParserFile parserGen(L"PureRegex.ParserDefine.txt", make_shared<ztl::general_parser::GeneralLALRParser>(ztl::general_parser::BootStrapDefineTable()));
+	parserGen.GenerateSpecialParserFile();
+}
 void GenerateFile()
 {
 	LARGE_INTEGER BegainTime;
@@ -103,6 +109,8 @@ void GenerateFile()
 }
 int main()
 {
+	//GenerateFile();
+	GeneratePureRegexParserFile();
 	//内部调用的regex库 debug模式下拆解token太慢- -debug下性能分析占了90%+的时间- -
 	//release一启动渣本200ms全部执行完了
 	//GenerateFile();
@@ -112,7 +120,7 @@ int main()
 	//解析10W行XML 0.9s
 	//解析100W行XML 3G内存用完了- -.
 	//解析的性能还不错
-	TestJson();
+	//TestJson();
 	//TestXml();
 	return 0;
 }

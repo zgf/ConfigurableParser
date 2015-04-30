@@ -21,6 +21,7 @@ namespace ztl
 			auto currentSymbol = GetTokenSymbol(tokenIndex);
 			while(!IsParserFinish(currentSymbol))
 			{
+				
 				currentLRNode = LRNodeStack.back();
 				currentPDANode = PDANodeStack.back();
 				assert(grammarStack.empty() || grammarStack.back().first->GetTarget() == currentPDANode);

@@ -168,6 +168,7 @@ namespace ztl
 			ParserSymbol* regexSymbol = nullptr;
 			auto tokenSymbol = CreatASymbol(SymbolType::TokenDef, name, GetGlobalSymbol(), regexSymbol, ignore);
 			regexSymbol = CreatASymbol(SymbolType::RegexDef, regex, GetGlobalSymbol(), tokenSymbol, ignore);
+			//Need Check
 			TryAddSubSymbol(regexSymbol, GetGlobalSymbol());
 			TryAddSubSymbol(tokenSymbol, GetGlobalSymbol());
 			return tokenSymbol;
