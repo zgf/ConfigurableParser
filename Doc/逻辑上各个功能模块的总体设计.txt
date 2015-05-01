@@ -1,0 +1,32 @@
+#pragma once
+总得模块划分:
+依赖基础库:
+ztl_fast_pair_builder.
+ztl_regex
+ztl_generator
+解决字符串匹配和拼接变量散落在源码内,可读性差的问题
+变量名约定:
+字符串内变量名$<变量名(单词大写)>
+源码内对应变量名(驼峰式)
+匹配替换.
+工程模块:
+1.符号表和符号表管理模块
+ParserSymbol和SymbolManager
+2.结构化BENF手写模块.
+用来手写最初的Boostrap函数.
+3.结构化EBNF的语义分析模块
+GeneralAnalyze
+EBNF其实就是手写的AST.验证手写的EBNF是否语义正确,并且收集符号表
+4.非确定下推自动机模块
+GeneralPushDownMachine就是读取符号表和结构化EBNF去生成NPDA
+5.确定性下推自动机模块
+GeneralLRMachine构建确定性下推自动机
+6.自动机基类模块.
+GeneralParserBase 可以基于这个类派生出GLR或者LALR或者其他类型的自动机.
+重写GenerateIsomorphismParserTree函数就行
+7.LALR自动机模块
+GeneralLALRMachine 
+通过调用GeneralLRMachine内的CheckShiftAndReduceConfilct判断到底应该使用LALR还是GLR.该模块重写了GenerateIsomorphismParserTree
+按LALR的方式进行解析
+8.生成编译器的反射,boostrap文件文件
+GeneralParserFile.对解析后的所需语言的结构化EBNF进行语义分析生成符号表.生成反射和boostrap文件.
