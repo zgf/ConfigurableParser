@@ -50,6 +50,9 @@
     <Filter Include="Source\GenerateFile\General">
       <UniqueIdentifier>{a207762d-b469-4396-bfad-51c6a50f1c51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\GenerateFile\PureRegex">
+      <UniqueIdentifier>{0e787807-5cd2-4183-a386-54b7f092747f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -160,6 +163,12 @@
     <ClCompile Include="Source\BootstrapDefineTable.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParser.cpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexLexer.cpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -239,6 +248,18 @@
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralParserBase.h">
       <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexParser.h">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexLexer.h">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTest\GenerateFileTest.h">
+      <Filter>UnitTest</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTest\ParserTest.h">
+      <Filter>UnitTest</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

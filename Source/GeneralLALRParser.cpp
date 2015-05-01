@@ -66,6 +66,10 @@ namespace ztl
 				}
 			}
 			assert(treeNodeStack.size() == 1);
+			treeNodeStack.clear();
+			PDANodeStack.clear();
+			LRNodeStack.clear();
+			grammarStack.clear();
 			this->generalTreeRoot = GetPools().GetGeneralNodePool()[treeNodeStack[0]].get();
 		}
 

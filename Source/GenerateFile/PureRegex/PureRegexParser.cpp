@@ -390,7 +390,7 @@ namespace ztl
 				.Token(L"TROPES", LR"(\\S)")
 				.Token(L"TROPEs", LR"(\\s)")
 				.Token(L"MatchAll", LR"(\.)")
-				.Token(L"NORMAL", LR"(...)")
+				.Token(L"NORMAL", LR"(siguoyi)")
 
 				)
 				.Type

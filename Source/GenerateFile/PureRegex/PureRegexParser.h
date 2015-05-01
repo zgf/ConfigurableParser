@@ -28,7 +28,7 @@ namespace ztl
 		struct Repeat;
 		struct Alternate;
 		struct Sequence;
-
+		struct Factor;
 		struct Define
 		{
 			class IVisitor
@@ -188,5 +188,7 @@ namespace ztl
 
 		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* root);
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser);
+		vector<shared_ptr<ztl::general_parser::TokenInfo>> PureRegexParseToken(const wstring& pattern);
+
 	}
 }

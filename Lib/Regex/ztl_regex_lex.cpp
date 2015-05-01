@@ -319,7 +319,7 @@ namespace ztl
 	void RegexLex::ParseNamedCapture(const wstring& pattern, Ptr<vector<RegexToken>>& tokens, int& index, const Ptr<vector<RegexControl>>& optional)
 	{
 		tokens->emplace_back(RegexToken(TokenType::CaptureBegin));
-
+		
 		auto index_end = RegexLex::GetLongestMatched(L'(', L')', pattern, index);
 
 		JumpTrivalCharacter(index, 2);
@@ -492,7 +492,7 @@ namespace ztl
 			}
 			else if(pattern[start_index] == matched_end)
 			{
-				if(!(start_index != 0 && pattern[start_index - 1] == '\\'))
+				if((start_index == 0 || pattern[start_index - 1] != '\\')||(start_index>=2&&pattern[start_index - 1] == pattern[start_index - 2]&& pattern[start_index - 2] == '\\'))
 				{
 					count--;
 				}
