@@ -28,17 +28,17 @@
 								L"Instruction",
 								{
 									{
-										L"name",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<Instruction>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
-											return;
-										}
-									},{
 										L"attributes",
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<Instruction>(classObject)->attributes.emplace_back(std::static_pointer_cast<Attribute>(valueObject));
+											return;
+										}
+									},{
+										L"name",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<Instruction>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
 										}
 									},
@@ -107,10 +107,10 @@
 								L"Element",
 								{
 									{
-										L"name",
+										L"subNodes",
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
-											std::static_pointer_cast<Element>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
+											std::static_pointer_cast<Element>(classObject)->subNodes.emplace_back(std::static_pointer_cast<Node>(valueObject));
 											return;
 										}
 									},{
@@ -121,10 +121,10 @@
 											return;
 										}
 									},{
-										L"subNodes",
+										L"name",
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
-											std::static_pointer_cast<Element>(classObject)->subNodes.emplace_back(std::static_pointer_cast<Node>(valueObject));
+											std::static_pointer_cast<Element>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
 										}
 									},{

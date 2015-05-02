@@ -60,18 +60,7 @@ namespace ztl
 			this->descriptor = _descriptor;
 		}
 
-		void ParserSymbol::SetFieldEssential()
-{
-			assert(this->IsFieldDef());
-			ignore = false;
-		}
-
-		bool ParserSymbol::IsChoiceFieldDef() const
-		{
-			assert(IsFieldDef());
-			return ignore;
-		}
-
+	
 		ParserSymbol * ParserSymbol::GetSubSymbolByName(const wstring & _name) const
 		{
 			assert(subSymbolMap != nullptr);
@@ -156,10 +145,10 @@ namespace ztl
 			return this->ignore;
 		}
 
-		bool ParserSymbol::EqualToBaseClassType(ParserSymbol* baseDef)
+		bool ParserSymbol::EqualToBaseClassType(ParserSymbol* baseDef)const
 		{
 			assert(baseDef->IsClassType()&&this->IsClassType());
-			ParserSymbol* work = this;
+			auto work = this;
 			while(work!=nullptr)
 			{
 				if (work == baseDef)
@@ -171,14 +160,10 @@ namespace ztl
 			return false;
 		}
 
-		ParserSymbol * ParserSymbol::SearchClassFieldSymbol(const wstring & _name)
+		ParserSymbol* ParserSymbol::SearchClassFieldDefSymbol(const wstring& _name) const
 		{
 			auto result = SearchClassSubSymbol(_name);
-			if (result !=nullptr&&result->IsFieldDef())
-			{
-				return result;
-			}
-			return nullptr;
+			return (result != nullptr&&result->IsFieldDef())? result :nullptr;
 		}
 
 		
@@ -220,8 +205,8 @@ namespace ztl
 		{
 			return  (absoluteScope.empty()) ?name:absoluteScope + L"::" + name;
 		}
-		const unordered_map<wstring, ParserSymbol*> ParserSymbol::GetSubSymbolMap() const
-		{
+		const unordered_map<wstring, ParserSymbol*>& ParserSymbol::GetSubSymbolMap() const
+{
 			return *subSymbolMap;
 		}
 

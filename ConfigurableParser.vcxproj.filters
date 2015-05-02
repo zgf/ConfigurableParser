@@ -74,6 +74,9 @@
     <Text Include="Doc\符号表的设计.txt">
       <Filter>Doc</Filter>
     </Text>
+    <Text Include="Doc\逻辑上各个功能模块的总体设计.txt">
+      <Filter>Doc</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">

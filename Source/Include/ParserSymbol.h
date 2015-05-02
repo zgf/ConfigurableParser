@@ -55,15 +55,13 @@ namespace ztl
 			ParserSymbol*							GetDescriptorSymbol()					 const;
 			void									AddSubSymbol(ParserSymbol* subSymbol);
 			void									SetDescriptor(ParserSymbol* _descriptor);
-			void									SetFieldEssential();
-			bool									IsChoiceFieldDef()						 const;
 			ParserSymbol*							GetSubSymbolByName(const wstring& _name) const;
 			size_t									SubSymbolCount()						 const;
 			ParserSymbol*							SearchClassSubSymbol(const wstring& _name)const;
 			vector<ParserSymbol*>					GetClassAllFieldDefSymbol()const;
-			const unordered_map<wstring, ParserSymbol*>	GetSubSymbolMap()const;
+			const unordered_map<wstring, ParserSymbol*>& GetSubSymbolMap()const;
 			wstring									GetSymbolAbsoluteName()const;
-			void SetAbsoluteScope(const wstring& scope);
+			void									SetAbsoluteScope(const wstring& scope);
 		
 		public:
 			bool									IsType()     const;
@@ -80,8 +78,8 @@ namespace ztl
 			bool									IsRuleDef()  const;
 			bool									IsIgnore() const;
 
-			bool EqualToBaseClassType(ParserSymbol* baseDef);
-			ParserSymbol* SearchClassFieldSymbol(const wstring& _name);
+			bool EqualToBaseClassType(ParserSymbol* baseDef)const;//判断baseDef是不是当前class的基类的classDef
+			ParserSymbol* SearchClassFieldDefSymbol(const wstring& _name)const;
 		};
 	}
 }

@@ -36,17 +36,17 @@
 								L"GeneralTableDefine",
 								{
 									{
-										L"heads",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralTableDefine>(classObject)->heads.emplace_back(std::static_pointer_cast<GeneralHeadInfoDefine>(valueObject));
-											return;
-										}
-									},{
 										L"types",
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<GeneralTableDefine>(classObject)->types.emplace_back(std::static_pointer_cast<GeneralTypeDefine>(valueObject));
+											return;
+										}
+									},{
+										L"heads",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralTableDefine>(classObject)->heads.emplace_back(std::static_pointer_cast<GeneralHeadInfoDefine>(valueObject));
 											return;
 										}
 									},{
@@ -85,32 +85,6 @@
 									},
 								}
 							},{
-								L"GeneralGrammarSetterTypeDefine",
-								{
-									{
-										L"grammar",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
-											return;
-										}
-									},{
-										L"name",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
-											return;
-										}
-									},{
-										L"value",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->value=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
-											return;
-										}
-									},
-								}
-							},{
 								L"GeneralHeadInfoDefine",
 								{
 									{
@@ -125,6 +99,32 @@
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->value=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarSetterTypeDefine",
+								{
+									{
+										L"name",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
+											return;
+										}
+									},{
+										L"grammar",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
+											return;
+										}
+									},{
+										L"value",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralGrammarSetterTypeDefine>(classObject)->value=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
 										}
 									},
@@ -279,17 +279,17 @@
 								L"GeneralClassTypeDefine",
 								{
 									{
-										L"subTypes",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralClassTypeDefine>(classObject)->subTypes.emplace_back(std::static_pointer_cast<GeneralTypeDefine>(valueObject));
-											return;
-										}
-									},{
 										L"name",
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<GeneralClassTypeDefine>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
+											return;
+										}
+									},{
+										L"subTypes",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralClassTypeDefine>(classObject)->subTypes.emplace_back(std::static_pointer_cast<GeneralTypeDefine>(valueObject));
 											return;
 										}
 									},{
@@ -372,17 +372,17 @@
 								L"GeneralGrammarAssignTypeDefine",
 								{
 									{
-										L"name",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralGrammarAssignTypeDefine>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
-											return;
-										}
-									},{
 										L"grammar",
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<GeneralGrammarAssignTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
+											return;
+										}
+									},{
+										L"name",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralGrammarAssignTypeDefine>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
 										}
 									},
@@ -472,17 +472,17 @@
 					}
 				},
 				{
-					L"GeneralGrammarSetterTypeDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralGrammarSetterTypeDefine>();
-					}
-				},
-				{
 					L"GeneralHeadInfoDefine",
 					[]()->shared_ptr<void>
 					{
 						return make_shared<GeneralHeadInfoDefine>();
+					}
+				},
+				{
+					L"GeneralGrammarSetterTypeDefine",
+					[]()->shared_ptr<void>
+					{
+						return make_shared<GeneralGrammarSetterTypeDefine>();
 					}
 				},
 				{

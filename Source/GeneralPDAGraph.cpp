@@ -121,13 +121,13 @@ namespace ztl
 				ActionWrap wrap;
 				if(ruleSymbol->IsTokenDef())
 				{
-					auto fieldSymbol = createTypeSymbol->SearchClassFieldSymbol(node->name);
+					auto fieldSymbol = createTypeSymbol->SearchClassFieldDefSymbol(node->name);
 					assert(fieldSymbol != nullptr&&fieldSymbol->IsFieldDef());
 					wrap = ActionWrap(ActionType::Assign, fieldSymbol);
 				}
 				else
 				{
-					auto fieldSymbol = createTypeSymbol->SearchClassFieldSymbol(node->name);
+					auto fieldSymbol = createTypeSymbol->SearchClassFieldDefSymbol(node->name);
 					assert(fieldSymbol != nullptr&&fieldSymbol->IsFieldDef());
 					auto fieldTypeSymbol = fieldSymbol->GetDescriptorSymbol();
 					if(fieldTypeSymbol->IsArrayType())

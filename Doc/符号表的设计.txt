@@ -1,4 +1,9 @@
 #pragma once
+这里要弄清几个名词;
+XXXObject是使用XXX的地方
+XXXDef是定义XXX的地方.
+
+
 符号表用于语义分析.
 符号表对符号进行管理.对于已经查询过的符号, 提供缓存,绑定预定义的语法树节点和Symbol的关系
 绑定类定义的语法树节点和Symbol的关系.
@@ -24,11 +29,25 @@ enum class SymbolType
 			wstring												name;
 			ParserSymbol*										parent;
 			ParserSymbol*										descriptor;
-			//unique_ptr<vector<ParserSymbol*>>					subSymbolList;
-			
+			wstring												absoluteScope;			
 			unique_ptr<unordered_map<wstring, ParserSymbol*>>	subSymbolMap;
 
-在一个符号内部定义的符号都属于这个符号的字符号.
+absoluteScope是缓存符号的绝对名称,作用域::符号名.在做反射的时候有用
+
+整个符号表的公开API差不多就这些.
+基本都是做查询的
+需要解释的也就这几个看起来差不多的API.
+	1.ParserSymbol*							SearchClassSubSymbol(const wstring& _name)const;
+	2.ParserSymbol* SearchClassFieldSymbol(const wstring& _name)const;
+	
+	3.ParserSymbol* GetSubSymbolByName(const wstring& _name) const;
+	4.vector<ParserSymbol*>					GetClassAllFieldDefSymbol()const;
+	2是对1的封装,只获取Class及其基类的FiledDef.否则返回nullptr
+	3.是获取当前对象的subSymbolMap的符号.
+	4.是获取class及其基类的的全部fieldDef.
+
+
+在一个符号内部定义的符号都属于这个符号的子符号.
 例如class的字段,subType,Enum的item,
 所以收集符号的时候,对于types.遍历时去要安排subSymbol.另外descriptor含义和注释一致.parent就是该符号定义时的外部作用域.根符号是Global
 

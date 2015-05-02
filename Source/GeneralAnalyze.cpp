@@ -859,7 +859,7 @@ namespace ztl
 			void								Visit(GeneralGrammarSetterTypeDefine* node)
 			{
 				CheckCreatNodeExist();
-				auto fieldSymbol = createdTypeSymbol->SearchClassFieldSymbol(node->name);
+				auto fieldSymbol = createdTypeSymbol->SearchClassFieldDefSymbol(node->name);
 				if(!fieldSymbol)
 				{
 					throw ztl_exception(L"Can't find filed name" + node->name + L"in the class" + createdTypeSymbol->GetName());
@@ -884,7 +884,7 @@ namespace ztl
 			void								Visit(GeneralGrammarAssignTypeDefine* node)
 			{
 				CheckCreatNodeExist();
-				auto fieldSymbol = createdTypeSymbol->SearchClassFieldSymbol(node->name);
+				auto fieldSymbol = createdTypeSymbol->SearchClassFieldDefSymbol(node->name);
 				if(!fieldSymbol)
 				{
 					throw ztl_exception(L"Can't find filed name" + node->name + L"in the class" + createdTypeSymbol->GetName());
