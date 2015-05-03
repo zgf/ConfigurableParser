@@ -14,7 +14,8 @@ namespace ztl
 		}
 		shared_ptr<GeneralTableDefine> GeneralParserFile::GetGenerateParserTableDefine()
 		{
-			generalParser->BuildParser(fileName);
+			generalParser->SetTokenPool(fileName);
+			generalParser->BuildParser();
 			generalParser->GenerateIsomorphismParserTree();
 			auto parserResult = GeneralHeterogeneousParserTree(*generalParser);
 			return shared_ptr<GeneralTableDefine>(*(std::shared_ptr<GeneralTableDefine>*)(&parserResult));
@@ -193,18 +194,18 @@ namespace ztl
 			return manager->GetGenerateArrayProperty(property);
 		}
 
-		void GeneralParserFile::CreateFile(const wstring& fileName, const wstring& content)
+		void GeneralParserFile::CreateFile(const wstring& filePath, const wstring& content)
 		{
-			wofstream output(fileName);
+			wofstream output(filePath);
 			output.write(content.c_str(), content.size());
 		}
-		wstring GeneralParserFile::GetFileLeafName(const wstring & fileName)
+		wstring GeneralParserFile::GetFileLeafName(const wstring & filePath)
 		{
-			int backslashResult = (int)fileName.rfind(L"/");
-			int slashResult = (int)fileName.rfind(L"\\");
+			int backslashResult = (int) filePath.rfind(L"/");
+			int slashResult = (int) filePath.rfind(L"\\");
 			assert(backslashResult != slashResult || ((backslashResult == slashResult) && (backslashResult == -1)));
 			int slashPosition = std::max(backslashResult, slashResult);
-			auto leaf = fileName.substr(slashPosition + 1);
+			auto leaf = filePath.substr(slashPosition + 1);
 			return leaf;
 		}
 		GeneralParserBase & ztl::general_parser::GeneralParserFile::GetParser()

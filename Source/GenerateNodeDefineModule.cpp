@@ -257,7 +257,7 @@ namespace ztl
 			auto classSymbol = manager->GetCacheSymbolByTypeDefine(node);
 			wstring forwardDeclarationString = L"";
 			assert(classSymbol->IsClassType());
-			if(!manager->GetCacheDeriveByBaseSymbol(classSymbol).empty())
+			if(classSymbol->GetDescriptorSymbol()==nullptr&&!manager->GetCacheDeriveByBaseSymbol(classSymbol).empty())
 			{
 				forwardDeclarationString = GetForwardDeclarationString(classSymbol);
 				visitorString = GetVisitorString(classSymbol);

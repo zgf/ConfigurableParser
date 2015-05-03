@@ -11,6 +11,7 @@ namespace ztl
 		//NFAToDFA NFA转DFA并且在停机状态上打上标记.
 		//DFAToDFATable  DFA生成跳转表
 		//RunTimeBuilder. 运行时环境搭建,返回Token.
-	
+		vector<shared_ptr<ztl::general_parser::TokenInfo>> PureRegexParseToken(const wstring& pattern);
+
 	}
 }

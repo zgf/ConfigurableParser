@@ -172,6 +172,12 @@
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexLexer.cpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GenerateFile\PureRegex\CharsetMapTable.cpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParsing.cpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -263,6 +269,18 @@
     </ClInclude>
     <ClInclude Include="UnitTest\ParserTest.h">
       <Filter>UnitTest</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\CharsetMapTable.h">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexWriter.hpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachine.h">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachineData.h">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

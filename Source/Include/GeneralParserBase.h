@@ -59,6 +59,12 @@ namespace ztl
 			{
 				heterogeneousPool.emplace_back(element);
 			}
+			void ClearPools()
+			{
+				generalNodePool.clear();
+				tokenPool.clear();
+				heterogeneousPool.clear();
+			}
 		private:
 			vector<shared_ptr<GeneralTreeNode>>  generalNodePool;
 			vector<shared_ptr<TokenInfo>>		 tokenPool;
@@ -76,16 +82,17 @@ namespace ztl
 			GeneralParserBase& operator=(GeneralParserBase&&)  = default;
 			GeneralParserBase& operator=(const GeneralParserBase&)   = default;
 		public:
+			virtual void GenerateIsomorphismParserTree();
+			virtual void ClearEnvironment();
+			void SetTokenPool(const wstring& fileName);
 			void SetTokenPool(const vector<shared_ptr<TokenInfo>>& tokens);
 			void SetTokenPool(vector<shared_ptr<TokenInfo>>&& tokens);
 			void SetTokenPool(const shared_ptr<TokenInfo>& token);
 			void SetGeneralNodePool(const shared_ptr<GeneralTreeNode>& node);
 			void SetHeterogeneousPool(const shared_ptr<void>& element);
-			void BuildParser(const wstring& fileName);
-			void BuildParser(const vector<shared_ptr<TokenInfo>>& tokens);
-			void BuildParser(vector<shared_ptr<TokenInfo>>&& tokens);
+			
 
-			virtual void GenerateIsomorphismParserTree();
+		
 			GeneralTreeNode* GetGeneralTreeRoot() const;
 			SymbolManager* GetManager() const;
 			void SaveHeterogeneousNode(const shared_ptr<void>& node);
@@ -95,10 +102,10 @@ namespace ztl
 			LRNode*  GetLRMachineStartNode()const;
 			const GeneralNodePools& GetPools()const;
 			ParserSymbol* GetRootRuleSymbol()const;
+			void BuildParser();
 		protected:
 			GeneralTreeNode*	MakeTreeNode(ParserSymbol* symbol);
 			GeneralTreeNode*	CopyTreeNode(GeneralTreeNode*);
-			void BuildParser();
 
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
 			

@@ -20,29 +20,32 @@ namespace ztl
 {
 	namespace pure_regex
 	{
+		struct Define;
 		struct TokenUnit;
 		struct CharSet;
-		struct BinaryFactor;
+		struct Factor;
 		struct UserDefineFactor;
+		struct BinaryFactor;
 		struct NormalFactor;
 		struct Repeat;
 		struct Alternate;
 		struct Sequence;
-		struct Factor;
+
 		struct Define
 		{
 			class IVisitor
 			{
 			public:
+				virtual void		Visit(Define* node) = 0;
 				virtual void		Visit(TokenUnit* node) = 0;
 				virtual void		Visit(CharSet* node) = 0;
-				virtual void		Visit(BinaryFactor* node) = 0;
+				virtual void		Visit(Factor* node) = 0;
 				virtual void		Visit(UserDefineFactor* node) = 0;
+				virtual void		Visit(BinaryFactor* node) = 0;
 				virtual void		Visit(NormalFactor* node) = 0;
 				virtual void		Visit(Repeat* node) = 0;
 				virtual void		Visit(Alternate* node) = 0;
 				virtual void		Visit(Sequence* node) = 0;
-				virtual void		Visit(Factor* node) = 0;
 			};
 			virtual void									Accept(IVisitor*)
 			{
@@ -91,53 +94,17 @@ namespace ztl
 			}
 		};
 
-		struct BinaryFactor;
-		struct UserDefineFactor;
-		struct NormalFactor;
-
 		struct Factor: public Define
 		{
 			virtual void									Accept(IVisitor* visitor)override
 			{
 				visitor->Visit(this);
 			}
-
-			class IVisitor
-			{
-			public:
-				virtual void		Visit(BinaryFactor* node) = 0;
-				virtual void		Visit(UserDefineFactor* node) = 0;
-				virtual void		Visit(NormalFactor* node) = 0;
-			};
-			virtual void									Accept(IVisitor*)
-			{
-			}
 		};
 
 		struct NormalFactor: public Factor
 		{
 			wstring    name;
-
-			virtual void									Accept(IVisitor* visitor)override
-			{
-				visitor->Visit(this);
-			}
-		};
-
-		struct UserDefineFactor: public Factor
-		{
-			enum class UserDefineType
-			{
-				TROPEW,
-				TROPEw,
-				TROPES,
-				TROPEs,
-				TROPED,
-				TROPEd,
-				MatchAll,
-			};
-
-			UserDefineType    type;
 
 			virtual void									Accept(IVisitor* visitor)override
 			{
@@ -173,6 +140,28 @@ namespace ztl
 			}
 		};
 
+		struct UserDefineFactor: public Factor
+		{
+			enum class UserDefineType
+			{
+				TROPEW,
+				TROPEw,
+				TROPES,
+				TROPEs,
+				TROPED,
+				TROPEd,
+				MatchAll,
+			};
+
+			shared_ptr<CharSet>    factor;
+			UserDefineType    type;
+
+			virtual void									Accept(IVisitor* visitor)override
+			{
+				visitor->Visit(this);
+			}
+		};
+
 		struct TokenUnit: public Define
 		{
 			shared_ptr<Define>    charset;
@@ -188,7 +177,5 @@ namespace ztl
 
 		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* root);
 		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser);
-		vector<shared_ptr<ztl::general_parser::TokenInfo>> PureRegexParseToken(const wstring& pattern);
-
 	}
 }

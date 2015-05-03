@@ -109,3 +109,5 @@ Gen的General解析器的核心如果带|和()就会生成的语法树长的形状不对 问题已找到
 
 action wrap的value只有set才用,应该设置为指针,缩小对象大小 解决
 
+1.classprefix还没实装
+2.生成class define还有些问题.

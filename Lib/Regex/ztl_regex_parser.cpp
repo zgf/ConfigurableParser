@@ -89,7 +89,7 @@ namespace ztl
 		int index = 0;
 		expression = RegexParser::Alter(pattern, tokens, index, tokens->size());
 		char_table->range_table = expression->GetCharSetTable(optional);
-		char_table->char_table  = CreatWCharTable(char_table->range_table);
+		char_table->char_table = CreatWCharTable(char_table->range_table);
 		expression->SetTreeCharSetOrthogonal(char_table);
 	}
 
@@ -100,7 +100,7 @@ namespace ztl
 		for(size_t i = 0; i < table->size(); i++)
 		{
 			auto& element = (*table)[i];
-			auto count    = element.max - element.min + 1;
+			auto count = element.max - element.min + 1;
 			fill_n(current_iter, move(count), i);
 			current_iter += count;
 		}
@@ -179,7 +179,7 @@ namespace ztl
 		auto end_index = -1;
 		index += 1;
 		end_index = FindTheLongestCaptureEnd(tokens, index);
-		auto result        = make_shared<Type>();
+		auto result = make_shared<Type>();
 		result->expression = RegexParser::Alter(pattern, tokens, index, end_index);
 		index = end_index + 1;
 		return move(result);
@@ -210,12 +210,12 @@ namespace ztl
 		for(auto i = index; i < tokens->size(); i++)
 		{
 			auto& type = (*tokens)[i].type;
-			if( type == TokenType::PositiveLookbehind || 
-				type == TokenType::PositivetiveLookahead || 
-				type == TokenType::NegativeLookahead || 
-				type == TokenType::NegativeLookbehind || 
-				type == TokenType::CaptureBegin || 
-				type == TokenType::NoneCapture || 
+			if(type == TokenType::PositiveLookbehind ||
+				type == TokenType::PositivetiveLookahead ||
+				type == TokenType::NegativeLookahead ||
+				type == TokenType::NegativeLookbehind ||
+				type == TokenType::CaptureBegin ||
+				type == TokenType::NoneCapture ||
 				type == TokenType::AnonymityCaptureBegin ||
 
 				type == TokenType::RegexMacro)
@@ -238,8 +238,8 @@ namespace ztl
 		index += 1;
 
 		auto end_index = FindTheLongestCaptureEnd(tokens, index);
-		auto exp       = Alter(pattern, tokens, index, end_index);
-		auto result    = make_shared<NoneCaptureExpression>(exp);
+		auto exp = Alter(pattern, tokens, index, end_index);
+		auto result = make_shared<NoneCaptureExpression>(exp);
 		index += 1;
 		return result;
 	}
@@ -249,7 +249,7 @@ namespace ztl
 
 		auto end_index = FindTheLongestCaptureEnd(tokens, index);
 
-		wstring name   = Named(pattern, tokens, index);
+		wstring name = Named(pattern, tokens, index);
 		if(tokens->at(index).type != TokenType::Named)
 		{
 			throw exception("expect symbol not a name");
@@ -259,7 +259,7 @@ namespace ztl
 		{
 			throw exception("expect symbol not in fist[CaptureRight]");
 		}
-		auto alter  = Alter(pattern, tokens, index, end_index);
+		auto alter = Alter(pattern, tokens, index, end_index);
 		auto result = make_shared<MacroExpression>(name, alter);
 		index += 1;
 		return result;
@@ -413,7 +413,7 @@ namespace ztl
 			auto seq_left = make_shared<SequenceExpression>(
 				make_shared<PositiveLookbehindExpression>(w),
 				make_shared<PositivetiveLookaheadExpression>(W));
-			auto seq_right= make_shared<SequenceExpression>(
+			auto seq_right = make_shared<SequenceExpression>(
 				make_shared<PositiveLookbehindExpression>(W),
 				make_shared<PositivetiveLookaheadExpression>(w));
 			auto input_head = make_shared<SequenceExpression>(make_shared<BeginExpression>(), make_shared<PositivetiveLookaheadExpression>(w));
@@ -432,7 +432,7 @@ namespace ztl
 			auto seq_left = make_shared<SequenceExpression>(
 				make_shared<PositiveLookbehindExpression>(w),
 				make_shared<PositivetiveLookaheadExpression>(w));
-			auto seq_right= make_shared<SequenceExpression>
+			auto seq_right = make_shared<SequenceExpression>
 				(make_shared<PositiveLookbehindExpression>(W),
 				 make_shared<PositivetiveLookaheadExpression>(W));
 			return make_shared<AlternationExpression>(move(seq_left), move(seq_right));
@@ -451,7 +451,7 @@ namespace ztl
 		index += 1;
 		auto end_index = FindTheLongestCaptureEnd(tokens, index);
 
-		auto result    = CaptureRight(pattern, tokens, index, end_index);
+		auto result = CaptureRight(pattern, tokens, index, end_index);
 		index += 1;
 		return result;
 	}
@@ -460,7 +460,7 @@ namespace ztl
 		index += 1;
 		auto end_index = FindTheLongestCaptureEnd(tokens, index);
 
-		auto result    = AnonymityCaptureRight(pattern, tokens, index, end_index);
+		auto result = AnonymityCaptureRight(pattern, tokens, index, end_index);
 		index += 1;
 		return result;
 	}
@@ -468,7 +468,7 @@ namespace ztl
 	Ptr<Expression> RegexParser::CharSet(const wstring& pattern, const Ptr<vector<RegexToken>>& tokens, const bool reverse, int& index)
 	{
 		index += 1;
-		auto result     = make_shared<CharSetExpression>();
+		auto result = make_shared<CharSetExpression>();
 		result->reverse = reverse;
 		CharRange temp;
 		while(tokens->at(index).type != TokenType::CharSetEnd)
@@ -494,13 +494,13 @@ namespace ztl
 	Ptr<Expression> RegexParser::CaptureRight(const wstring& pattern, const Ptr<vector<RegexToken>>& tokens, int& index, const int end_index)
 	{
 		wstring name;
-		name   = Named(pattern, tokens, index);
+		name = Named(pattern, tokens, index);
 		index += 1;
 		if(RegexParser::first_map[TokenType::Alter]->find(tokens->at(index).type) == RegexParser::first_map[TokenType::Alter]->end())
 		{
 			throw exception("expect symbol not in fist[CaptureRight]");
 		}
-		auto alter  = Alter(pattern, tokens, index, end_index);
+		auto alter = Alter(pattern, tokens, index, end_index);
 		auto result = make_shared<CaptureExpression>(name, alter);
 		return result;
 	}
@@ -510,7 +510,7 @@ namespace ztl
 		{
 			throw exception("expect symbol not in fist[AnonymityCaptureRight]");
 		}
-		auto alter  = Alter(pattern, tokens, index, end_index);
+		auto alter = Alter(pattern, tokens, index, end_index);
 		auto result = make_shared<AnonymityCaptureExpression>(0, alter);
 		return result;
 	}
@@ -541,7 +541,6 @@ namespace ztl
 			throw exception("expect symbol not in fist[Factor]");
 		}
 		return RegexParser::actions[current_type](pattern, tokens, index);
-
 	}
 	Ptr<Expression> RegexParser::Unit(const wstring& pattern, const Ptr<vector<RegexToken>>& tokens, int& index, const int end_index)
 	{

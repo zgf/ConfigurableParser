@@ -20,6 +20,7 @@ namespace ztl
 {
 	namespace json
 	{
+		struct Node;
 		struct Object;
 		struct ObjectField;
 		struct Array;
@@ -32,6 +33,7 @@ namespace ztl
 			class IVisitor
 			{
 			public:
+				virtual void		Visit(Node* node) = 0;
 				virtual void		Visit(Object* node) = 0;
 				virtual void		Visit(ObjectField* node) = 0;
 				virtual void		Visit(Array* node) = 0;

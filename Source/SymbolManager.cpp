@@ -341,11 +341,8 @@ namespace ztl
 				auto back = stack.back();
 				stack.pop_back();
 				auto list = this->GetCacheDeriveByBaseSymbol(back);
-				if(list.empty())
-				{
-					result.emplace_back(back);
-				}
-				else
+				result.emplace_back(back);
+				if(!list.empty())
 				{
 					stack.insert(stack.end(), list.begin(), list.end());
 				}

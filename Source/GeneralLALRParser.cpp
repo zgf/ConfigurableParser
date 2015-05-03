@@ -69,7 +69,14 @@ namespace ztl
 		
 			this->generalTreeRoot = GetPools().GetGeneralNodePool()[treeNodeStack[0]].get();
 		}
-
+		void GeneralLALRParser::ClearEnvironment()
+		{
+			GeneralParserBase::ClearEnvironment();
+			this->grammarStack.clear();
+			this->treeNodeStack.clear();
+			this->LRNodeStack.clear();
+			this->PDANodeStack.clear();
+		}
 		ParserSymbol* GeneralLALRParser::GetTokenSymbol(int tokenIndex) const
 		{
 			auto&& currentToken = GetPools().GetTokenPool()[tokenIndex].get();

@@ -12,56 +12,28 @@ namespace ztl
 			static unordered_map<wstring, int> signMap =
 			{
 			{
-				L"Repeat::RepeatType::KLEENEGREEDY",
-				static_cast<int>(Repeat::RepeatType::KLEENEGREEDY)
-			},
-			{
 				L"Repeat::RepeatType::KLEENE",
 				static_cast<int>(Repeat::RepeatType::KLEENE)
 			},
 			{
-				L"Repeat::RepeatType::POSITIVEKLEENEGREEDY",
-				static_cast<int>(Repeat::RepeatType::POSITIVEKLEENEGREEDY)
-			},
-			{
-				L"Repeat::RepeatType::POSITIVEKLEENE",
-				static_cast<int>(Repeat::RepeatType::POSITIVEKLEENE)
-			},
-			{
-				L"Repeat::RepeatType::CHOCIEKLEENEGREEDY",
-				static_cast<int>(Repeat::RepeatType::CHOCIEKLEENEGREEDY)
+				L"Repeat::RepeatType::KLEENEGREEDY",
+				static_cast<int>(Repeat::RepeatType::KLEENEGREEDY)
 			},
 			{
 				L"Repeat::RepeatType::CHOCIEKLEENE",
 				static_cast<int>(Repeat::RepeatType::CHOCIEKLEENE)
 			},
 			{
-				L"UserDefineFactor::UserDefineType::TROPEW",
-				static_cast<int>(UserDefineFactor::UserDefineType::TROPEW)
+				L"Repeat::RepeatType::CHOCIEKLEENEGREEDY",
+				static_cast<int>(Repeat::RepeatType::CHOCIEKLEENEGREEDY)
 			},
 			{
-				L"UserDefineFactor::UserDefineType::TROPEw",
-				static_cast<int>(UserDefineFactor::UserDefineType::TROPEw)
+				L"Repeat::RepeatType::POSITIVEKLEENE",
+				static_cast<int>(Repeat::RepeatType::POSITIVEKLEENE)
 			},
 			{
-				L"UserDefineFactor::UserDefineType::TROPES",
-				static_cast<int>(UserDefineFactor::UserDefineType::TROPES)
-			},
-			{
-				L"UserDefineFactor::UserDefineType::TROPEs",
-				static_cast<int>(UserDefineFactor::UserDefineType::TROPEs)
-			},
-			{
-				L"UserDefineFactor::UserDefineType::TROPED",
-				static_cast<int>(UserDefineFactor::UserDefineType::TROPED)
-			},
-			{
-				L"UserDefineFactor::UserDefineType::TROPEd",
-				static_cast<int>(UserDefineFactor::UserDefineType::TROPEd)
-			},
-			{
-				L"UserDefineFactor::UserDefineType::MatchAll",
-				static_cast<int>(UserDefineFactor::UserDefineType::MatchAll)
+				L"Repeat::RepeatType::POSITIVEKLEENEGREEDY",
+				static_cast<int>(Repeat::RepeatType::POSITIVEKLEENEGREEDY)
 			},
 			{
 				L"CharSet::CharSetOptional::Positve",
@@ -70,6 +42,34 @@ namespace ztl
 			{
 				L"CharSet::CharSetOptional::Reverse",
 				static_cast<int>(CharSet::CharSetOptional::Reverse)
+			},
+			{
+				L"UserDefineFactor::UserDefineType::TROPEw",
+				static_cast<int>(UserDefineFactor::UserDefineType::TROPEw)
+			},
+			{
+				L"UserDefineFactor::UserDefineType::TROPEW",
+				static_cast<int>(UserDefineFactor::UserDefineType::TROPEW)
+			},
+			{
+				L"UserDefineFactor::UserDefineType::TROPEs",
+				static_cast<int>(UserDefineFactor::UserDefineType::TROPEs)
+			},
+			{
+				L"UserDefineFactor::UserDefineType::TROPES",
+				static_cast<int>(UserDefineFactor::UserDefineType::TROPES)
+			},
+			{
+				L"UserDefineFactor::UserDefineType::TROPEd",
+				static_cast<int>(UserDefineFactor::UserDefineType::TROPEd)
+			},
+			{
+				L"UserDefineFactor::UserDefineType::TROPED",
+				static_cast<int>(UserDefineFactor::UserDefineType::TROPED)
+			},
+			{
+				L"UserDefineFactor::UserDefineType::MatchAll",
+				static_cast<int>(UserDefineFactor::UserDefineType::MatchAll)
 			},
 			};
 			assert(signMap.find(value) != signMap.end());
@@ -89,18 +89,6 @@ namespace ztl
 							{
 							}
 						},{
-							L"Repeat",
-							{
-								{
-									L"type",
-									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-									{
-										std::static_pointer_cast<Repeat>(classObject)->type = static_cast<Repeat::RepeatType>(WstringToEnumItem(L"Repeat::RepeatType::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
-										return;
-									}
-								},
-							}
-						},{
 							L"Sequence",
 							{
 								{
@@ -115,6 +103,18 @@ namespace ztl
 									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 									{
 										std::static_pointer_cast<Sequence>(classObject)->second = std::static_pointer_cast<Define>(valueObject);
+										return;
+									}
+								},
+							}
+						},{
+							L"Repeat",
+							{
+								{
+									L"type",
+									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+									{
+										std::static_pointer_cast<Repeat>(classObject)->type = static_cast<Repeat::RepeatType>(WstringToEnumItem(L"Repeat::RepeatType::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
 										return;
 									}
 								},
@@ -151,32 +151,20 @@ namespace ztl
 								},
 							}
 						},{
-							L"UserDefineFactor",
-							{
-								{
-									L"type",
-									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-									{
-										std::static_pointer_cast<UserDefineFactor>(classObject)->type = static_cast<UserDefineFactor::UserDefineType>(WstringToEnumItem(L"UserDefineFactor::UserDefineType::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
-										return;
-									}
-								},
-							}
-						},{
 							L"CharSet",
 							{
 								{
-									L"type",
-									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-									{
-										std::static_pointer_cast<CharSet>(classObject)->type = static_cast<CharSet::CharSetOptional>(WstringToEnumItem(L"CharSet::CharSetOptional::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
-										return;
-									}
-								},{
 									L"tokens",
 									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 									{
 										std::static_pointer_cast<CharSet>(classObject)->tokens.emplace_back(std::static_pointer_cast<Factor>(valueObject));
+										return;
+									}
+								},{
+									L"type",
+									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+									{
+										std::static_pointer_cast<CharSet>(classObject)->type = static_cast<CharSet::CharSetOptional>(WstringToEnumItem(L"CharSet::CharSetOptional::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
 										return;
 									}
 								},
@@ -185,17 +173,36 @@ namespace ztl
 							L"BinaryFactor",
 							{
 								{
+									L"end",
+									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+									{
+										std::static_pointer_cast<BinaryFactor>(classObject)->end = std::static_pointer_cast<NormalFactor>(valueObject);
+										return;
+									}
+								},{
 									L"begin",
 									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 									{
 										std::static_pointer_cast<BinaryFactor>(classObject)->begin = std::static_pointer_cast<NormalFactor>(valueObject);
 										return;
 									}
-								},{
-									L"end",
+								},
+							}
+						},{
+							L"UserDefineFactor",
+							{
+								{
+									L"factor",
 									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 									{
-										std::static_pointer_cast<BinaryFactor>(classObject)->end = std::static_pointer_cast<NormalFactor>(valueObject);
+										std::static_pointer_cast<UserDefineFactor>(classObject)->factor = std::static_pointer_cast<CharSet>(valueObject);
+										return;
+									}
+								},{
+									L"type",
+									[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+									{
+										std::static_pointer_cast<UserDefineFactor>(classObject)->type = static_cast<UserDefineFactor::UserDefineType>(WstringToEnumItem(L"UserDefineFactor::UserDefineType::" + std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content));
 										return;
 									}
 								},
@@ -246,17 +253,17 @@ namespace ztl
 				}
 			},
 			{
-				L"Repeat",
-				[]()->shared_ptr<void>
-				{
-					return make_shared<Repeat>();
-				}
-			},
-			{
 				L"Sequence",
 				[]()->shared_ptr<void>
 				{
 					return make_shared<Sequence>();
+				}
+			},
+			{
+				L"Repeat",
+				[]()->shared_ptr<void>
+				{
+					return make_shared<Repeat>();
 				}
 			},
 			{
@@ -274,13 +281,6 @@ namespace ztl
 				}
 			},
 			{
-				L"UserDefineFactor",
-				[]()->shared_ptr<void>
-				{
-					return make_shared<UserDefineFactor>();
-				}
-			},
-			{
 				L"CharSet",
 				[]()->shared_ptr<void>
 				{
@@ -292,6 +292,13 @@ namespace ztl
 				[]()->shared_ptr<void>
 				{
 					return make_shared<BinaryFactor>();
+				}
+			},
+			{
+				L"UserDefineFactor",
+				[]()->shared_ptr<void>
+				{
+					return make_shared<UserDefineFactor>();
 				}
 			},
 			{
@@ -485,43 +492,6 @@ namespace ztl
 				.Class
 				(
 				ztl::general_parser::GeneralClassTypeWriter()
-				.Name(L"UserDefineFactor")
-
-				.SubType(
-
-				ztl::general_parser::GeneralTypeListWriter()
-
-				.Enum
-				(
-				ztl::general_parser::GeneralEnumTypeWriter()
-				.Name(L"UserDefineType")
-
-				.Member(ztl::general_parser::EnumMember(L"TROPEW"))
-
-				.Member(ztl::general_parser::EnumMember(L"TROPEw"))
-
-				.Member(ztl::general_parser::EnumMember(L"TROPES"))
-
-				.Member(ztl::general_parser::EnumMember(L"TROPEs"))
-
-				.Member(ztl::general_parser::EnumMember(L"TROPED"))
-
-				.Member(ztl::general_parser::EnumMember(L"TROPEd"))
-
-				.Member(ztl::general_parser::EnumMember(L"MatchAll"))
-
-				)
-
-				)
-
-				.Member(ztl::general_parser::ClassMember(ztl::general_parser::Normal(L"UserDefineType"), L"type"))
-
-				.ParentType(ztl::general_parser::Normal(L"Factor"))
-				)
-
-				.Class
-				(
-				ztl::general_parser::GeneralClassTypeWriter()
 				.Name(L"BinaryFactor")
 
 				.Member(ztl::general_parser::ClassMember(ztl::general_parser::Normal(L"NormalFactor"), L"begin"))
@@ -558,6 +528,45 @@ namespace ztl
 				.Member(ztl::general_parser::ClassMember(ztl::general_parser::Array(ztl::general_parser::Normal(L"Factor")), L"tokens"))
 
 				.ParentType(ztl::general_parser::Normal(L"Define"))
+				)
+
+				.Class
+				(
+				ztl::general_parser::GeneralClassTypeWriter()
+				.Name(L"UserDefineFactor")
+
+				.SubType(
+
+				ztl::general_parser::GeneralTypeListWriter()
+
+				.Enum
+				(
+				ztl::general_parser::GeneralEnumTypeWriter()
+				.Name(L"UserDefineType")
+
+				.Member(ztl::general_parser::EnumMember(L"TROPEW"))
+
+				.Member(ztl::general_parser::EnumMember(L"TROPEw"))
+
+				.Member(ztl::general_parser::EnumMember(L"TROPES"))
+
+				.Member(ztl::general_parser::EnumMember(L"TROPEs"))
+
+				.Member(ztl::general_parser::EnumMember(L"TROPED"))
+
+				.Member(ztl::general_parser::EnumMember(L"TROPEd"))
+
+				.Member(ztl::general_parser::EnumMember(L"MatchAll"))
+
+				)
+
+				)
+
+				.Member(ztl::general_parser::ClassMember(ztl::general_parser::Normal(L"CharSet"), L"factor"))
+
+				.Member(ztl::general_parser::ClassMember(ztl::general_parser::Normal(L"UserDefineType"), L"type"))
+
+				.ParentType(ztl::general_parser::Normal(L"Factor"))
 				)
 
 				.Class

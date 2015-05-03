@@ -15,22 +15,12 @@ namespace ztl
 		{
 		}
 
-		void GeneralParserBase::BuildParser(const wstring& fileName)
+		void GeneralParserBase::SetTokenPool(const wstring& fileName)
 		{
 			assert(!fileName.empty());
 			pools.SetTokenPool(ParseToken(fileName));
-			BuildParser();
 		}
-		void GeneralParserBase::BuildParser(const vector<shared_ptr<TokenInfo>>& tokens)
-		{
-			pools.SetTokenPool(tokens);
-			BuildParser();
-		}
-		void GeneralParserBase::BuildParser(vector<shared_ptr<TokenInfo>>&& tokens)
-		{
-			pools.SetTokenPool(std::forward<vector<shared_ptr<TokenInfo>>&&>(tokens));
-			BuildParser();
-		}
+	
 		void GeneralParserBase::BuildParser()
 		{
 			ValidateGeneratorCoreSemantic(manager.get());
@@ -66,6 +56,11 @@ namespace ztl
 		void GeneralParserBase::GenerateIsomorphismParserTree()
 		{
 			return;
+		}
+		void GeneralParserBase::ClearEnvironment()
+		{
+			generalTreeRoot = nullptr;
+			pools.ClearPools();
 		}
 		GeneralTreeNode* GeneralParserBase::MakeTreeNode(ParserSymbol* symbol)
 		{

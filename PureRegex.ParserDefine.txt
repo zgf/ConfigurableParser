@@ -43,20 +43,7 @@ class NormalFactor : Factor
 {
 	token name;
 };
-class UserDefineFactor : Factor
-{
-	enum UserDefineType
-	{
-		TROPEW,
-		TROPEw,
-		TROPES,
-		TROPEs,
-		TROPED,
-		TROPEd,
-		MatchAll,
-	};
-	UserDefineType type;
-};
+
 class BinaryFactor : Factor
 {
 	NormalFactor begin;
@@ -72,7 +59,21 @@ class CharSet : Define
 	CharSetOptional type;
 	Factor[] tokens;
 };
-
+class UserDefineFactor : Factor
+{
+	enum UserDefineType
+	{
+		TROPEW,
+		TROPEw,
+		TROPES,
+		TROPEs,
+		TROPED,
+		TROPEd,
+		MatchAll,
+	};
+	CharSet factor;
+	UserDefineType type;
+};
 class TokenUnit : Define
 {
 	Define charset;

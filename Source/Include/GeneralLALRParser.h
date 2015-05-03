@@ -17,7 +17,7 @@ namespace ztl
 			GeneralLALRParser& operator=(const GeneralLALRParser&) = default;
 		public:
 			virtual void GenerateIsomorphismParserTree()override;
-			
+			virtual void ClearEnvironment()override;
 		private:
 			ParserSymbol* GetTokenSymbol(int tokenIndex)const;
 			pair<bool,PDAEdge*> NeedMove(PDANode*node, LRNode* LRNode, ParserSymbol* symbol);

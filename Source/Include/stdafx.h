@@ -16,6 +16,7 @@
 #include <locale>
 #include <deque>
 #include <set>
+#include <array>
 #include<iterator>
 #include "../../Lib/ZTL/ztl_exception.h"
 #include "../../Lib/ZTL/ztl_hash.hpp"
@@ -72,6 +73,8 @@ namespace ztl
 	using std::ifstream;
 	using std::back_inserter;
 	using std::for_each;
+	using std::array;
+	using std::static_pointer_cast;
 	using ztl::contract::ztl_exception;
 	using ztl::generator::MarcoGenerator; 
 	using ztl::hasher::ztl_hash;

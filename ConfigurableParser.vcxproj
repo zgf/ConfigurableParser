@@ -193,8 +193,10 @@
     <ClCompile Include="Source\GeneralReflectionObjectModule.cpp" />
     <ClCompile Include="Source\GeneralTreeNode.cpp" />
     <ClCompile Include="Source\GenerateFile\Json\JsonParser.cpp" />
+    <ClCompile Include="Source\GenerateFile\PureRegex\CharsetMapTable.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexLexer.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParser.cpp" />
+    <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParsing.cpp" />
     <ClCompile Include="Source\GenerateFile\Xml\XmlParser.cpp" />
     <ClCompile Include="Source\GenerateNodeDefineModule.cpp" />
     <ClCompile Include="Source\GeneralTableWriter.cpp" />
@@ -227,8 +229,12 @@
     <ClInclude Include="Lib\ZTL\ztl_hash.hpp" />
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
+    <ClInclude Include="Source\GenerateFile\PureRegex\CharsetMapTable.h" />
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachine.h" />
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachineData.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexLexer.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexParser.h" />
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexWriter.hpp" />
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h" />
     <ClInclude Include="Source\Include\GeneralLALRParser.h" />
     <ClInclude Include="Source\Include\GeneralLRMachine.h" />

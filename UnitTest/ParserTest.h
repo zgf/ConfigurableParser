@@ -1,15 +1,16 @@
 #pragma once
+#include "../Source/GenerateFile/PureRegex/PureRegexLexer.h"
 namespace ztl
 {
 	namespace general_parser
 	{
 		namespace parser_test
 		{
-
 			void TestJson()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::json::BootStrapDefineTable());
-				LALRParser.BuildParser(L"TestJson.txt");
+				LALRParser.SetTokenPool(L"TestJson.txt");
+				LALRParser.BuildParser();
 				LARGE_INTEGER BegainTime;
 				LARGE_INTEGER EndTime;
 				LARGE_INTEGER Frequency;
@@ -21,13 +22,14 @@ namespace ztl
 				auto tree = ztl::json::GeneralHeterogeneousParserTree(LALRParser);
 				QueryPerformanceCounter(&EndTime);
 
-				//输出运行时间（单位：s）    
+				//输出运行时间（单位：s）
 				wcout << (double) (EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
 			}
 			void TestXml()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::xml::BootStrapDefineTable());
-				LALRParser.BuildParser(L"TestXml.txt");
+				LALRParser.SetTokenPool(L"TestXml.txt");
+				LALRParser.BuildParser();
 				LARGE_INTEGER BegainTime;
 				LARGE_INTEGER EndTime;
 				LARGE_INTEGER Frequency;
@@ -39,14 +41,16 @@ namespace ztl
 				auto tree = ztl::xml::GeneralHeterogeneousParserTree(LALRParser);
 				QueryPerformanceCounter(&EndTime);
 
-				//输出运行时间（单位：s）    
+				//输出运行时间（单位：s）
 				wcout << (double) (EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
 			}
 
 			void TestPureRegex()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::pure_regex::BootStrapDefineTable());
-				LALRParser.BuildParser(ztl::pure_regex::PureRegexParseToken(LR"([a-zA-Z_]\w*)"));
+				LALRParser.BuildParser();
+
+				LALRParser.SetTokenPool(ztl::pure_regex::PureRegexParseToken(LR"([a-zA-Z_]\w*)"));
 				LARGE_INTEGER BegainTime;
 				LARGE_INTEGER EndTime;
 				LARGE_INTEGER Frequency;
@@ -55,17 +59,20 @@ namespace ztl
 
 				LALRParser.GenerateIsomorphismParserTree();
 
-				auto tree = (ztl::pure_regex::Alternate*)ztl::pure_regex::GeneralHeterogeneousParserTree(LALRParser).get();
-
+				shared_ptr<ztl::pure_regex::Alternate> tree = std::static_pointer_cast<ztl::pure_regex::Alternate>(ztl::pure_regex::GeneralHeterogeneousParserTree(LALRParser));
+				LALRParser.ClearEnvironment();
+				int a = 0;
 				QueryPerformanceCounter(&EndTime);
 
-				//输出运行时间（单位：s）    
+				//输出运行时间（单位：s）
 				wcout << (double) (EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
 			}
 			void TestParseGeneralDefine()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::general_parser::BootStrapDefineTable());
-				LALRParser.BuildParser(L"ParserDefine.txt");
+				LALRParser.SetTokenPool(L"ParserDefine.txt");
+				LALRParser.BuildParser();
+
 				LALRParser.GenerateIsomorphismParserTree();
 				auto tree = ztl::general_parser::GeneralHeterogeneousParserTree(LALRParser);
 			}
@@ -73,7 +80,8 @@ namespace ztl
 			void TestParseXMLDefine()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::general_parser::BootStrapDefineTable());
-				LALRParser.BuildParser(L"Xml.ParserDefine.txt");
+				LALRParser.SetTokenPool(L"Xml.ParserDefine.txt");
+				LALRParser.BuildParser();
 				LALRParser.GenerateIsomorphismParserTree();
 				auto tree = ztl::general_parser::GeneralHeterogeneousParserTree(LALRParser);
 			}
@@ -81,7 +89,8 @@ namespace ztl
 			void TestParseJsonDefine()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::general_parser::BootStrapDefineTable());
-				LALRParser.BuildParser(L"Json.ParserDefine.txt");
+				LALRParser.SetTokenPool(L"Json.ParserDefine.txt");
+				LALRParser.BuildParser();
 				LALRParser.GenerateIsomorphismParserTree();
 				auto tree = ztl::general_parser::GeneralHeterogeneousParserTree(LALRParser);
 			}

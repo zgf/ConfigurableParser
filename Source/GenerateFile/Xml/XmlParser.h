@@ -20,6 +20,7 @@ namespace ztl
 {
 	namespace xml
 	{
+		struct Node;
 		struct Document;
 		struct Instruction;
 		struct Element;
@@ -33,6 +34,7 @@ namespace ztl
 			class IVisitor
 			{
 			public:
+				virtual void		Visit(Node* node) = 0;
 				virtual void		Visit(Document* node) = 0;
 				virtual void		Visit(Instruction* node) = 0;
 				virtual void		Visit(Element* node) = 0;

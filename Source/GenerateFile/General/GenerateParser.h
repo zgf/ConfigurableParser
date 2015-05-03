@@ -59,7 +59,8 @@ TokenOptional    ignore;
 			
 
 
-			struct GeneralSubTypeObject;
+			struct GeneralTypeObject;
+struct GeneralSubTypeObject;
 struct GeneralNormalTypeObject;
 struct GeneralTokenTypeObject;
 struct GeneralArrayTypeObject;
@@ -73,7 +74,8 @@ struct GeneralArrayTypeObject;
 				class IVisitor
 				{
 				public:
-					virtual void		Visit(GeneralSubTypeObject* node) =0;
+					virtual void		Visit(GeneralTypeObject* node) =0;
+virtual void		Visit(GeneralSubTypeObject* node) =0;
 virtual void		Visit(GeneralNormalTypeObject* node) =0;
 virtual void		Visit(GeneralTokenTypeObject* node) =0;
 virtual void		Visit(GeneralArrayTypeObject* node) =0;
@@ -156,7 +158,8 @@ wstring    name;
 			
 
 
-			struct GeneralEnumTypeDefine;
+			struct GeneralTypeDefine;
+struct GeneralEnumTypeDefine;
 struct GeneralClassTypeDefine;
 struct GeneralEnumMemberTypeDefine;
 struct GeneralClassMemberTypeDefine;
@@ -170,7 +173,8 @@ struct GeneralClassMemberTypeDefine;
 				class IVisitor
 				{
 				public:
-					virtual void		Visit(GeneralEnumTypeDefine* node) =0;
+					virtual void		Visit(GeneralTypeDefine* node) =0;
+virtual void		Visit(GeneralEnumTypeDefine* node) =0;
 virtual void		Visit(GeneralClassTypeDefine* node) =0;
 virtual void		Visit(GeneralEnumMemberTypeDefine* node) =0;
 virtual void		Visit(GeneralClassMemberTypeDefine* node) =0;
@@ -258,7 +262,8 @@ wstring    name;
 			
 
 
-			struct GeneralGrammarAlternationTypeDefine;
+			struct GeneralGrammarTypeDefine;
+struct GeneralGrammarAlternationTypeDefine;
 struct GeneralGrammarCreateTypeDefine;
 struct GeneralGrammarUsingTypeDefine;
 struct GeneralGrammarSetterTypeDefine;
@@ -278,7 +283,8 @@ struct GeneralGrammarTextTypeDefine;
 				class IVisitor
 				{
 				public:
-					virtual void		Visit(GeneralGrammarAlternationTypeDefine* node) =0;
+					virtual void		Visit(GeneralGrammarTypeDefine* node) =0;
+virtual void		Visit(GeneralGrammarAlternationTypeDefine* node) =0;
 virtual void		Visit(GeneralGrammarCreateTypeDefine* node) =0;
 virtual void		Visit(GeneralGrammarUsingTypeDefine* node) =0;
 virtual void		Visit(GeneralGrammarSetterTypeDefine* node) =0;
