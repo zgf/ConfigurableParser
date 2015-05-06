@@ -78,11 +78,8 @@ namespace ztl
 		{
 			enum class RepeatType
 			{
-				KLEENEGREEDY,
 				KLEENE,
-				POSITIVEKLEENEGREEDY,
 				POSITIVEKLEENE,
-				CHOCIEKLEENEGREEDY,
 				CHOCIEKLEENE,
 			};
 

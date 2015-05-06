@@ -15,26 +15,17 @@ namespace ztl
 				L"Repeat::RepeatType::KLEENE",
 				static_cast<int>(Repeat::RepeatType::KLEENE)
 			},
-			{
-				L"Repeat::RepeatType::KLEENEGREEDY",
-				static_cast<int>(Repeat::RepeatType::KLEENEGREEDY)
-			},
+		
 			{
 				L"Repeat::RepeatType::CHOCIEKLEENE",
 				static_cast<int>(Repeat::RepeatType::CHOCIEKLEENE)
 			},
-			{
-				L"Repeat::RepeatType::CHOCIEKLEENEGREEDY",
-				static_cast<int>(Repeat::RepeatType::CHOCIEKLEENEGREEDY)
-			},
+		
 			{
 				L"Repeat::RepeatType::POSITIVEKLEENE",
 				static_cast<int>(Repeat::RepeatType::POSITIVEKLEENE)
 			},
-			{
-				L"Repeat::RepeatType::POSITIVEKLEENEGREEDY",
-				static_cast<int>(Repeat::RepeatType::POSITIVEKLEENEGREEDY)
-			},
+		
 			{
 				L"CharSet::CharSetOptional::Positve",
 				static_cast<int>(CharSet::CharSetOptional::Positve)

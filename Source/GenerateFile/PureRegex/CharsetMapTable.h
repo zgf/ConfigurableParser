@@ -21,7 +21,9 @@ namespace ztl
 		public:
 			void AddCharRange(wchar_t first, wchar_t second);
 			void AddChar(wchar_t value);
-			int GetCharSetMap(wchar_t value)const;
+			void AddEnd();//÷ÿ≈≈–Ú.
+			unsigned short GetCharSetMap(wchar_t value)const;
+			static unsigned short GetNullEdge();
 		private:
 			std::array<unsigned short, 65536> table;
 			unsigned short count;

@@ -25,11 +25,8 @@ class Repeat : Define
 {
 	enum RepeatType
 	{
-		KLEENEGREEDY,
 		KLEENE,
-		POSITIVEKLEENEGREEDY,
 		POSITIVEKLEENE,
-		CHOCIEKLEENEGREEDY,
 		CHOCIEKLEENE,
 	};
 	RepeatType type;
@@ -120,10 +117,7 @@ rule Define CharSetRule = "[" {FactorRule : tokens} "]" as CharSet with {type="P
 						
 						;
 rule Repeat RepeatRule = "*" as Repeat with {type="KLEENEGREEDY"}
-					   = "*?" as Repeat with {type="KLEENE"}
 					   = "+" as Repeat with {type="POSITIVEKLEENEGREEDY"}
-					   = "+?" as Repeat with {type="POSITIVEKLEENE"}
-					   = "??" as Repeat with {type="CHOCIEKLEENEGREEDY"}
 					   = "?" as Repeat with {type="CHOCIEKLEENE"}
 					   ;
 					   

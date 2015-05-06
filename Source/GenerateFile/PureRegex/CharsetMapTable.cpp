@@ -27,9 +27,20 @@ namespace ztl
 				++count;
 			}
 		}
-		int CharsetMapTable::GetCharSetMap(wchar_t value) const
+		unsigned short CharsetMapTable::GetCharSetMap(wchar_t value) const
 		{
 			return table[value];
 		}
+
+		unsigned short CharsetMapTable::GetNullEdge() 
+		{
+			return 65535;
+		}
+
+		void CharsetMapTable::AddEnd()
+		{
+			
+		}
+
 	}
 }

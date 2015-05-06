@@ -178,6 +178,9 @@
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParsing.cpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GenerateFile\PureRegex\NFABuilder.cpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -276,10 +279,10 @@
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexWriter.hpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachine.h">
+    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachineData.h">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachineData.h">
+    <ClInclude Include="Source\GenerateFile\PureRegex\NFABuilder.h">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClInclude>
   </ItemGroup>
