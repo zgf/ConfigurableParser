@@ -7,15 +7,15 @@ namespace ztl
 		struct Alternate;
 		class CharsetMapTable;
 		class NFANode;
-		class NFABuilder
+		class DFATableBuilder
 		{
-			NFABuilder() = delete;
-			NFABuilder(vector<shared_ptr<Alternate>>* _roots,TokenList*	 _tokens, CharsetMapTable*	_charTable);
-			~NFABuilder() = default;
-			NFABuilder(const NFABuilder&) = default;
-			NFABuilder(NFABuilder&&) = default;
-			NFABuilder& operator = (NFABuilder&&) = default;
-			NFABuilder& operator=(const NFABuilder&) = default;
+			DFATableBuilder() = delete;
+			DFATableBuilder(vector<shared_ptr<Alternate>>* _roots,TokenList*	 _tokens, CharsetMapTable*	_charTable);
+			~DFATableBuilder() = default;
+			DFATableBuilder(const DFATableBuilder&) = default;
+			DFATableBuilder(DFATableBuilder&&) = default;
+			DFATableBuilder& operator = (DFATableBuilder&&) = default;
+			DFATableBuilder& operator=(const DFATableBuilder&) = default;
 		public:
 			void AddNullLink(NFANode* left, NFANode* right);
 			void AddLink(NFANode* left, NFANode* right,wchar_t val);
@@ -25,16 +25,17 @@ namespace ztl
 			vector<shared_ptr<Alternate>>* GetRoots()const;
 			void AddStopStates(int nfaNumber, int tokenIndex);
 			void SetNFA(NFANode* _start, NFANode* _end);
+			void NFAToDFATable();
 		private:
-			void BuildNFASet(NFANode* _start);
+			int GetDFAStopState(const unordered_set<NFANode*>& nodes)const;
 		private:
 			TokenList*					tokens;
 			CharsetMapTable*			charTable;
 			vector<shared_ptr<Alternate>>* roots;
-
 			vector<shared_ptr<NFANode>> nfaNodePool;
 			pair<NFANode*,NFANode*>		nfa;
-			unordered_map<int, int>		nfaStopStates;
+			unordered_map<int, int>		stopStates;
+			vector<vector<unsigned short>> dfaTable;
 		};
 		shared_ptr<CharsetMapTable> BuildCharsetMapTable(const vector<shared_ptr<Alternate>>& roots);
 		vector<shared_ptr<Alternate>> ParsingAllTokensToAst(const vector<TokenPacket>& tokens);

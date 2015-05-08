@@ -13,10 +13,10 @@ namespace ztl
 
 			}
 			~CharsetMapTable() noexcept = default;
-			CharsetMapTable(CharsetMapTable&&) noexcept = default;
-			CharsetMapTable(const CharsetMapTable&) noexcept = default;
-			CharsetMapTable& operator=(CharsetMapTable&&) noexcept = default;
-			CharsetMapTable& operator=(const CharsetMapTable&) noexcept  = default;
+			CharsetMapTable(CharsetMapTable&&)  = default;
+			CharsetMapTable(const CharsetMapTable&)  = default;
+			CharsetMapTable& operator=(CharsetMapTable&&)  = default;
+			CharsetMapTable& operator=(const CharsetMapTable&)   = default;
 			
 		public:
 			void AddCharRange(wchar_t first, wchar_t second);
@@ -24,6 +24,7 @@ namespace ztl
 			void AddEnd();//÷ÿ≈≈–Ú.
 			unsigned short GetCharSetMap(wchar_t value)const;
 			static unsigned short GetNullEdge();
+			int GetCount()const;
 		private:
 			std::array<unsigned short, 65536> table;
 			unsigned short count;

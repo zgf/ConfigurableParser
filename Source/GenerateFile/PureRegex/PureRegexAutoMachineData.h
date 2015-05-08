@@ -46,16 +46,16 @@ namespace ztl
 			}
 			TokenPacket* GetToken(int index)const
 			{
-				assert(index >= 0 && index < tokens.size());
+				assert(index >= 0 && index < (int)tokens.size());
 				return tokens [index]? tokens[index] : nullptr;
 			}
 		};
-		class NFABuilder;
+		class DFATableBuilder;
 		class NFANode
 		{
-			friend NFABuilder;
+			friend DFATableBuilder;
 			int number;
-			unordered_map<unsigned short, vector<NFANode*>> next;
+			unordered_map<unsigned short, unordered_set<NFANode*>> next;
 		public:
 			NFANode()  = default;
 			~NFANode() noexcept = default;
@@ -68,6 +68,10 @@ namespace ztl
 
 			}
 		public:
+			const unordered_map<unsigned short, unordered_set<NFANode*>>& GetNextMap()const
+			{
+				return next;
+			}
 			int GetNumber()const
 			{
 				return number;
@@ -77,7 +81,7 @@ namespace ztl
 				auto findIter = next.find(index);
 				return findIter != next.end();
 			}
-			const vector<NFANode*>& GetNextNFASet(unsigned short index)const
+			const unordered_set<NFANode*>& GetNextNFASet(unsigned short index)const
 			{
 				assert(HaveCharIndex(index));
 				auto findIter = next.find(index);
@@ -90,7 +94,7 @@ namespace ztl
 				{
 					next[index];
 				}
-				next[index].emplace_back(node);
+				next[index].insert(node);
 			}
 		};
 		class DFANode

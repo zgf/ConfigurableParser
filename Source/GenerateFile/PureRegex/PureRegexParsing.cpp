@@ -5,7 +5,7 @@
 #include "PureRegexParser.h"
 #include "CharsetMapTable.h"
 #include "PureRegexLexer.h"
-#include "NFABuilder.h"
+#include "DFATableBuilder.h"
 namespace ztl
 {
 	namespace pure_regex
@@ -37,7 +37,10 @@ namespace ztl
 		class BuildCharsetVisitor: public Factor::IVisitor
 		{
 		public:
-			BuildCharsetVisitor() noexcept = default;
+			BuildCharsetVisitor()
+			{
+
+			}
 			~BuildCharsetVisitor() noexcept = default;
 			BuildCharsetVisitor(BuildCharsetVisitor&&) noexcept = default;
 			BuildCharsetVisitor(const BuildCharsetVisitor&) noexcept = default;
@@ -113,7 +116,7 @@ namespace ztl
 		{
 		public:
 			BuildNFAVistor() = delete;
-			BuildNFAVistor(NFABuilder* _builder) :builder(_builder), start(nullptr), end(nullptr)
+			BuildNFAVistor(DFATableBuilder* _builder) :builder(_builder), start(nullptr), end(nullptr)
 			{
 			}
 			~BuildNFAVistor() noexcept = default;
@@ -215,12 +218,12 @@ namespace ztl
 		private:
 			NFANode* start;
 			NFANode* end;
-			NFABuilder* builder;
+			DFATableBuilder* builder;
 		};
-		void BuildNFA(NFABuilder* builder)
+		void BuildNFA(DFATableBuilder* builder)
 		{
 			vector<BuildNFAVistor>result;
-			for(auto i = 0; i < builder->GetRoots()->size(); ++i)
+			for(size_t i = 0; i < builder->GetRoots()->size(); ++i)
 			{
 				auto&&iter = (*builder->GetRoots())[i];
 				BuildNFAVistor visitor(builder);
@@ -238,5 +241,8 @@ namespace ztl
 			}
 			builder->SetNFA(first, second);
 		}
+
+		//NFA to DFA
+		
 	}
 }

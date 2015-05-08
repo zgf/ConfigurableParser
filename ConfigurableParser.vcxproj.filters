@@ -178,7 +178,7 @@
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParsing.cpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GenerateFile\PureRegex\NFABuilder.cpp">
+    <ClCompile Include="Source\GenerateFile\PureRegex\DFATableBuilder.cpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
   </ItemGroup>
@@ -282,7 +282,7 @@
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachineData.h">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GenerateFile\PureRegex\NFABuilder.h">
+    <ClInclude Include="Source\GenerateFile\PureRegex\DFATableBuilder.h">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClInclude>
   </ItemGroup>

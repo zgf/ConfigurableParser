@@ -18,6 +18,7 @@ namespace ztl
 		}
 		void CharsetMapTable::AddChar(wchar_t value)
 		{
+
 			if((table[value] == 0)||
 				(value == 0 && table[value + 1] == table[value]) ||
 				(value == 65535 && table[value - 1] == table[value]) ||
@@ -37,10 +38,35 @@ namespace ztl
 			return 65535;
 		}
 
-		void CharsetMapTable::AddEnd()
+		int CharsetMapTable::GetCount() const
 		{
-			
+			return count;
 		}
 
+		void CharsetMapTable::AddEnd()
+		{
+			int number = 1;
+			for(size_t i = 0; i < table.size();++i)
+			{
+				if (table[i]!=0)
+				{
+					auto current = table[i];
+					auto findIter = find_if(table.begin() + i, table.end(), [current](unsigned short val)
+					{
+						return val != 0 && current != val;
+					});
+
+					for(auto iter = table.begin() + i; iter != findIter;++iter)
+					{
+						if (*iter!=0)
+						{
+							*iter = number;
+							++number;
+						}
+					}
+				}
+			}
+			count = number;
+		}
 	}
 }

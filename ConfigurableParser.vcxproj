@@ -194,7 +194,7 @@
     <ClCompile Include="Source\GeneralTreeNode.cpp" />
     <ClCompile Include="Source\GenerateFile\Json\JsonParser.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\CharsetMapTable.cpp" />
-    <ClCompile Include="Source\GenerateFile\PureRegex\NFABuilder.cpp" />
+    <ClCompile Include="Source\GenerateFile\PureRegex\DFATableBuilder.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexLexer.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParser.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParsing.cpp" />
@@ -231,7 +231,7 @@
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\CharsetMapTable.h" />
-    <ClInclude Include="Source\GenerateFile\PureRegex\NFABuilder.h" />
+    <ClInclude Include="Source\GenerateFile\PureRegex\DFATableBuilder.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachineData.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexLexer.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexParser.h" />

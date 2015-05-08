@@ -386,7 +386,7 @@ namespace ztl
 			assert(ruleToIndexMap.find(ruleName) == ruleToIndexMap.end());
 			ruleToIndexMap.insert({ruleName,index});
 			indexToruleList.emplace_back(ruleName);
-			assert(index == indexToruleList.size() - 1);
+			assert(index == (int)indexToruleList.size() - 1);
 		}
 
 		int SymbolManager::GetRuleIndexByName(const wstring & ruleName) const
