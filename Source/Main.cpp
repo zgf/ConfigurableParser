@@ -14,10 +14,8 @@
 #include <windows.h>
 #include "..\UnitTest\ParserTest.h"
 #include "..\UnitTest\GenerateFileTest.h"
-
 int main()
 {
-	//ztl::general_parser::parser_test::TestPureRegex();
 	//内部调用的regex库 debug模式下拆解token太慢- -debug下性能分析占了90%+的时间- -
 	//release一启动渣本200ms全部执行完了
 	//GenerateFile();
@@ -27,10 +25,10 @@ int main()
 	//解析10W行XML 0.9s
 	//解析100W行XML 3G内存用完了- -.
 	//解析的性能还不错
-	ztl::general_parser::parser_test::TestJson();
-	//ztl::general_parser::generate_file_test::GeneratePureRegexParserFile();
-	//ztl::general_parser::generate_file_test::GenerateFile();
-	//ztl::general_parser::parser_test::TestPureRegex();
+	//ztl::general_parser::parser_test::TestJson();
+	ztl::general_parser::parser_test::TestXml();
 
+	//ztl::general_parser::parser_test::TestPureRegex();
+	//ztl::general_parser::generate_file_test::GenerateFile();
 	return 0;
 }

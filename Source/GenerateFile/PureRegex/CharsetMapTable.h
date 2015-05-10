@@ -8,9 +8,8 @@ namespace ztl
 		class CharsetMapTable
 		{
 		public:
-			CharsetMapTable() :table({ 0 }), count(0)
+			CharsetMapTable() : table({0}),count(1)
 			{
-
 			}
 			~CharsetMapTable() noexcept = default;
 			CharsetMapTable(CharsetMapTable&&)  = default;

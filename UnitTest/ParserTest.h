@@ -1,5 +1,7 @@
 #pragma once
 #include "../Source/GenerateFile/PureRegex/PureRegexLexer.h"
+#include "../Source/GenerateFile/PureRegex/GeneralLexer.h"
+
 namespace ztl
 {
 	namespace general_parser
@@ -61,7 +63,6 @@ namespace ztl
 
 				shared_ptr<ztl::pure_regex::Alternate> tree = std::static_pointer_cast<ztl::pure_regex::Alternate>(ztl::pure_regex::GeneralHeterogeneousParserTree(LALRParser));
 				LALRParser.ClearEnvironment();
-				int a = 0;
 				QueryPerformanceCounter(&EndTime);
 
 				//输出运行时间（单位：s）
@@ -94,6 +95,7 @@ namespace ztl
 				LALRParser.GenerateIsomorphismParserTree();
 				auto tree = ztl::general_parser::GeneralHeterogeneousParserTree(LALRParser);
 			}
+			
 		}
 	}
 }

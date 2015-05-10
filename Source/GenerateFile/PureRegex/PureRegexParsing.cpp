@@ -15,14 +15,14 @@ namespace ztl
 		//////////////////////////////////////////////////////////////////////////
 		//输入tokens,解析出一堆AST
 
-		vector<shared_ptr<Alternate>> ParsingAllTokensToAst(const vector<TokenPacket>& tokens)
+		vector<shared_ptr<Alternate>> ParsingAllTokensToAst(const vector<shared_ptr<TokenPacket>>& tokens)
 		{
 			vector<shared_ptr<Alternate>> result;
 			ztl::general_parser::GeneralLALRParser LALRParser(ztl::pure_regex::BootStrapDefineTable());
 			LALRParser.BuildParser();
 			for(auto&&tokenIter : tokens)
 			{
-				LALRParser.SetTokenPool(ztl::pure_regex::PureRegexParseToken(tokenIter.regex));
+				LALRParser.SetTokenPool(ztl::pure_regex::PureRegexParseToken(tokenIter->regex));
 				LALRParser.GenerateIsomorphismParserTree();
 				result.emplace_back(static_pointer_cast<Alternate>(ztl::pure_regex::GeneralHeterogeneousParserTree(LALRParser)));
 				LALRParser.ClearEnvironment();
@@ -37,7 +37,7 @@ namespace ztl
 		class BuildCharsetVisitor: public Factor::IVisitor
 		{
 		public:
-			BuildCharsetVisitor()
+			BuildCharsetVisitor():table(make_shared<CharsetMapTable>())
 			{
 
 			}
@@ -102,11 +102,13 @@ namespace ztl
 
 		shared_ptr<CharsetMapTable> BuildCharsetMapTable(const vector<shared_ptr<Alternate>>& roots)
 		{
+			assert(!roots.empty());
 			BuildCharsetVisitor visitor;
 			for(auto&&rootIter : roots)
 			{
 				rootIter->Accept(&visitor);
 			}
+			visitor.GetResult()->AddEnd();
 			return visitor.GetResult();
 		}
 		///////////////////////////////////////////////////////////////////////////
@@ -226,11 +228,10 @@ namespace ztl
 			for(size_t i = 0; i < builder->GetRoots()->size(); ++i)
 			{
 				auto&&iter = (*builder->GetRoots())[i];
-				BuildNFAVistor visitor(builder);
-				result.emplace_back(visitor);
+				result.emplace_back(builder);
 				iter->Accept(&result.back());
 				auto&& token = builder->GetTokens()->GetToken(i);
-				builder->AddStopStates(visitor.GetEnd()->GetNumber(), i);
+				builder->AddStopStates(result[i].GetEnd()->GetNumber(), (int)i);
 			}
 			auto first = builder->GetNewNode();
 			auto second = builder->GetNewNode();

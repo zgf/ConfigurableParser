@@ -20,11 +20,11 @@ namespace ztl
 		{
 
 			if((table[value] == 0)||
-				(value == 0 && table[value + 1] == table[value]) ||
-				(value == 65535 && table[value - 1] == table[value]) ||
+				(value == 0 && table[1] == table[0]) ||
+				(value == 65535 && table[65535 - 1] == table[65535]) ||
 				(table[value + 1] == table[value] || table[value - 1] == table[value]))
 			{
-				value = count;
+				table[value] = count;
 				++count;
 			}
 		}
@@ -45,8 +45,8 @@ namespace ztl
 
 		void CharsetMapTable::AddEnd()
 		{
-			int number = 1;
-			for(size_t i = 0; i < table.size();++i)
+			unsigned short number = 1;
+			for(size_t i = 0; i < table.size();)
 			{
 				if (table[i]!=0)
 				{
@@ -55,15 +55,16 @@ namespace ztl
 					{
 						return val != 0 && current != val;
 					});
-
-					for(auto iter = table.begin() + i; iter != findIter;++iter)
+					replace_if(table.begin() + i, findIter, [](unsigned short val)
 					{
-						if (*iter!=0)
-						{
-							*iter = number;
-							++number;
-						}
-					}
+						return val != 0;
+					}, number);
+					++number;
+					i = findIter - table.begin();
+				}
+				else
+				{
+					++i;
 				}
 			}
 			count = number;

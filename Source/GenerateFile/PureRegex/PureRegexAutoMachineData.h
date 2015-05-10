@@ -44,9 +44,9 @@ namespace ztl
 				auto findIter = tokenNameIndexMap.find(name);
 				return (findIter != tokenNameIndexMap.end())?tokens[findIter->second]:nullptr;
 			}
-			TokenPacket* GetToken(int index)const
+			TokenPacket* GetToken(size_t index)const
 			{
-				assert(index >= 0 && index < (int)tokens.size());
+				assert(index >= 0 && index < tokens.size());
 				return tokens [index]? tokens[index] : nullptr;
 			}
 		};

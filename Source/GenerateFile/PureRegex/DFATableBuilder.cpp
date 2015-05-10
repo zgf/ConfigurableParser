@@ -11,7 +11,11 @@ namespace ztl
 
 		DFATableBuilder::DFATableBuilder(vector<shared_ptr<Alternate>>* _roots, TokenList* _tokens, CharsetMapTable* _charTable):tokens(_tokens),charTable(_charTable),roots(_roots)
 		{
-
+			assert(_roots != nullptr);
+			assert(_tokens != nullptr);
+			assert(_charTable != nullptr);
+			BuildNFA(this);
+			this->NFAToDFATable();
 		}
 
 		NFANode* DFATableBuilder::GetNewNode()
@@ -30,7 +34,7 @@ namespace ztl
 		{
 			auto first = charTable->GetCharSetMap(begin);
 			auto second = charTable->GetCharSetMap(end);
-			assert(first < second);
+			assert(first <= second);
 			for(auto i = first; i <= second; ++i)
 			{
 				left->AddOneNFANodeMap(i, right);
@@ -101,7 +105,10 @@ namespace ztl
 			for (auto&& iter:nodes)
 			{
 				auto findIter = stopStates.find(iter->GetNumber());
-				min = std::min(findIter->second, min);
+				if (findIter != stopStates.end())
+				{
+					min = std::min(findIter->second, min);
+				}
 			}
 			return min;
 		}
@@ -113,7 +120,6 @@ namespace ztl
 			//对整个集合求特定char的映射.
 			//映射到的集合是新的DFA节点
 			unordered_map<int, int> dfaStopStates;
-
 			unordered_map<unordered_set<NFANode*>, unsigned short, ztl_hash<unordered_set<NFANode*>>> nfaToDfa;
 			deque<unordered_set<NFANode*>> queue;
 			unordered_set<unordered_set<NFANode*>, ztl_hash<unordered_set<NFANode*>>> nfaSign;
@@ -130,7 +136,7 @@ namespace ztl
 			{
 				nfaToDfa.insert({ queue.back(),count });
 				++count;
-				dfaTable.emplace_back(vector<unsigned short>(charTable->GetCount()));
+				dfaTable.emplace_back(vector<unsigned short>(charTable->GetCount(),-1));
 			};
 			queue.emplace_back();
 			queue.back().insert(nfa.first);

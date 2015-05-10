@@ -82,12 +82,9 @@ token CHASETREVERSEBEGIN = "\[^";
 token CHASETEND = "\]";
 token PARENTOPEN ="\(";
 token PARENTCLOSE = "\)";
-token KLEENEGREEDY = "\*";
-token KLEENE = "\*\?";
-token POSITIVEKLEENEGREEDY = "\+";
-token POSITIVEKLEENE = "\+\?";
-token CHOCIEKLEENEGREEDY = "\?";
-token CHOCIEKLEENE = "\?\?";
+token KLEENE = "\*";
+token POSITIVEKLEENE = "\+";
+token CHOCIEKLEENE = "\?";
 token CHOCIE = "\|";
 token CONPONENT = "-";
 token TROPE = "\\";
@@ -114,21 +111,19 @@ rule Factor FactorRule  = !NormalFactorRule | !BinaryFactorRule|!UserDefineFacto
 rule Define CharSetRule = "[" {FactorRule : tokens} "]" as CharSet with {type="Positve"}
 						= "[^" {FactorRule: tokens}"]" as CharSet with {type="Reverse"}
 						= !FactorRule
-						
+						="(" !AlertRule ")"
 						;
-rule Repeat RepeatRule = "*" as Repeat with {type="KLEENEGREEDY"}
-					   = "+" as Repeat with {type="POSITIVEKLEENEGREEDY"}
+rule Repeat RepeatRule = "*" as Repeat with {type="KLEENE"}
+					   = "+" as Repeat with {type="POSITIVEKLEENE"}
 					   = "?" as Repeat with {type="CHOCIEKLEENE"}
 					   ;
 					   
-rule Define SequenceRule = SequenceRule : first TokenUnitRule : second as Sequence
+rule Define SequenceRule = TokenUnitRule : first  SequenceRule : second as Sequence
 						 = !TokenUnitRule
 						 ;
-rule Define TokenUnitRule = CharSetRule : charset RepeatRule : repeat as TokenUnit
-						 = !CharSetRule
-						 = "(" !AlertRule ")"
+rule Define TokenUnitRule = CharSetRule : charset [RepeatRule : repeat] as TokenUnit
 						 ;
 						 
-rule Define AlertRule = AlertRule:left SequenceRule : right as Alternate
+rule Define AlertRule = SequenceRule:left  AlertRule: right as Alternate
 					  = !SequenceRule
 					  ;

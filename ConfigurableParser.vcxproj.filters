@@ -181,6 +181,9 @@
     <ClCompile Include="Source\GenerateFile\PureRegex\DFATableBuilder.cpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GenerateFile\PureRegex\GeneralLexer.cpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -284,6 +287,12 @@
     </ClInclude>
     <ClInclude Include="Source\GenerateFile\PureRegex\DFATableBuilder.h">
       <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\GeneralLexer.h">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTest\TestGeneralLexer.h">
+      <Filter>UnitTest</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

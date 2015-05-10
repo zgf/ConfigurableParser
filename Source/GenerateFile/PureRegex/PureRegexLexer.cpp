@@ -49,21 +49,21 @@ namespace ztl
 					L"*",
 					[](const wstring& pattern,size_t& index)
 					{
-						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,1),L"KLEENEGREEDY",index,1);
+						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,1),L"KLEENE",index,1);
 					}
 				},
 				{
 					L"+",
 					[](const wstring& pattern,size_t& index)
 					{
-						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,1),L"POSITIVEKLEENEGREEDY",index,1);
+						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,1),L"POSITIVEKLEENE",index,1);
 					}
 				},
 				{
 					L"?",
 					[](const wstring& pattern,size_t& index)
 					{
-						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,1),L"CHOCIEKLEENEGREEDY",index,1);
+						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,1),L"CHOCIEKLEENE",index,1);
 					}
 				},
 				{
@@ -93,27 +93,6 @@ namespace ztl
 					[](const wstring& pattern,size_t& index)
 					{
 						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,1),L"MatchAll",index,1);
-					}
-				},
-				{
-					L"*?",
-					[](const wstring& pattern,size_t& index)
-					{
-						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,2),L"KLEENE",index,2);
-					}
-				},
-				{
-					L"+?",
-					[](const wstring& pattern,size_t& index)
-					{
-						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,2),L"POSITIVEKLEENE",index,2);
-					}
-				},
-				{
-					L"??",
-					[](const wstring& pattern,size_t& index)
-					{
-						return make_shared<ztl::general_parser::TokenInfo>(pattern.substr(index,2),L"CHOCIEKLEENE",index,2);
 					}
 				},
 				{
@@ -186,6 +165,8 @@ namespace ztl
 					}
 				}
 			}
+			auto finish = make_shared<ztl::general_parser::TokenInfo>(L"<$>", L"FINISH", -1, 3);
+			result.emplace_back(finish);
 			return result;
 		}
 

@@ -195,6 +195,7 @@
     <ClCompile Include="Source\GenerateFile\Json\JsonParser.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\CharsetMapTable.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\DFATableBuilder.cpp" />
+    <ClCompile Include="Source\GenerateFile\PureRegex\GeneralLexer.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexLexer.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParser.cpp" />
     <ClCompile Include="Source\GenerateFile\PureRegex\PureRegexParsing.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\CharsetMapTable.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\DFATableBuilder.h" />
+    <ClInclude Include="Source\GenerateFile\PureRegex\GeneralLexer.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexAutoMachineData.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexLexer.h" />
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexParser.h" />
@@ -251,6 +253,7 @@
     <ClInclude Include="Source\Include\SymbolManager.h" />
     <ClInclude Include="UnitTest\GenerateFileTest.h" />
     <ClInclude Include="UnitTest\ParserTest.h" />
+    <ClInclude Include="UnitTest\TestGeneralLexer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
