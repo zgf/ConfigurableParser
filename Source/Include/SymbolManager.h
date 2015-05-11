@@ -11,12 +11,6 @@ namespace ztl
 		class GeneratePath;
 		class SymbolManager
 		{
-		public:
-			enum class TagType
-			{
-				terminate,
-				nonterminate,
-			};
 		private:
 			using TypeObjectToSymbolMapType = unordered_map<GeneralTypeObject*, ParserSymbol*>;
 			using TypeDefineToSymbolMapType = unordered_map<GeneralTypeDefine*, ParserSymbol*>;
