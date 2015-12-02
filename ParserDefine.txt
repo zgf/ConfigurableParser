@@ -1,13 +1,27 @@
-filename : "GenerateParser";
+filename : "GenerateParser" @Color("FileName");
 include : "Include/stdafx.h";
 namespace : "ztl";
 namespace : "general_parser";
 dirname : "General";
+		
+		class GeneralTypeDefine @Color("asas","bbb")
+		{
 
+		};
+		struct GeneralAttributeArgumentDefine
+		{
+			token name @Color("AttributeArgumentName");
+		};
+		struct GeneralAttributeDefine 
+		{
+			token name @Color("AttributeName");
+			GeneralAttributeArgumentDefine[] arguments;
+		};
 		struct GeneralHeadInfoDefine
 		{
-			token    property;
+			token    property @Color("HeadInfoName");
 			token    value;
+			GeneralAttributeDefine[] attributes;
 		};
 		
 		class GeneralTokenDefine
@@ -17,9 +31,10 @@ dirname : "General";
 				False,
 				True,
 			};
-			token			name;
+			token			name @Color("TokenName");
 			token			regex;
 			TokenOptional	ignore;
+			GeneralAttributeDefine[] attributes;
 		};
 
 	
@@ -47,31 +62,31 @@ dirname : "General";
 			token									name;
 		};
 		
-		class GeneralTypeDefine
-		{
-
-		};
-		
+	
 		class GeneralClassMemberTypeDefine :  GeneralTypeDefine
 		{
 			GeneralTypeObject						   type;
-			token									name;
+			token									name @Color("ClassFieldName");
+			GeneralAttributeDefine[] attributes;
 		};
 		class GeneralEnumMemberTypeDefine :  GeneralTypeDefine
 		{
-			token									name;
+			token									name @Color("EnumFieldName");
+			GeneralAttributeDefine[] attributes;
 		};
 		class GeneralClassTypeDefine :  GeneralTypeDefine
 		{
 			GeneralTypeDefine[]				subTypes;
 			GeneralClassMemberTypeDefine[]	members;
 			GeneralTypeObject				parent;
-			token						name;
+			token						name @Color("ClassName");
+			GeneralAttributeDefine[] attributes;
 		};
 		class GeneralEnumTypeDefine :  GeneralTypeDefine
 		{
 			GeneralEnumMemberTypeDefine[]			members;
-			token								name;
+			token								name @Color("EnumName");
+			GeneralAttributeDefine[] attributes;
 		};
 		class GeneralGrammarTypeDefine 
 		{
@@ -128,8 +143,9 @@ dirname : "General";
 		class GeneralRuleDefine
 		{
 			GeneralTypeObject						type;
-			token								name;
+			token								name @Color("RuleName");
 			GeneralGrammarTypeDefine[]				grammars;
+			GeneralAttributeDefine[] attributes;
 		};
 		class GeneralTableDefine
 		{
@@ -139,14 +155,14 @@ dirname : "General";
 			GeneralRuleDefine[]   rules;
 		};
 
-token CLASS = "class";
-token STRUCT = "struct";
-token ENUM = "enum";
-token TOKEN = "token";
-token DISCARDTOKEN = "ignoretoken";
-token RULE = "rule";
-token AS = "as";
-token WITH = "with";
+token CLASS = "class" @Color("Keywords");
+token STRUCT = "struct"@Color("Keywords");
+token ENUM = "enum"@Color("Keywords");
+token TOKEN = "token"@Color("Keywords");
+token DISCARDTOKEN = "ignoretoken"@Color("Keywords");
+token RULE = "rule"@Color("Keywords");
+token AS = "as"@Color("Keywords");
+token WITH = "with"@Color("Keywords");
 token OPEN = "\{";
 token CLOSE = "\}";
 token SEMICOLON = ";";
@@ -156,15 +172,23 @@ token DOT = "\.";
 token ASSIGN = "=";
 token USING = "!";
 token OR = "\|";
+token ATSIGN = "@";
 token OPTOPEN = "\[";
 token OPTCLOSE = "\]";
 token PREOPEN = "\(";
 token PRECLOSE = "\)";
 token NAME = "[a-zA-Z_]\w*";
-token STRING = "\"(\\\\|\\\"|[^\"])*\"";
+token STRING = "\"(\\\\|\\\"|[^\"])*\"" @Color("String");
 ignoretoken SPACE = "\s+";
-ignoretoken LINENOTE = "//[^\n]*\n";
-ignoretoken BLOCKNOTE = "/\*.*?\*/";
+ignoretoken LINENOTE = "//[^\n]*\n"@Color("Note");
+ignoretoken BLOCKNOTE = "/\*.*?\*/"@Color("Note");
+
+rule GeneralAttributeArgumentDefine AttributeArgument 
+        = STRING : name as GeneralAttributeArgumentDefine
+        ;
+rule GeneralAttributeDefine Attribute
+        = "@" NAME : name "(" [ AttributeArgument : arguments ] { "," AttributeArgument : arguments } ")" as GeneralAttributeDefine
+        ;
 rule GeneralTypeDefine TypeDecl
         = !Enum | !Class
         ;
@@ -175,18 +199,18 @@ rule GeneralTypeObject Type
         = Type : element "[" "]" as GeneralArrayTypeObject
         ;
 rule GeneralEnumMemberTypeDefine EnumMember
-        = NAME : name "," as GeneralEnumMemberTypeDefine 
+        = NAME : name [ Attribute : attributes ] { "," Attribute : attributes } "," as GeneralEnumMemberTypeDefine 
         ;
 rule GeneralEnumTypeDefine Enum
-        = "enum" NAME : name  "{" { EnumMember : members } "}" ";" as GeneralEnumTypeDefine
+        = "enum" NAME : name [ Attribute : attributes]  { "," Attribute : attributes }  "{" { EnumMember : members } "}" ";" as GeneralEnumTypeDefine
         ;
 rule GeneralClassMemberTypeDefine ClassMember
-        = Type : type NAME : name ";" as GeneralClassMemberTypeDefine
+        = Type : type NAME : name [ Attribute : attributes]  { "," Attribute : attributes }  ";" as GeneralClassMemberTypeDefine
         ;
 
 
 rule GeneralClassTypeDefine Class
-        = ("struct" |"class") NAME : name [ ":" Type : parent ] "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GeneralClassTypeDefine
+        = ("struct" |"class") NAME : name [ ":" Type : parent ] [ Attribute : attributes  ] { "," Attribute : attributes }  "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GeneralClassTypeDefine
         ;
 rule GeneralGrammarTypeDefine SequenceGrammar
         = !PrimitiveGrammar
@@ -213,13 +237,13 @@ rule GeneralGrammarTypeDefine PrimitiveGrammar
         ;
 
 rule GeneralTokenDefine TokenDecl
-        = "token" NAME : name "=" STRING : regex ";" as GeneralTokenDefine with { ignore = "False" }
-        = "ignoretoken" NAME : name "=" STRING : regex ";" as GeneralTokenDefine with { ignore = "True" }
+        = "token" NAME : name "=" STRING : regex [ Attribute : attributes ]{ "," Attribute : attributes }  ";" as GeneralTokenDefine with { ignore = "False" }
+        = "ignoretoken" NAME : name "=" STRING : regex [ Attribute : attributes ]{ "," Attribute : attributes } ";" as GeneralTokenDefine with { ignore = "True" }
         ;
-rule GeneralHeadInfoDefine HeadDecl = NAME : property ":" STRING : value ";" as GeneralHeadInfoDefine
+rule GeneralHeadInfoDefine HeadDecl = NAME : property ":" STRING : value [ Attribute : attributes  ] { "," Attribute : attributes } ";" as GeneralHeadInfoDefine
 		;
 rule GeneralRuleDefine RuleDecl
-        = "rule" Type : type NAME : name { "=" Grammar : grammars } ";" as GeneralRuleDefine
+        = "rule" Type : type NAME : name [ Attribute : attributes ]{ "," Attribute : attributes }   { "=" Grammar : grammars } ";" as GeneralRuleDefine
         ;
 rule GeneralTableDefine ParserDecl
         = {HeadDecl : heads}| { TypeDecl : types} |{ TokenDecl : tokens} |{ RuleDecl : rules } as GeneralTableDefine

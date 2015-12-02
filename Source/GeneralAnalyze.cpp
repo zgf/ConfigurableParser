@@ -145,7 +145,7 @@ namespace ztl
 			{
 			}
 		public:
-			void								Visit(GeneralClassTypeDefine* node)
+			void								Visit(GeneralClassTypeDefine* node)override
 			{
 				auto name = node->name;
 				auto classTypeSymbol = manager->AddClass(name, node->parent == nullptr ? nullptr : FindType(manager, scope, node->parent.get()), scope);
@@ -161,7 +161,7 @@ namespace ztl
 				}
 				swap(scope, classTypeSymbol);
 			}
-			void								Visit(GeneralEnumTypeDefine* node)
+			void								Visit(GeneralEnumTypeDefine* node)override
 			{
 				auto name = node->name;
 				auto enumTypeSymbol = manager->AddEnum(name, scope);
@@ -173,16 +173,16 @@ namespace ztl
 				}
 				swap(scope, enumTypeSymbol);
 			}
-			void								Visit(GeneralClassMemberTypeDefine* node)
+			void								Visit(GeneralClassMemberTypeDefine* node)override
 			{
 				auto name = node->name;
 				auto fieldSymbol = manager->AddField(name, nullptr, scope);
 				auto fieldType = FindType(manager, scope, node->type.get());
 				fieldSymbol->SetDescriptor(fieldType);
 			}
-			void								Visit(GeneralEnumMemberTypeDefine* node)
+			void								Visit(GeneralEnumMemberTypeDefine* node)override
 			{
-				auto enumItemSymbol = manager->AddEnumItem(node->name, scope);
+				manager->AddEnumItem(node->name, scope);
 			}
 		};
 		//根据语法树节点,构造符号表节点.
@@ -212,12 +212,13 @@ namespace ztl
 			CollectTypeDefineVisitor visitor(manager, manager->GetGlobalSymbol());
 			for(auto&& iter : table->types)
 			{
+				
 				iter->Accept(&visitor);
 			}
 
 			for(auto&& iter : table->tokens)
 			{
-				auto&& tokenSymbol = manager->AddTokenDefine(iter->name, iter->regex, (iter->ignore == GeneralTokenDefine::TokenOptional::True) ? true : false);
+				manager->AddTokenDefine(iter->name, iter->regex, (iter->ignore == GeneralTokenDefine::TokenOptional::True) ? true : false);
 			}
 
 			for(size_t i = 0; i < table->rules.size();++i)

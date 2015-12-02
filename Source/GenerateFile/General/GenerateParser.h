@@ -25,12 +25,69 @@
 								
 
 
+			struct GeneralTypeDefine;
+struct GeneralEnumTypeDefine;
+struct GeneralClassTypeDefine;
+struct GeneralEnumMemberTypeDefine;
+struct GeneralClassMemberTypeDefine;
+
+			struct GeneralTypeDefine 
+			{
+				
+				
+				
+				
+				class IVisitor
+				{
+				public:
+					virtual void		Visit(GeneralTypeDefine* node) =0;
+virtual void		Visit(GeneralEnumTypeDefine* node) =0;
+virtual void		Visit(GeneralClassTypeDefine* node) =0;
+virtual void		Visit(GeneralEnumMemberTypeDefine* node) =0;
+virtual void		Visit(GeneralClassMemberTypeDefine* node) =0;
+
+				};
+				virtual void									Accept(IVisitor* )
+				{
+
+				}
+				
+			};
+			
+
+
+			
+			struct GeneralAttributeArgumentDefine 
+			{
+				
+				wstring    name;
+
+				
+				
+			};
+			
+
+
+			
+			struct GeneralAttributeDefine 
+			{
+				
+				wstring    name;
+vector<shared_ptr<GeneralAttributeArgumentDefine>>    arguments;
+
+				
+				
+			};
+			
+
+
 			
 			struct GeneralHeadInfoDefine 
 			{
 				
 				wstring    property;
 wstring    value;
+vector<shared_ptr<GeneralAttributeDefine>>    attributes;
 
 				
 				
@@ -52,6 +109,7 @@ True,
 				wstring    name;
 wstring    regex;
 TokenOptional    ignore;
+vector<shared_ptr<GeneralAttributeDefine>>    attributes;
 
 				
 				
@@ -158,43 +216,13 @@ wstring    name;
 			
 
 
-			struct GeneralTypeDefine;
-struct GeneralEnumTypeDefine;
-struct GeneralClassTypeDefine;
-struct GeneralEnumMemberTypeDefine;
-struct GeneralClassMemberTypeDefine;
-
-			struct GeneralTypeDefine 
-			{
-				
-				
-				
-				
-				class IVisitor
-				{
-				public:
-					virtual void		Visit(GeneralTypeDefine* node) =0;
-virtual void		Visit(GeneralEnumTypeDefine* node) =0;
-virtual void		Visit(GeneralClassTypeDefine* node) =0;
-virtual void		Visit(GeneralEnumMemberTypeDefine* node) =0;
-virtual void		Visit(GeneralClassMemberTypeDefine* node) =0;
-
-				};
-				virtual void									Accept(IVisitor* )
-				{
-
-				}
-				
-			};
-			
-
-
 			
 			struct GeneralClassMemberTypeDefine : public GeneralTypeDefine
 			{
 				
 				shared_ptr<GeneralTypeObject>    type;
 wstring    name;
+vector<shared_ptr<GeneralAttributeDefine>>    attributes;
 
 				
 				virtual void									Accept(IVisitor* visitor)override
@@ -212,6 +240,7 @@ wstring    name;
 			{
 				
 				wstring    name;
+vector<shared_ptr<GeneralAttributeDefine>>    attributes;
 
 				
 				virtual void									Accept(IVisitor* visitor)override
@@ -232,6 +261,7 @@ wstring    name;
 vector<shared_ptr<GeneralClassMemberTypeDefine>>    members;
 shared_ptr<GeneralTypeObject>    parent;
 wstring    name;
+vector<shared_ptr<GeneralAttributeDefine>>    attributes;
 
 				
 				virtual void									Accept(IVisitor* visitor)override
@@ -250,6 +280,7 @@ wstring    name;
 				
 				vector<shared_ptr<GeneralEnumMemberTypeDefine>>    members;
 wstring    name;
+vector<shared_ptr<GeneralAttributeDefine>>    attributes;
 
 				
 				virtual void									Accept(IVisitor* visitor)override
@@ -488,6 +519,7 @@ shared_ptr<GeneralGrammarTypeDefine>    right;
 				shared_ptr<GeneralTypeObject>    type;
 wstring    name;
 vector<shared_ptr<GeneralGrammarTypeDefine>>    grammars;
+vector<shared_ptr<GeneralAttributeDefine>>    attributes;
 
 				
 				

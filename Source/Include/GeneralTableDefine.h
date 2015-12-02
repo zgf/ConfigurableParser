@@ -40,17 +40,19 @@ namespace ztl
 		//namespace : name
 		//filename : name
 		*/
-
+		struct GeneralAttributeDefine;
+		struct GeneralAttributeArgumentDefine;
 		struct GeneralHeadInfoDefine
 		{
 			wstring property;
 			wstring value;
-
+			vector<shared_ptr<GeneralAttributeDefine>>				attributes;
 		};
 		/*
 		token和IgnoreToken的定义
 
 		*/
+		
 		struct GeneralTokenDefine
 		{
 			enum class TokenOptional
@@ -62,6 +64,7 @@ namespace ztl
 			wstring name;
 			wstring regex;
 			TokenOptional	ignore;
+			vector<shared_ptr<GeneralAttributeDefine>>				attributes;
 			GeneralTokenDefine() = default;
 			~GeneralTokenDefine() = default;
 			GeneralTokenDefine(const wstring& name, const wstring& regex, const TokenOptional ignore)
@@ -138,6 +141,7 @@ namespace ztl
 			}
 		};
 	
+
 		/*
 		前置声明
 		*/
@@ -146,6 +150,7 @@ namespace ztl
 		struct GeneralEnumTypeDefine;
 		struct GeneralClassMemberTypeDefine;
 		struct GeneralEnumMemberTypeDefine;
+		struct GeneralAttributeDefine;
 		/*
 		类型的声明的定义
 		*/
@@ -159,7 +164,7 @@ namespace ztl
 				virtual void								Visit(GeneralEnumTypeDefine* node)=0;
 				virtual void								Visit(GeneralClassMemberTypeDefine* node)=0;
 				virtual void								Visit(GeneralEnumMemberTypeDefine* node)=0;
-
+				
 			};
 
 			virtual void									Accept(IVisitor*)
@@ -172,6 +177,7 @@ namespace ztl
 		{
 			shared_ptr<GeneralTypeObject>			type;
 			wstring									name;
+			vector<shared_ptr<GeneralAttributeDefine>>				attributes;
 			virtual void									Accept(IVisitor* visitor)override
 			{
 				visitor->Visit(this);
@@ -180,10 +186,15 @@ namespace ztl
 		struct GeneralEnumMemberTypeDefine: public GeneralTypeDefine
 		{
 			wstring									name;
+			vector<shared_ptr<GeneralAttributeDefine>>				attributes;
 			virtual void									Accept(IVisitor* visitor)override
 			{
 				visitor->Visit(this);
 			}
+		};
+		struct GeneralAttributeArgumentDefine
+		{
+			wstring									name;
 		};
 		struct GeneralClassTypeDefine: public GeneralTypeDefine
 		{
@@ -191,6 +202,7 @@ namespace ztl
 			vector<shared_ptr<GeneralClassMemberTypeDefine>>	members;
 			shared_ptr<GeneralTypeObject>						parent;
 			wstring												name;
+			vector<shared_ptr<GeneralAttributeDefine>>				attributes;
 			virtual void									Accept(IVisitor* visitor)override
 			{
 				visitor->Visit(this);
@@ -200,12 +212,18 @@ namespace ztl
 		{
 			vector<shared_ptr<GeneralEnumMemberTypeDefine>>		members;
 			wstring												name;
+			vector<shared_ptr<GeneralAttributeDefine>>				attributes;
 			virtual void									Accept(IVisitor* visitor)override
 			{
 				visitor->Visit(this);
 			}
 		};
 
+		struct GeneralAttributeDefine 
+		{
+			vector<shared_ptr<GeneralAttributeArgumentDefine>>	arguments;
+			wstring												name;
+		};
 		/*
 		文法定义
 		*/
@@ -356,6 +374,7 @@ namespace ztl
 			shared_ptr<GeneralTypeObject>						type;
 			wstring												name;
 			vector<shared_ptr<GeneralGrammarTypeDefine>>		grammars;
+			vector<shared_ptr<GeneralAttributeDefine>>				attributes;
 		};
 
 		struct GeneralTableDefine

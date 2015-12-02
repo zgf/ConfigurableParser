@@ -26,9 +26,8 @@ int main()
 	//解析100W行XML 3G内存用完了- -.
 	//解析的性能还不错
 	//ztl::general_parser::parser_test::TestJson();
-	ztl::general_parser::parser_test::TestXml();
-
+	//ztl::general_parser::parser_test::TestXml();
 	//ztl::general_parser::parser_test::TestPureRegex();
-	//ztl::general_parser::generate_file_test::GenerateFile();
+	ztl::general_parser::generate_file_test::GenerateGeneralParserFile();
 	return 0;
 }

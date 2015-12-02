@@ -9,32 +9,74 @@ namespace ztl
 		static const wstring namespacePrefix = L"ztl::general_parser::";
 		wstring SerializeTypeList(const vector<shared_ptr<GeneralTypeDefine>>& types);
 
+		wstring SerializeAttributeArguments(const vector<shared_ptr<GeneralAttributeArgumentDefine>>& arguments)
+		{
+			wstring result = LR"(
+					$<Namespace>GeneralAttributeParamsWriter()$<Arguments>
+					)";
+			auto argumentList = accumulate(arguments.begin(), arguments.end(), wstring(),
+				[](const wstring& sum, const shared_ptr<GeneralAttributeArgumentDefine>& argument) {
+				wstring templateString = LR"(
+					.Param(L$<Name>)
+				)";
+				wstring name = argument->name;
+				MarcoGenerator generator(templateString, { L"$<Name>" });
+				return generator.GenerateText({ name }).GetMacroResult();
+			});
+			MarcoGenerator generator(result, { L"$<Namespace>", L"$<Arguments>" });
+			return generator.GenerateText({ namespacePrefix,argumentList }).GetMacroResult();
+
+		}
+		wstring SerializeAttribute(const vector<shared_ptr<GeneralAttributeDefine>>& attributes)
+		{
+			wstring result = LR"(
+				$<Namespace>GeneralAttributeWriter()
+				$<Attributes>
+				)";
+			auto attributeList = accumulate(attributes.begin(), attributes.end(), wstring(),
+				[](const wstring& sum, const shared_ptr<GeneralAttributeDefine>& attribute)
+			{
+				wstring templateString = LR"(
+					.Attribute(L"$<Name>",$<Arguments>)
+				)";
+				auto name = attribute->name;
+				auto arguments = SerializeAttributeArguments(attribute->arguments);
+				MarcoGenerator generator(templateString, { L"$<Name>", L"$<Arguments>" });
+				return generator.GenerateText({ name,arguments }).GetMacroResult();
+			});
+			MarcoGenerator generator(result, { L"$<Namespace>", L"$<Attributes>" });
+			return generator.GenerateText({ namespacePrefix ,attributeList }).GetMacroResult();
+
+		}
+
 		wstring SerializeHeadInfoList(const vector<shared_ptr<GeneralHeadInfoDefine>>& infos)
 		{
 			wstring templateString =
-				L".Info(LR\"($<Property>)\",LR\"($<Value>)\")";
+				L".Info(LR\"($<Property>)\",LR\"($<Value>,$<Attributes>)\")";
 			templateString = 
 				LR"(
 					)"+ templateString +LR"(
 				)";
 			return accumulate(infos.begin(), infos.end(), wstring(), [&templateString](const wstring& sum, const shared_ptr<GeneralHeadInfoDefine>& info)
 			{
-				ztl::generator::MarcoGenerator generator(templateString, { L"$<Property>",L"$<Value>" });
-				return sum + generator.GenerateText({ info->property,info->value }).GetMacroResult();
+				wstring attributes = SerializeAttribute(info->attributes);
+				ztl::generator::MarcoGenerator generator(templateString, { L"$<Property>",L"$<Value>" ,L"$<Attributes>"});
+				return sum + generator.GenerateText({ info->property,info->value,attributes }).GetMacroResult();
 			});
 		}
 
 		wstring SerializeTokenInfoList(const vector<shared_ptr<GeneralTokenDefine>>& tokens)
 		{
 			wstring templateString =
-				L".$<TokenType>(L\"$<TokenName>\",LR\"($<Value>)\")\n";
+				L".$<TokenType>(L\"$<TokenName>\",LR\"($<Value>)\",$<Attributes>)\n";
 			wstring headString = LR"(						.Token(L"FINISH",L"<\\$>")
 			)";
 			return accumulate(tokens.begin(), tokens.end(), headString, [&templateString](const wstring& sum, const shared_ptr<GeneralTokenDefine>& token)
 			{
-				ztl::generator::MarcoGenerator generator(templateString, { L"$<TokenType>",LR"($<TokenName>)",LR"($<Value>)" });
+				ztl::generator::MarcoGenerator generator(templateString, { L"$<TokenType>",LR"($<TokenName>)",LR"($<Value>)",L"$<Attributes>" });
 				wstring tokenType = (token->ignore == GeneralTokenDefine::TokenOptional::True) ? L"IgnoreToken" : L"Token";
-				return sum + generator.GenerateText({ tokenType,token->name,token->regex }).GetMacroResult();
+				wstring attributes = SerializeAttribute(token->attributes);
+				return sum + generator.GenerateText({ tokenType,token->name,token->regex,attributes }).GetMacroResult();
 			});
 		}
 		class SerialzeTypeObjectVisitor:public GeneralTypeObject::IVisitor
@@ -103,6 +145,7 @@ namespace ztl
 							$<SubTypeList>
 							$<ClassMemberList>
 							$<ParentName>
+							.Attributes($<Attributes>)
 						)
 					)";
 
@@ -135,8 +178,11 @@ namespace ztl
 						return sum + visitor.result;
 					});
 				}
-				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<ClassName>",L"$<SubTypeList>",L"$<ClassMemberList>",L"$<ParentName>" });
-				result = generator.GenerateText({namespacePrefix, node->name,subTypeList,classMemberList, parentName }).GetMacroResult();
+				
+					wstring	attributes = SerializeAttribute(node->attributes);
+				
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<ClassName>",L"$<SubTypeList>",L"$<ClassMemberList>",L"$<ParentName>" ,L"$<Attributes>"});
+				result = generator.GenerateText({namespacePrefix, node->name,subTypeList,classMemberList, parentName,attributes }).GetMacroResult();
 			}
 			void								Visit(GeneralEnumTypeDefine* node)
 			{
@@ -147,6 +193,7 @@ namespace ztl
 							$<Namespace>GeneralEnumTypeWriter()
 							.Name(L"$<EnumName>")
 							$<EnumItemList>
+							.Attributes($<Attributes>)
 						)
 					)";
 				wstring enumItemList = accumulate(node->members.begin(), node->members.end(), wstring(), [](const wstring& sum, const shared_ptr<GeneralEnumMemberTypeDefine>& node)
@@ -155,8 +202,11 @@ namespace ztl
 					node->Accept(&visitor);
 					return sum + visitor.result;
 				});
-				MarcoGenerator generator(templateString, { L"$<Namespace>",L"$<EnumName>",L"$<EnumItemList>" });
-				result = generator.GenerateText({namespacePrefix, node->name,enumItemList }).GetMacroResult();
+				
+				auto attributes = SerializeAttribute(node->attributes);
+				
+				MarcoGenerator generator(templateString, { L"$<Namespace>",L"$<EnumName>",L"$<EnumItemList>",L"$<Attributes>" });
+				result = generator.GenerateText({namespacePrefix, node->name,enumItemList,attributes }).GetMacroResult();
 			}
 			void								Visit(GeneralClassMemberTypeDefine* node)
 			{
@@ -165,20 +215,23 @@ namespace ztl
 				auto fieldType = visitor.GetResult();
 				wstring templateString =
 					LR"(
-					.Member($<Namespace>ClassMember($<FieldType>, L"$<Value>"))
+					.Member($<Namespace>ClassMember($<FieldType>, L"$<Value>",$<Attributes>))
 				)";
-				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<FieldType>",L"$<Value>" });
-				result = generator.GenerateText({ namespacePrefix, fieldType,node->name }).GetMacroResult();
+				wstring attributes = SerializeAttribute(node->attributes);
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<FieldType>",L"$<Value>" ,L"$<Attributes>"});
+				result = generator.GenerateText({ namespacePrefix, fieldType,node->name,attributes }).GetMacroResult();
 			}
 			void								Visit(GeneralEnumMemberTypeDefine* node)
 			{
 				wstring templateString =
 					LR"(
-						.Member($<Namespace>EnumMember(L"$<Value>"))
+						.Member($<Namespace>EnumMember(L"$<Value>",$<Attributes>))
 					)";
-				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<Value>" });
-				result = generator.GenerateText({ namespacePrefix, node->name }).GetMacroResult();
+				wstring attributes = SerializeAttribute(node->attributes);
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<Value>" ,L"$<Attributes>" });
+				result = generator.GenerateText({ namespacePrefix, node->name ,attributes }).GetMacroResult();
 			}
+		
 		private:
 			wstring result;
 		};
@@ -199,6 +252,7 @@ namespace ztl
 			MarcoGenerator generator(templateString, { L"$<Namespace>", L"$<TypeList>" });
 			return generator.GenerateText({ namespacePrefix,typeList }).GetMacroResult();
 		}
+		
 		class SerializeGrammarDefineVisitor:public GeneralGrammarTypeDefine::IVisitor
 		{
 		public:
@@ -311,7 +365,6 @@ namespace ztl
 		}
 		wstring SerializeRuleList(const vector<shared_ptr<GeneralRuleDefine>>& rules)
 		{
-			wstring ruleList;
 			wstring templateString =
 				LR"(
 						.Rule
@@ -320,6 +373,7 @@ namespace ztl
 							.Name(L"$<RuleName>")
 							.ReturnType($<Returnype>)
 							$<GrammarList>
+							$<Attributes>
 						)
 				)";
 			return	accumulate(rules.begin(), rules.end(), wstring(), [&templateString](const wstring&sum, const shared_ptr<GeneralRuleDefine>& rule)
@@ -328,8 +382,13 @@ namespace ztl
 				SerialzeTypeObjectVisitor visitor;
 				rule->type->Accept(&visitor);
 				wstring returnType = visitor.GetResult();
-				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<RuleName>",L"$<Returnype>",L"$<GrammarList>" });
-				return sum + generator.GenerateText({ namespacePrefix,rule->name,returnType,grammarList }).GetMacroResult();
+				wstring attributes = L"";
+				if (!rule->attributes.empty())
+				{
+					attributes = SerializeAttribute(rule->attributes);
+				}
+				MarcoGenerator generator(templateString, {L"$<Namespace>", L"$<RuleName>",L"$<Returnype>",L"$<GrammarList>",L"$<Attributes>" });
+				return sum + generator.GenerateText({ namespacePrefix,rule->name,returnType,grammarList,attributes }).GetMacroResult();
 			});
 		}
 		wstring SerializeEBNFCoreModuleHead()
@@ -342,6 +401,7 @@ namespace ztl
 			return generator.GenerateText({ namespacePrefix }).GetMacroResult();
 		}
 
+		 
 
 		wstring SerializeEBNFCoreModuleImp(void* tableDefine)
 		{

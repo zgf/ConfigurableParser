@@ -6,22 +6,34 @@ namespace ztl
 	namespace general_parser
 	{
 		//GeneralTokenWriter
-		GeneralTokenWriter& GeneralTokenWriter::Token(const wstring& name, const wstring& regex, GeneralTokenDefine::TokenOptional ignore)
+		GeneralTokenWriter& GeneralTokenWriter::Token(const wstring& name, const wstring& regex, GeneralTokenDefine::TokenOptional ignore, const GeneralAttributeWriter & writer)
 		{
 			auto result = make_shared<GeneralTokenDefine>();
 			result->ignore = ignore;
 			result->name = name;
 			result->regex = regex;
+			result->attributes = writer.attributes;
 			this->tokens.emplace_back(move(result));
 			return *this;
 		}
 		GeneralTokenWriter& GeneralTokenWriter::IgnoreToken(const wstring& name, const wstring& regex)
 		{
-			return Token(name, regex, GeneralTokenDefine::TokenOptional::True);
+			return Token(name, regex, GeneralTokenDefine::TokenOptional::True, GeneralAttributeWriter());
 		}
+
+		GeneralTokenWriter & GeneralTokenWriter::IgnoreToken(const wstring & name, const wstring & regex, const GeneralAttributeWriter & writer)
+		{
+			return Token(name, regex, GeneralTokenDefine::TokenOptional::True, writer);
+		}
+	
 		GeneralTokenWriter& GeneralTokenWriter::Token(const wstring& name, const wstring& regex)
 		{
-			return Token(name, regex, GeneralTokenDefine::TokenOptional::False);
+			return Token(name, regex, GeneralTokenDefine::TokenOptional::False, GeneralAttributeWriter());
+		}
+
+		GeneralTokenWriter & GeneralTokenWriter::Token(const wstring & name, const wstring & regex, const GeneralAttributeWriter & writer)
+		{
+			return Token(name, regex, GeneralTokenDefine::TokenOptional::False, writer);
 		}
 
 		//ÊÖÐ´Object¶ÔÏó
@@ -31,18 +43,30 @@ namespace ztl
 			result->element = elementType;
 			return result;
 		}
-		shared_ptr<GeneralClassMemberTypeDefine>	ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring& name)
+		
+		shared_ptr<GeneralClassMemberTypeDefine> ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring & name, const GeneralAttributeWriter & writer)
 		{
 			auto result = make_shared<GeneralClassMemberTypeDefine>();
 			result->type = type;
 			result->name = name;
+			result->attributes = writer.attributes;
+			return result;
+		}
+		shared_ptr<GeneralClassMemberTypeDefine>	ClassMember(const shared_ptr<GeneralTypeObject>& type, const wstring& name)
+		{
+			return ClassMember(type, name, GeneralAttributeWriter());
+		}
+	
+		shared_ptr<GeneralEnumMemberTypeDefine> EnumMember(const wstring & name, const GeneralAttributeWriter & writer)
+		{
+			auto result = make_shared<GeneralEnumMemberTypeDefine>();
+			result->name = name;
+			result->attributes = writer.attributes;
 			return result;
 		}
 		shared_ptr<GeneralEnumMemberTypeDefine>		EnumMember(const wstring& name)
 		{
-			auto result = make_shared<GeneralEnumMemberTypeDefine>();
-			result->name = name;
-			return result;
+			return EnumMember(name, GeneralAttributeWriter());
 		}
 		shared_ptr<GeneralNormalTypeObject> Normal(const wstring& name)
 		{
@@ -100,6 +124,11 @@ namespace ztl
 			this->_struct->parent = type;
 			return *this;
 		}
+		GeneralClassTypeWriter & GeneralClassTypeWriter::Attributes(const GeneralAttributeWriter & writer)
+		{
+			_struct->attributes = writer.attributes;
+			return *this;
+		}
 		//GeneralEnumTypeWriter
 
 		GeneralEnumTypeWriter& GeneralEnumTypeWriter::Name(const wstring& name)
@@ -111,6 +140,11 @@ namespace ztl
 		GeneralEnumTypeWriter& GeneralEnumTypeWriter::Member(const shared_ptr<GeneralEnumMemberTypeDefine>& member)
 		{
 			this->_enum->members.emplace_back(member);
+			return *this;
+		}
+		GeneralEnumTypeWriter & GeneralEnumTypeWriter::Attributes(const GeneralAttributeWriter & writer)
+		{
+			_enum->attributes = writer.attributes;
 			return *this;
 		}
 		//GeneralRuleListWriter
@@ -131,6 +165,11 @@ namespace ztl
 		GeneralRuleWriter& GeneralRuleWriter::ReturnType(const shared_ptr<GeneralTypeObject>& type)
 		{
 			this->rule->type = type;
+			return *this;
+		}
+		GeneralRuleWriter & GeneralRuleWriter::Attributes(const GeneralAttributeWriter & writer)
+		{
+			rule->attributes = writer.attributes;
 			return *this;
 		}
 		GeneralRuleWriter& GeneralRuleWriter::Grammar(const GeneralGrammarWriter& writer)
@@ -259,14 +298,40 @@ namespace ztl
 			table->heads = writer.heads;
 			return *this;
 		}
-		GeneralHeadInfoWriter& GeneralHeadInfoWriter::Info(const wstring & property, const wstring & value)
+	
+		GeneralHeadInfoWriter & GeneralHeadInfoWriter::Info(const wstring & property, const wstring & value, const GeneralAttributeWriter & writer)
 		{
-			// TODO: insert return statement here
 			auto result = make_shared<GeneralHeadInfoDefine>();
 			result->property = property;
 			result->value = value;
+			result->attributes = writer.attributes;
 			heads.emplace_back(move(result));
 			return *this;
+		}
+
+		GeneralHeadInfoWriter& GeneralHeadInfoWriter::Info(const wstring & property, const wstring & value)
+		{
+			// TODO: insert return statement here
+			return Info(property, value, GeneralAttributeWriter());
+		}
+		GeneralAttributeParamsWriter & GeneralAttributeParamsWriter::Param(const wstring& param)
+		{
+			auto result = make_shared<GeneralAttributeArgumentDefine>();
+			result->name = param;
+			params.emplace_back(move(result));
+			return *this;
+		}
+		GeneralAttributeWriter & GeneralAttributeWriter::Attribute(const wstring & name, const GeneralAttributeParamsWriter & writer)
+		{
+			auto attribute = make_shared<GeneralAttributeDefine>();
+			attribute->name = name;
+			attribute->arguments = writer.params;
+			attributes.emplace_back(attribute);
+			return *this;
+		}
+		GeneralAttributeWriter & GeneralAttributeWriter::Attribute(const wstring & name)
+		{
+			return Attribute(name, GeneralAttributeParamsWriter());
 		}
 	}
 }

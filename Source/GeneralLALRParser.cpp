@@ -19,8 +19,13 @@ namespace ztl
 			PDANodeStack.emplace_back(currentPDANode);
 			size_t tokenIndex = 0;
 			auto currentSymbol = GetTokenSymbol(tokenIndex);
+		
 			while(!IsParserFinish(currentSymbol))
 			{
+				if (tokenIndex == 928&& currentSymbol->GetName()==L"FINISH")
+				{
+					int a = 0;
+				}
 				currentLRNode = LRNodeStack.back();
 				currentPDANode = PDANodeStack.back();
 				assert(grammarStack.empty() || grammarStack.back().first->GetTarget() == currentPDANode);

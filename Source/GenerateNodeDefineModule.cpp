@@ -297,7 +297,6 @@ namespace ztl
 		{
 			content = node->name + L",\n";
 		}
-
 		 wstring GetNodeDefineModule(GeneralTableDefine* table,SymbolManager*manager)
 		 {
 			return accumulate(table->types.begin(), table->types.end(), wstring(), [&manager](const wstring& sum, const shared_ptr<GeneralTypeDefine>&target)
