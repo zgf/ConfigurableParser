@@ -18,7 +18,7 @@ namespace ztl
 			GeneralTreeNode(const int number,ParserSymbol* symbol);
 			void SetFieldMap(const wstring& fieldName, const int nodeIndex);
 
-			void SetTermMap(const wstring& fieldName, const int nodeIndex);
+			void SetTermMap(const wstring& fieldName, size_t nodeIndex);
 
 			bool HaveThisField(const wstring& fieldName);
 			const wstring& GetName()const;

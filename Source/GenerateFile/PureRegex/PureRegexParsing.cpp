@@ -230,7 +230,6 @@ namespace ztl
 				auto&&iter = (*builder->GetRoots())[i];
 				result.emplace_back(builder);
 				iter->Accept(&result.back());
-				auto&& token = builder->GetTokens()->GetToken(i);
 				builder->AddStopStates(result[i].GetEnd()->GetNumber(), (int)i);
 			}
 			auto first = builder->GetNewNode();

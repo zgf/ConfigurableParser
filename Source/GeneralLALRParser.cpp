@@ -22,10 +22,6 @@ namespace ztl
 		
 			while(!IsParserFinish(currentSymbol))
 			{
-				if (tokenIndex == 928&& currentSymbol->GetName()==L"FINISH")
-				{
-					int a = 0;
-				}
 				currentLRNode = LRNodeStack.back();
 				currentPDANode = PDANodeStack.back();
 				assert(grammarStack.empty() || grammarStack.back().first->GetTarget() == currentPDANode);
@@ -81,7 +77,7 @@ namespace ztl
 			this->LRNodeStack.clear();
 			this->PDANodeStack.clear();
 		}
-		ParserSymbol* GeneralLALRParser::GetTokenSymbol(int tokenIndex) const
+		ParserSymbol* GeneralLALRParser::GetTokenSymbol(size_t tokenIndex) const
 		{
 			auto&& currentToken = GetPools().GetTokenPool()[tokenIndex].get();
 			return GetManager()->GetTokenSymbolByName(currentToken->tag);
@@ -162,7 +158,6 @@ namespace ztl
 		{
 			assert(!acionts.empty());
 			assert(acionts[0].GetActionType() == ActionType::Create);
-			auto nodeIndex = GetPools().GetGeneralNodePool().size();
 			auto treeNode = MakeTreeNode(acionts[0].GetParserSymbol());
 			if(acionts.size() > 1)
 			{
@@ -176,7 +171,7 @@ namespace ztl
 			}
 			return treeNode;
 		}
-		ParserSymbol* GeneralLALRParser::ExceteReduceAction(PDANode* currentPDANode, GeneralTreeNode* node, int nodeIndex)
+		ParserSymbol* GeneralLALRParser::ExceteReduceAction(PDANode* currentPDANode, GeneralTreeNode* node, size_t nodeIndex)
 		{
 			assert(grammarStack.back().first->GetTarget() == currentPDANode);
 			assert(LRNodeStack.back()->GetItemsMap().find(currentPDANode) != LRNodeStack.back()->GetItemsMap().end());

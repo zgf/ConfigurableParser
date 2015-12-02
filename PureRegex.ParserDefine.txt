@@ -76,7 +76,6 @@ class TokenUnit : Define
 	Define charset;
 	Repeat  repeat;
 };
-
 token CHASETBEGIN = "\[";
 token CHASETREVERSEBEGIN = "\[^";
 token CHASETEND = "\]";
@@ -95,7 +94,7 @@ token TROPEd = "\\d";
 token TROPES = "\\S";
 token TROPEs = "\\s";
 token MatchAll = "\.";
-token NORMAL = "siguoyi";
+token NORMAL = "[^\[\]\(\)\*\?\+-\\\.\|]";
 rule NormalFactor NormalFactorRule  =  NORMAL : name as NormalFactor;
 rule Factor BinaryFactorRule  = NormalFactorRule : begin "-" NormalFactorRule : end  as BinaryFactor;
 rule Factor UserDefineFactorRule = "\W" as 	UserDefineFactor with{type = "TROPEW"}
@@ -118,12 +117,14 @@ rule Repeat RepeatRule = "*" as Repeat with {type="KLEENE"}
 					   = "?" as Repeat with {type="CHOCIEKLEENE"}
 					   ;
 					   
-rule Define SequenceRule = TokenUnitRule : first  SequenceRule : second as Sequence
-						 = !TokenUnitRule
-						 ;
 rule Define TokenUnitRule = CharSetRule : charset [RepeatRule : repeat] as TokenUnit
 						 ;
 						 
-rule Define AlertRule = SequenceRule:left  AlertRule: right as Alternate
+rule Define SequenceRule = TokenUnitRule : first  SequenceRule : second as Sequence
+						 = !TokenUnitRule
+						 ;
+						 
+rule Define AlertRule = SequenceRule:left "|" AlertRule: right as Alternate
 					  = !SequenceRule
 					  ;
+rule Define RegexRootRule = !AlertRule;

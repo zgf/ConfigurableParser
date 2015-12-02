@@ -65,7 +65,6 @@ namespace ztl
 				for(auto&& edgeIter : currentNode->GetNexts())
 				{
 					assert(!edgeIter->GetActions().empty());
-					auto target = edgeIter->GetTarget();
 					auto&& firstActionWrap = *edgeIter->GetActions().begin();
 					if(firstActionWrap.GetActionType() != ActionType::Create)
 					{

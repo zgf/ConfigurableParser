@@ -15,7 +15,7 @@ namespace ztl
 			fieldMap[fieldName].emplace_back(nodeIndex);
 		}
 
-		void GeneralTreeNode::SetTermMap(const wstring& fieldName, const int nodeIndex)
+		void GeneralTreeNode::SetTermMap(const wstring& fieldName, size_t nodeIndex)
 		{
 			auto findIter = termMap.find(fieldName);
 			if(findIter == termMap.end())

@@ -19,11 +19,11 @@ namespace ztl
 			virtual void GenerateIsomorphismParserTree()override;
 			virtual void ClearEnvironment()override;
 		private:
-			ParserSymbol* GetTokenSymbol(int tokenIndex)const;
+			ParserSymbol* GetTokenSymbol(size_t tokenIndex)const;
 			pair<bool,PDAEdge*> NeedMove(PDANode*node, LRNode* LRNode, ParserSymbol* symbol);
 			void ExcuteEdgeAdditionAction(const pair<PDAEdge*, int>& grammar, GeneralTreeNode* node);
 			GeneralTreeNode* ExcuteEndAction(const vector<ActionWrap>& acionts);
-			ParserSymbol* ExceteReduceAction(PDANode* currentPDANode, GeneralTreeNode* node, int nodeIndex);
+			ParserSymbol* ExceteReduceAction(PDANode* currentPDANode, GeneralTreeNode* node, size_t nodeIndex);
 			ParserSymbol* ExceteReduceWithoutEndAction(PDANode* currentPDANode);
 			const vector<PDAEdge*>& FindTheNodePathEdges(PDANode* start, PDANode* end);
 

@@ -136,7 +136,7 @@ namespace ztl
 			{
 				nfaToDfa.insert({ queue.back(),count });
 				++count;
-				dfaTable.emplace_back(vector<unsigned short>(charTable->GetCount(),-1));
+				dfaTable.emplace_back(vector<unsigned short>(charTable->GetCount(), std::numeric_limits<unsigned short>::max()));
 			};
 			queue.emplace_back();
 			queue.back().insert(nfa.first);

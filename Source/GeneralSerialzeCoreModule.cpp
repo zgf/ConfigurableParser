@@ -21,7 +21,7 @@ namespace ztl
 				)";
 				wstring name = argument->name;
 				MarcoGenerator generator(templateString, { L"$<Name>" });
-				return generator.GenerateText({ name }).GetMacroResult();
+				return sum + generator.GenerateText({ name }).GetMacroResult();
 			});
 			MarcoGenerator generator(result, { L"$<Namespace>", L"$<Arguments>" });
 			return generator.GenerateText({ namespacePrefix,argumentList }).GetMacroResult();
@@ -42,7 +42,7 @@ namespace ztl
 				auto name = attribute->name;
 				auto arguments = SerializeAttributeArguments(attribute->arguments);
 				MarcoGenerator generator(templateString, { L"$<Name>", L"$<Arguments>" });
-				return generator.GenerateText({ name,arguments }).GetMacroResult();
+				return sum + generator.GenerateText({ name,arguments }).GetMacroResult();
 			});
 			MarcoGenerator generator(result, { L"$<Namespace>", L"$<Attributes>" });
 			return generator.GenerateText({ namespacePrefix ,attributeList }).GetMacroResult();
