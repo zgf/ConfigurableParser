@@ -22,6 +22,7 @@
     <ProjectGuid>{B923A10F-DFDE-483A-A805-5913A16DA09A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ConfigurableParser</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -99,8 +100,9 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <Profile>true</Profile>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,8 +119,9 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <Profile>true</Profile>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -159,7 +162,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <Profile>true</Profile>
@@ -220,6 +223,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\SymbolManager.cpp" />
+    <ClCompile Include="UnitTest\Source\TestCodeAnalyze.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib\Regex\forward.h" />
@@ -256,6 +260,8 @@
     <ClInclude Include="Source\Include\stdafx.h" />
     <ClInclude Include="Source\Include\SymbolManager.h" />
     <ClInclude Include="UnitTest\GenerateFileTest.h" />
+    <ClInclude Include="UnitTest\Include\TestCodeAnalyze.h" />
+    <ClInclude Include="UnitTest\UnitTest.h" />
     <ClInclude Include="UnitTest\ParserTest.h" />
     <ClInclude Include="UnitTest\TestGeneralLexer.h" />
   </ItemGroup>
@@ -265,13 +271,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\Microsoft.Gsl.0.0.1.0\build\native\Microsoft.Gsl.targets" Condition="Exists('packages\Microsoft.Gsl.0.0.1.0\build\native\Microsoft.Gsl.targets')" />
-    <Import Project="packages\Microsoft.CppCoreCheck.14.0.23107.1\build\native\Microsoft.CppCoreCheck.targets" Condition="Exists('packages\Microsoft.CppCoreCheck.14.0.23107.1\build\native\Microsoft.CppCoreCheck.targets')" />
+    <Import Project="packages\Microsoft.CppCoreCheck.14.0.23107.2\build\native\Microsoft.CppCoreCheck.targets" Condition="Exists('packages\Microsoft.CppCoreCheck.14.0.23107.2\build\native\Microsoft.CppCoreCheck.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\Microsoft.Gsl.0.0.1.0\build\native\Microsoft.Gsl.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Gsl.0.0.1.0\build\native\Microsoft.Gsl.targets'))" />
-    <Error Condition="!Exists('packages\Microsoft.CppCoreCheck.14.0.23107.1\build\native\Microsoft.CppCoreCheck.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CppCoreCheck.14.0.23107.1\build\native\Microsoft.CppCoreCheck.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.CppCoreCheck.14.0.23107.2\build\native\Microsoft.CppCoreCheck.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CppCoreCheck.14.0.23107.2\build\native\Microsoft.CppCoreCheck.targets'))" />
   </Target>
 </Project>

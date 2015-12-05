@@ -184,6 +184,7 @@
     <ClCompile Include="Source\GenerateFile\PureRegex\GeneralLexer.cpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
+    <ClCompile Include="UnitTest\Source\TestCodeAnalyze.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -294,6 +295,8 @@
     <ClInclude Include="UnitTest\TestGeneralLexer.h">
       <Filter>UnitTest</Filter>
     </ClInclude>
+    <ClInclude Include="UnitTest\UnitTest.h" />
+    <ClInclude Include="UnitTest\Include\TestCodeAnalyze.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

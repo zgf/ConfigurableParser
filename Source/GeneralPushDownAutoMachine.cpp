@@ -220,8 +220,8 @@ namespace ztl
 
 		wstring	 PushDownAutoMachine::GetRootRuleName()const
 		{
-			assert(!this->GetSymbolManager()->GetStartRuleList().empty());
-			return this->GetSymbolManager()->GetStartRuleList()[0];
+			assert(manager->GetRootSymbol()!=nullptr);
+			return manager->GetRootSymbol()->GetName();
 		}
 
 

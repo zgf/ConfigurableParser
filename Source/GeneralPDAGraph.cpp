@@ -328,10 +328,11 @@ namespace ztl
 		void CollectNodeAndEdgeMap(PushDownAutoMachine& machine)
 		{
 			unordered_set<PDANode*>sign;
-			for(auto&&iter : machine.GetSymbolManager()->GetStartRuleList())
+			for(auto&&iter : machine.GetSymbolManager()->StartRuleList())
 			{
+				auto&& name = iter->GetName();
 				deque<PDANode*> queue;
-				queue.emplace_back(machine.GetPDAMap()[iter].first);
+				queue.emplace_back(machine.GetPDAMap()[name].first);
 				while(!queue.empty())
 				{
 					PDANode* front = queue.front();
@@ -339,7 +340,7 @@ namespace ztl
 					if(sign.find(front) == sign.end())
 					{
 						sign.insert(front);
-						machine.AddNodeMapElement(front, machine.GetSymbolManager()->GetRuleIndexByName(iter));
+						machine.AddNodeMapElement(front, machine.GetSymbolManager()->GetRuleIndexByName(name));
 						for(auto&& edgeIter : front->GetNexts())
 						{
 							machine.AddNodeEdgeMapElement(front, edgeIter);

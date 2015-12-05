@@ -997,8 +997,9 @@ namespace ztl
 		{
 		private:
 			SymbolManager*									manager;
-			unordered_map<ParserSymbol*, bool>				rules;
-			int												hitCount;
+			unordered_set<ParserSymbol*>					rules;
+			ParserSymbol*									root;
+			vector<ParserSymbol*>							orderedRuleList;
 		public:
 			GetStartSymbolVisitor() = default;
 			~GetStartSymbolVisitor() noexcept = default;
@@ -1006,13 +1007,27 @@ namespace ztl
 			GetStartSymbolVisitor(const GetStartSymbolVisitor&) = default;
 			GetStartSymbolVisitor& operator=(GetStartSymbolVisitor&&) = default;
 			GetStartSymbolVisitor& operator=(const GetStartSymbolVisitor&) = default;
-			GetStartSymbolVisitor(SymbolManager* _manager, unordered_map<ParserSymbol*, bool> _rules, int count) :manager(_manager), rules(_rules), hitCount(count)
+			GetStartSymbolVisitor(SymbolManager* _manager, ParserSymbol* _root) :manager(_manager),root(_root)
 			{
+				rules.insert(root);
+				orderedRuleList.emplace_back(root);
 			}
 		public:
-			size_t GetHitCount()const
+			bool IsStartRuleSymbol(int num)const
 			{
-				return hitCount;
+				return rules.size() == num;
+			}
+			ParserSymbol* GetRootSymbol()
+			{
+				return root;
+			}
+			const unordered_set<ParserSymbol*>& GetReachableSymbols()const
+			{
+				return rules;
+			}
+			const vector<ParserSymbol*> GetOrderedRuleList()const
+			{
+				return orderedRuleList;
 			}
 		public:
 			void								Visit(GeneralGrammarTextTypeDefine*)
@@ -1024,13 +1039,12 @@ namespace ztl
 				auto symbol = manager->GetCacheNormalGrammarToRuleDefSymbol(node);
 				if(symbol != nullptr &&
 					symbol->IsRuleDef() &&
-					rules.find(symbol)->second == false)
+					rules.find(symbol) == rules.end())
 				{
-					rules[symbol] = true;
-					manager->GetStartRuleList().emplace_back(symbol->GetName());
+					rules.insert(symbol);
+					orderedRuleList.emplace_back(symbol);
 					auto ruleNode = manager->GetCacheRuleDefineBySymbol(symbol);
 					assert(ruleNode != nullptr);
-					hitCount++;
 					for(auto&& grammarIter : ruleNode->grammars)
 					{
 						grammarIter->Accept(this);
@@ -1078,26 +1092,42 @@ namespace ztl
 		{
 			auto&& table = manager->GetTable();
 			unordered_map<ParserSymbol*, bool> rules;
+
 			for(auto&& ruleIter : table->rules)
 			{
 				auto ruleSymbol = manager->GetRuleSymbolByName(ruleIter->name);
 				rules[ruleSymbol] = false;
 			}
+
+			auto nums = table->rules.size();
 			for(auto&& ruleIter : table->rules)
 			{
 				auto ruleSymbol = manager->GetRuleSymbolByName(ruleIter->name);
-				rules[ruleSymbol] = true;
-				manager->GetStartRuleList().emplace_back(ruleSymbol->GetName());
-				GetStartSymbolVisitor visitor(manager, rules, 1);
-				rules[ruleSymbol] = false;
-				for(auto&& grammarIter : ruleIter->grammars)
+				if (!rules[ruleSymbol])
 				{
-					grammarIter->Accept(&visitor);
-				}
+					rules[ruleSymbol] = true;
+					GetStartSymbolVisitor visitor(manager, ruleSymbol);
+					
+					for (auto&& grammarIter : ruleIter->grammars)
+					{
+						grammarIter->Accept(&visitor);
+					}
 
-				if(visitor.GetHitCount() != rules.size())
-				{
-					manager->GetStartRuleList().clear();
+					auto reachableSet = visitor.GetReachableSymbols();
+					for_each(reachableSet.begin(), reachableSet.end(), [&rules](auto&& symbol)
+					{
+						if (!rules[symbol])
+						{
+							rules[symbol] = true;
+						}
+					});
+
+					if (visitor.IsStartRuleSymbol(nums))
+					{
+						manager->StartRuleList() = std::move(visitor.GetOrderedRuleList());
+						manager->SetRootSymbol(visitor.GetRootSymbol());
+						break;
+					}
 				}
 			}
 		}

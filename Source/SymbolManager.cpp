@@ -9,7 +9,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		vector<wstring>& SymbolManager::GetStartRuleList()
+		vector<ParserSymbol*>& SymbolManager::StartRuleList()
 		{
 			return startRuleList;
 		}
@@ -98,12 +98,13 @@ namespace ztl
 			TryAddSubSymbol(fieldSymbol, parentType);
 			return fieldSymbol;
 		}
-		SymbolManager::SymbolManager() :table(BootStrapDefineTable())
+		SymbolManager::SymbolManager() :table(BootStrapDefineTable()), rootRuleSymbol(nullptr)
 		{
 			globalSymbol = CreatASymbol(SymbolType::Global, L"", nullptr, nullptr);
 			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"token", nullptr, nullptr);
+
 		}
-		SymbolManager::SymbolManager(const shared_ptr<GeneralTableDefine>& _table) : table(_table)
+		SymbolManager::SymbolManager(const shared_ptr<GeneralTableDefine>& _table) : table(_table), rootRuleSymbol(nullptr)
 		{
 			globalSymbol = CreatASymbol(SymbolType::Global, L"", nullptr, nullptr);
 			tokenTypeSymbol = CreatASymbol(SymbolType::TokenType, L"TokenInfo", nullptr, nullptr);
@@ -404,6 +405,18 @@ namespace ztl
 		ParserSymbol * SymbolManager::GetFinishTokenSymbol() const
 		{
 			return GetTokenSymbolByName(L"FINISH");
+		}
+
+		ParserSymbol * SymbolManager::GetRootSymbol() const
+		{
+			assert(rootRuleSymbol != nullptr);
+			return rootRuleSymbol;
+		}
+
+		void SymbolManager::SetRootSymbol(ParserSymbol * symbol) 
+		{
+			assert(rootRuleSymbol == nullptr);
+			rootRuleSymbol = symbol;
 		}
 
 		void SymbolManager::CheckNameReDefineError(const wstring& name, ParserSymbol * parentSymbol)
