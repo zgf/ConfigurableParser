@@ -92,7 +92,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>Include\stdafx.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -110,7 +110,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>Include\stdafx.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -134,7 +134,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>Include\stdafx.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -155,7 +155,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>Include\stdafx.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -179,12 +179,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Lib\Regex\forward.cpp" />
-    <ClCompile Include="Lib\Regex\ztl_regex_automachine.cpp" />
-    <ClCompile Include="Lib\Regex\ztl_regex_expression.cpp" />
-    <ClCompile Include="Lib\Regex\ztl_regex_interpretor.cpp" />
-    <ClCompile Include="Lib\Regex\ztl_regex_lex.cpp" />
-    <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp" />
     <ClCompile Include="Source\BootstrapDefineTable.cpp" />
     <ClCompile Include="Source\GeneralAnalyze.cpp" />
     <ClCompile Include="Source\GeneralLALRParser.cpp" />
@@ -226,13 +220,6 @@
     <ClCompile Include="UnitTest\Source\TestCodeAnalyze.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Lib\Regex\forward.h" />
-    <ClInclude Include="Lib\Regex\ztl_regex_automachine.h" />
-    <ClInclude Include="Lib\Regex\ztl_regex_data.h" />
-    <ClInclude Include="Lib\Regex\ztl_regex_expression.h" />
-    <ClInclude Include="Lib\Regex\ztl_regex_interpretor.h" />
-    <ClInclude Include="Lib\Regex\ztl_regex_lex.h" />
-    <ClInclude Include="Lib\Regex\ztl_regex_parser.h" />
     <ClInclude Include="Lib\ZTL\ztl_algorithm.h" />
     <ClInclude Include="Lib\ZTL\ztl_exception.h" />
     <ClInclude Include="Lib\ZTL\ztl_generator.hpp" />

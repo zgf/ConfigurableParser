@@ -1013,7 +1013,7 @@ namespace ztl
 				orderedRuleList.emplace_back(root);
 			}
 		public:
-			bool IsStartRuleSymbol(int num)const
+			bool IsStartRuleSymbol(size_t num)const
 			{
 				return rules.size() == num;
 			}
@@ -1088,43 +1088,55 @@ namespace ztl
 			}
 		};
 		
+		void MergeReableSymbolToSignMap(const unordered_set<ParserSymbol*> &reachableSet,
+			unordered_map<ParserSymbol*, bool> &sign)
+		{
+			for_each(reachableSet.begin(), reachableSet.end(), [&sign](auto&& symbol)
+			{
+				if (!sign[symbol])
+				{
+					sign[symbol] = true;
+				}
+			});
+		}
+
+		unordered_map<ParserSymbol*, bool> GetRuleSymbolSignMap(GeneralTableDefine * table, 
+			SymbolManager * manager)
+		{
+			unordered_map<ParserSymbol*, bool> signMap;
+			for (auto&& ruleIter : table->rules)
+			{
+				auto ruleSymbol = manager->GetRuleSymbolByName(ruleIter->name);
+				signMap[ruleSymbol] = false;
+			}
+			return signMap;
+		}
+
 		void GetStartSymbol(SymbolManager * manager)
 		{
 			auto&& table = manager->GetTable();
-			unordered_map<ParserSymbol*, bool> rules;
+			auto&& signMap = GetRuleSymbolSignMap(table, manager);
+			auto ruleCounts = table->rules.size();
 
 			for(auto&& ruleIter : table->rules)
 			{
 				auto ruleSymbol = manager->GetRuleSymbolByName(ruleIter->name);
-				rules[ruleSymbol] = false;
-			}
-
-			auto nums = table->rules.size();
-			for(auto&& ruleIter : table->rules)
-			{
-				auto ruleSymbol = manager->GetRuleSymbolByName(ruleIter->name);
-				if (!rules[ruleSymbol])
+				if (!signMap[ruleSymbol])
 				{
-					rules[ruleSymbol] = true;
+					signMap[ruleSymbol] = true;
+
 					GetStartSymbolVisitor visitor(manager, ruleSymbol);
-					
 					for (auto&& grammarIter : ruleIter->grammars)
 					{
 						grammarIter->Accept(&visitor);
 					}
 
 					auto reachableSet = visitor.GetReachableSymbols();
-					for_each(reachableSet.begin(), reachableSet.end(), [&rules](auto&& symbol)
-					{
-						if (!rules[symbol])
-						{
-							rules[symbol] = true;
-						}
-					});
+					MergeReableSymbolToSignMap(reachableSet, signMap);
 
-					if (visitor.IsStartRuleSymbol(nums))
+					if (visitor.IsStartRuleSymbol(ruleCounts))
 					{
-						manager->StartRuleList() = std::move(visitor.GetOrderedRuleList());
+						manager->OrderedRuleList() = std::move(visitor.GetOrderedRuleList());
 						manager->SetRootSymbol(visitor.GetRootSymbol());
 						break;
 					}

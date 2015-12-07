@@ -328,7 +328,7 @@ namespace ztl
 		void CollectNodeAndEdgeMap(PushDownAutoMachine& machine)
 		{
 			unordered_set<PDANode*>sign;
-			for(auto&&iter : machine.GetSymbolManager()->StartRuleList())
+			for(auto&&iter : machine.GetSymbolManager()->OrderedRuleList())
 			{
 				auto&& name = iter->GetName();
 				deque<PDANode*> queue;

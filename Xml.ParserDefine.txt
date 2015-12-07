@@ -48,12 +48,12 @@ class Document : Node
     Element rootElement;
 };
 
-token INSTRUCTION_OPEN = "<\?";
-token INSTRUCTION_CLOSE = "\?>" ;
-token COMPLEX_ELEMENT_OPEN = "</" ;
-token SINGLE_ELEMENT_CLOSE = "/>" ;
-token ELEMENT_OPEN = "<" ;
-token ELEMENT_CLOSE = ">" ;
+token INSTRUCTIONOPEN = "<\?";
+token INSTRUCTIONCLOSE = "\?>" ;
+token COMPLEXELEMENTOPEN = "</" ;
+token SINGLEELEMENTCLOSE = "/>" ;
+token ELEMENTOPEN = "<" ;
+token ELEMENTCLOSE = ">" ;
 token EQUAL = "=";
 token NAME = "[a-zA-Z0-9:._\-]+" ;
 token ATTVALUE = "\"[^<>\"]*\"|'[^<>']*'" ;

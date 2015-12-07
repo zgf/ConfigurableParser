@@ -24,7 +24,7 @@ namespace ztl
 			vector<shared_ptr<ParserSymbol>> createdSymbolList;//符号的对象池
 			ParserSymbol*					 globalSymbol;//根符号
 			ParserSymbol*					 tokenTypeSymbol;//token类型符号
-			vector<ParserSymbol*>				 startRuleList;
+			vector<ParserSymbol*>				 orderedRuleList;
 			ParserSymbol*						 rootRuleSymbol;//开始符号
 			unordered_map<wstring, int>			 ruleToIndexMap;//rule to Index的Map
 			vector<wstring>						 indexToruleList;//index to rule List
@@ -42,7 +42,7 @@ namespace ztl
 		public:
 			const vector<shared_ptr<GeneralTokenDefine>>& GetTokens() const;
 			const vector<shared_ptr<GeneralTypeDefine>>& GetTypes() const;
-			vector<ParserSymbol*>& StartRuleList();
+			vector<ParserSymbol*>& OrderedRuleList();
 			GeneralTableDefine* GetTable();
 			ParserSymbol* GetGlobalSymbol();
 			ParserSymbol* GetTokenTypeSymbol();

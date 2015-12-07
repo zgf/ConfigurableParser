@@ -305,27 +305,27 @@
 						(
 							ztl::general_parser::GeneralTokenWriter()
 													.Token(L"FINISH",L"<\\$>")
-			.Token(L"INSTRUCTION_OPEN",LR"(<\?)",
+			.Token(L"INSTRUCTIONOPEN",LR"(<\?)",
 				ztl::general_parser::GeneralAttributeWriter()
 				
 				)
-.Token(L"INSTRUCTION_CLOSE",LR"(\?>)",
+.Token(L"INSTRUCTIONCLOSE",LR"(\?>)",
 				ztl::general_parser::GeneralAttributeWriter()
 				
 				)
-.Token(L"COMPLEX_ELEMENT_OPEN",LR"(</)",
+.Token(L"COMPLEXELEMENTOPEN",LR"(</)",
 				ztl::general_parser::GeneralAttributeWriter()
 				
 				)
-.Token(L"SINGLE_ELEMENT_CLOSE",LR"(/>)",
+.Token(L"SINGLEELEMENTCLOSE",LR"(/>)",
 				ztl::general_parser::GeneralAttributeWriter()
 				
 				)
-.Token(L"ELEMENT_OPEN",LR"(<)",
+.Token(L"ELEMENTOPEN",LR"(<)",
 				ztl::general_parser::GeneralAttributeWriter()
 				
 				)
-.Token(L"ELEMENT_CLOSE",LR"(>)",
+.Token(L"ELEMENTCLOSE",LR"(>)",
 				ztl::general_parser::GeneralAttributeWriter()
 				
 				)
@@ -633,26 +633,26 @@
 							
 						|
 					(
-						ztl::general_parser::GrammarSymbol(L"ELEMENT_OPEN")+
+						ztl::general_parser::GrammarSymbol(L"ELEMENTOPEN")+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
 					+*(
 						ztl::general_parser::GrammarSymbol(L"XAttribute")[L"attributes"]
-					)+ztl::general_parser::GrammarSymbol(L"SINGLE_ELEMENT_CLOSE")
+					)+ztl::general_parser::GrammarSymbol(L"SINGLEELEMENTCLOSE")
 					)
 					.Create(ztl::general_parser::Normal(L"Element"))
 					
 				
 						|
 					(
-						ztl::general_parser::GrammarSymbol(L"ELEMENT_OPEN")+
+						ztl::general_parser::GrammarSymbol(L"ELEMENTOPEN")+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
 					+*(
 						ztl::general_parser::GrammarSymbol(L"XAttribute")[L"attributes"]
-					)+ztl::general_parser::GrammarSymbol(L"ELEMENT_CLOSE")+*(
+					)+ztl::general_parser::GrammarSymbol(L"ELEMENTCLOSE")+*(
 						ztl::general_parser::GrammarSymbol(L"XSubNode")[L"subNodes"]
-					)+ztl::general_parser::GrammarSymbol(L"COMPLEX_ELEMENT_OPEN")+
+					)+ztl::general_parser::GrammarSymbol(L"COMPLEXELEMENTOPEN")+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"closingName"]
-					+ztl::general_parser::GrammarSymbol(L"ELEMENT_CLOSE")
+					+ztl::general_parser::GrammarSymbol(L"ELEMENTCLOSE")
 					)
 					.Create(ztl::general_parser::Normal(L"Element"))
 					
@@ -685,11 +685,11 @@
 							
 						|
 					(
-						ztl::general_parser::GrammarSymbol(L"INSTRUCTION_OPEN")+
+						ztl::general_parser::GrammarSymbol(L"INSTRUCTIONOPEN")+
 						ztl::general_parser::GrammarSymbol(L"NAME")[L"name"]
 					+*(
 						ztl::general_parser::GrammarSymbol(L"XAttribute")[L"attributes"]
-					)+ztl::general_parser::GrammarSymbol(L"INSTRUCTION_CLOSE")
+					)+ztl::general_parser::GrammarSymbol(L"INSTRUCTIONCLOSE")
 					)
 					.Create(ztl::general_parser::Normal(L"Instruction"))
 					

@@ -88,24 +88,6 @@
     <ClCompile Include="Source\stdafx.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Lib\Regex\forward.cpp">
-      <Filter>Lib\Regex</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\Regex\ztl_regex_automachine.cpp">
-      <Filter>Lib\Regex</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\Regex\ztl_regex_expression.cpp">
-      <Filter>Lib\Regex</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\Regex\ztl_regex_interpretor.cpp">
-      <Filter>Lib\Regex</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\Regex\ztl_regex_lex.cpp">
-      <Filter>Lib\Regex</Filter>
-    </ClCompile>
-    <ClCompile Include="Lib\Regex\ztl_regex_parser.cpp">
-      <Filter>Lib\Regex</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SymbolManager.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
@@ -199,44 +181,8 @@
     <ClInclude Include="Source\Include\SymbolManager.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Lib\Regex\forward.h">
-      <Filter>Lib\Regex</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Regex\ztl_regex_automachine.h">
-      <Filter>Lib\Regex</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Regex\ztl_regex_data.h">
-      <Filter>Lib\Regex</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Regex\ztl_regex_expression.h">
-      <Filter>Lib\Regex</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Regex\ztl_regex_interpretor.h">
-      <Filter>Lib\Regex</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Regex\ztl_regex_lex.h">
-      <Filter>Lib\Regex</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\Regex\ztl_regex_parser.h">
-      <Filter>Lib\Regex</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\ZTL\ztl_exception.h">
-      <Filter>Lib\ZTL</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\ZTL\ztl_generator.hpp">
-      <Filter>Lib\ZTL</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\ZTL\ztl_hash.hpp">
-      <Filter>Lib\ZTL</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Include\ParserSymbol.h">
       <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\ZTL\ztl_algorithm.h">
-      <Filter>Lib\ZTL</Filter>
-    </ClInclude>
-    <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp">
-      <Filter>Lib\ZTL</Filter>
     </ClInclude>
     <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h">
       <Filter>Source\AInclude</Filter>
@@ -297,6 +243,11 @@
     </ClInclude>
     <ClInclude Include="UnitTest\UnitTest.h" />
     <ClInclude Include="UnitTest\Include\TestCodeAnalyze.h" />
+    <ClInclude Include="Lib\ZTL\ztl_algorithm.h" />
+    <ClInclude Include="Lib\ZTL\ztl_exception.h" />
+    <ClInclude Include="Lib\ZTL\ztl_generator.hpp" />
+    <ClInclude Include="Lib\ZTL\ztl_hash.hpp" />
+    <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

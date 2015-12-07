@@ -1,17 +1,15 @@
 #include "Include/stdafx.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
-#include "../Lib/Regex/ztl_regex_lex.h"
-#include "../Lib/Regex/ztl_regex_parser.h"
 #include "../Lib/ZTL/ztl_exception.h"
 
 namespace ztl
 {
 	namespace general_parser
 	{
-		vector<ParserSymbol*>& SymbolManager::StartRuleList()
+		vector<ParserSymbol*>& SymbolManager::OrderedRuleList()
 		{
-			return startRuleList;
+			return orderedRuleList;
 		}
 	
 		GeneralTableDefine * SymbolManager::GetTable()
@@ -149,9 +147,7 @@ namespace ztl
 		}
 		void CheckRegexError(const wstring& regex)
 		{
-			RegexLex lexer(regex);
-			lexer.ParsingPattern();
-			RegexParser parser(lexer);
+			boost::xpressive::wsregex::compile(regex);
 		}
 		ParserSymbol* SymbolManager::AddTokenDefine(const wstring& name, const wstring& regex, bool ignore)
 		{
@@ -160,11 +156,11 @@ namespace ztl
 			{
 				CheckRegexError(regex);
 			}
-			catch(const ztl_exception& ex)
+			catch(const boost::xpressive::regex_error& ex)
 			{
 				throw ztl_exception(L"\ntoken name: " + name +
 					L"token regex: " + regex +
-					L"can't creat correct regex string! the regex error message is:" + ex.Message());
+					L"can't creat correct regex string!");
 			}
 			ParserSymbol* regexSymbol = nullptr;
 			auto tokenSymbol = CreatASymbol(SymbolType::TokenDef, name, GetGlobalSymbol(), regexSymbol, ignore);
@@ -452,10 +448,44 @@ namespace ztl
 			}
 			return result;
 		}
-		wstring LinearStringToRegex(const wstring &regex)
+		wstring LinearStringToRegex(const wstring& regex)
 		{
-			return ztl::LinearStringToRegexString(regex);
+			wstring result;
+			int begin = 0;
+			if (regex[0] == '^')
+			{
+				result += LR"(\)" + wstring(1, regex[0]);
+				++begin;
+			}
+			for (int i = begin; i < regex.size(); i++)
+			{
+				auto c = regex[i];
+				switch (c)
+				{
+				case L'(':
+				case L')':
+				case L'{':
+				case L'}':
+				case L'[':
+				case L']':
+				case L'\\':
+				case L'.':
+				case L'|':
+				case L'\n':
+				case L'\t':
+				case L'\r':
+				case L'$':
+				case L'+':
+				case L'*':
+				case L'?':
+					result += LR"(\)" + wstring(1, c);
+					break;
+				default:
+					result += c;
+					break;
+				}
+			}
+			return result;
 		}
-	
 	}
 }

@@ -1,7 +1,6 @@
 #include "Include\stdafx.h"
 #include "Include\GeneralParserBase.h"
 #include "Include\SymbolManager.h"
-#include "../Lib/Regex/ztl_regex_interpretor.h"
 namespace ztl
 {
 	namespace general_parser
@@ -18,8 +17,8 @@ namespace ztl
 
 		static wstring DealWithWord(const wstring& value)
 		{
-			static RegexInterpretor interepter(LR"(^[a-zA-Z_]\w*$)");
-			if(interepter.IsMatch(value))
+			static boost::xpressive::wsregex regex = boost::xpressive::wsregex::compile(LR"(^[a-zA-Z_]\w*$)");
+			if (boost::xpressive::regex_match(value, regex))
 			{
 				return LR"(\b)" + value + LR"(\b)";
 			}
@@ -30,40 +29,47 @@ namespace ztl
 		}
 		vector<shared_ptr<TokenInfo>> GeneralParserBase::ParseToken(const wstring& fileName)
 		{
-			assert(manager->GetTable() != nullptr);
+			auto&& table = manager->GetTable();
+			auto&& tokens = table->tokens;
+			assert(table != nullptr);
 			unordered_map<wstring, GeneralTokenDefine::TokenOptional> infos;
-			for_each(manager->GetTable()->tokens.begin(), manager->GetTable()->tokens.end(), [&infos](const shared_ptr<GeneralTokenDefine>& token)
+			for_each(tokens.begin(), tokens.end(), [&infos](const shared_ptr<GeneralTokenDefine>& token)
 			{
 				infos.insert({ token->name, token->ignore });
 			});
 
 			wifstream input(fileName);
-			if(!input.is_open())
+			if (!input.is_open())
 			{
 				throw ztl_exception(L"error:file" + fileName + L"not open!");
 			}
 			vector<shared_ptr<TokenInfo>> stream;
 			std::wstring content((std::istreambuf_iterator<wchar_t>(input)),
 				std::istreambuf_iterator<wchar_t>());
-			auto pattern = accumulate(manager->GetTable()->tokens.begin(), manager->GetTable()->tokens.end(),
+
+			auto wpattern = accumulate(tokens.begin(), tokens.end(),
 				wstring(), [](const wstring& sum, const shared_ptr<GeneralTokenDefine>& token)
 			{
-				return sum + L"(<" + token->name + L">" + DealWithWord(token->regex) + L")|";
+				return sum + L"(?P<" + token->name + L">" + DealWithWord(token->regex) + L")|";
 			});
-			pattern.pop_back();
-			RegexInterpretor interpretor(pattern);
-			auto result = interpretor.Matches(content);
-			for(auto&& iter : result)
+			wpattern.pop_back();
+			auto regex = boost::xpressive::wsregex::compile(wpattern, boost::xpressive::regex_constants::syntax_option_type::optimize);
+			boost::xpressive::wsregex_iterator end;
+			for (boost::xpressive::wsregex_iterator current(content.begin(), content.end(), regex);current != end;++current)
 			{
-				assert(iter.group.size() == 1);
-				auto groupIter = *iter.group.begin();
-				auto tag = groupIter.first;
-				assert(infos.find(tag) != infos.end());
-				if(infos[tag] != GeneralTokenDefine::TokenOptional::True)
+				auto&& match = *current;
+				auto&& findIter = std::find_if(tokens.begin(), tokens.end(), [&match](auto&& iter) {return match[iter->name].matched;});
+				assert(findIter != tokens.end());
+				auto&& name = (*findIter)->name;
+				auto&& matched = match[name];
+				auto&& str = matched.str();
+
+				if (infos[name] != GeneralTokenDefine::TokenOptional::True)
 				{
-					stream.emplace_back(make_shared<TokenInfo>(groupIter.second.content, tag, groupIter.second.position, groupIter.second.length));
+					stream.emplace_back(make_shared<TokenInfo>(str, name, matched.first - content.begin(), matched.length()));
 				}
 			}
+
 			stream.emplace_back(make_shared<TokenInfo>(L"<$>", L"FINISH", -1, 4));
 			return stream;
 		}

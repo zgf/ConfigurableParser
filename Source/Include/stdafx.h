@@ -12,7 +12,7 @@
 #include <sstream>
 #include <numeric>
 #include <fstream>
-#include "boost/any.hpp"
+#include <boost/xpressive/xpressive.hpp>
 #include <locale>
 #include <deque>
 #include <set>
@@ -49,8 +49,6 @@ namespace ztl
 	using std::equal;
 	using std::reverse_iterator;
 	using std::weak_ptr;
-	using boost::any;
-	using boost::any_cast;
 	using std::pair;
 	using std::set_difference;
 	using std::iota;
