@@ -19,18 +19,30 @@ namespace ztl
 			wstring tag;
 			int     position;
 			int     length;
+			int		lineNumber;
 			TokenInfo() = default;
 			TokenInfo(const wstring& _content,const wstring& _tag,int _position,int _length)
-				:content(_content),tag(_tag), position(_position),length(_length)
+				:content(_content),tag(_tag), position(_position),length(_length), lineNumber(0)
 			{
 			
 			}
+			
 			wstring GetTokenInfo()
 			{
 				return L" tag : " + tag + 
 					L" content : " + content +
 					L" position : " + to_wstring(position) + 
 					L" length : " + to_wstring(length)+L"\n";
+			}
+			
+			int GetLineNumber()const
+			{
+				return lineNumber;
+			}
+
+			void SetLineNumber(int value)
+			{
+				lineNumber = value;
 			}
 		};
 		/*
@@ -69,11 +81,6 @@ namespace ztl
 			~GeneralTokenDefine() = default;
 			GeneralTokenDefine(const wstring& name, const wstring& regex, const TokenOptional ignore)
 				:name(name),regex(regex),ignore(ignore)
-			{
-
-			}
-			GeneralTokenDefine(const wstring& name, const wstring& regex, const bool ignore)
-				:name(name), regex(regex), ignore(ignore?TokenOptional::True:TokenOptional::False)
 			{
 
 			}

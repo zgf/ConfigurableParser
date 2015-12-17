@@ -108,7 +108,10 @@ namespace ztl
 			GeneralTreeNode*	CopyTreeNode(GeneralTreeNode*);
 
 			vector<shared_ptr<TokenInfo>> ParseToken(const wstring& fileName);
+
 			
+
+
 		protected:
 			shared_ptr<SymbolManager>			 manager;
 			GeneralNodePools					 pools;

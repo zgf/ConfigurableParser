@@ -26,5 +26,30 @@ namespace ztl
 			}
 			return   str;
 		}
+		template<typename ValueType>
+		std::pair<bool, int> binary_search(const std::vector<ValueType>& container,typename std::vector<ValueType>::const_reference target)
+		{
+			int l = 0;
+			int r = container.size() - 1;
+			while (l <= r)
+			{
+				int mid = (l + r) / 2;
+				if (container[mid] == target)
+				{
+					return make_pair(true, mid);
+				}
+				
+				if (container[mid] < target)
+				{
+					l = mid + 1;
+				}
+				else
+				{
+					r = mid - 1;
+				}
+			}
+			return make_pair(false,l);
+		}
+
 	}
 }
