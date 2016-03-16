@@ -27,6 +27,7 @@ namespace ztl
 			auto machine = make_shared<PushDownAutoMachine>(manager.get());
 			CreateDPDAGraph(*machine.get());
 			LRMachine = make_shared<GeneralLRMachine>(machine);
+			LRMachine->CalculateFirstSet();
 			LRMachine->BuildFirstTable();
 			LRMachine->BuildLRItems();
 		}
@@ -43,7 +44,10 @@ namespace ztl
 		{
 			return LRMachine->GetLRMachineStartNode();
 		}
-
+		void GeneralParserBase::LALRConfilctDetection()
+		{
+			LRMachine->LALRConfilctDetection();
+		}
 		GeneralLRMachine & GeneralParserBase::GetMachine() const
 		{
 			// TODO: insert return statement here

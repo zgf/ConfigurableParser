@@ -1,13 +1,34 @@
 #pragma once
 #include "../Source/GenerateFile/PureRegex/PureRegexLexer.h"
 #include "../Source/GenerateFile/PureRegex/GeneralLexer.h"
-
+#include "GenerateFile\MiniSharp\MiniSharpParser.h"
+#include "GenerateFile\TestAssign\TestAssignParser.h"
 namespace ztl
 {
 	namespace general_parser
 	{
 		namespace parser_test
 		{
+			void TestMiniSharp()
+			{
+				auto table = ztl::miniSharp::BootStrapDefineTable();
+				ztl::general_parser::GeneralLALRParser LALRParser(table);
+				LALRParser.SetTokenPool(L"TestMiniSharp.txt");
+				LALRParser.BuildParser();
+				LARGE_INTEGER BegainTime;
+				LARGE_INTEGER EndTime;
+				LARGE_INTEGER Frequency;
+				QueryPerformanceFrequency(&Frequency);
+				QueryPerformanceCounter(&BegainTime);
+
+				LALRParser.GenerateIsomorphismParserTree();
+
+				auto tree = ztl::miniSharp::GeneralHeterogeneousParserTree(LALRParser);
+				QueryPerformanceCounter(&EndTime);
+
+				//输出运行时间（单位：s）
+				wcout << (double)(EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
+			}
 			void TestJson()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::json::BootStrapDefineTable());
@@ -46,7 +67,28 @@ namespace ztl
 				//输出运行时间（单位：s）
 				wcout << (double) (EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
 			}
+			void TestTestAssign()
+			{
+				ztl::general_parser::GeneralLALRParser LALRParser(ztl::testAssign::BootStrapDefineTable());
+				
+				LALRParser.SetTokenPool(L"TestTestAssign.txt");
+				LALRParser.BuildParser();
 
+				LARGE_INTEGER BegainTime;
+				LARGE_INTEGER EndTime;
+				LARGE_INTEGER Frequency;
+				QueryPerformanceFrequency(&Frequency);
+				QueryPerformanceCounter(&BegainTime);
+
+				LALRParser.GenerateIsomorphismParserTree();
+
+				auto tree = ztl::testAssign::GeneralHeterogeneousParserTree(LALRParser);
+				LALRParser.ClearEnvironment();
+				QueryPerformanceCounter(&EndTime);
+
+				//输出运行时间（单位：s）
+				wcout << (double)(EndTime.QuadPart - BegainTime.QuadPart) / Frequency.QuadPart << endl;
+			}
 			void TestPureRegex()
 			{
 				ztl::general_parser::GeneralLALRParser LALRParser(ztl::pure_regex::BootStrapDefineTable());

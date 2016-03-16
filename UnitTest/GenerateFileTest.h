@@ -1,10 +1,22 @@
 #pragma once
+
 namespace ztl
 {
 	namespace general_parser
 	{
 		namespace generate_file_test
 		{
+
+			void GenerateTestAssignParserFile()
+			{
+				ztl::general_parser::GeneralParserFile parserGen(L"TestAsssign.ParserDefine.txt", make_shared<ztl::general_parser::GeneralLALRParser>(ztl::general_parser::BootStrapDefineTable()));
+				parserGen.GenerateSpecialParserFile();
+			}
+			void GenerateMiniSharpParserFile()
+			{
+				ztl::general_parser::GeneralParserFile parserGen(L"MiniSharp.ParserDefine.txt", make_shared<ztl::general_parser::GeneralLALRParser>(ztl::general_parser::BootStrapDefineTable()));
+				parserGen.GenerateSpecialParserFile();
+			}
 			void GenerateGeneralParserFile()
 			{
 				ztl::general_parser::GeneralParserFile parserGen(L"ParserDefine.txt", make_shared<ztl::general_parser::GeneralLALRParser>(ztl::general_parser::BootStrapDefineTable()));

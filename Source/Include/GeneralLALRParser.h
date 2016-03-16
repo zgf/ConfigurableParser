@@ -4,6 +4,7 @@ namespace ztl
 {
 	namespace general_parser
 	{
+
 		 class GeneralLALRParser: public GeneralParserBase
 		{
 		public:
@@ -18,6 +19,8 @@ namespace ztl
 		public:
 			virtual void GenerateIsomorphismParserTree()override;
 			virtual void ClearEnvironment()override;
+			
+			
 		private:
 			ParserSymbol* GetTokenSymbol(size_t tokenIndex)const;
 			pair<bool,PDAEdge*> NeedMove(PDANode*node, LRNode* LRNode, ParserSymbol* symbol);
@@ -26,8 +29,8 @@ namespace ztl
 			ParserSymbol* ExceteReduceAction(PDANode* currentPDANode, GeneralTreeNode* node, size_t nodeIndex);
 			ParserSymbol* ExceteReduceWithoutEndAction(PDANode* currentPDANode);
 			const vector<PDAEdge*>& FindTheNodePathEdges(PDANode* start, PDANode* end);
-
-			bool IsParserFinish(ParserSymbol* node)const;
+			void ExecutableEdgeAddctionAction(const vector<pair<PDAEdge*, int>>&edges, GeneralTreeNode* node);
+			bool IsParserFinish(ParserSymbol* node,ParserSymbol*tokenSymbol)const;
 		private:
 			vector<int>							 treeNodeStack;
 			vector<pair<PDAEdge*,int>>			 grammarStack;

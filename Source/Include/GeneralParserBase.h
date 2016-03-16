@@ -91,7 +91,7 @@ namespace ztl
 			void SetGeneralNodePool(const shared_ptr<GeneralTreeNode>& node);
 			void SetHeterogeneousPool(const shared_ptr<void>& element);
 			
-
+			void LALRConfilctDetection();
 		
 			GeneralTreeNode* GetGeneralTreeRoot() const;
 			SymbolManager* GetManager() const;

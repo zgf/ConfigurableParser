@@ -71,7 +71,7 @@ namespace ztl
 					stream.emplace_back(make_shared<TokenInfo>(str, name, matched.first - content.begin(), matched.length()));
 				}
 			}
-			stream.emplace_back(make_shared<TokenInfo>(L"<$>", L"FINISH", -1, 4));
+			stream.emplace_back(make_shared<TokenInfo>(L"<$>", L"FINISH", content.size(), 4));
 			return stream;
 		}
 		unordered_map<wstring, GeneralTokenDefine::TokenOptional> CacheNameToIgnoreMap(const vector<shared_ptr<GeneralTokenDefine>> &tokens)
@@ -87,11 +87,16 @@ namespace ztl
 		{
 			vector<int> result;
 			auto beginIter = content.cbegin();
-			for (auto startIter = content.cbegin();startIter < content.cend();++startIter)
+			auto endIter = content.cend();
+			for (auto startIter = content.cbegin();startIter < endIter;)
 			{
 				startIter = find(startIter, content.cend(), L'\n');
 				auto index = startIter - beginIter;
 				result.emplace_back(index);
+				if (startIter < endIter)
+				{
+					++startIter;
+				}
 			}
 			result.emplace_back(std::numeric_limits<int>::max());
 			return result;
@@ -100,7 +105,7 @@ namespace ztl
 		int CalculateIndexLineNumber(int index, const vector<int>& lineMap)
 		{
 			assert(!lineMap.empty());
-			assert(index > 0);
+			assert(index >= 0);
 			auto&& result = ztl::algorithm::binary_search(lineMap, index);
 			return result.second;
 		}

@@ -167,6 +167,8 @@
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
     <ClCompile Include="UnitTest\Source\TestCodeAnalyze.cpp" />
+    <ClCompile Include="Source\GenerateFile\MiniSharp\MiniSharpParser.cpp" />
+    <ClCompile Include="Source\GenerateFile\TestAssign\TestAssignParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -248,6 +250,8 @@
     <ClInclude Include="Lib\ZTL\ztl_generator.hpp" />
     <ClInclude Include="Lib\ZTL\ztl_hash.hpp" />
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
+    <ClInclude Include="Source\GenerateFile\MiniSharp\MiniSharpParser.h" />
+    <ClInclude Include="Source\GenerateFile\TestAssign\TestAssignParser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

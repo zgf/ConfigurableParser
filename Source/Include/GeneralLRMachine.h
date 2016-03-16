@@ -17,6 +17,7 @@ namespace ztl
 		{
 			PDANode* position;
 			int ruleIndex;
+			bool isProductEndPosition;
 			unique_ptr<vector<ActionWrap>> endAction = nullptr;
 			unique_ptr<unordered_set<ParserSymbol*>> followToken = nullptr;
 		public:
@@ -24,12 +25,12 @@ namespace ztl
 			ProductPosition(int _ruleIndex, PDANode* _position, GeneralLRMachine& machine,ParserSymbol* initSymbol) noexcept:ruleIndex(_ruleIndex), position(_position), followToken(make_unique<unordered_set<ParserSymbol*>>())
 			{
 				followToken->emplace(initSymbol);
-				AddEndAction(machine);
+				AddIsProductEndPosition(machine);
 			}
 			ProductPosition(int _ruleIndex, PDANode* _position,GeneralLRMachine& machine,const unordered_set<ParserSymbol*>& initSymbolList) noexcept : ruleIndex(_ruleIndex), position(_position), followToken(make_unique<unordered_set<ParserSymbol*>>())
 			{
 				followToken->insert(initSymbolList.begin(), initSymbolList.end());
-				AddEndAction(machine);
+				AddIsProductEndPosition(machine);
 			}
 			ProductPosition(ProductPosition&&) noexcept = default;
 			ProductPosition(const ProductPosition&) noexcept = default;
@@ -37,17 +38,20 @@ namespace ztl
 			ProductPosition& operator=(const ProductPosition&) noexcept = default;
 			~ProductPosition() = default;
 			PDANode* GetPosition()const;
+			bool IsProductEndPosition()const;
 			int GetRuleIndex()const;
 			bool HasEndAction()const;
 			const vector<ActionWrap>& GetEndAction()const;
 			void AddFollowToken(ParserSymbol* symbol);
-			void AddFollowToken(const vector<ParserSymbol*>&symbolList);
+			void AddFollowToken(const unordered_set<ParserSymbol*>&symbolList);
 			const unordered_set<ParserSymbol*>& GetFollowTokens()const;
 			wstring LogProduct(const GeneralLRMachine& LRMachine)const;
 			wstring LogFollowToken()const;
 			wstring LogEndAction()const;
+			
 		private:
 			void AddEndAction(GeneralLRMachine& LRMachine);
+			void AddIsProductEndPosition(GeneralLRMachine& LRMachine);
 		};
 
 		class LRNode
@@ -67,7 +71,7 @@ namespace ztl
 			void AddGotoMap(unordered_map<ParserSymbol*, vector<PDAEdge*>>&& target);
 			void AddCoreItem(ProductPosition&& item);
 			void AddItem(ProductPosition&& item);
-			void AddCoreEnd(GeneralLRMachine & LRMachine);
+			void AddCoreEndAndComputeAllItems(GeneralLRMachine & LRMachine);
 			const ProductPosition& GetProductByPDANode(PDANode*)const;
 			wstring LogProductList(const GeneralLRMachine & LRMachine)const;
 			wstring LogNextsList()const;
@@ -81,13 +85,13 @@ namespace ztl
 			const unordered_map<PDANode*, int>& GetItemsMap()const;
 			const ProductPosition& GetFirstProductPosition()const;
 			int GetItemIndex(PDANode* node)const;
-
+			ProductPosition& GetMutableProductByPDANode(PDANode*);
+			ProductPosition& GetMutableProductByIndex(size_t);
 			wstring LogLRNode(const GeneralLRMachine& LRMachine)const;
 		private:
 			void ComputeAllItems(GeneralLRMachine & LRMachine);
 			void BuildCoreItemsMap();
 			void BuildItemsMap();
-
 		};
 		struct coreItemHash
 		{
@@ -98,6 +102,7 @@ namespace ztl
 		public:
 			GeneralLRMachine() = delete;
 			GeneralLRMachine(const shared_ptr<PushDownAutoMachine>& _machine);
+			ParserSymbol * GetProductHeadRuleSymbolByPosition(const ProductPosition * product) const;
 			~GeneralLRMachine() noexcept = default;
 			GeneralLRMachine(GeneralLRMachine&&) = default;
 			GeneralLRMachine(const GeneralLRMachine&) = default;
@@ -120,26 +125,35 @@ namespace ztl
 			const wstring& GetRuleNameByIndex(int index)const;
 			PDANode* GetRuleStart(const wstring& name)const;
 			void BuildFirstTable();
-			const unordered_set<ParserSymbol*>& GetFirstSetByNode(PDANode* node)const;
+			const unordered_set<ParserSymbol*>& GetFirstSetByNode(PDANode* node);
 			bool CheckShiftAndReduceConfilct()const;
 			void LogItems(const wstring& fileName)const;
 			wstring LogPDANode(const wstring & ruleName, PDANode * node) const;
+			void LALRConfilctDetection();
+			PDANode* GetStartNodeByProduction(const ProductPosition* product)const;
+			const unordered_map<ParserSymbol*, unordered_set<ParserSymbol*>> &  GetFirstSet()const;
+			void CalculateFirstSet();
 		private:
 			unordered_map<ParserSymbol*, vector<PDAEdge*>> GetGotoInfo(LRNode* node)const;
 
 			PDANode* GetRootRuleStart();
 			LRNode* HasTheSameCoreItem(const vector<PDANode*>& expect)const;
-			LRNode* AddLRItem(const vector<PDANode*>& coreItem, const vector<const unordered_set<ParserSymbol*>*>& followSetList);
+			LRNode* AddLRItem(const vector<PDANode*>& coreItem,const unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap);
 			unordered_set<ParserSymbol*>& FindFirst(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			unordered_set<ParserSymbol*>& FindFirst(PDANode*node, unordered_set<PDAEdge*>& sign);
 			const vector<PDAEdge*>& GetEdgesByNode(PDANode* node)const;
 
+			void CalculateFirstSet(ParserSymbol* ruleSymbol);
+		
 		private:
 			shared_ptr<PushDownAutoMachine> machine;
 			vector<shared_ptr<LRNode>> nodePool;
+			unordered_map<ParserSymbol*, unordered_set<ParserSymbol*>> firstSet;
+			unordered_map<PDANode*, unordered_set<ParserSymbol*>> firstNodeSet;
 			unordered_map<vector<PDANode*>, int, coreItemHash> coreItemMap;
 			unordered_map<PDAEdge*, unordered_set<ParserSymbol*>> firstTable;
 			unordered_map<PDANode*, unordered_set<ParserSymbol*>> firstNodeTable;
+
 		};
 	}
 }

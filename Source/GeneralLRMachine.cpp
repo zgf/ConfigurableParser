@@ -11,6 +11,26 @@ namespace ztl
 		GeneralLRMachine::GeneralLRMachine(const shared_ptr<PushDownAutoMachine>& _machine) :machine(_machine)
 		{
 		}
+		ParserSymbol*  GeneralLRMachine::GetProductHeadRuleSymbolByPosition(const ProductPosition * product) const
+		{
+			auto ruleIndex = product->GetRuleIndex();
+			auto&& ruleName = GetRuleNameByIndex(ruleIndex);
+			auto ruleSymbol = GetSymbolManager()->GetRuleSymbolByName(ruleName);
+			return ruleSymbol;
+		}
+		PDANode * GeneralLRMachine::GetStartNodeByProduction(const ProductPosition * product) const
+		{
+			auto ruleIndex = product->GetRuleIndex();
+			auto&& ruleName = GetRuleNameByIndex(ruleIndex);
+			auto startNode = GetRuleStart(ruleName);
+			return startNode;
+		}
+
+		const unordered_map<ParserSymbol*, unordered_set<ParserSymbol*>>& GeneralLRMachine::GetFirstSet() const
+		{
+			return firstSet;
+		}
+	
 		SymbolManager*				GeneralLRMachine::GetSymbolManager()const
 		{
 			return machine->GetSymbolManager();
@@ -88,54 +108,79 @@ namespace ztl
 		{
 			return GetSymbolManager()->GetRuleNameByIndex(index);
 		}
+		void AddFollowInfoToExsitLRNode(LRNode* node, const vector<PDANode*>& coreItems, unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap)
+		{
+			for (size_t i = 0; i < node->GetCoreNumber(); i++)
+			{
+				auto&&product = node->GetMutableProductByIndex(i);
+				auto follow = *coreItemToFollowSetMap.find(coreItems[i])->second;
+				product.AddFollowToken(follow);
+			}
+
+		}
 		void GeneralLRMachine::BuildLRItems()
 		{
 			deque<LRNode*> queue;
-			auto init = GetInitLRNode();
+			auto init = this->GetInitLRNode();
 			queue.emplace_back(init);
 
 			while(!queue.empty())
 			{
+				
 				auto current = queue.front();
+				if (current->GetNumber() == 30)
+				{
+					int a = 0;
+				}
 				queue.pop_front();
 				auto&& gotoMap = GetGotoInfo(current);
 				for(auto&&iter : gotoMap)
 				{
 					auto symbol = iter.first;
 					vector<PDANode*> coreItems;
-					vector<const unordered_set<ParserSymbol*>*> followSetList;
-					transform(iter.second.begin(), iter.second.end(), back_inserter(coreItems), [&current, &followSetList](PDAEdge* edge)
+					unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>coreItemToFollowSetMap;
+					auto&&edges = iter.second;
+					for (auto&&edge : edges)
 					{
 						auto node = edge->GetSource();
 						auto&& product = current->GetProductByPDANode(node);
-						followSetList.push_back(&product.GetFollowTokens());
-						return edge->GetTarget();
-					});
+						coreItems.emplace_back(edge->GetTarget());
+						coreItemToFollowSetMap.insert(make_pair(edge->GetTarget(), &product.GetFollowTokens()));
+					}
 					sort(coreItems.begin(), coreItems.end());
 					auto result = HasTheSameCoreItem(coreItems);
 					if(result == nullptr)
 					{
-						result = AddLRItem(coreItems, followSetList);
+						result = AddLRItem(coreItems, coreItemToFollowSetMap);
 						queue.emplace_back(result);
+						
+					}
+					else
+					{
+						AddFollowInfoToExsitLRNode(result, coreItems, coreItemToFollowSetMap);
 					}
 					current->AddNexts(symbol, result);
 				}
 				current->AddGotoMap(move(gotoMap));
 			}
 		}
-
+		
 		LRNode * GeneralLRMachine::GetInitLRNode()
 		{
 			assert(machine != nullptr);
 			auto init = NewEmptyLRNode();
-			ProductPosition position(GetRuleIndex(GetRootRuleStart()), GetRootRuleStart(), *this, GetSymbolManager()->GetTokenTypeSymbol());
+			ProductPosition position(GetRuleIndex(GetRootRuleStart()), GetRootRuleStart(), *this, GetSymbolManager()->GetFinishTokenSymbol());
 			init->AddCoreItem(move(position));
-			init->AddCoreEnd(*this);
+			init->AddCoreEndAndComputeAllItems(*this);
 			return init;
 		}
 
 		LRNode * GeneralLRMachine::NewEmptyLRNode()
 		{
+			if (nodePool.size() == 25)
+			{
+				int a = 0;
+			}
 			nodePool.emplace_back(make_shared<LRNode>((int) nodePool.size()));
 			return 	nodePool.back().get();
 		}
@@ -154,18 +199,19 @@ namespace ztl
 
 		LRNode* GeneralLRMachine::HasTheSameCoreItem(const vector<PDANode*>& expect) const
 		{
+			assert(std::is_sorted(expect.begin(),expect.end()));
 			auto findIter = coreItemMap.find(expect);
 			return  (findIter != coreItemMap.end()) ? nodePool[findIter->second].get() : nullptr;
 		}
 
-		LRNode* GeneralLRMachine::AddLRItem(const vector<PDANode*>& coreItem, const vector<const unordered_set<ParserSymbol*>*>& followSetList)
+		LRNode* GeneralLRMachine::AddLRItem(const vector<PDANode*>& coreItem, const unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap)
 		{
 			auto init = NewEmptyLRNode();
-			assert(coreItem.size() == followSetList.size());
+			assert(coreItem.size() == coreItemToFollowSetMap.size());
 			for(size_t i = 0; i < coreItem.size(); i++)
 			{
 				auto&& iter = coreItem[i];
-				auto&& followSet = *followSetList[i];
+				auto followSet = *coreItemToFollowSetMap.find(iter)->second;
 				ProductPosition position(GetRuleIndex(iter), iter, *this, followSet);
 				init->AddCoreItem(move(position));
 			}
@@ -174,12 +220,20 @@ namespace ztl
 			{
 				return value.GetPosition();
 			});
+			sort(hashKey.begin(), hashKey.end());
 			coreItemMap.insert({ hashKey,init->GetNumber() });
-			init->AddCoreEnd(*this);
+			if (init->GetNumber() == 37)
+			{
+				int a = 0;
+			}
+			init->AddCoreEndAndComputeAllItems(*this);
 			return init;
 		}
 		void GeneralLRMachine::BuildFirstTable()
 		{
+			
+
+
 			deque<PDANode*> queue;
 			unordered_set<PDAEdge*>edgeSign;
 			unordered_set<PDANode*> sign;
@@ -204,6 +258,7 @@ namespace ztl
 					edgeSign.clear();
 				}
 			}
+			return;
 		}
 		unordered_set<ParserSymbol*>& GeneralLRMachine::FindFirst(PDAEdge*edge, unordered_set<PDAEdge*>& sign)
 		{
@@ -270,11 +325,92 @@ namespace ztl
 		{
 			return machine->GetEdgesByNode(node);
 		}
-		const unordered_set<ParserSymbol*>& GeneralLRMachine::GetFirstSetByNode(PDANode * node) const
+		void CollectionNodeEdgeSymbol(PDANode* node, unordered_set<ParserSymbol*>& termSet, unordered_set<ParserSymbol*>& nonTermSet)
 		{
-			auto findIter = firstNodeTable.find(node);
+			
+			auto&&nexts = node->GetNexts();
+			for (auto&&iter : nexts)
+			{
+				auto&& actions = iter->GetActions();
+				assert(!actions.empty());
+				auto&& action = actions[0];
+				auto symbol = action.GetParserSymbol();
+				assert(action.GetActionType() == ActionType::NonTerminate || action.GetActionType() == ActionType::Terminate|| action.GetActionType() == ActionType::Create);
+				if (action.GetActionType() == ActionType::NonTerminate)
+				{
+					nonTermSet.emplace(symbol);
+				}
+				else if(action.GetActionType() == ActionType::Terminate)
+				{
+					termSet.emplace(symbol);
+				}
+			}
+
+		}
+
+		void GeneralLRMachine::CalculateFirstSet(ParserSymbol* ruleSymbol)
+		{
+			unordered_set<ParserSymbol*> result;
+			auto&& ruleName = ruleSymbol->GetName();
+			auto&& startNode = GetRuleStart(ruleName);
+			unordered_set<ParserSymbol*> termSet;
+			unordered_set<ParserSymbol*> nonTermSet;
+			CollectionNodeEdgeSymbol(startNode, termSet, nonTermSet);
+			if (nonTermSet.find(ruleSymbol) != nonTermSet.end())
+			{
+				nonTermSet.erase(ruleSymbol);
+			}
+			for (auto&&iter : nonTermSet)
+			{
+				if (firstSet.find(iter) == firstSet.end())
+				{
+					CalculateFirstSet(iter);
+					assert(!firstSet[iter].empty());
+					
+				}
+				result.insert(firstSet[iter].begin(), firstSet[iter].end());
+			}
+			result.insert(termSet.begin(), termSet.end());
+			assert(firstSet.find(ruleSymbol) == firstSet.end());
+			firstSet[ruleSymbol] = move(result);
+
+		}
+		void GeneralLRMachine::CalculateFirstSet()
+		{
+			for (auto&&iter : GetPDAMap())
+			{
+				auto ruleName = iter.first;
+				
+				auto ruleSymbol = GetSymbolManager()->GetRuleSymbolByName(ruleName);
+				assert(ruleSymbol != nullptr);
+				if (firstSet.find(ruleSymbol) == firstSet.end())
+				{
+					this->CalculateFirstSet(ruleSymbol);
+				}
+			}
+		}
+		const unordered_set<ParserSymbol*>& GeneralLRMachine::GetFirstSetByNode(PDANode * node) 
+		{
+			/*auto findIter = firstNodeTable.find(node);
 			assert(findIter != firstNodeTable.end());
-			return findIter->second;
+			return findIter->second;*/
+			auto findIter = firstNodeSet.find(node);
+			if (findIter == firstNodeSet.end())
+			{
+				firstNodeSet[node];
+				unordered_set<ParserSymbol*> termSet;
+				unordered_set<ParserSymbol*> nonTermSet;
+				CollectionNodeEdgeSymbol(node, termSet, nonTermSet);
+				for (auto&&iter : nonTermSet)
+				{
+					auto&& temp = firstSet[iter];
+					firstNodeSet[node].insert(temp.begin(), temp.end());
+				}
+				firstNodeSet[node].insert(termSet.begin(), termSet.end());
+
+			}
+			assert(firstNodeTable[node] == firstNodeSet[node]);
+			return firstNodeSet[node];
 		}
 		bool GeneralLRMachine::CheckShiftAndReduceConfilct() const
 		{
@@ -308,7 +444,41 @@ namespace ztl
 			}
 			return false;
 		}
-
+		void ztl::general_parser::GeneralLRMachine::LALRConfilctDetection()
+		{
+			
+			for (auto&&node : this->nodePool)
+			{
+				unordered_set<ParserSymbol*> endSet;
+				unordered_set<ParserSymbol*>moveSet;
+				unordered_set<ParserSymbol*>testSet;
+				for (auto&&item : node->GetItems())
+				{
+					
+					if (item.HasEndAction())
+					{
+						auto set = item.GetFollowTokens();
+						endSet.insert(set.begin(), set.end());
+					}
+				}
+				
+				for (auto&&mapIter : node->GetGotoMap())
+				{
+					auto symbol = mapIter.first;
+					moveSet.insert(symbol);
+				}
+				for (auto&&mapIter : node->GetNexts())
+				{
+					auto symbol = mapIter.first;
+					testSet.insert(symbol);
+				}
+				assert(moveSet == testSet);
+				for (auto&&iter : endSet)
+				{
+					assert(moveSet.find(iter) == moveSet.end());
+				}
+			}
+		}
 		unique_ptr<vector<ActionWrap>> GeneralLRMachine::GetEndAction(PDAEdge* edge) const
 		{
 			auto result = make_unique<vector<ActionWrap>>();
@@ -343,9 +513,18 @@ namespace ztl
 			auto index = GetItemIndex(node);
 			assert(index >= 0 && index < (int) items.size());
 			return items[index];
-			// TODO: insert return statement here
 		}
-
+		ProductPosition & LRNode::GetMutableProductByPDANode(PDANode * node)
+		{
+			auto index = GetItemIndex(node);
+			assert(index >= 0 && index < (int)items.size());
+			return items[index];
+		}
+		ProductPosition & LRNode::GetMutableProductByIndex(size_t index)
+		{
+			assert( index < items.size());
+			return items[index];
+		}
 		int LRNode::GetNumber()const
 		{
 			return number;
@@ -362,7 +541,7 @@ namespace ztl
 			this->items.emplace_back(std::forward<ProductPosition&&>(item));
 		}
 
-		void LRNode::AddCoreEnd(GeneralLRMachine & LRMachine)
+		void LRNode::AddCoreEndAndComputeAllItems(GeneralLRMachine & LRMachine)
 		{
 			sort(items.begin(), items.end(), [](const ProductPosition&left, const ProductPosition& right)
 			{
@@ -400,15 +579,36 @@ namespace ztl
 
 			assert(this->coreItemEnd != 0);
 			unordered_set<wstring> signMap;
-
+			
 			for(size_t i = 0; i < items.size(); i++)
 			{
-				auto& current = items[i];
-				for(auto&&edgeIter : current.GetPosition()->GetNexts())
+				
+				for(auto&&edgeIter : items[i].GetPosition()->GetNexts())
 				{
 					if(IsNonTerminateSymbol(edgeIter))
 					{
-						assert(!edgeIter->GetActions().empty() && edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
+						auto&& ruleName = edgeIter->GetActions()[0].GetName();
+						auto ruleIndex = LRMachine.GetRuleIndexByName(ruleName);
+						auto start = LRMachine.GetRuleStart(ruleName);
+						auto propagateToken = items[i].GetFollowTokens();
+						auto spontaneousToken = LRMachine.GetFirstSetByNode(edgeIter->GetTarget());
+						unordered_set<ParserSymbol*> followToken;
+						followToken.insert(propagateToken.begin(), propagateToken.end());
+						followToken.insert(spontaneousToken.begin(), spontaneousToken.end());
+						if (signMap.find(ruleName) == signMap.end()&&itemsMap.find(start)==itemsMap.end())
+						{
+							signMap.insert(ruleName);
+							ProductPosition product(ruleIndex, start, LRMachine, followToken);
+							itemsMap[start] = items.size();
+							AddItem(move(product));
+						}
+						else
+						{
+							auto&& product = this->GetMutableProductByPDANode(start);
+							assert(product.GetPosition() == start);
+							product.AddFollowToken(followToken);
+						}
+						/*assert(!edgeIter->GetActions().empty() && edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
 						auto&& ruleName = edgeIter->GetActions()[0].GetName();
 						if(signMap.find(ruleName) == signMap.end())
 						{
@@ -426,10 +626,11 @@ namespace ztl
 								ProductPosition product(ruleIndex, start, LRMachine, followSet);
 								AddItem(move(product));
 							}
-						}
+						}*/
 					}
 				}
 			}
+			return;
 		}
 		void ztl::general_parser::LRNode::BuildCoreItemsMap()
 		{
@@ -440,11 +641,12 @@ namespace ztl
 		}
 		void LRNode::BuildItemsMap()
 		{
-			for(size_t i = this->coreItemEnd; i < items.size(); i++)
+			/*for(size_t i = this->coreItemEnd; i < items.size(); i++)
 			{
 				itemsMap.insert({ items[i].GetPosition(),i });
-			}
+			}*/
 		}
+		
 		void LRNode::AddNexts(ParserSymbol * symbol, LRNode * next)
 		{
 			if(this->nexts.find(symbol) == nexts.end())
@@ -492,7 +694,7 @@ namespace ztl
 			auto findIter = nexts.find(symbol);
 			return (findIter == nexts.end()) ? nullptr : findIter->second;
 		}
-
+	
 		void ztl::general_parser::LRNode::AddGotoMap(unordered_map<ParserSymbol*, vector<PDAEdge*>>&& target)
 		{
 			gotoMap = move(std::forward<unordered_map<ParserSymbol*, vector<PDAEdge*>>&&>(target));
@@ -515,9 +717,30 @@ namespace ztl
 				endAction = move(actions);
 			}
 		}
+		void ProductPosition::AddIsProductEndPosition(GeneralLRMachine & LRMachine)
+		{
+			AddEndAction(LRMachine);
+			if (HasEndAction())
+			{
+				isProductEndPosition = true;
+			}
+			else if (position->GetNexts().size() == 0)//看看是不是其他不包含create语意的语句尾部 例如 "("!Grammar")"
+			{
+				isProductEndPosition = true;
+			}
+			else
+			{
+				isProductEndPosition = false;
+			}
+		}
 		PDANode * ProductPosition::GetPosition() const
 		{
 			return position;
+		}
+
+		bool ProductPosition::IsProductEndPosition() const
+		{
+			return isProductEndPosition;
 		}
 
 		int ProductPosition::GetRuleIndex() const
@@ -538,7 +761,7 @@ namespace ztl
 		{
 			followToken->emplace(symbol);
 		}
-		void ztl::general_parser::ProductPosition::AddFollowToken(const vector<ParserSymbol*>& symbolList)
+		void ztl::general_parser::ProductPosition::AddFollowToken(const unordered_set<ParserSymbol*>& symbolList)
 		{
 			followToken->insert(symbolList.begin(), symbolList.end());
 		}

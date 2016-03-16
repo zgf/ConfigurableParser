@@ -10,61 +10,189 @@ namespace ztl
 {
 	namespace general_parser
 	{
+	
+		const ProductPosition* GetReducableProductPosition(ParserSymbol* currentSymbol, LRNode* currentLRNode)
+		{
+			vector<const ProductPosition*> result;
+			auto&& items = currentLRNode->GetItems();
+			for (auto&&item : items)
+			{
+				if (item.IsProductEndPosition()&& item.GetFollowTokens().find(currentSymbol) != item.GetFollowTokens().end())
+				{
+					result.push_back(&item);
+				}
+			}
+			assert(result.size() == 1);
+			return  result[0];
+		}
+		pair<PDAEdge*, int> GetPositionPreEdge(PDANode* position,const pair<const vector<PDAEdge*>*, int>& edgesPair)
+		{
+			auto&& edges = edgesPair.first;
+			auto&&tokenIndex = edgesPair.second;
+			vector<pair<PDAEdge*, int> >result;
+			for (auto&&edge : *edges)
+			{
+				if (edge->GetTarget() == position)
+				{
+					result.emplace_back(make_pair(edge, tokenIndex));
+				}
+			}
+			assert(result.size() == 1);
+			return  result[0];
+		}
+	
+		vector<pair<PDAEdge*, int>> CollectWaitExecuteEdges(PDANode*startNode, PDANode* endPosition,const vector<pair<const vector<PDAEdge*>*, int>>& edgeStack)
+		{
+			vector<pair<PDAEdge*, int>> result;
+			auto nextPosition = endPosition;
+			for (int i = edgeStack.size() - 1; i >= 0; i--)
+			{
+				auto&& edgesIter = edgeStack[i];
+				auto edgePair = GetPositionPreEdge(nextPosition, edgesIter);
+				result.emplace_back(edgePair);
+				nextPosition = edgePair.first->GetSource();
+				if (edgePair.first->GetSource() == startNode)
+				{
+					return result;
+				}
+			}
+			assert(false);
+			return{};
+		}
+		void GeneralLALRParser::ExecutableEdgeAddctionAction(const vector<pair<PDAEdge*, int>>& edges,GeneralTreeNode* node)
+		{
+			for (auto&& edgeIter : edges)
+			{
+				ExcuteEdgeAdditionAction(edgeIter, node);
+			}
+		}
+		void ReduceGrammarInStack( vector<pair<const vector<PDAEdge*>*, int>>&edgeStack, vector<LRNode*>& LRNodeStack,int num)
+		{
+			edgeStack.erase(edgeStack.end() - num, edgeStack.end());
+			LRNodeStack.erase(LRNodeStack.end() - num, LRNodeStack.end());
+		}
 		void GeneralLALRParser::GenerateIsomorphismParserTree()
 		{
+			//int ÊÇtokenIndex
+			vector<pair<const vector<PDAEdge*>*,int>> edgeStack;
 			auto currentLRNode = GetLRMachineStartNode();
 			LRNodeStack.emplace_back(currentLRNode);
-			assert(currentLRNode->GetCoreNumber() == 1);
-			auto&& currentPDANode = currentLRNode->GetFirstProductPosition().GetPosition();
-			PDANodeStack.emplace_back(currentPDANode);
 			size_t tokenIndex = 0;
 			auto currentSymbol = GetTokenSymbol(tokenIndex);
-		
-			while(!IsParserFinish(currentSymbol))
+			auto NeedMove = [](ParserSymbol* currentSymbol,LRNode* currentLRNode)
 			{
+				auto next = currentLRNode->GetNextLRNode(currentSymbol);
+				auto edges = currentLRNode->GetGotoEdges(currentSymbol);
+				return make_pair(next,edges);
+			};
+			
+			while (!IsParserFinish(currentSymbol, GetTokenSymbol(tokenIndex)))
+			{
+			
 				currentLRNode = LRNodeStack.back();
-				currentPDANode = PDANodeStack.back();
-				assert(grammarStack.empty() || grammarStack.back().first->GetTarget() == currentPDANode);
-				assert(LRNodeStack.back()->GetItemsMap().find(currentPDANode) != LRNodeStack.back()->GetItemsMap().end());
-				auto findIter = NeedMove(currentPDANode, currentLRNode, currentSymbol);
-				if(findIter.first == false)
+				auto resultPair = NeedMove(currentSymbol, currentLRNode);
+				auto next = resultPair.first;
+				auto edgesIter = resultPair.second;
+				
+				if (next==nullptr)
 				{
-					//NeedReduce
-					auto&& currentProduct = currentLRNode->GetProductByPDANode(currentPDANode);
-					GeneralTreeNode* treeNode = nullptr;
-					if(currentProduct.HasEndAction())
-					{				
-						treeNode = ExcuteEndAction(currentProduct.GetEndAction());
-						assert(currentPDANode == grammarStack.back().first->GetTarget());
-						auto nodeIndex = GetPools().GetGeneralNodePool().size() - 1;
-						currentSymbol = ExceteReduceAction(currentPDANode, treeNode, nodeIndex);
-						assert(currentSymbol->IsRuleDef());
-					}
-					else
+					//REDUCE
+					auto reducablePosition = GetReducableProductPosition(currentSymbol, currentLRNode);
+					assert(reducablePosition != nullptr);
+					auto startNode = GetMachine().GetStartNodeByProduction(reducablePosition);
+					auto headRuleSymbol = GetMachine().GetProductHeadRuleSymbolByPosition(reducablePosition);
+					assert(startNode != nullptr);
+					auto executableEdges = CollectWaitExecuteEdges(startNode, reducablePosition->GetPosition(), edgeStack);
+					if (reducablePosition->HasEndAction())
 					{
-						//UsingÂ·¾¶
-						assert(currentPDANode == grammarStack.back().first->GetTarget());
-						currentSymbol = ExceteReduceWithoutEndAction(currentPDANode);
-						assert(currentSymbol->IsRuleDef());
+						//create
+						auto treeNode = ExcuteEndAction(reducablePosition->GetEndAction());
+						auto nodeName = treeNode->GetName();
+						auto nodeIndex = GetPools().GetGeneralNodePool().size() - 1;
+						ExecutableEdgeAddctionAction(executableEdges, treeNode);
+						treeNodeStack.emplace_back(nodeIndex);
 					}
+					//else using
+					//{
+						
+					//}
+					ReduceGrammarInStack(edgeStack, LRNodeStack,executableEdges.size());
+					currentSymbol = headRuleSymbol;
 				}
 				else
 				{
-					//Need Move;
-					auto edge = findIter.second;
-					grammarStack.emplace_back(edge, tokenIndex);
-					currentPDANode = edge->GetTarget();
-					PDANodeStack.emplace_back(currentPDANode);
-					currentLRNode = currentLRNode->GetNextLRNode(currentSymbol);
-					LRNodeStack.emplace_back(currentLRNode);
-					if(currentSymbol->IsTokenDef())
+					//MOVE
+					assert(edgesIter != nullptr);
+					LRNodeStack.emplace_back(next);
+					edgeStack.emplace_back(edgesIter,tokenIndex);
+					if (currentSymbol->IsTokenDef())
 					{
 						++tokenIndex;
 					}
+					auto oldSymbol = currentSymbol;
 					currentSymbol = GetTokenSymbol(tokenIndex);
 					assert(currentSymbol->IsTokenDef());
 				}
 			}
+
+			/*auto currentLRNode = GetLRMachineStartNode();
+			LRNodeStack.emplace_back(currentLRNode);*/
+			//assert(currentLRNode->GetCoreNumber() == 1);
+			//auto&& currentPDANode = currentLRNode->GetFirstProductPosition().GetPosition();
+			//PDANodeStack.emplace_back(currentPDANode);
+			//size_t tokenIndex = 0;
+			//auto currentSymbol = GetTokenSymbol(tokenIndex);
+			//this->LALRConfilctDetection();
+			//while(!IsParserFinish(currentSymbol, GetTokenSymbol(tokenIndex)))
+			//{
+			//	if (tokenIndex == 5)
+			//	{
+			//		int a = 0;
+			//	}
+			//	currentLRNode = LRNodeStack.back();
+			//	currentPDANode = PDANodeStack.back();
+			//	assert(grammarStack.empty() || grammarStack.back().first->GetTarget() == currentPDANode);
+			//	assert(LRNodeStack.back()->GetItemsMap().find(currentPDANode) != LRNodeStack.back()->GetItemsMap().end());
+			//	auto findIter = NeedMove(currentPDANode, currentLRNode, currentSymbol);
+			//	if(findIter.first == false)
+			//	{
+			//		//NeedReduce
+			//		auto&& currentProduct = currentLRNode->GetProductByPDANode(currentPDANode);
+			//		GeneralTreeNode* treeNode = nullptr;
+			//		if(currentProduct.HasEndAction())
+			//		{				
+			//			treeNode = ExcuteEndAction(currentProduct.GetEndAction());
+			//			assert(currentPDANode == grammarStack.back().first->GetTarget());
+			//			auto nodeIndex = GetPools().GetGeneralNodePool().size() - 1;
+			//			currentSymbol = ExceteReduceAction(currentPDANode, treeNode, nodeIndex);
+			//			assert(currentSymbol->IsRuleDef());
+			//		}
+			//		else
+			//		{
+			//			//UsingÂ·¾¶
+			//			assert(currentPDANode == grammarStack.back().first->GetTarget());
+			//			currentSymbol = ExceteReduceWithoutEndAction(currentPDANode);
+			//			assert(currentSymbol->IsRuleDef());
+			//		}
+			//	}
+			//	else
+			//	{
+			//		//Need Move;
+			//		auto edge = findIter.second;
+			//		grammarStack.emplace_back(edge, tokenIndex);
+			//		currentPDANode = edge->GetTarget();
+			//		PDANodeStack.emplace_back(currentPDANode);
+			//		currentLRNode = currentLRNode->GetNextLRNode(currentSymbol);
+			//		LRNodeStack.emplace_back(currentLRNode);
+			//		if(currentSymbol->IsTokenDef())
+			//		{
+			//			++tokenIndex;
+			//		}
+			//		auto oldSymbol = currentSymbol;
+			//		currentSymbol = GetTokenSymbol(tokenIndex);
+			//		assert(currentSymbol->IsTokenDef());
+			//	}
+			//}
 			assert(treeNodeStack.size() == 1);
 		
 			this->generalTreeRoot = GetPools().GetGeneralNodePool()[treeNodeStack[0]].get();
@@ -77,6 +205,7 @@ namespace ztl
 			this->LRNodeStack.clear();
 			this->PDANodeStack.clear();
 		}
+		
 		ParserSymbol* GeneralLALRParser::GetTokenSymbol(size_t tokenIndex) const
 		{
 			auto&& currentToken = GetPools().GetTokenPool()[tokenIndex].get();
@@ -140,19 +269,22 @@ namespace ztl
 			auto&& edge = grammar.first;
 			auto&& tokenIndex = grammar.second;
 			auto&& actions = edge->GetActions();
-			assert(actions.size() == 2);
-			assert(actions[0].GetActionType() == ActionType::NonTerminate || actions[0].GetActionType() == ActionType::Terminate);
-			auto&& actionIter = actions[1];
-			assert(actions[1].GetActionType() == ActionType::Assign);
-			if(actions[0].GetActionType() == ActionType::NonTerminate)
+			if (actions.size() == 2)
 			{
-				node->SetFieldMap(actionIter.GetName(), treeNodeStack.back());
-				treeNodeStack.pop_back();
+				assert(actions[0].GetActionType() == ActionType::NonTerminate || actions[0].GetActionType() == ActionType::Terminate);
+				auto&& actionIter = actions[1];
+				assert(actions[1].GetActionType() == ActionType::Assign);
+				if (actions[0].GetActionType() == ActionType::NonTerminate)
+				{
+					node->SetFieldMap(actionIter.GetName(), treeNodeStack.back());
+					treeNodeStack.pop_back();
+				}
+				else if (actions[0].GetActionType() == ActionType::Terminate)
+				{
+					node->SetTermMap(actionIter.GetName(), tokenIndex);
+				}
 			}
-			else if(actions[0].GetActionType() == ActionType::Terminate)
-			{
-				node->SetTermMap(actionIter.GetName(), tokenIndex);
-			}
+			
 		}
 		GeneralTreeNode* GeneralLALRParser::ExcuteEndAction(const vector<ActionWrap>& acionts)
 		{
@@ -192,7 +324,7 @@ namespace ztl
 			}
 			this->grammarStack.erase(grammarStack.end() - i, grammarStack.end());
 			this->LRNodeStack.erase(LRNodeStack.end() - i, LRNodeStack.end());
-			this->PDANodeStack.erase(PDANodeStack.end() - (i + 1), PDANodeStack.end());
+			this->PDANodeStack.erase(PDANodeStack.end() - (i), PDANodeStack.end());
 			auto ruleIndex = LRNodeStack.back()->GetProductByPDANode(currentPDANode).GetRuleIndex();
 			auto&& ruleName = GetManager()->GetRuleNameByIndex(ruleIndex);
 			auto ruleSymbol = GetManager()->GetRuleSymbolByName(ruleName);
@@ -220,7 +352,7 @@ namespace ztl
 			}
 			this->grammarStack.erase(grammarStack.end() - i, grammarStack.end());
 			this->LRNodeStack.erase(LRNodeStack.end() - i, LRNodeStack.end());
-			this->PDANodeStack.erase(PDANodeStack.end() - (i + 1), PDANodeStack.end());
+			this->PDANodeStack.erase(PDANodeStack.end() - (i +1), PDANodeStack.end());
 			auto ruleIndex = LRNodeStack.back()->GetProductByPDANode(currentPDANode).GetRuleIndex();
 			auto&& ruleName = GetManager()->GetRuleNameByIndex(ruleIndex);
 			auto ruleSymbol = GetManager()->GetRuleSymbolByName(ruleName);
@@ -230,9 +362,9 @@ namespace ztl
 			return ruleSymbol;
 		}
 	
-		bool GeneralLALRParser::IsParserFinish(ParserSymbol* node) const
+		bool GeneralLALRParser::IsParserFinish(ParserSymbol* node, ParserSymbol*tokenSymbol) const
 		{
-			return  GetRootRuleSymbol() == node;
+			return  GetRootRuleSymbol() == node&&treeNodeStack.size() == 1&& tokenSymbol == manager->GetFinishTokenSymbol();
 		}
 		GeneralLALRParser::GeneralLALRParser(const shared_ptr<GeneralTableDefine>& _tableDefine) :GeneralParserBase(_tableDefine)
 		{
@@ -249,5 +381,6 @@ namespace ztl
 			}
 			return findPathCacheMap[key];
 		}
+		
 	}
 }

@@ -24,9 +24,9 @@ namespace ztl
 		public:
 			
 		private:
-			SymbolManager*										manager;
 			SymbolType											type;
 			wstring												name;
+			SymbolManager*										manager;
 			ParserSymbol*										parent;
 			ParserSymbol*										descriptor;
 			bool												ignore;//token ignore.对于classDef的filedDef,ignore表名该字段是否必要
