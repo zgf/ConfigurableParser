@@ -67,7 +67,7 @@ namespace ztl
 			assert(!nodePool.empty());
 			return nodePool[0].get();
 		}
-		void AddGoToMapElement(unordered_map<ParserSymbol*, vector<PDAEdge*>>& gotoMap, ParserSymbol*first, PDAEdge*second)
+		void AddGoToMapElement(std::unordered_map<ParserSymbol*, vector<PDAEdge*>>& gotoMap, ParserSymbol*first, PDAEdge*second)
 		{
 			if(gotoMap.find(first) == gotoMap.end())
 			{
@@ -76,9 +76,9 @@ namespace ztl
 			gotoMap[first].emplace_back(second);
 		}
 
-		unordered_map<ParserSymbol*, vector<PDAEdge*>> GeneralLRMachine::GetGotoInfo(LRNode* node) const
+		std::unordered_map<ParserSymbol*, vector<PDAEdge*>> GeneralLRMachine::GetGotoInfo(LRNode* node) const
 		{
-			unordered_map<ParserSymbol*, vector<PDAEdge*>> result;
+			std::unordered_map<ParserSymbol*, vector<PDAEdge*>> result;
 			for(auto&&iter : node->GetItems())
 			{
 				auto&& currentNode = iter.GetPosition();
@@ -108,38 +108,118 @@ namespace ztl
 		{
 			return GetSymbolManager()->GetRuleNameByIndex(index);
 		}
-		void AddFollowInfoToExsitLRNode(LRNode* node, const vector<PDANode*>& coreItems, unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap)
+		vector<ProductPosition*> LRNode::GetProductPositionChildren(ProductPosition* parent)
 		{
-			for (size_t i = 0; i < node->GetCoreNumber(); i++)
+			vector<ProductPosition*> result;
+			deque<ProductPosition*> queue;
+			queue.emplace_back(parent);
+			while (queue.empty())
 			{
-				auto&&product = node->GetMutableProductByIndex(i);
+				auto element = queue.back();
+				queue.pop_back();
+				auto&&findIter = generateItemMap.find(element->GetPosition());
+				if (findIter != generateItemMap.end())
+				{
+					for (auto&& childIter : findIter->second)
+					{
+						auto&& product = this->GetMutableProductByPDANode(childIter);
+						result.push_back(&product);
+						queue.emplace_back(&product);
+					}
+				}
+			}
+			return result;
+		}
+		void LRNode::PropagateFollowInfoToNextPosition(ProductPosition* product,deque<pair<LRNode*,ProductPosition*>>& queue)
+		{
+			auto&& nextEdges = product->GetPosition()->GetNexts();
+			for (auto&&edge : nextEdges)
+			{
+				auto&& action = edge->GetActions()[0];
+				assert(action.GetActionType() == ActionType::NonTerminate || action.GetActionType() == ActionType::Terminate || action.GetActionType() == ActionType::Create);
+				if (action.GetActionType() == ActionType::NonTerminate || action.GetActionType() == ActionType::Terminate)
+				{
+				
+					auto nextLRNode = this->GetNextLRNode(action.GetParserSymbol());
+					assert(nextLRNode != nullptr);
+					auto&& nextProduct = nextLRNode->GetMutableProductByPDANode(edge->GetTarget());
+					nextProduct.AddFollowToken(product->GetFollowTokens());
+					queue.push_back(make_pair(nextLRNode, &nextProduct));
+				}
+			}
+		}
+		void LRNode::PropagateFollowInfoToNextPosition( deque<pair<LRNode*, ProductPosition*>>& products)
+		{
+			while (!products.empty())
+			{
+				auto productPair = products.back();
+				auto node = productPair.first;
+				auto product = productPair.second;
+				products.pop_back();
+				node->PropagateFollowInfoToNextPosition(product, products);
+			}
+		}
+		deque<pair<LRNode*, ProductPosition*>> CreatePropagateDeque(const vector<ProductPosition*> init,LRNode* node)
+		{
+			deque<pair<LRNode*, ProductPosition*>> result;
+			for (auto&&iter : init)
+			{
+				result.push_back(make_pair(node, iter));
+			}
+			return result;
+		}
+		void LRNode::AddFollowInfoToExsitLRNode(const vector<PDANode*>& coreItems, unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap)
+		{
+			for (size_t i = 0; i < this->GetCoreNumber(); i++)
+			{
+				auto&&product = this->GetMutableProductByIndex(i);
 				auto follow = *coreItemToFollowSetMap.find(coreItems[i])->second;
 				product.AddFollowToken(follow);
+				//当一个已经存在的项的某一个产生式被传播了新的followset.
+				//0.它需要将followset传播到它的生成项
+				//1.它需要将新的followset传播到它可以到达的其他产生式节点上.
+				this->UpdateGenerateItemFollowSet(product.GetPosition());
+				/*auto result = GetProductPositionChildren(&product);
+				result.emplace_back(&product);
+				auto queue = CreatePropagateDeque(result,this);
+				this->PropagateFollowInfoToNextPosition(queue);*/
 			}
-
+		}
+		vector<ParserSymbol*> GetGotoTravelOrder(const std::unordered_map<ParserSymbol*, vector<PDAEdge*>>& gotoMap)
+		{
+			vector<ParserSymbol*> orderList;
+			for (auto&&iter : gotoMap)
+			{
+				orderList.emplace_back(iter.first);
+			}
+			sort(orderList.begin(), orderList.end(), [](ParserSymbol*left, ParserSymbol*right) {return left->GetNumber() < right->GetNumber();});
+			return orderList;
 		}
 		void GeneralLRMachine::BuildLRItems()
 		{
 			deque<LRNode*> queue;
 			auto init = this->GetInitLRNode();
 			queue.emplace_back(init);
-
+			
 			while(!queue.empty())
 			{
 				
 				auto current = queue.front();
-				if (current->GetNumber() == 30)
+				if (current->GetNumber() == 38)
 				{
 					int a = 0;
 				}
 				queue.pop_front();
 				auto&& gotoMap = GetGotoInfo(current);
-				for(auto&&iter : gotoMap)
+				auto&& orderList = GetGotoTravelOrder(gotoMap);
+			
+				for(auto&& orderIter: orderList)
 				{
-					auto symbol = iter.first;
+					auto&&gotoEdges = gotoMap[orderIter];
+					auto symbol = orderIter;
 					vector<PDANode*> coreItems;
 					unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>coreItemToFollowSetMap;
-					auto&&edges = iter.second;
+					auto&&edges = gotoEdges;
 					for (auto&&edge : edges)
 					{
 						auto node = edge->GetSource();
@@ -147,7 +227,7 @@ namespace ztl
 						coreItems.emplace_back(edge->GetTarget());
 						coreItemToFollowSetMap.insert(make_pair(edge->GetTarget(), &product.GetFollowTokens()));
 					}
-					sort(coreItems.begin(), coreItems.end());
+					sort(coreItems.begin(), coreItems.end(), [](PDANode*left, PDANode*right) {return left->GetNumber() < right->GetNumber();});
 					auto result = HasTheSameCoreItem(coreItems);
 					if(result == nullptr)
 					{
@@ -157,14 +237,17 @@ namespace ztl
 					}
 					else
 					{
-						AddFollowInfoToExsitLRNode(result, coreItems, coreItemToFollowSetMap);
+						if (result->GetNumber() == 19)
+						{
+							int a = 0;
+						}
+						result->AddFollowInfoToExsitLRNode(coreItems, coreItemToFollowSetMap);
 					}
 					current->AddNexts(symbol, result);
 				}
 				current->AddGotoMap(move(gotoMap));
 			}
 		}
-		
 		LRNode * GeneralLRMachine::GetInitLRNode()
 		{
 			assert(machine != nullptr);
@@ -177,7 +260,7 @@ namespace ztl
 
 		LRNode * GeneralLRMachine::NewEmptyLRNode()
 		{
-			if (nodePool.size() == 25)
+			if (nodePool.size() == 19)
 			{
 				int a = 0;
 			}
@@ -199,7 +282,6 @@ namespace ztl
 
 		LRNode* GeneralLRMachine::HasTheSameCoreItem(const vector<PDANode*>& expect) const
 		{
-			assert(std::is_sorted(expect.begin(),expect.end()));
 			auto findIter = coreItemMap.find(expect);
 			return  (findIter != coreItemMap.end()) ? nodePool[findIter->second].get() : nullptr;
 		}
@@ -220,7 +302,7 @@ namespace ztl
 			{
 				return value.GetPosition();
 			});
-			sort(hashKey.begin(), hashKey.end());
+			sort(hashKey.begin(), hashKey.end(), [](PDANode*left, PDANode*right) {return left->GetNumber() < right->GetNumber();});
 			coreItemMap.insert({ hashKey,init->GetNumber() });
 			if (init->GetNumber() == 37)
 			{
@@ -229,11 +311,9 @@ namespace ztl
 			init->AddCoreEndAndComputeAllItems(*this);
 			return init;
 		}
+
 		void GeneralLRMachine::BuildFirstTable()
 		{
-			
-
-
 			deque<PDANode*> queue;
 			unordered_set<PDAEdge*>edgeSign;
 			unordered_set<PDANode*> sign;
@@ -554,7 +634,7 @@ namespace ztl
 
 		bool LRNode::HasSameCoreItems(const vector<PDANode*>& expect) const
 		{
-			assert(is_sorted(expect.begin(), expect.end()));
+			assert(is_sorted(expect.begin(), expect.end(), [](PDANode*left, PDANode*right) {return left->GetNumber() < right->GetNumber();}));
 			assert(is_sorted(this->items.begin(), items.begin() + this->coreItemEnd, [](const ProductPosition&left, const ProductPosition& right)
 			{
 				return left.GetPosition() < right.GetPosition();
@@ -569,8 +649,41 @@ namespace ztl
 			assert(!edge->GetActions().empty());
 			return edge->GetActions()[0].GetActionType() == ActionType::NonTerminate;
 		}
+		void LRNode::UpdateGenerateItemFollowSet(PDANode* parentNode)
+		{
+			auto&& findIter = generateItemMap.find(parentNode);
+			if (findIter != generateItemMap.end())
+			{
+				auto&& generates = findIter->second;
+				for (auto&&iter : generates)
+				{
+					auto&& product = this->GetMutableProductByPDANode(iter);
+					product.AddFollowToken(this->GetMutableProductByPDANode(parentNode).GetFollowTokens());
+				}
+
+				for (auto&&iter : generates)
+				{
+					UpdateGenerateItemFollowSet(iter);
+				}
+			}
+		}
+
+		void LRNode::UpdateGenerateItemRelation( PDANode* parent, PDANode* child)
+		{
+			if (generateItemMap.find(parent) == generateItemMap.end())
+			{
+				generateItemMap[parent];
+			}
+			generateItemMap[parent].insert(child);
+		}
+
 		void LRNode::ComputeAllItems(GeneralLRMachine & LRMachine)
 		{
+			if (number == 38)
+			{
+				int a = 0;
+			}
+			//这里要注意到一个问题就是核心项生成的项的followset会因为核心项的followset更新而更新
 			assert(!items.empty());
 			assert(is_sorted(items.begin(), items.end(), [](const ProductPosition&left, const ProductPosition& right)
 			{
@@ -579,7 +692,6 @@ namespace ztl
 
 			assert(this->coreItemEnd != 0);
 			unordered_set<wstring> signMap;
-			
 			for(size_t i = 0; i < items.size(); i++)
 			{
 				
@@ -601,32 +713,22 @@ namespace ztl
 							ProductPosition product(ruleIndex, start, LRMachine, followToken);
 							itemsMap[start] = items.size();
 							AddItem(move(product));
+							UpdateGenerateItemRelation(items[i].GetPosition(),product.GetPosition());
 						}
 						else
 						{
+							
 							auto&& product = this->GetMutableProductByPDANode(start);
 							assert(product.GetPosition() == start);
-							product.AddFollowToken(followToken);
+							if (product.GetFollowTokens() != followToken)
+							{
+								//给已经存在的项添加followSet;
+								product.AddFollowToken(followToken);
+								//更新product生成的项的followset
+								UpdateGenerateItemFollowSet(product.GetPosition());
+							}
+							
 						}
-						/*assert(!edgeIter->GetActions().empty() && edgeIter->GetActions()[0].GetActionType() == ActionType::NonTerminate);
-						auto&& ruleName = edgeIter->GetActions()[0].GetName();
-						if(signMap.find(ruleName) == signMap.end())
-						{
-							signMap.insert(ruleName);
-							auto ruleIndex = LRMachine.GetRuleIndexByName(ruleName);
-							auto start = LRMachine.GetRuleStart(ruleName);
-							auto&& followSet = LRMachine.GetFirstSetByNode(start);
-							if(followSet.size() == 0)
-							{
-								ProductPosition product(ruleIndex, start, LRMachine, items[this->itemsMap[start]].GetFollowTokens());
-								AddItem(move(product));
-							}
-							else
-							{
-								ProductPosition product(ruleIndex, start, LRMachine, followSet);
-								AddItem(move(product));
-							}
-						}*/
 					}
 				}
 			}

@@ -26,6 +26,7 @@ namespace ztl
 		private:
 			SymbolType											type;
 			wstring												name;
+			int													number;//help debug
 			SymbolManager*										manager;
 			ParserSymbol*										parent;
 			ParserSymbol*										descriptor;
@@ -33,6 +34,7 @@ namespace ztl
 			unique_ptr<unordered_map<wstring, ParserSymbol*>>	subSymbolMap;
 			wstring												absoluteScope;//符号的修饰后的作用域
 			
+			static int											count;//help debug
 		public:
 			ParserSymbol() = delete;
 			ParserSymbol(SymbolManager * _manager, SymbolType _type,
@@ -46,7 +48,7 @@ namespace ztl
 			ParserSymbol& operator=(const ParserSymbol&) = default;
 			ParserSymbol& operator=(ParserSymbol&&) = default;
 		public:
-
+			int										GetNumber()								 const;
 			SymbolManager*							GetManager()							 const;
 			SymbolType								GetType()								 const;
 			wstring									GetTypeToWString()						 const;

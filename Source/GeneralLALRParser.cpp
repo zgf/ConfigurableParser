@@ -37,8 +37,15 @@ namespace ztl
 					result.emplace_back(make_pair(edge, tokenIndex));
 				}
 			}
-			assert(result.size() == 1);
-			return  result[0];
+			assert(result.size() <= 1);
+			if (result.empty())
+			{
+				return{nullptr,0};
+			}
+			else
+			{
+				return result[0];
+			}
 		}
 	
 		vector<pair<PDAEdge*, int>> CollectWaitExecuteEdges(PDANode*startNode, PDANode* endPosition,const vector<pair<const vector<PDAEdge*>*, int>>& edgeStack)
@@ -49,22 +56,58 @@ namespace ztl
 			{
 				auto&& edgesIter = edgeStack[i];
 				auto edgePair = GetPositionPreEdge(nextPosition, edgesIter);
+				if (edgePair.first != nullptr)
+				{
+					result.emplace_back(edgePair);
+					nextPosition = edgePair.first->GetSource();
+
+				}
+				else
+				{
+					return result;
+				}
+			/*	auto&& edgesIter = edgeStack[i];
+				auto edgePair = GetPositionPreEdge(nextPosition, edgesIter);
 				result.emplace_back(edgePair);
 				nextPosition = edgePair.first->GetSource();
 				if (edgePair.first->GetSource() == startNode)
 				{
 					return result;
-				}
+				}*/
+				
+			}
+			if (nextPosition == startNode)
+			{
+				return result;
 			}
 			assert(false);
 			return{};
 		}
 		void GeneralLALRParser::ExecutableEdgeAddctionAction(const vector<pair<PDAEdge*, int>>& edges,GeneralTreeNode* node)
 		{
+			vector<pair<PDAEdge*, int>> execute;
+			
 			for (auto&& edgeIter : edges)
 			{
+				if (edgeIter.first->GetActions().size() == 2&&edgeIter.first->HasNonTermActionType())
+				{
+					execute.emplace_back(edgeIter);
+				}
+				
+			}
+			auto count = execute.size();
+			auto rbegin = treeNodeStack.rbegin();
+			auto rend = rbegin+count;
+			std::reverse(rbegin, rend);
+			for (int i = edges.size() - 1; i >= 0; i--)
+			{
+				auto&&edgeIter = edges[i];
 				ExcuteEdgeAdditionAction(edgeIter, node);
 			}
+			/*for (auto&& edgeIter : edges)
+			{
+				ExcuteEdgeAdditionAction(edgeIter, node);
+			}*/
 		}
 		void ReduceGrammarInStack( vector<pair<const vector<PDAEdge*>*, int>>&edgeStack, vector<LRNode*>& LRNodeStack,int num)
 		{
@@ -88,7 +131,10 @@ namespace ztl
 			
 			while (!IsParserFinish(currentSymbol, GetTokenSymbol(tokenIndex)))
 			{
-			
+				if (tokenIndex == 116)
+				{
+					int a = 0;
+				}
 				currentLRNode = LRNodeStack.back();
 				auto resultPair = NeedMove(currentSymbol, currentLRNode);
 				auto next = resultPair.first;
@@ -284,7 +330,6 @@ namespace ztl
 					node->SetTermMap(actionIter.GetName(), tokenIndex);
 				}
 			}
-			
 		}
 		GeneralTreeNode* GeneralLALRParser::ExcuteEndAction(const vector<ActionWrap>& acionts)
 		{

@@ -7,21 +7,28 @@ namespace ztl
 {
 	namespace general_parser
 	{
+		int ParserSymbol::count = 0;
 		ParserSymbol::ParserSymbol(SymbolManager * _manager, SymbolType _type,
 			const wstring & _name, ParserSymbol * _parent, ParserSymbol * _descriptor)
 			:manager(_manager), type(_type), name(_name), parent(_parent),
 			descriptor(_descriptor),
 			subSymbolMap(make_unique<unordered_map<wstring, ParserSymbol*>>())
 		{
-
+			number = count++;
 		}
 
 		ParserSymbol::ParserSymbol(SymbolManager * _manager, SymbolType _type, const wstring & _name, ParserSymbol * _parent, ParserSymbol * _descriptor, bool _ignore) :manager(_manager), type(_type), name(_name), parent(_parent),
 			descriptor(_descriptor),
 			subSymbolMap(make_unique<unordered_map<wstring, ParserSymbol*>>()), ignore(_ignore)
 		{
+			number = count++;
 		}
 		
+		int ParserSymbol::GetNumber() const
+		{
+			return number;
+		}
+
 		SymbolManager * ztl::general_parser::ParserSymbol::GetManager()const
 		{
 			return this->manager;

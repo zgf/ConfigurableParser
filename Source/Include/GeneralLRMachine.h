@@ -62,10 +62,13 @@ namespace ztl
 			int coreItemEnd;
 			unordered_map<PDANode*, int> itemsMap;
 			unordered_map<ParserSymbol*, vector<PDAEdge*>> gotoMap;
+			unordered_map<PDANode*, unordered_set<PDANode*>> generateItemMap;
+			
 		public:
 			LRNode() = delete;
 			LRNode(int _number);
 		public:
+			
 			const vector<PDAEdge*>* GetGotoEdges(ParserSymbol*symbol)const;
 			LRNode* GetNextLRNode(ParserSymbol*symbol)const;
 			void AddGotoMap(unordered_map<ParserSymbol*, vector<PDAEdge*>>&& target);
@@ -88,10 +91,18 @@ namespace ztl
 			ProductPosition& GetMutableProductByPDANode(PDANode*);
 			ProductPosition& GetMutableProductByIndex(size_t);
 			wstring LogLRNode(const GeneralLRMachine& LRMachine)const;
+
+			void AddFollowInfoToExsitLRNode(const vector<PDANode*>& coreItems, unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap);
+
 		private:
 			void ComputeAllItems(GeneralLRMachine & LRMachine);
 			void BuildCoreItemsMap();
 			void BuildItemsMap();
+			void LRNode::UpdateGenerateItemRelation( PDANode* parent, PDANode* child);
+			void LRNode::UpdateGenerateItemFollowSet( PDANode* parent);
+			vector<ProductPosition*> GetProductPositionChildren(ProductPosition* parent);
+			void LRNode::PropagateFollowInfoToNextPosition(ProductPosition* product, deque<pair<LRNode*, ProductPosition*>>& queue);
+			void LRNode::PropagateFollowInfoToNextPosition( deque<pair<LRNode*, ProductPosition*>>& products);
 		};
 		struct coreItemHash
 		{
@@ -139,6 +150,8 @@ namespace ztl
 			PDANode* GetRootRuleStart();
 			LRNode* HasTheSameCoreItem(const vector<PDANode*>& expect)const;
 			LRNode* AddLRItem(const vector<PDANode*>& coreItem,const unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap);
+
+		//LRNode* AddLRItem(const vector<PDANode*>& coreItem, const vector<const unordered_set<ParserSymbol*>*>& followSetList);
 			unordered_set<ParserSymbol*>& FindFirst(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			unordered_set<ParserSymbol*>& FindFirst(PDANode*node, unordered_set<PDAEdge*>& sign);
 			const vector<PDAEdge*>& GetEdgesByNode(PDANode* node)const;
