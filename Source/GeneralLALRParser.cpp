@@ -128,7 +128,7 @@ namespace ztl
 				auto edges = currentLRNode->GetGotoEdges(currentSymbol);
 				return make_pair(next,edges);
 			};
-			
+			//66是"as" *** Type:name之间的位置; 66的核心项
 			while (!IsParserFinish(currentSymbol, GetTokenSymbol(tokenIndex)))
 			{
 				if (tokenIndex == 116)

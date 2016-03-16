@@ -22,6 +22,10 @@ namespace ztl
 			unique_ptr<unordered_set<ParserSymbol*>> followToken = nullptr;
 		public:
 			ProductPosition()noexcept = default;
+			ProductPosition(int _ruleIndex, PDANode* _position, GeneralLRMachine& machine) noexcept:ruleIndex(_ruleIndex), position(_position), followToken(make_unique<unordered_set<ParserSymbol*>>())
+			{
+				AddIsProductEndPosition(machine);
+			}
 			ProductPosition(int _ruleIndex, PDANode* _position, GeneralLRMachine& machine,ParserSymbol* initSymbol) noexcept:ruleIndex(_ruleIndex), position(_position), followToken(make_unique<unordered_set<ParserSymbol*>>())
 			{
 				followToken->emplace(initSymbol);
@@ -93,16 +97,15 @@ namespace ztl
 			wstring LogLRNode(const GeneralLRMachine& LRMachine)const;
 
 			void AddFollowInfoToExsitLRNode(const vector<PDANode*>& coreItems, unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap);
-
+			void LRNode::UpdateGenerateItemFollowSet(PDANode* parent);
 		private:
 			void ComputeAllItems(GeneralLRMachine & LRMachine);
 			void BuildCoreItemsMap();
 			void BuildItemsMap();
 			void LRNode::UpdateGenerateItemRelation( PDANode* parent, PDANode* child);
-			void LRNode::UpdateGenerateItemFollowSet( PDANode* parent);
+			
 			vector<ProductPosition*> GetProductPositionChildren(ProductPosition* parent);
-			void LRNode::PropagateFollowInfoToNextPosition(ProductPosition* product, deque<pair<LRNode*, ProductPosition*>>& queue);
-			void LRNode::PropagateFollowInfoToNextPosition( deque<pair<LRNode*, ProductPosition*>>& products);
+			
 		};
 		struct coreItemHash
 		{
@@ -144,20 +147,24 @@ namespace ztl
 			PDANode* GetStartNodeByProduction(const ProductPosition* product)const;
 			const unordered_map<ParserSymbol*, unordered_set<ParserSymbol*>> &  GetFirstSet()const;
 			void CalculateFirstSet();
+			void PropagateLRItemFollowSymbol();
+			void PropagateFollowInfoToNextPosition(deque<pair<LRNode*, ProductPosition*>>& products);
+			void PropagateFollowInfoToNextPosition(LRNode* node, ProductPosition* product, deque<pair<LRNode*, ProductPosition*>>& queue);
+
 		private:
 			unordered_map<ParserSymbol*, vector<PDAEdge*>> GetGotoInfo(LRNode* node)const;
-
+			void AddCoreItemMap(LRNode* init);
 			PDANode* GetRootRuleStart();
 			LRNode* HasTheSameCoreItem(const vector<PDANode*>& expect)const;
 			LRNode* AddLRItem(const vector<PDANode*>& coreItem,const unordered_map<PDANode*, const unordered_set<ParserSymbol*>*>&coreItemToFollowSetMap);
-
+			LRNode* GeneralLRMachine::AddLRItem(const vector<PDANode*>& coreItem);
 		//LRNode* AddLRItem(const vector<PDANode*>& coreItem, const vector<const unordered_set<ParserSymbol*>*>& followSetList);
 			unordered_set<ParserSymbol*>& FindFirst(PDAEdge*edge, unordered_set<PDAEdge*>& sign);
 			unordered_set<ParserSymbol*>& FindFirst(PDANode*node, unordered_set<PDAEdge*>& sign);
 			const vector<PDAEdge*>& GetEdgesByNode(PDANode* node)const;
 
 			void CalculateFirstSet(ParserSymbol* ruleSymbol);
-		
+			
 		private:
 			shared_ptr<PushDownAutoMachine> machine;
 			vector<shared_ptr<LRNode>> nodePool;

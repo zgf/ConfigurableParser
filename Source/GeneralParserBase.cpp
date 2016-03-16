@@ -30,6 +30,7 @@ namespace ztl
 			LRMachine->CalculateFirstSet();
 			LRMachine->BuildFirstTable();
 			LRMachine->BuildLRItems();
+			LRMachine->PropagateLRItemFollowSymbol();
 		}
 		SymbolManager* GeneralParserBase::GetManager() const
 		{

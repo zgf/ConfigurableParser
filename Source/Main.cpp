@@ -29,16 +29,16 @@ int main()
 	//解析的性能还不错
 	//MINISHARP
 
-	ztl::general_parser::generate_file_test::GenerateTestAssignParserFile();
+	/*ztl::general_parser::generate_file_test::GenerateTestAssignParserFile();
 	ztl::general_parser::generate_file_test::GeneratePureRegexParserFile();
 	ztl::general_parser::generate_file_test::GenerateXmlParserFile();
 
 	ztl::general_parser::generate_file_test::GenerateMiniSharpParserFile();
 	ztl::general_parser::generate_file_test::GenerateGeneralParserFile();
 
-	ztl::general_parser::generate_file_test::GenerateJsonParserFile();
+	ztl::general_parser::generate_file_test::GenerateJsonParserFile();*/
 
-	//ztl::general_parser::parser_test::TestMiniSharp();
+	ztl::general_parser::parser_test::TestMiniSharp();
 	//ztl::general_parser::parser_test::TestJson();
 	//ztl::general_parser::parser_test::TestXml();
 	//ztl::general_parser::parser_test::TestPureRegex();

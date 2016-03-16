@@ -93,32 +93,6 @@
 									},
 								}
 							},{
-								L"GeneralHeadInfoDefine",
-								{
-									{
-										L"attributes",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->attributes.emplace_back(std::static_pointer_cast<GeneralAttributeDefine>(valueObject));
-											return;
-										}
-									},{
-										L"property",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->property=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
-											return;
-										}
-									},{
-										L"value",
-										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
-										{
-											std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->value=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
-											return;
-										}
-									},
-								}
-							},{
 								L"GeneralGrammarSetterTypeDefine",
 								{
 									{
@@ -145,13 +119,27 @@
 									},
 								}
 							},{
-								L"GeneralGrammarLoopTypeDefine",
+								L"GeneralHeadInfoDefine",
 								{
 									{
-										L"grammar",
+										L"attributes",
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
-											std::static_pointer_cast<GeneralGrammarLoopTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
+											std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->attributes.emplace_back(std::static_pointer_cast<GeneralAttributeDefine>(valueObject));
+											return;
+										}
+									},{
+										L"property",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->property=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
+											return;
+										}
+									},{
+										L"value",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralHeadInfoDefine>(classObject)->value=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
 											return;
 										}
 									},
@@ -164,6 +152,18 @@
 										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
 										{
 											std::static_pointer_cast<GeneralNormalTypeObject>(classObject)->name=std::static_pointer_cast<ztl::general_parser::TokenInfo>(valueObject)->content;
+											return;
+										}
+									},
+								}
+							},{
+								L"GeneralGrammarLoopTypeDefine",
+								{
+									{
+										L"grammar",
+										[](const shared_ptr<void>& classObject,const shared_ptr<void>& valueObject)
+										{
+											std::static_pointer_cast<GeneralGrammarLoopTypeDefine>(classObject)->grammar = std::static_pointer_cast<GeneralGrammarTypeDefine>(valueObject);
 											return;
 										}
 									},
@@ -573,13 +573,6 @@
 					}
 				},
 				{
-					L"GeneralHeadInfoDefine",
-					[]()->shared_ptr<void>
-					{
-						return make_shared<GeneralHeadInfoDefine>();
-					}
-				},
-				{
 					L"GeneralGrammarSetterTypeDefine",
 					[]()->shared_ptr<void>
 					{
@@ -587,10 +580,10 @@
 					}
 				},
 				{
-					L"GeneralGrammarLoopTypeDefine",
+					L"GeneralHeadInfoDefine",
 					[]()->shared_ptr<void>
 					{
-						return make_shared<GeneralGrammarLoopTypeDefine>();
+						return make_shared<GeneralHeadInfoDefine>();
 					}
 				},
 				{
@@ -598,6 +591,13 @@
 					[]()->shared_ptr<void>
 					{
 						return make_shared<GeneralNormalTypeObject>();
+					}
+				},
+				{
+					L"GeneralGrammarLoopTypeDefine",
+					[]()->shared_ptr<void>
+					{
+						return make_shared<GeneralGrammarLoopTypeDefine>();
 					}
 				},
 				{
