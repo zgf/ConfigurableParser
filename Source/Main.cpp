@@ -37,6 +37,8 @@ int main()
 	ztl::general_parser::generate_file_test::GenerateGeneralParserFile();
 
 	ztl::general_parser::generate_file_test::GenerateJsonParserFile();*/
+	//ztl::general_parser::generate_file_test::GenerateMiniSharpParserFile();
+	
 
 	ztl::general_parser::parser_test::TestMiniSharp();
 	//ztl::general_parser::parser_test::TestJson();
