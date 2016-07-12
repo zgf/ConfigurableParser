@@ -1,45 +1,48 @@
 #include "Include/stdafx.h"
 #include "Include/GeneralTableDefine.h"
-#include "Include/GeneralPushDownAutoMachine.h"
+#include "Include/GeneralGrammarBuilder.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
-#include "Include/GeneralPushDownMachineData.h"
+#include "Include/GeneralGrammarBuilderData.h"
 namespace ztl
 {
 	namespace general_parser
 	{
-	
-		PushDownAutoMachine::PushDownAutoMachine() :manager(nullptr)
+		const wstring& ActionWrap::GetName()const
+		{
+			return data->GetName();
+		}
+		GrammarBuilder::GrammarBuilder() :manager(nullptr)
 		{
 		}
-		PushDownAutoMachine::PushDownAutoMachine(SymbolManager* _manager)
+		GrammarBuilder::GrammarBuilder(SymbolManager* _manager)
 			: manager(_manager)
 		{
 		}
 
-		SymbolManager * PushDownAutoMachine::GetSymbolManager() const
+		SymbolManager * GrammarBuilder::GetSymbolManager() const
 		{
 			return this->manager;
 		}
 
-		GeneralTableDefine * PushDownAutoMachine::GetTable() const
+		GeneralTableDefine * GrammarBuilder::GetTable() const
 		{
 			return GetSymbolManager()->GetTable();
 		}
 
-		unordered_map<wstring, pair<PDANode*, PDANode*>>& PushDownAutoMachine::GetPDAMap()
+		unordered_map<wstring, pair<PDANode*, PDANode*>>& GrammarBuilder::GetPDAMap()
 		{
 			return PDAMap;
 		}
 
-		void PushDownAutoMachine::AddEdge(PDANode * source, PDANode * target, const ActionWrap & wrap)
+		void GrammarBuilder::AddEdge(PDANode * source, PDANode * target, const ActionWrap & wrap)
 		{
 			auto edge = NewEdge(source, target, wrap);
 			source->nexts->push_back(edge);
 			target->fronts->push_back(edge);
 		}
 
-		void PushDownAutoMachine::AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList)
+		void GrammarBuilder::AddEdge(PDANode* source, PDANode* target, const vector<ActionWrap>& wrapList)
 		{
 			auto edge = NewEdge(source, target);
 			edge->actions = wrapList;
@@ -47,7 +50,7 @@ namespace ztl
 			target->fronts->push_back(edge);
 		}
 
-		void PushDownAutoMachine::DeleteEdge(PDAEdge* target)
+		void GrammarBuilder::DeleteEdge(PDAEdge* target)
 		{
 			auto frontNode = target->GetSource();
 			auto nextNode = target->GetTarget();
@@ -61,19 +64,19 @@ namespace ztl
 			nextNode->fronts->erase(nextIter);
 		}
 
-		void PushDownAutoMachine::AddGeneratePDA(wstring ruleName, const pair<PDANode *, PDANode*>& pairNode)
+		void GrammarBuilder::AddGeneratePDA(wstring ruleName, const pair<PDANode *, PDANode*>& pairNode)
 		{
 			auto findIter = PDAMap.find(ruleName);
 			assert(findIter == PDAMap.end());
 			PDAMap.insert(make_pair(ruleName, pairNode));
 		}
 
-		pair<PDANode*, PDANode*> PushDownAutoMachine::NewNodePair()
+		pair<PDANode*, PDANode*> GrammarBuilder::NewNodePair()
 		{
 			return{ NewNode(), NewNode() };
 		}
 
-		PDANode * PushDownAutoMachine::NewNode()
+		PDANode * GrammarBuilder::NewNode()
 		{
 			static int count = 0;
 			++count;
@@ -82,7 +85,7 @@ namespace ztl
 			return nodes.back().get();
 		}
 
-		PDANode * PushDownAutoMachine::GetRoot() const
+		PDANode * GrammarBuilder::GetRoot() const
 		{
 			assert(!PDAMap.empty());
 			auto findIter = PDAMap.find(this->GetRootRuleName());
@@ -90,7 +93,7 @@ namespace ztl
 			return findIter->second.first;
 		}
 
-		pair<PDANode*, PDANode*> PushDownAutoMachine::AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
+		pair<PDANode*, PDANode*> GrammarBuilder::AddSequenceLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
 			auto mergeNode = MergeIndependentNodes(left.second, right.first);
 			if(right.first == right.second)
@@ -103,34 +106,34 @@ namespace ztl
 			}
 		}
 		
-		pair<PDANode*, PDANode*> PushDownAutoMachine::AddLoopLinkNode(PDANode * loopStart, PDANode * loopEnd)
+		pair<PDANode*, PDANode*> GrammarBuilder::AddLoopLinkNode(PDANode * loopStart, PDANode * loopEnd)
 		{
 			auto mergeNode = MergeIndependentNodes(loopEnd, loopStart);
 			return pair<PDANode*, PDANode*>(mergeNode, mergeNode);
 		}
 
-		pair<PDANode*, PDANode*> PushDownAutoMachine::AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
+		pair<PDANode*, PDANode*> GrammarBuilder::AddAlterationLinkNode(pair<PDANode*, PDANode*>& left, pair<PDANode*, PDANode*>& right)
 		{
 			MergeIndependentNodes(left.first, right.first);
 			MergeIndependentNodes(left.second, right.second);
 			return{ left.first,left.second };
 		}
 
-		pair<PDANode*, PDANode*> PushDownAutoMachine::AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd)
+		pair<PDANode*, PDANode*> GrammarBuilder::AddOptionalLinkNode(PDANode* optionalStart, PDANode* optionalEnd)
 		{
 			auto mergeNode = MergeIndependentNodes(optionalStart, optionalEnd);
 
 			return pair<PDANode*, PDANode*>(mergeNode, mergeNode);
 		}
 
-		void PushDownAutoMachine::FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap)
+		void GrammarBuilder::FrontEdgesAdditionBackAction(PDANode* targetNode, const ActionWrap& wrap)
 		{
 			for(auto&& edgeIter : *targetNode->fronts)
 			{
 				this->BackInsertAction(edgeIter, wrap);
 			}
 		}
-		void PushDownAutoMachine::FrontEdgesAdditionSetterAction(PDANode* targetNode, const ActionWrap& wrap)
+		void GrammarBuilder::FrontEdgesAdditionSetterAction(PDANode* targetNode, const ActionWrap& wrap)
 		{
 			FrontEdgesAdditionBackAction(targetNode, wrap);
 			for(auto&& edgeIter : *targetNode->fronts)
@@ -140,7 +143,7 @@ namespace ztl
 			}
 		}
 
-		PDANode * PushDownAutoMachine::MergeIndependentNodes(PDANode * left, PDANode * right)
+		PDANode * GrammarBuilder::MergeIndependentNodes(PDANode * left, PDANode * right)
 		{
 			if(left != right)
 			{
@@ -164,30 +167,30 @@ namespace ztl
 			return left;
 		}
 
-		void PushDownAutoMachine::BackInsertAction(PDAEdge* edge, const ActionWrap& wrap)
+		void GrammarBuilder::BackInsertAction(PDAEdge* edge, const ActionWrap& wrap)
 		{
 			edge->actions.emplace_back(wrap);
 		}
 
-		void PushDownAutoMachine::FrontInsertAction(PDAEdge * edge, const ActionWrap & wrap)
+		void GrammarBuilder::FrontInsertAction(PDAEdge * edge, const ActionWrap & wrap)
 		{
 			edge->actions.emplace(edge->actions.begin(), wrap);
 		}
 
-		void PushDownAutoMachine::AddNodeMapElement(PDANode * node, int ruleIndex)
+		void GrammarBuilder::AddNodeMapElement(PDANode * node, int ruleIndex)
 		{
 			assert(nodeMap.find(node) == nodeMap.end());
 			nodeMap.insert({ node,ruleIndex });
 		}
 
-		int PushDownAutoMachine::GetRuleIndexByNode(PDANode * node) const
+		int GrammarBuilder::GetRuleIndexByNode(PDANode * node) const
 		{
 			auto findIter = nodeMap.find(node);
 			assert(findIter != nodeMap.end());
 			return findIter->second;
 		}
 
-		void PushDownAutoMachine::AddNodeEdgeMapElement(PDANode * node, PDAEdge * edge)
+		void GrammarBuilder::AddNodeEdgeMapElement(PDANode * node, PDAEdge * edge)
 		{
 			auto&& findIter = nodeEdgeMap.find(node);
 			if (findIter == nodeEdgeMap.end())
@@ -197,7 +200,7 @@ namespace ztl
 			nodeEdgeMap[node].emplace_back(edge);
 		}
 
-		const vector<PDAEdge*>& PushDownAutoMachine::GetEdgesByNode(PDANode * node) const
+		const vector<PDAEdge*>& GrammarBuilder::GetEdgesByNode(PDANode * node) const
 		{
 			auto findIter = nodeEdgeMap.find(node);
 			assert(findIter != nodeEdgeMap.end());
@@ -206,19 +209,19 @@ namespace ztl
 
 		
 
-		PDAEdge* PushDownAutoMachine::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
+		PDAEdge* GrammarBuilder::NewEdge(PDANode* source, PDANode* target, const ActionWrap& wrap)
 		{
 			edges.emplace_back(make_shared<PDAEdge>(wrap, source, target, (int) edges.size()));
 			return edges.back().get();
 		}
 
-		PDAEdge * PushDownAutoMachine::NewEdge(PDANode * source, PDANode * target)
+		PDAEdge * GrammarBuilder::NewEdge(PDANode * source, PDANode * target)
 		{
 			edges.emplace_back(make_shared<PDAEdge>(source, target, (int) edges.size()));
 			return edges.back().get();
 		}
 
-		wstring	 PushDownAutoMachine::GetRootRuleName()const
+		wstring	 GrammarBuilder::GetRootRuleName()const
 		{
 			assert(manager->GetRootSymbol()!=nullptr);
 			return manager->GetRootSymbol()->GetName();

@@ -10,7 +10,7 @@ namespace ztl
 		struct GeneralRuleDefine;
 		struct GeneralGrammarTypeDefine;
 		class SymbolManager;
-		class PushDownAutoMachine;
+		class GrammarBuilder;
 		struct GeneralTableDefine;
 		class PDANode;
 		class PDAEdge;
@@ -101,7 +101,7 @@ namespace ztl
 			{
 				return data;
 			}
-			const wstring& GetName()const;
+			const wstring& ActionWrap::GetName()const;
 			const wstring& GetValue()const
 			{
 				return *value;
@@ -176,7 +176,7 @@ namespace ztl
 
 		class PDAEdge
 		{
-			friend PushDownAutoMachine;
+			friend GrammarBuilder;
 
 		public:
 			PDAEdge() = delete;
@@ -239,7 +239,7 @@ namespace ztl
 		};
 		class PDANode
 		{
-			friend PushDownAutoMachine;
+			friend GrammarBuilder;
 		public:
 			PDANode() :nexts(make_unique<vector<PDAEdge*>>()), fronts(make_unique<vector<PDAEdge*>>())
 			{

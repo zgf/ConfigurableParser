@@ -1,6 +1,6 @@
 #pragma once
 #include "Include\stdafx.h"
-#include "GeneralLexer.h"
+#include "GeneralRegexLexer.h"
 #include "PureRegexAutoMachineData.h"
 #include "DFATableBuilder.h"
 namespace ztl

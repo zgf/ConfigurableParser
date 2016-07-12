@@ -2,7 +2,7 @@
 #include "Include/stdafx.h"
 #include "Include/SymbolManager.h"
 #include "Include/GeneralTableDefine.h"
-#include "Include/GeneralParserFile.h"
+#include "Include/GeneralParserFileGenerator.h"
 #include "Include/ParserSymbol.h"
 #include "../Lib/ZTL/ztl_generator.hpp"
 #include "Include/GeneralTreeNode.h"
@@ -235,7 +235,7 @@ namespace ztl
 		{
 			wstring templateString =
 				LR"(
-				void GeneralHeterogeneousParserTree($<NameSpace>GeneralParserBase& parser, $<NameSpace>GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+				void GenerateHeterogeneousParserTree($<NameSpace>GeneralLRExecutor& parser, $<NameSpace>GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 				{
 					assert(classObject != nullptr);
 					assert(classNode != nullptr);
@@ -249,7 +249,7 @@ namespace ztl
 							auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
 							parser.SaveHeterogeneousNode(fieldObject);
 							ReflectionBuidler(className, fieldName, classObject, fieldObject);
-							$<ReflectionNameSpace>GeneralHeterogeneousParserTree(parser,fieldNode, fieldObject);
+							$<ReflectionNameSpace>GenerateHeterogeneousParserTree(parser,fieldNode, fieldObject);
 						}
 					}
 					for(auto&&iter : classNode->GetTermMap())
@@ -262,17 +262,17 @@ namespace ztl
 					}
 				}
 	
-				shared_ptr<void> GeneralHeterogeneousParserTree($<NameSpace>GeneralParserBase& parser,$<NameSpace>GeneralTreeNode* root)
+				shared_ptr<void> GenerateHeterogeneousParserTree($<NameSpace>GeneralLRExecutor& parser,$<NameSpace>GeneralTreeNode* root)
 				{
 					assert(root != nullptr);
 					auto rootObject = ReflecteObjectByName(root->GetName());
 					parser.SaveHeterogeneousNode(rootObject);
-					$<ReflectionNameSpace>GeneralHeterogeneousParserTree(parser,root, rootObject);
+					$<ReflectionNameSpace>GenerateHeterogeneousParserTree(parser,root, rootObject);
 					return rootObject;
 				}
-				shared_ptr<void>	GeneralHeterogeneousParserTree($<NameSpace>GeneralParserBase& parser)
+				shared_ptr<void>	GenerateHeterogeneousParserTree($<NameSpace>GeneralLRExecutor& parser)
 				{
-					return $<ReflectionNameSpace>GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
+					return $<ReflectionNameSpace>GenerateHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 				}
 				)";
 			ztl::generator::MarcoGenerator generator(templateString, { L"$<NameSpace>" ,L"$<ReflectionNameSpace>"});
@@ -283,8 +283,8 @@ namespace ztl
 			
 			wstring templateString =
 				LR"(
-			shared_ptr<void> GeneralHeterogeneousParserTree($<NameSpace>GeneralParserBase& parser,$<NameSpace>GeneralTreeNode* root);
-			shared_ptr<void>	GeneralHeterogeneousParserTree($<NameSpace>GeneralParserBase& parser);
+			shared_ptr<void> GenerateHeterogeneousParserTree($<NameSpace>GeneralLRExecutor& parser,$<NameSpace>GeneralTreeNode* root);
+			shared_ptr<void>	GenerateHeterogeneousParserTree($<NameSpace>GeneralLRExecutor& parser);
 			)";
 			ztl::generator::MarcoGenerator generator(templateString, { L"$<NameSpace>" });
 			return generator.GenerateText({ namespacePrefix }).GetMacroResult();

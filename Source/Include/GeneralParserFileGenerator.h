@@ -3,34 +3,35 @@ namespace ztl
 {
 	namespace general_parser
 	{
-		class GeneralLALRParser;
+		class GeneralLRExecutor;
 		struct GeneralTableDefine;
-		class PushDownAutoMachine;
+		class GrammarBuilder;
 		class SymbolManager;
-		class GeneralParserBase;
+		class GeneralLRExecutor;
 		//节点定义文件的生成,节点反射函数的生成.
 		//要生成的,节点定义,节点反射 节点序列化三个模块.放到同一个.hpp文件里面去
 		//
-		class GeneralParserFile
+		class GeneralParserFileGenerator
 		{
 		public:
-			GeneralParserFile()  = default;
-			GeneralParserFile(const shared_ptr<GeneralParserBase>& _generalParser);
-			GeneralParserFile(const wstring& fileName,const shared_ptr<GeneralParserBase>& _generalParser);
+			GeneralParserFileGenerator()  = default;
+			GeneralParserFileGenerator(const shared_ptr<GeneralLRExecutor>& _generalParser);
+			GeneralParserFileGenerator(const wstring& fileName,const shared_ptr<GeneralLRExecutor>& _generalParser);
 
-			~GeneralParserFile() noexcept = default;
-			GeneralParserFile(GeneralParserFile&&)  = default;
-			GeneralParserFile(const GeneralParserFile&)  = default;
-			GeneralParserFile& operator=(GeneralParserFile&&)  = default;
-			GeneralParserFile& operator=(const GeneralParserFile&)   = default;
+			~GeneralParserFileGenerator() noexcept = default;
+			GeneralParserFileGenerator(GeneralParserFileGenerator&&)  = default;
+			GeneralParserFileGenerator(const GeneralParserFileGenerator&)  = default;
+			GeneralParserFileGenerator& operator=(GeneralParserFileGenerator&&)  = default;
+			GeneralParserFileGenerator& operator=(const GeneralParserFileGenerator&)   = default;
 		public:
 			void				GenerateSpecialParserFile();
 			void CreateFile(const wstring& fileName, const wstring& content);
 			wstring GetFileLeafName(const wstring& fileName);
-			GeneralParserBase&	GetParser();
+			GeneralLRExecutor&	GetParser();
 		private:
 			wstring GetGenerateImpModuleBody(GeneralTableDefine* table, SymbolManager*manager);
 			wstring GetGenerateHeadModuleBody(GeneralTableDefine* table, SymbolManager*manager);
+			wstring GetGenerateIRCodeGenoduleBody(GeneralTableDefine* table, SymbolManager*manager);
 			wstring GetGenerateFileName(SymbolManager* manager);
 			vector<wstring> GetGenerateNameSapce(SymbolManager* manager);
 			wstring GetGenerateClassPrefix(SymbolManager* manager);
@@ -46,19 +47,20 @@ namespace ztl
 			wstring GenerateModuleInclude(const wstring& endInclude, const vector<wstring>& includes);
 			wstring GenerateHeadModuleInclude(SymbolManager* manager);
 			wstring GenerateHeadModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& namespaces);
+			wstring GeneratIRCodeGenModuleContent(const wstring& filename,GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& namespaces);
 			wstring GenerateImpModuleContent(GeneralTableDefine* table, SymbolManager*manager, const vector<wstring>& includes, const wstring filename, const vector<wstring>& namespaces);
 
 		private:
-			shared_ptr<GeneralParserBase>	generalParser;
+			shared_ptr<GeneralLRExecutor>	generalParser;
 			wstring fileName;
 
 		};
-		extern void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine);
-		wstring GetNodeDefineFileInclude(SymbolManager* manager);
+		extern void LogGraphInfo(const wstring& fileName, GrammarBuilder& machine);
 		wstring GetReflectionModuleImp(SymbolManager* manager);
 		wstring SerializeEBNFCoreModuleHead();
 		wstring GetReflectionModuleHead();
 		wstring GetNodeDefineModule(GeneralTableDefine* table, SymbolManager*manager);
 		wstring SerializeEBNFCoreModuleImp(void* tableDefine);
+		wstring GetIRCodeGenModule(GeneralTableDefine* table, SymbolManager*manager);
 	}
 }

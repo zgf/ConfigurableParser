@@ -8,20 +8,31 @@
 #include <unordered_set>
 #include <assert.h>
 #include <algorithm>
+#include <locale>
+#include <codecvt>
 #include <iostream>
 #include <sstream>
 #include <numeric>
 #include <fstream>
-#include <boost/xpressive/xpressive.hpp>
 #include <locale>
 #include <deque>
 #include <set>
 #include <array>
-#include<iterator>
+#include <iterator>
+#include <windows.h>
 #include "../../Lib/ZTL/ztl_exception.h"
 #include "../../Lib/ZTL/ztl_hash.hpp"
 #include "../../Lib/ZTL/ztl_generator.hpp"
+#include "../../Lib/ZTL/ztl_algorithm.h"
 
+//Boost
+#include <boost/xpressive/xpressive.hpp>
+#include <boost/any.hpp>
+
+//LLVM
+#undef min
+#undef max
+#include <llvm\IR\IRBuilder.h>
 namespace ztl
 {
 	//////////////////////////////////////////////////////////////////////////

@@ -10,26 +10,25 @@ namespace ztl
 		struct GeneralRuleDefine;
 		struct GeneralGrammarTypeDefine;
 		class SymbolManager;
-		class PushDownAutoMachine;
+		class GrammarBuilder;
 		struct GeneralTableDefine;
 		class PDANode;
 		class PDAEdge;
 		class CreatedNodeResolve;
 		class ActionWrap;
-		class PushDownAutoMachine
+		class GrammarBuilder
 		{
 		public:
-			PushDownAutoMachine();
-			PushDownAutoMachine(SymbolManager* _manager);
-			~PushDownAutoMachine() = default;
-			PushDownAutoMachine(PushDownAutoMachine&&) = default;
-			PushDownAutoMachine(const PushDownAutoMachine&) = default;
-			PushDownAutoMachine& operator=(PushDownAutoMachine&&) = default;
-			PushDownAutoMachine& operator=(const PushDownAutoMachine&) = default;
+			GrammarBuilder();
+			GrammarBuilder(SymbolManager* _manager);
+			~GrammarBuilder() = default;
+			GrammarBuilder(GrammarBuilder&&) = default;
+			GrammarBuilder(const GrammarBuilder&) = default;
+			GrammarBuilder& operator=(GrammarBuilder&&) = default;
+			GrammarBuilder& operator=(const GrammarBuilder&) = default;
 		public:
 			SymbolManager*				GetSymbolManager()const;
 			GeneralTableDefine*			GetTable()const;
-			CreatedNodeResolve*			GetCreateNodeResolve();
 			unordered_map<wstring, pair<PDANode*, PDANode*>>& GetPDAMap();
 			pair<PDANode*, PDANode*>	NewNodePair();
 			PDANode*					NewNode();
@@ -69,14 +68,9 @@ namespace ztl
 		public:
 		};
 		vector<PDAEdge*> FindThePath(PDANode* start, PDANode* end);
-		void CreateDPDAGraph(PushDownAutoMachine& machine);
-		void MergeGrammarCommonFactor(PushDownAutoMachine& machine);
-		void MergeEpsilonPDAGraph(PushDownAutoMachine& machine);
-		void MergePDAEpsilonSymbol(PushDownAutoMachine& machine);
-		void CollectCreateNodeRequires(PushDownAutoMachine& machine);
-		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
-		void AddFinishNode(PushDownAutoMachine& machine);
-		extern void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine);
-		void RecordNewNode(PDANode* target, vector<PDANode*>& allNode, unordered_set<PDANode*>& noNeed);
+		void CreateDPDAGraph(GrammarBuilder& machine);
+		void MergeGrammarCommonFactor(GrammarBuilder& machine);
+		void MergeStartAndEndNode(GrammarBuilder& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap);
+		extern void LogGraphInfo(const wstring& fileName, GrammarBuilder& machine);
 	}
 }

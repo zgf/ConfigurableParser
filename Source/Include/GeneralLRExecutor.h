@@ -10,10 +10,10 @@ namespace ztl
 		class SymbolManager;
 		class ActionWrap;
 		struct GeneralTableDefine;
-		class PushDownAutoMachine;
+		class GrammarBuilder;
 		struct GeneralTokenDefine;
 		class ParserSymbol;
-		class GeneralLRMachine;
+		class GeneralLRBuilder;
 		enum class ActionType:int;
 		class LRNode;
 		class GeneralNodePools
@@ -36,8 +36,6 @@ namespace ztl
 			{
 				return tokenPool;
 			}
-			
-			
 
 			void SetTokenPool(const shared_ptr<TokenInfo>& token)
 			{
@@ -71,16 +69,19 @@ namespace ztl
 			//Setter的value.assign的终结符号,Setter的TokenInfo tag==Setter -1,-1,
 			vector<shared_ptr<void>>			 heterogeneousPool;
 		};
-		class GeneralParserBase
+		class GeneralLRExecutor
 		{
 		public:
-			GeneralParserBase(const shared_ptr<GeneralTableDefine>& _tableDefine);
-			GeneralParserBase()  = default;
-			~GeneralParserBase() noexcept = default;
-			GeneralParserBase(GeneralParserBase&&)  = default;
-			GeneralParserBase(const GeneralParserBase&)  = default;
-			GeneralParserBase& operator=(GeneralParserBase&&)  = default;
-			GeneralParserBase& operator=(const GeneralParserBase&)   = default;
+			GeneralLRExecutor(const shared_ptr<GeneralTableDefine>& _tableDefine);
+			GeneralLRExecutor()  = default;
+			virtual ~GeneralLRExecutor()
+			{
+
+			}
+			GeneralLRExecutor(GeneralLRExecutor&&)  = default;
+			GeneralLRExecutor(const GeneralLRExecutor&)  = default;
+			GeneralLRExecutor& operator=(GeneralLRExecutor&&)  = default;
+			GeneralLRExecutor& operator=(const GeneralLRExecutor&)   = default;
 		public:
 			virtual void GenerateIsomorphismParserTree();
 			virtual void ClearEnvironment();
@@ -98,7 +99,7 @@ namespace ztl
 			void SaveHeterogeneousNode(const shared_ptr<void>& node);
 			GeneralTreeNode* GetNonTermNodeByIndex(int index)const;
 			shared_ptr<TokenInfo> GetTermNodeByIndex(int index)const;
-			GeneralLRMachine & GeneralParserBase::GetMachine() const;
+			GeneralLRBuilder & GeneralLRExecutor::GetMachine() const;
 			LRNode*  GetLRMachineStartNode()const;
 			const GeneralNodePools& GetPools()const;
 			ParserSymbol* GetRootRuleSymbol()const;
@@ -116,11 +117,11 @@ namespace ztl
 			shared_ptr<SymbolManager>			 manager;
 			GeneralNodePools					 pools;
 			GeneralTreeNode*					 generalTreeRoot;
-			shared_ptr<GeneralLRMachine>		 LRMachine;
+			shared_ptr<GeneralLRBuilder>		 LRMachine;
 
 		};
 
-		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* root);
-		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser);
+		shared_ptr<void>	GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser, ztl::general_parser::GeneralTreeNode* root);
+		shared_ptr<void>	GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser);
 	}
 }

@@ -1,0 +1,38 @@
+//MiniSharp Parser Define
+filename : "TestAssignParser";
+include : "Include/stdafx.h";
+namespace : "ztl";
+namespace : "testAssign";
+dirname : "TestAssign";
+class Variable
+{
+	token name;
+};
+class Expression
+{
+
+};
+class PrimaryExpression : Expression
+{
+	token name;
+};
+class AssignExpression : Expression
+{
+	Variable left;
+	Expression right;
+};
+class BinaryExpression : Expression
+{
+	
+	Expression left;
+	Expression right;
+};
+token NAME =  "[a-zA-Z_]\w*";
+token ASSIGN = "=";
+token ADD="\+";
+ignoretoken SPACE = "\s+";
+
+rule Expression PrimaryExpressionRule = NAME : name as PrimaryExpression;
+rule Expression BinaryExpressionRule = BinaryExpressionRule :right "+"  PrimaryExpressionRule : left  as BinaryExpression
+									=!PrimaryExpressionRule
+									;

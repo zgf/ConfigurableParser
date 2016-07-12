@@ -1,6 +1,6 @@
 #include "Include/stdafx.h"
 #include "PureRegexAutoMachineData.h"
-#include "../../Include/GeneralLALRParser.h"
+#include "../../Include/GeneralLRExecutor.h"
 #include "PureRegexWriter.hpp"
 #include "PureRegexParser.h"
 #include "CharsetMapTable.h"
@@ -18,13 +18,13 @@ namespace ztl
 		vector<shared_ptr<Alternate>> ParsingAllTokensToAst(const vector<shared_ptr<TokenPacket>>& tokens)
 		{
 			vector<shared_ptr<Alternate>> result;
-			ztl::general_parser::GeneralLALRParser LALRParser(ztl::pure_regex::BootStrapDefineTable());
+			ztl::general_parser::GeneralLRExecutor LALRParser(ztl::pure_regex::BootStrapDefineTable());
 			LALRParser.BuildParser();
 			for(auto&&tokenIter : tokens)
 			{
 				LALRParser.SetTokenPool(ztl::pure_regex::PureRegexParseToken(tokenIter->regex));
 				LALRParser.GenerateIsomorphismParserTree();
-				result.emplace_back(static_pointer_cast<Alternate>(ztl::pure_regex::GeneralHeterogeneousParserTree(LALRParser)));
+				result.emplace_back(static_pointer_cast<Alternate>(ztl::pure_regex::GenerateHeterogeneousParserTree(LALRParser)));
 				LALRParser.ClearEnvironment();
 			}
 			return result;

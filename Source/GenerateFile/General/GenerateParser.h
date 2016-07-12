@@ -15,7 +15,7 @@
 				using std::make_shared;
 				#include "..\..\Include\GeneralTableDefine.h"
 				#include "..\..\Include\GeneralTreeNode.h"
-				#include "..\..\Include\GeneralLALRParser.h"
+				#include "..\..\Include\GeneralLALRExecutor.h"
 				
 							namespace ztl
 							{
@@ -542,8 +542,8 @@ vector<shared_ptr<GeneralRuleDefine>>    rules;
 			
 				shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable();
 				
-			shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser,ztl::general_parser::GeneralTreeNode* root);
-			shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser);
+			shared_ptr<void> GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser,ztl::general_parser::GeneralTreeNode* root);
+			shared_ptr<void>	GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser);
 			
 							}
 						 

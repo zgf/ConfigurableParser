@@ -1,5 +1,5 @@
 #include "Include\stdafx.h"
-#include "Include\GeneralLALRParser.h"
+#include "Include\GeneralLRExecutor.h"
 #include "Include\SymbolManager.h"
 #include "Include\GeneralTreeNode.h"
 namespace ztl
@@ -812,10 +812,8 @@ namespace ztl
 			}
 		}
 
-		void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+		void GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 		{
-			assert(classObject != nullptr);
-			assert(classNode != nullptr);
 			auto className = classNode->GetName();
 			for(auto&& iter : classNode->GetFieldMap())
 			{
@@ -826,7 +824,7 @@ namespace ztl
 					auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
 					parser.SaveHeterogeneousNode(fieldObject);
 					ReflectionBuidler(className, fieldName, classObject, fieldObject);
-					ztl::general_parser::GeneralHeterogeneousParserTree(parser, fieldNode, fieldObject);
+					ztl::general_parser::GenerateHeterogeneousParserTree(parser, fieldNode, fieldObject);
 				}
 			}
 			for(auto&&iter : classNode->GetTermMap())
@@ -839,19 +837,19 @@ namespace ztl
 			}
 		}
 
-		shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* root)
+		shared_ptr<void> GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser, ztl::general_parser::GeneralTreeNode* root)
 		{
 			assert(root != nullptr);
 			auto rootObject = ReflecteObjectByName(root->GetName());
 			parser.SaveHeterogeneousNode(rootObject);
-			ztl::general_parser::GeneralHeterogeneousParserTree(parser, root, rootObject);
+			ztl::general_parser::GenerateHeterogeneousParserTree(parser, root, rootObject);
 			DealWithQuotation((GeneralTableDefine*) rootObject.get());
 
 			return rootObject;
 		}
-		shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser)
+		shared_ptr<void>	GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser)
 		{
-			return ztl::general_parser::GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
+			return ztl::general_parser::GenerateHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 		}
 
 	

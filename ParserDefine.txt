@@ -208,7 +208,6 @@ rule GeneralClassMemberTypeDefine ClassMember
         = Type : type NAME : name [ Attribute : attributes]  { "," Attribute : attributes }  ";" as GeneralClassMemberTypeDefine
         ;
 
-
 rule GeneralClassTypeDefine Class
         = ("struct" |"class") NAME : name [ ":" Type : parent ] [ Attribute : attributes  ] { "," Attribute : attributes }  "{" { ClassMember : members | TypeDecl : subTypes } "}" ";" as GeneralClassTypeDefine
         ;

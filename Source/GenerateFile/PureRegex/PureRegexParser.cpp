@@ -307,7 +307,7 @@
 				assert(objectMap.find(name) != objectMap.end());
 				return objectMap[name]();
 			}
-				void GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
+				void GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser, ztl::general_parser::GeneralTreeNode* classNode, shared_ptr<void>& classObject)
 				{
 					assert(classObject != nullptr);
 					assert(classNode != nullptr);
@@ -321,7 +321,7 @@
 							auto fieldObject = ReflecteObjectByName(fieldNode->GetName());
 							parser.SaveHeterogeneousNode(fieldObject);
 							ReflectionBuidler(className, fieldName, classObject, fieldObject);
-							ztl::pure_regex::GeneralHeterogeneousParserTree(parser,fieldNode, fieldObject);
+							ztl::pure_regex::GenerateHeterogeneousParserTree(parser,fieldNode, fieldObject);
 						}
 					}
 					for(auto&&iter : classNode->GetTermMap())
@@ -334,17 +334,17 @@
 					}
 				}
 	
-				shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser,ztl::general_parser::GeneralTreeNode* root)
+				shared_ptr<void> GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser,ztl::general_parser::GeneralTreeNode* root)
 				{
 					assert(root != nullptr);
 					auto rootObject = ReflecteObjectByName(root->GetName());
 					parser.SaveHeterogeneousNode(rootObject);
-					ztl::pure_regex::GeneralHeterogeneousParserTree(parser,root, rootObject);
+					ztl::pure_regex::GenerateHeterogeneousParserTree(parser,root, rootObject);
 					return rootObject;
 				}
-				shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser)
+				shared_ptr<void>	GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser)
 				{
-					return ztl::pure_regex::GeneralHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
+					return ztl::pure_regex::GenerateHeterogeneousParserTree(parser, parser.GetGeneralTreeRoot());
 				}
 				
 				shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable()

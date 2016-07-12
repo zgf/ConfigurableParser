@@ -111,7 +111,7 @@ namespace ztl
 		};
 		wstring LinearStringToRegex(const wstring&);
 		ParserSymbol* FindType(SymbolManager* manager, ParserSymbol* scope, GeneralTypeObject* type);
-		void ValidateGeneratorCoreSemantic(SymbolManager* manager);
+		void SemanticAnalysis(SymbolManager* manager);
 		void CollectHeadInfo(SymbolManager* manager);
 		void ValidateHeadInfo(SymbolManager* manager);
 		void CollectAndValidateTypeDefine(SymbolManager* manager);

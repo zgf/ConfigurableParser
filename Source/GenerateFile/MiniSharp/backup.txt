@@ -1,0 +1,490 @@
+#pragma once
+#include "MiniSharpParser.h"
+#include <llvm\IR\IRBuilder.h>
+#include "MiniSharpParserSymbol.hpp"
+#include "MiniSharpSymbolManager.h"
+namespace ztl
+{
+	namespace miniSharp
+	{
+		struct IRCodeGenContext
+		{
+		public:
+			IRCodeGenContext():builder(theContext)
+			{
+
+			}
+			MiniSharpPasrseSymbol* scope;
+			llvm::LLVMContext theContext;
+			llvm::IRBuilder<> builder;
+			MiniSharpSymbolManager*manager;
+		};
+		template<typename BaseClassType>
+		class IRCodeGen : public BaseClassType::IVisitor
+		{
+			IRCodeGenContext* context;
+		};
+
+		class IdentifierObject;
+		class ThisIdentifierObject;
+		class SubIdentifierObject;
+		class ArrayIdentifierObject;
+		class NormalIdentifierObject;
+		class PrimaryIdentifierObject;
+
+		template<>
+		class IRCodeGen<IdentifierObject> : public IdentifierObject::IVisitor
+		{
+		public:
+			IRCodeGen(IRCodeGenContext* _context) :context(_context)
+			{
+			}
+
+			static IRCodeGen<AstExpression> CodeGen(AstExpression* node, IRCodeGenContext* context)
+			{
+				IRCodeGen<AstExpression> object(context);
+				object.Visit(node);
+				return object;
+			}
+		public:
+			virtual void		Visit(IdentifierObject*) override
+			{
+			}
+			virtual void		Visit(ThisIdentifierObject*) override
+			{
+			}
+			virtual void		Visit(SubIdentifierObject*) override
+			{
+			}
+			virtual void		Visit(ArrayIdentifierObject*) override
+			{
+			}
+			virtual void		Visit(NormalIdentifierObject*) override
+			{
+			}
+			virtual void		Visit(PrimaryIdentifierObject*) override
+			{
+			}
+
+		public:
+			Value* GetValue()
+			{
+				return value;
+			}
+			IRCodeGenContext* Context()
+			{
+				return context;
+			}
+		private:
+			Value* value;
+			IRCodeGenContext* context;
+		};
+
+		class AstExpression;
+		class CastExpression;
+		class AttachSuffixExpression;
+		class AttachPrefixExpression;
+		class LogicExpression;
+		class LogicAndExpression;
+		class LogicOrExpression;
+		class CompareExpression;
+		class ArithmeticExpression;
+		class LowArithmeticExpression;
+		class HighArithmeticExpression;
+		class AssignExpression;
+		class NewExpression;
+		class FunctionCallExpression;
+		class DeclarationExpression;
+		class LiteralExpression;
+		class CharExpression;
+		class StringExpression;
+		class NullExpression;
+		class BoolExpression;
+		class DoubleExpression;
+		class IntegerExpression;
+		class VariableExpression;
+
+		template<>
+		class IRCodeGen<AstExpression> : public AstExpression::IVisitor
+		{
+		public:
+			IRCodeGen(IRCodeGenContext* _context) :context(_context)
+			{
+			}
+
+			static IRCodeGen<AstExpression> CodeGen(AstExpression* node, IRCodeGenContext* context)
+			{
+				IRCodeGen<AstExpression> object(context);
+				object.Visit(node);
+				return object;
+			}
+		public:
+			virtual void		Visit(AstExpression*) override
+			{
+				assert(false);
+			}
+			virtual void		Visit(CastExpression* node) override
+			{
+				auto typeDefSymbol = context->manager->GetIdentifierDefByIdentifierObject(node->type.get());
+				auto desType = typeDefSymbol->GetLLVMTypeDef();
+				auto expression = CodeGen(node->expression.get(), context);
+				value = context->builder.CreateBitCast(expression.value, desType);
+			}
+			virtual void		Visit(AttachSuffixExpression* node) override
+			{
+				using actionType = Value*(*)(AttachSuffixExpression*, IRCodeGenContext*);
+				static unordered_map<wstring, actionType> action =
+				{
+					{
+						L"INCREASESELF",[](AttachSuffixExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto expression = CodeGen(node->expression.get(),context);
+							llvm::APInt one(32,1,true);
+							auto constants = llvm::ConstantInt::get(context->theContext, one);
+							auto newValue = context->builder.CreateAdd(expression.value, constants);
+							return context->builder.CreateStore(newValue, expression.value);
+						},
+					},
+					{
+						L"DECREASESELF",[](AttachSuffixExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto expression = CodeGen(node->expression.get(),context);
+							llvm::APInt one(32,1,true);
+							auto constants = llvm::ConstantInt::get(context->theContext, one);
+							auto newValue = context->builder.CreateSub(expression.value, constants);
+							return context->builder.CreateStore(newValue, expression.value);
+						},
+
+					},
+				};
+				assert(action.find(node->op) != action.end() && L"unkown op");
+				value = action[node->op](node, context);
+			}
+			virtual void		Visit(AttachPrefixExpression* node) override
+			{
+				assert(node->op == L"NEGATION"&&L"unkown op");
+				auto expression = CodeGen(node->expression.get(),context);
+				value = context->builder.CreateNot(expression.value, "nottmp");
+			}
+			virtual void		Visit(LogicExpression*) override
+			{
+				assert(false&&L"we can't run this function");
+			}
+			virtual void		Visit(LogicAndExpression* node) override
+			{
+				auto left = CodeGen(node->left.get(), context);
+				auto right = CodeGen(node->right.get(), context);
+				value = context->builder.CreateAnd(left.value, right.value, "andtmp");
+			}
+			virtual void		Visit(LogicOrExpression* node) override
+			{
+				auto left = CodeGen(node->left.get(), context);
+				auto right = CodeGen(node->right.get(), context);
+				value = context->builder.CreateOr(left.value, right.value, "ortmp");
+			}
+			virtual void		Visit(CompareExpression* node) override
+			{
+				using actionType = Value*(*)(CompareExpression*, IRCodeGenContext*);
+				static unordered_map<wstring, actionType> action =
+				{
+					{
+						L"LESS",[](CompareExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto left = CodeGen(node->left.get(), context);
+							auto right = CodeGen(node->right.get(), context);
+							return context->builder.CreateICmpSLT(left.value, right.value, "lesstmp");
+						},
+					},
+					{
+						L"GREAT",[](CompareExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto left = CodeGen(node->left.get(), context);
+							auto right = CodeGen(node->right.get(), context);
+							return context->builder.CreateICmpSGT(left.value, right.value, "greatetmp");
+						},
+						
+					},
+					{
+						L"GREATEQUAL",[](CompareExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto left = CodeGen(node->left.get(), context);
+							auto right = CodeGen(node->right.get(), context);
+							return context->builder.CreateICmpSGE(left.value, right.value, "GREATEQUALtmp");
+						},
+						
+					},
+					{
+						L"LESSEQUAL",[](CompareExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto left = CodeGen(node->left.get(), context);
+							auto right = CodeGen(node->right.get(), context);
+							return context->builder.CreateICmpSLE(left.value, right.value, "LESSEQUALtmp");
+						},
+						
+					},
+					{
+						L"NOTEQUAL",[](CompareExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto left = CodeGen(node->left.get(), context);
+							auto right = CodeGen(node->right.get(), context);
+							return context->builder.CreateICmpNE(left.value, right.value, "NOTEQUALtmp");
+						},
+						
+					},
+					{
+						L"EQUAL",[](CompareExpression*node,IRCodeGenContext* context)->Value*
+						{
+							auto left = CodeGen(node->left.get(), context);
+							auto right = CodeGen(node->right.get(), context);
+							return context->builder.CreateICmpEQ(left.value, right.value, "EQUALtmp");
+						},
+					}
+				};
+				
+				assert(action.find(node->op) != action.end(), &&L"error! unkown op");
+				value = action[node->op](node, context);
+			}
+			virtual void		Visit(ArithmeticExpression*) override
+			{
+				assert(false && "we can't run this function");
+			}
+			virtual void		Visit(LowArithmeticExpression* node) override
+			{
+				if (node->op == L"ADD")
+				{
+					auto left = CodeGen(node->left.get(), context);
+					auto right = CodeGen(node->right.get(), context);
+					value = context->builder.CreateAdd(left.value, right.value, "addtmp");
+				}
+				else if(node->op == L"SUB")
+				{
+					auto left = CodeGen(node->left.get(), context);
+					auto right = CodeGen(node->right.get(), context);
+					value = context->builder.CreateSub(left.value, right.value, "subtmp");
+				}
+				else
+				{
+					assert(false && "unkown op");
+				}
+			}
+			virtual void		Visit(HighArithmeticExpression* node) override
+			{
+				if (node->op == L"MUL")
+				{
+					auto left = CodeGen(node->left.get(), context);
+					auto right = CodeGen(node->right.get(), context);
+					value = context->builder.CreateMul(left.value, right.value, "multmp");
+				}
+				else if (node->op == L"DIV")
+				{
+					auto left = CodeGen(node->left.get(), context);
+					auto right = CodeGen(node->right.get(), context);
+					value = context->builder.CreateSDiv(left.value, right.value, "divtmp");
+				}
+				else
+				{
+					assert(false && L"unkown op");
+				}
+			}
+			virtual void		Visit(AssignExpression* node) override
+			{
+				auto variableDefSymbol = context->manager->GetIdentifierDefByIdentifierObject(node->variable.get());
+				auto right = CodeGen(node->right.get(),context);
+				context->builder.CreateStore(right.value, variableDefSymbol->GetValue());
+			}
+			virtual void		Visit(NewExpression* node) override
+			{
+				auto typedDefSymbol = context->manager->GetIdentifierDefByIdentifierObject(node->type.get());
+				value = context->builder.CreateAlloca(typedDefSymbol->GetLLVMTypeDef());
+				vector<Value*> result;
+				std::transform(node->args.begin(), node->args.end(), back_inserter(result),
+					[this](const shared_ptr<AstExpression>& arg) { return CodeGen(arg.get(), context).value;});
+				
+				//auto constructSymbol = typedDefSymbol->GetValueByName(typedDefSymbol->GetName());
+			//	context->builder.CreateCall(, result);
+			}
+			virtual void		Visit(FunctionCallExpression* node) override
+			{
+				
+			}
+			virtual void		Visit(DeclarationExpression*) override
+			{
+			}
+			virtual void		Visit(LiteralExpression*) override
+			{
+			}
+			virtual void		Visit(CharExpression*) override
+			{
+			}
+			virtual void		Visit(StringExpression*) override
+			{
+			}
+			virtual void		Visit(NullExpression*) override
+			{
+			}
+			virtual void		Visit(BoolExpression*) override
+			{
+			}
+			virtual void		Visit(DoubleExpression*) override
+			{
+			}
+			virtual void		Visit(IntegerExpression*) override
+			{
+			}
+			virtual void		Visit(VariableExpression*) override
+			{
+			}
+
+		public:
+			Value* GetValue()
+			{
+				return value;
+			}
+			IRCodeGenContext* Context()
+			{
+				return context;
+			}
+		private:
+			Value* value;
+			IRCodeGenContext* context;
+		};
+
+		class AstStatement;
+		class UsingStatement;
+		class ContinueStatement;
+		class BreakStatement;
+		class ReturnStatement;
+		class SwitchStatement;
+		class CaseStatement;
+		class ForStatement;
+		class WhileStatement;
+		class IfStatement;
+		class ScopeStatement;
+		class ExpressionStatement;
+
+		template<>
+		class IRCodeGen<AstStatement> : public AstStatement::IVisitor
+		{
+		public:
+			IRCodeGen(IRCodeGenContext* _context) :context(_context)
+			{
+			}
+
+			static IRCodeGen<AstExpression> CodeGen(AstExpression* node, IRCodeGenContext* context)
+			{
+				IRCodeGen<AstExpression> object(context);
+				object.Visit(node);
+				return object;
+			}
+		public:
+			virtual void		Visit(AstStatement*) override
+			{
+			}
+			virtual void		Visit(UsingStatement*) override
+			{
+			}
+			virtual void		Visit(ContinueStatement*) override
+			{
+			}
+			virtual void		Visit(BreakStatement*) override
+			{
+			}
+			virtual void		Visit(ReturnStatement*) override
+			{
+			}
+			virtual void		Visit(SwitchStatement*) override
+			{
+			}
+			virtual void		Visit(CaseStatement*) override
+			{
+			}
+			virtual void		Visit(ForStatement*) override
+			{
+			}
+			virtual void		Visit(WhileStatement*) override
+			{
+			}
+			virtual void		Visit(IfStatement*) override
+			{
+			}
+			virtual void		Visit(ScopeStatement*) override
+			{
+			}
+			virtual void		Visit(ExpressionStatement*) override
+			{
+			}
+
+		public:
+			Value* GetValue()
+			{
+				return value;
+			}
+			IRCodeGenContext* Context()
+			{
+				return context;
+			}
+		private:
+			Value* value;
+			IRCodeGenContext* context;
+		};
+
+		class AstTypeDefine;
+		class AstNamesapceDefine;
+		class AstClassTypeDefine;
+		class AstEnumTypeDefine;
+		class AstInterfaceTypeDefine;
+		class AstFunctionTypeDefine;
+		class AstFieldTypeDefine;
+
+		template<>
+		class IRCodeGen<AstTypeDefine> : public AstTypeDefine::IVisitor
+		{
+		public:
+			IRCodeGen(IRCodeGenContext* _context) :context(_context)
+			{
+			}
+
+			static IRCodeGen<AstExpression> CodeGen(AstExpression* node, IRCodeGenContext* context)
+			{
+				IRCodeGen<AstExpression> object(context);
+				object.Visit(node);
+				return object;
+			}
+		public:
+			virtual void		Visit(AstTypeDefine*) override
+			{
+			}
+			virtual void		Visit(AstNamesapceDefine*) override
+			{
+			}
+			virtual void		Visit(AstClassTypeDefine*) override
+			{
+			}
+			virtual void		Visit(AstEnumTypeDefine*) override
+			{
+			}
+			virtual void		Visit(AstInterfaceTypeDefine*) override
+			{
+			}
+			virtual void		Visit(AstFunctionTypeDefine*) override
+			{
+			}
+			virtual void		Visit(AstFieldTypeDefine*) override
+			{
+			}
+
+		public:
+			Value* GetValue()
+			{
+				return value;
+			}
+			IRCodeGenContext* Context()
+			{
+				return context;
+			}
+		private:
+			Value* value;
+			IRCodeGenContext* context;
+		};
+	}
+}

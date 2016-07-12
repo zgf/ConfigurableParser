@@ -1143,8 +1143,9 @@ namespace ztl
 				}
 			}
 		}
-		void ValidateGeneratorCoreSemantic(SymbolManager* manager)
+		void SemanticAnalysis(SymbolManager* manager)
 		{
+			//SemanticAnalysis
 			CollectHeadInfo(manager);
 			ValidateHeadInfo(manager);
 			CollectAndValidateTypeDefine(manager);

@@ -1,8 +1,13 @@
 #pragma once
+#include <string>
+
 namespace ztl
 {
 	namespace algorithm
 	{
+		std::wstring s2ws(const std::string& str);
+
+		std::string ws2s(const std::wstring& wstr);
 		template<typename string_type>
 		string_type&   replace_all(string_type&   str, const   string_type&   old_value, const   string_type&   new_value)
 		{
@@ -18,7 +23,7 @@ namespace ztl
 		template<typename string_type>
 		string_type&   replace_all_distinct(string_type&   str, const   string_type&   old_value, const   string_type&   new_value)
 		{
-			for(string_type::size_type pos(0); pos != string_type::npos; pos += new_value.length())
+			for(typename string_type::size_type pos(0); pos != string_type::npos; pos += new_value.length())
 			{
 				if((pos = str.find(old_value, pos)) != string_type::npos)
 					str.replace(pos, old_value.length(), new_value);

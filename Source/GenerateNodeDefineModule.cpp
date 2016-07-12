@@ -4,7 +4,7 @@
 #include "Include/SymbolManager.h"
 #include "../Lib/ZTL/ztl_generator.hpp"
 #include "Include/ParserSymbol.h"
-#include "Include/GeneralParserFile.h"
+#include "Include/GeneralParserFileGenerator.h"
 namespace ztl
 {
 	namespace general_parser
@@ -225,7 +225,7 @@ namespace ztl
 		 void								GeneralTypeDefineVisitor::Visit(GeneralClassTypeDefine* node) 
 		{
 			
-			wstring templateString = 
+			wstring templateString =
 			LR"(
 			$<ForwardDeclaration>
 			struct $<ClassName> $<Parent>
@@ -234,6 +234,7 @@ namespace ztl
 				$<Members>
 				$<VirtualFunction>
 				$<Visitor>
+				
 			};
 			)";
 			wstring parentString = GetClassParentString(node);

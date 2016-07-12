@@ -20,20 +20,30 @@
 							namespace ztl
 							{
 								
-							namespace json
+							namespace testAssign
 							{
 								
 
 
-			struct Node;
-struct Object;
-struct ObjectField;
-struct Array;
-struct Number;
-struct String;
-struct Literal;
+			
+			struct Variable 
+			{
+				
+				wstring    name;
 
-			struct Node 
+				
+				
+				
+			};
+			
+
+
+			struct Expression;
+struct BinaryExpression;
+struct AssignExpression;
+struct PrimaryExpression;
+
+			struct Expression 
 			{
 				
 				
@@ -42,13 +52,10 @@ struct Literal;
 				class IVisitor
 				{
 				public:
-					virtual void		Visit(Node* node) =0;
-virtual void		Visit(Object* node) =0;
-virtual void		Visit(ObjectField* node) =0;
-virtual void		Visit(Array* node) =0;
-virtual void		Visit(Number* node) =0;
-virtual void		Visit(String* node) =0;
-virtual void		Visit(Literal* node) =0;
+					virtual void		Visit(Expression* node) =0;
+virtual void		Visit(BinaryExpression* node) =0;
+virtual void		Visit(AssignExpression* node) =0;
+virtual void		Visit(PrimaryExpression* node) =0;
 
 				};
 				virtual void									Accept(IVisitor* )
@@ -56,98 +63,23 @@ virtual void		Visit(Literal* node) =0;
 
 				}
 				
-			};
-			
-
-
-			
-			struct Literal : public Node
-			{
-				
-					enum class Value
-					{
-						True,
-False,
-Null,
-
-					};
-					
-				Value    value;
-
-				
-				virtual void									Accept(IVisitor* visitor)override
-				{
-					visitor->Visit(this);
-				}
-				
 				
 			};
 			
 
 
 			
-			struct String : public Node
-			{
-				
-				wstring    content;
-
-				
-				virtual void									Accept(IVisitor* visitor)override
-				{
-					visitor->Visit(this);
-				}
-				
-				
-			};
-			
-
-
-			
-			struct Number : public Node
-			{
-				
-				wstring    content;
-
-				
-				virtual void									Accept(IVisitor* visitor)override
-				{
-					visitor->Visit(this);
-				}
-				
-				
-			};
-			
-
-
-			
-			struct Array : public Node
-			{
-				
-				vector<shared_ptr<Node>>    items;
-
-				
-				virtual void									Accept(IVisitor* visitor)override
-				{
-					visitor->Visit(this);
-				}
-				
-				
-			};
-			
-
-
-			
-			struct ObjectField : public Node
+			struct PrimaryExpression : public Expression
 			{
 				
 				wstring    name;
-shared_ptr<Node>    value;
 
 				
 				virtual void									Accept(IVisitor* visitor)override
 				{
 					visitor->Visit(this);
 				}
+				
 				
 				
 			};
@@ -155,16 +87,37 @@ shared_ptr<Node>    value;
 
 
 			
-			struct Object : public Node
+			struct AssignExpression : public Expression
 			{
 				
-				vector<shared_ptr<ObjectField>>    fields;
+				shared_ptr<Variable>    left;
+shared_ptr<Expression>    right;
 
 				
 				virtual void									Accept(IVisitor* visitor)override
 				{
 					visitor->Visit(this);
 				}
+				
+				
+				
+			};
+			
+
+
+			
+			struct BinaryExpression : public Expression
+			{
+				
+				shared_ptr<Expression>    left;
+shared_ptr<Expression>    right;
+
+				
+				virtual void									Accept(IVisitor* visitor)override
+				{
+					visitor->Visit(this);
+				}
+				
 				
 				
 			};

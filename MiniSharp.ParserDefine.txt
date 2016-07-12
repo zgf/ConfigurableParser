@@ -1,0 +1,508 @@
+//MiniSharp Parser Define
+filename : "MiniSharpParser";
+include : "Include/stdafx.h";
+namespace : "ztl";
+namespace : "miniSharp";
+dirname : "miniSharp";
+
+class IdentifierObject
+{
+
+};
+class PrimaryIdentifierObject:IdentifierObject
+{
+	token primary;
+};
+class NormalIdentifierObject :IdentifierObject
+{
+	token name;
+};
+
+class SubIdentifierObject :IdentifierObject
+{
+	IdentifierObject scope;
+	IdentifierObject right;
+};
+class ThisIdentifierObject: IdentifierObject
+{
+
+};
+//end with ";" single line
+class AstExpression
+{
+
+};
+
+class ArrayIdentifierObject :IdentifierObject
+{
+	IdentifierObject element;
+	AstExpression[] numbers;
+};
+//LiteralExpression
+class LiteralExpression :AstExpression
+{
+
+};
+class VariableExpression:LiteralExpression
+{
+	IdentifierObject variable;
+};
+class IntegerExpression : LiteralExpression
+{
+	token value;
+};
+class DoubleExpression : LiteralExpression
+{
+	token value;
+};
+class BoolExpression : LiteralExpression
+{
+	token value;
+};
+class NullExpression : LiteralExpression
+{
+
+};
+class StringExpression :  LiteralExpression
+{
+	token value;
+};
+class CharExpression :  LiteralExpression
+{
+	token value;
+};
+enum PrefixPropertyValue
+{
+	Constants,
+	ReadOnly,
+	Static,
+	Public,
+	Private,
+	Virtual,
+};
+class PrefixProperty
+{
+	PrefixPropertyValue value;
+};
+
+class DeclarationExpression : AstExpression
+{
+	IdentifierObject type;
+	AstExpression[] expressions;
+};
+
+class FunctionCallExpression: AstExpression
+{
+	IdentifierObject name;
+	AstExpression[] args;
+};
+
+class NewExpression: AstExpression
+{
+	IdentifierObject type;
+	AstExpression[] args;
+};
+
+class AssignExpression: AstExpression
+{
+	IdentifierObject variable;
+	AstExpression right;
+};
+class ArithmeticExpression : AstExpression
+{
+
+};
+class HighArithmeticExpression : ArithmeticExpression
+{
+	token op;
+	AstExpression left;
+	AstExpression right;
+};
+
+class LowArithmeticExpression : ArithmeticExpression
+{
+	token op;
+	AstExpression left;
+	AstExpression right;
+};
+
+class LogicExpression:AstExpression
+{
+
+};
+class CompareExpression: LogicExpression
+{
+	token op;
+	AstExpression left;
+	AstExpression right;
+};
+class LogicOrExpression : LogicExpression
+{
+
+	AstExpression left;
+	AstExpression right;
+};
+
+class LogicAndExpression : LogicExpression
+{
+	AstExpression left;
+	AstExpression right;
+};
+class AttachPrefixExpression: AstExpression
+{
+	token op;
+	AstExpression expression;
+};
+
+class AttachSuffixExpression: AstExpression
+{
+	token op;
+	AstExpression expression;
+};
+
+class CastExpression:AstExpression
+{
+	IdentifierObject type;
+	AstExpression expression;
+};
+class AstStatement
+{
+
+};
+
+class ExpressionStatement : AstStatement
+{
+	PrefixProperty[] properties;
+	AstExpression expression;
+};
+//begin with "{" end with "}"
+class ScopeStatement : AstStatement
+{
+	AstStatement[] statements;
+};
+
+class IfStatement:AstStatement
+{
+	AstExpression conditional;
+	ScopeStatement truePath;
+	AstStatement falsePath;
+};
+class WhileStatement:AstStatement
+{
+	AstExpression conditional;
+	ScopeStatement body;
+};
+class ForStatement:AstStatement
+{
+	ExpressionStatement initExpression;
+	AstExpression conditional;
+	AstExpression[] stepExpressions;
+	ScopeStatement body;
+};
+class CaseStatement:AstStatement
+{
+	AstExpression value;
+	AstStatement[] statements;
+};
+class DefaultStatement:AstStatement
+{
+	AstStatement[] statements;
+};
+class SwitchStatement:AstStatement
+{
+	AstExpression conditional;
+	CaseStatement[] cases;
+	AstStatement default;
+};
+class ReturnStatement:AstStatement
+{
+	AstExpression expression;
+};
+
+class BreakStatement : AstStatement
+{
+
+};
+class ContinueStatement:AstStatement
+{
+
+};
+class UsingStatement:AstStatement
+{
+	AstExpression source;
+	ScopeStatement body;
+};
+class AstTypeDefine
+{
+	
+};
+
+class AstFieldTypeDefine : AstTypeDefine
+{
+	IdentifierObject type;
+	token name;
+};
+class AstFunctionParameter
+{
+	IdentifierObject type;
+	token name;
+};
+
+class FunctionSignature
+{
+
+	IdentifierObject returnType;
+	AstFunctionParameter[] parameters;
+	token name;
+};
+class AstFunctionTypeDefine : AstTypeDefine
+{
+	FunctionSignature sign;
+	ScopeStatement  body;
+};
+class InterfaceMember
+{
+	PrefixProperty[] properties;
+	FunctionSignature  sign;
+};
+class AstInterfaceTypeDefine : AstTypeDefine
+{
+
+	token name;
+	IdentifierObject[] parents;
+	InterfaceMember[]  members;
+};
+class EnumFieldTypeDefine
+{
+	token name;
+	token value;
+};
+class AstEnumTypeDefine :  AstTypeDefine
+{
+	token name;
+	token base;
+	EnumFieldTypeDefine[] members;
+};
+class AstClassMember
+{
+	PrefixProperty[] properties;
+	AstTypeDefine define;
+};
+class AstClassTypeDefine : AstTypeDefine
+{
+	token name;
+	IdentifierObject parent;
+	IdentifierObject[] parentInterfaces;
+	AstClassMember[] members;
+};
+class NamespaceMember
+{
+	PrefixProperty[] properties;
+	AstTypeDefine define;
+};
+class AstNamesapceDefine : AstTypeDefine
+{
+	token name;
+	NamespaceMember[] members;
+};
+class AstUsingDeclExpression :AstExpression
+{
+	IdentifierObject module;
+	token 	name;
+};
+class ParserASTRoot
+{
+	AstUsingDeclExpression[] usings;
+	NamespaceMember[] members;
+};
+token INTERFACE = "interface";
+token CLASS = "class";
+token ENUM = "enum";
+token IF="if";
+token ELSE ="else";
+token SWTICH = "switch";
+token CASE ="case";
+token DEFAULT = "default";
+token WHILE = "while";
+token FOR = "for";
+token CAST = "cast";
+token BREAK = "break";
+token CONTINUE = "continue";
+token RETURN = "return";
+token STATIC = "static";
+token READONLY = "readonly";
+token THIS = "this";
+token CONST = "const";
+token PUBLIC = "public";
+token PRIVATE = "private";
+token VIRTUAL = "virtual";
+token TRUEVALUE = "true";
+token FALSEVALUE = "false";
+token INT = "int";
+token BOOL = "bool";
+token DOUBLE = "double";
+token VOID = "void";
+token CHAR = "char";
+token STRINGTYPE = "string";
+token NULL = "null";
+token USING = "using";
+token NAMESPACE = "namespace";
+token INCREASESELF="\+\+";
+token ADD = "\+";
+token SUB = "-";
+token MUL = "\*";
+token DIV = "\\";
+token EQUAL = "==";
+token NOTEQUAL = "!=";
+token LESSEQUAL = "<=";
+token GREATEQUAL = ">=";
+token GREAT = ">";
+token LESS = "<";
+token NEGATION = "!" ;
+
+token DECREASESELF = "--";
+token NEW = "new";
+token OPEN = "\{";
+token CLOSE = "\}";
+token SEMICOLON = ";";
+token COLON = ":";
+token COMMA = ",";
+token ASSIGN = "=";
+token OR = "\|\|";
+token AND = "&&";
+token OPTOPEN = "\[";
+token OPTCLOSE = "\]";
+token PREOPEN = "\(";
+token PRECLOSE = "\)";
+token QUOT="\"";
+token CHARVALUE = "'.'";
+token DOUBLEVALUE = "(\d|([1-9]\d+))\.\d+";
+token INTVALUE = "\d|([1-9]\d+)";
+token DOT = "\.";
+token NAME = "[a-zA-Z_]\w*";
+token STRING = "\"(\\\\|\\\"|[^\"])*\"" @Color("String");
+
+ignoretoken SPACE = "\s+";
+ignoretoken LINENOTE = "//[^\n]*\n"@Color("Note");
+ignoretoken BLOCKNOTE = "/\*.*?\*/"@Color("Note");
+rule IdentifierObject IdentifierObjectUnitRule  =  NAME : name as NormalIdentifierObject
+													=  "this" as ThisIdentifierObject
+													=  (INT :primary| DOUBLE :primary|CHAR :primary|STRINGTYPE:primary|BOOL:primary|VOID : primary) as PrimaryIdentifierObject
+													=  IdentifierObjectUnitRule : element "[" ExpressionRule : numbers"]" {  "[" ExpressionRule : numbers"]" } as ArrayIdentifierObject
+													;
+													
+rule IdentifierObject IdentifierObjectRule  = !IdentifierObjectUnitRule
+										    =  IdentifierObjectUnitRule : scope "." IdentifierObjectRule : right as SubIdentifierObject
+											;
+
+rule PrefixProperty PrefixPropertyRule  	=  "const" as PrefixProperty with { value = "Constants" }
+											=  "readonly" as PrefixProperty with { value = "ReadOnly" }
+											=  "private" as PrefixProperty  with { value = "Private" }
+											=  "static" as PrefixProperty  with { value = "Static" }
+											=  "virtual" as PrefixProperty  with { value = "Virtual" }
+											=  "public" as PrefixProperty  with { value = "Public" }
+											;
+rule AstExpression VariableExpressionRule = IdentifierObjectRule:variable as VariableExpression;
+rule AstExpression LiteralExpressionRule = INTVALUE : value as IntegerExpression
+											 = DOUBLEVALUE : value as DoubleExpression
+											 = STRING :value as StringExpression
+											 = (TRUEVALUE :value |FALSEVALUE : value ) as BoolExpression
+											 = CHARVALUE : value as CharExpression
+											 = "null" as NullExpression
+											 =! VariableExpressionRule
+											 = "(" ! ExpressionRule ")"
+											 ;
+
+rule AstExpression FunctionCallExpressionRule =  IdentifierObjectRule:name "(" [LogicOrExpressionRule : args]{"," LogicOrExpressionRule :args }")" as FunctionCallExpression
+											  =  "new" IdentifierObjectRule:type "(" [LogicOrExpressionRule : args]{"," LogicOrExpressionRule :args } ")" as NewExpression
+											  = !LiteralExpressionRule
+											  ;
+rule AstExpression AttachSuffixExpressionRule = FunctionCallExpressionRule:expression (INCREASESELF :op|DECREASESELF:op) as AttachSuffixExpression
+											= !FunctionCallExpressionRule
+											;
+rule AstExpression AttachPrefixExpressionRule = NEGATION: op AttachSuffixExpressionRule:expression as AttachPrefixExpression
+											   = !AttachSuffixExpressionRule
+											   ;
+									   
+rule AstExpression CastExpressionRule = "cast" "(" IdentifierObjectRule:type ")"	 CastExpressionRule:expression as CastExpression
+									   = !AttachPrefixExpressionRule
+									   ; 
+							
+rule AstExpression HighArithmeticExpressionRule = HighArithmeticExpressionRule : left ( MUL:op| DIV:op)CastExpressionRule  :right as HighArithmeticExpression
+								  =!CastExpressionRule
+								  ;
+rule AstExpression LowArithmeticExpressionRule = LowArithmeticExpressionRule  : left ( ADD :op| SUB:op) HighArithmeticExpressionRule :right as LowArithmeticExpression
+								  =!HighArithmeticExpressionRule
+								  ;
+						
+rule AstExpression CompareExpressionRule = CompareExpressionRule : left (EQUAL:op|NOTEQUAL:op|LESSEQUAL:op|GREATEQUAL:op|GREAT:op|LESS:op)LowArithmeticExpressionRule :right as CompareExpression
+											 = !LowArithmeticExpressionRule
+											 ;
+rule AstExpression LogicAndExpressionRule =LogicAndExpressionRule:left  "&&" CompareExpressionRule :right as LogicAndExpression
+											   =! CompareExpressionRule
+											   ;
+rule AstExpression LogicOrExpressionRule =  LogicOrExpressionRule: left "||" LogicAndExpressionRule  : right as LogicOrExpression
+											 = ! LogicAndExpressionRule
+											 ;
+rule AstExpression AssignExpressionRule = IdentifierObjectRule:variable "=" AssignExpressionRule : right as AssignExpression
+											=!LogicOrExpressionRule;
+
+rule AstExpression DeclarationExpressionRule =  IdentifierObjectRule : type AssignExpressionRule :expressions {"," AssignExpressionRule :expressions } as DeclarationExpression ;
+										
+											 
+											
+rule AstExpression ExpressionRule = !DeclarationExpressionRule
+								  =  !AssignExpressionRule
+									;
+
+rule ExpressionStatement ExpressionStatementRule =  {PrefixPropertyRule:properties} ExpressionRule :expression ";" as ExpressionStatement;
+rule IfStatement IfStatementRule = "if""("LogicOrExpressionRule : conditional")" ScopeStatementRule : truePath 
+[ "else" (IfStatementRule: falsePath | ScopeStatementRule:falsePath) ]  as IfStatement;
+rule UsingStatement UsingStatementRule = "using""("DeclarationExpressionRule : source")" ScopeStatementRule : body  as UsingStatement;
+rule WhileStatement WhileStatementRule = "while""("LogicOrExpressionRule :conditional")" ScopeStatementRule : body  as WhileStatement;
+rule ForStatement ForStatementRule = "for""("ExpressionStatementRule:initExpression LogicOrExpressionRule:conditional ";"
+ [AssignExpressionRule :stepExpressions ] {"," AssignExpressionRule :stepExpressions } ")" ScopeStatementRule:body as ForStatement;
+rule CaseStatement CaseStatementRule = "case" LiteralExpressionRule : value ":"  
+{ (ExpressionStatementRule : statements|ScopeStatementRule:statements)} "break" ";" as CaseStatement;
+rule DefaultStatement DefaultStatementRule = "default" ":" { (ExpressionStatementRule : statements |ScopeStatementRule:statements)} "break" ";" as DefaultStatement;
+rule SwitchStatement SwitchStatementRule = "switch" "(" VariableExpressionRule : conditional ")" "{" {CaseStatementRule : cases  } DefaultStatementRule:default "}"as SwitchStatement;
+rule BreakStatement BreakStatementRule = "break" ";" as BreakStatement;
+rule ContinueStatement ContinueStatementRule = "continue" ";" as ContinueStatement;
+rule ReturnStatement ReturnStatementRule = "return" LogicOrExpressionRule : expression ";" as ReturnStatement;
+rule ScopeStatement ScopeStatementRule = "{"{ (IfStatementRule :statements | UsingStatementRule:statements | WhileStatementRule:statements | 
+											ForStatementRule:statements | SwitchStatementRule:statements | ScopeStatementRule:statements |
+											ExpressionStatementRule:statements | BreakStatementRule :statements |
+											ContinueStatementRule :statements| ReturnStatementRule: statements) }"}" as ScopeStatement
+											;
+rule AstFunctionParameter FunctionParameterRule =  IdentifierObjectRule : type NAME : name as AstFunctionParameter;
+rule FunctionSignature FunctionSignatureRule = [IdentifierObjectRule : returnType]  NAME : name 
+											"("[ FunctionParameterRule : parameters]{","  FunctionParameterRule : parameters } ")" 
+											as FunctionSignature;
+rule AstFunctionTypeDefine FunctionTypeRule = FunctionSignatureRule:sign ScopeStatementRule:body as AstFunctionTypeDefine;
+
+rule AstFieldTypeDefine FieldTypeRule =  IdentifierObjectRule : type NAME : name ";"as AstFieldTypeDefine;
+rule InterfaceMember InterfaceMemberRule ={PrefixPropertyRule : properties }  FunctionSignatureRule:sign as InterfaceMember;
+rule AstInterfaceTypeDefine InterfaceTypeRule = "interface" NAME : name  [ ":" IdentifierObjectRule : parents]
+{"," IdentifierObjectRule: parents } "{" { InterfaceMemberRule:members ";"}  "}" as AstInterfaceTypeDefine;
+
+rule EnumFieldTypeDefine EnumFieldTypeDefineRule = NAME:name ["=" (CHARVALUE :value |INTVALUE: value) ] as EnumFieldTypeDefine;
+rule AstEnumTypeDefine AstEnumTypeDefineRule = "enum" NAME : name [":" (INT:base|CHAR:base) ] "{" { EnumFieldTypeDefineRule : members "," }  "}" as AstEnumTypeDefine;
+rule AstClassMember AstClassMemberDefineRule =  {PrefixPropertyRule : properties }  (InterfaceTypeRule:define |FieldTypeRule:define|
+ FunctionTypeRule:define|ClassTypeDefineRule :define|AstEnumTypeDefineRule:define) as AstClassMember;
+rule AstClassTypeDefine ClassTypeDefineRule = "class" NAME: name [ ":" IdentifierObjectRule : parent]{"," 
+IdentifierObjectRule: parentInterfaces } "{" {  AstClassMemberDefineRule:members}  "}" as AstClassTypeDefine;
+rule AstTypeDefine TypeDefineRule  = !AstEnumTypeDefineRule 
+								= !ClassTypeDefineRule
+								= !InterfaceTypeRule
+								= !FunctionTypeRule
+								;
+rule NamespaceMember NamespaceMemberRule =  {PrefixPropertyRule : properties } 
+(TypeDefineRule :define | NamesapceDefineRule:define) as NamespaceMember;
+rule AstNamesapceDefine NamesapceDefineRule = "namespace" NAME:name "{" { NamespaceMemberRule:members} "}" as AstNamesapceDefine;
+
+rule AstUsingDeclExpression UsingDeclStatementRule  
+					
+						=  "using" [NAME:name "="] IdentifierObjectRule : module ";" as AstUsingDeclExpression
+						;
+				
+rule ParserASTRoot ParserDecl = {UsingDeclStatementRule :usings } {NamespaceMemberRule:members} as ParserASTRoot;

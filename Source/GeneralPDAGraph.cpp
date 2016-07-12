@@ -1,6 +1,6 @@
 #include "Include/stdafx.h"
-#include "Include/GeneralPushDownAutoMachine.h"
-#include "Include/GeneralPushDownMachineData.h"
+#include "Include/GeneralGrammarBuilder.h"
+#include "Include/GeneralGrammarBuilderData.h"
 #include "Include/GeneralTableDefine.h"
 #include "Include/SymbolManager.h"
 #include "Include/ParserSymbol.h"
@@ -18,7 +18,7 @@ namespace ztl
 			CreateEpsilonPDAVisitor(const CreateEpsilonPDAVisitor&) = default;
 			CreateEpsilonPDAVisitor& operator=(CreateEpsilonPDAVisitor&&) noexcept = default;
 			CreateEpsilonPDAVisitor& operator=(const CreateEpsilonPDAVisitor&) = default;
-			CreateEpsilonPDAVisitor(PushDownAutoMachine* _machine)noexcept
+			CreateEpsilonPDAVisitor(GrammarBuilder* _machine)noexcept
 				:machine(_machine)
 			{
 			}
@@ -141,7 +141,7 @@ namespace ztl
 				machine->FrontEdgesAdditionBackAction(result.second, move(wrap));
 			}
 		private:
-			PushDownAutoMachine* machine;
+			GrammarBuilder* machine;
 			pair<PDANode*, PDANode*> result;
 			ParserSymbol* createTypeSymbol = nullptr;
 		};
@@ -154,7 +154,7 @@ namespace ztl
 			}
 			PDAMap[ruleName].emplace_back(make_pair(start, end));
 		}
-		unordered_map<wstring, vector<pair<PDANode*, PDANode*>>> CreateEpsilonPDA(PushDownAutoMachine& machine)
+		unordered_map<wstring, vector<pair<PDANode*, PDANode*>>> CreateEpsilonPDA(GrammarBuilder& machine)
 		{
 			unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>  PDAMap;
 
@@ -173,7 +173,7 @@ namespace ztl
 			//HelpLogJumpTable(L"LogJumpTable_RawTable.txt", machine);
 			return PDAMap;
 		}
-		void AddPDAToPDAMachine(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap)
+		void AddPDAToPDAMachine(GrammarBuilder& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>&  PDAMap)
 		{
 			for(auto&& ruleIter : PDAMap)
 			{
@@ -185,7 +185,7 @@ namespace ztl
 		//可合并节点含义
 
 		//同一个起点,包含同样信息的边,到达不同的节点,那么这个不同节点可以合并成同一个节点
-		void MergeNodeByEdge(const vector<PDAEdge*>& edges, vector<PDANode*>& nodeList, PushDownAutoMachine& machine)
+		void MergeNodeByEdge(const vector<PDAEdge*>& edges, vector<PDANode*>& nodeList, GrammarBuilder& machine)
 		{
 			assert(!edges.empty());
 			assert(is_sorted(edges.begin(), edges.end(), [](const PDAEdge* left, const PDAEdge* right)
@@ -219,7 +219,7 @@ namespace ztl
 				startIter = endIter;
 			}
 		}
-		void MergeCommonNode(PDANode* nodeIter, vector<PDANode*>& nodeList, PushDownAutoMachine& machine)
+		void MergeCommonNode(PDANode* nodeIter, vector<PDANode*>& nodeList, GrammarBuilder& machine)
 		{
 			vector<PDAEdge*> edges(nodeIter->GetNexts().begin(), nodeIter->GetNexts().end());
 
@@ -289,7 +289,7 @@ namespace ztl
 			}
 		}
 
-		void MergeGrammarCommonFactor(PushDownAutoMachine& machine)
+		void MergeGrammarCommonFactor(GrammarBuilder& machine)
 		{
 			vector<PDANode*>nodeList;
 			//收集最左的边>2的节点
@@ -311,7 +311,7 @@ namespace ztl
 			}
 		}
 		
-		void MergeStartAndEndNode(PushDownAutoMachine& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap)
+		void MergeStartAndEndNode(GrammarBuilder& machine, unordered_map<wstring, vector<pair<PDANode*, PDANode*>>>& PDAMap)
 		{
 			for(auto&& ruleIter : PDAMap)
 			{
@@ -325,7 +325,7 @@ namespace ztl
 				grammars.erase(grammars.begin() + 1, grammars.end());
 			}
 		}
-		void CollectNodeAndEdgeMap(PushDownAutoMachine& machine)
+		void CollectNodeAndEdgeMap(GrammarBuilder& machine)
 		{
 			unordered_set<PDANode*>sign;
 			for(auto&&iter : machine.GetSymbolManager()->OrderedRuleList())
@@ -385,7 +385,7 @@ namespace ztl
 			FindThePath(start, end, sign, result, finish);
 			return result;
 		}
-		void CreateDPDAGraph(PushDownAutoMachine& machine)
+		void CreateDPDAGraph(GrammarBuilder& machine)
 		{
 			auto PDAMap = CreateEpsilonPDA(machine);
 			MergeStartAndEndNode(machine, PDAMap);

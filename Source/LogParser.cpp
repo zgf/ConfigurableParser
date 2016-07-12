@@ -1,13 +1,13 @@
 #include "Include/stdafx.h"
-#include "Include/GeneralPushDownMachineData.h"
-#include "Include/GeneralPushDownAutoMachine.h"
-#include "Include/GeneralLRMachine.h"
+#include "Include/GeneralGrammarBuilderData.h"
+#include "Include/GeneralGrammarBuilder.h"
+#include "Include/GeneralLRBuilder.h"
 #include "Include/ParserSymbol.h"
 namespace ztl
 {
 	namespace general_parser
 	{
-		wstring PushDownAutoMachine::LogPDANode(const wstring & ruleName, PDANode * node) const
+		wstring GrammarBuilder::LogPDANode(const wstring & ruleName, PDANode * node) const
 		{
 			auto findIter = PDAMap.find(ruleName);
 			assert(findIter != PDAMap.end());
@@ -21,7 +21,7 @@ namespace ztl
 			result += L"O";
 			return result;
 		}
-		wstring LRNode::LogProductList(const GeneralLRMachine & LRMachine) const
+		wstring LRNode::LogProductList(const GeneralLRBuilder & LRMachine) const
 		{
 			wstring result;
 			for(auto&&iter : this->items)
@@ -40,7 +40,7 @@ namespace ztl
 			}
 			return result;
 		}
-		wstring ztl::general_parser::LRNode::LogLRNode(const GeneralLRMachine & LRMachine) const
+		wstring ztl::general_parser::LRNode::LogLRNode(const GeneralLRBuilder & LRMachine) const
 		{
 			wstring templateString = LR"(
 				NodeNumber: $<Number>
@@ -101,7 +101,7 @@ namespace ztl
 			}
 			return result;
 		}
-		wstring ztl::general_parser::ProductPosition::LogProduct(const GeneralLRMachine& LRMachine) const
+		wstring ztl::general_parser::ProductPosition::LogProduct(const GeneralLRBuilder& LRMachine) const
 		{
 			wstring templateString = LR"(
 				ruleName: $<RuleName>
@@ -125,7 +125,7 @@ namespace ztl
 			return result;
 		}
 		//Log
-		void GeneralLRMachine::LogItems(const wstring& fileName) const
+		void GeneralLRBuilder::LogItems(const wstring& fileName) const
 		{
 			wofstream output(fileName);
 			wstring result;
@@ -135,7 +135,7 @@ namespace ztl
 			}
 			output.write(result.c_str(), result.size());
 		}
-		wstring GeneralLRMachine::LogPDANode(const wstring & ruleName, PDANode * node) const
+		wstring GeneralLRBuilder::LogPDANode(const wstring & ruleName, PDANode * node) const
 		{
 			return machine->LogPDANode(ruleName, node);
 		}
@@ -190,7 +190,7 @@ namespace ztl
 			});
 			return result;
 		}
-		void LogGraphInfo(const wstring& fileName, PushDownAutoMachine& machine)
+		void LogGraphInfo(const wstring& fileName, GrammarBuilder& machine)
 		{
 			unordered_set<PDANode*>sign;
 			deque<PDANode*> queue;

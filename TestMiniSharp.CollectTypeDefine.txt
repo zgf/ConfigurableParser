@@ -1,0 +1,132 @@
+
+using MiniSharp.Network;
+using MiniSharp.IO;
+using MiniSharp.ValueType;
+using NewType = MiniSharp.IO.KeyType;
+namespace Test
+{
+	 namespace Value
+	{
+		public class Program
+		{
+			public readonly int a = 0;
+			public readonly string b = 0;
+			public char c = '0';
+			public double d = 1;
+			public bool e = true;
+			public bool Program = false;
+			public Program test = null;
+			public void Main(int a,double b,char c)
+			{
+				int ad = ab+ac;
+				int ce = a+b;
+				
+	c=b+ce;
+	a=Min(a,b);
+	continue;
+				break;
+	
+				const double aaa =0;
+				const readonly char g='0';
+				string ed=null;
+			
+				char cc;
+				Log e = new Log(5,2);
+				int a1=b2=c2=0;
+				int ds =cast(int) Min(3,6);
+				double ccx = a+Min(3,6)*c;
+				
+if(b)
+{
+
+}
+				
+				if(a==b)
+				{
+				
+				
+				}
+			else if(a==b)
+			{
+			}
+			else
+			{
+			
+			}
+				if(a==b)
+				{
+				
+				
+				}
+				else if(c==d)
+				{
+				
+				}
+				else
+				{
+				
+				}
+				for(int a3,b3=0;c<d;c+1,e+1)
+				{
+					int a =0;
+					{
+					}
+				}
+				switch(a)
+				{
+					case 1:
+					{
+						
+					}
+					break;
+					case 2:
+					{
+						
+					}
+					break;
+					default:
+					break;
+				}
+				
+				
+			}
+			
+			
+			public interface Pointer
+			{
+				public void Main(int a,double b,char c);
+				public void Main2(int a,double b,char c);
+			}
+			public enum ProgamEnum
+			{
+				Test1,
+				Test2,
+				Test3,
+			}
+			public class ProgramClass2
+			{
+				
+			}
+			public enum ProgamEnum2
+			{
+				Test1,
+				Test2,
+				Test3,
+			}
+			
+			public class ProgramClass
+			{
+				
+			}
+			public interface Pointer2
+			{
+				public void Main(int a,double b,char c);
+				public void Main(int a,double b,char c);
+			}
+		}
+	}
+
+
+}
+
+			

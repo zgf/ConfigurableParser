@@ -1,7 +1,6 @@
 #include "Include\stdafx.h"
-#include "Include\GeneralLALRParser.h"
+#include "Include\GeneralLRExecutor.h"
 #include "Include\SymbolManager.h"
-#include "..\Lib\ZTL\ztl_algorithm.h"
 namespace ztl
 {
 	namespace general_parser

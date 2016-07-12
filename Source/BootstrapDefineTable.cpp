@@ -543,7 +543,6 @@ namespace ztl
 
 						|
 						(
-
 							ztl::general_parser::GrammarSymbol(L"Type")[L"type"]
 							+
 							ztl::general_parser::GrammarSymbol(L"NAME")[L"name"] + 
@@ -794,7 +793,6 @@ namespace ztl
 						ztl::general_parser::GeneralRuleWriter()
 						.Name(L"ParserDecl")
 						.ReturnType(ztl::general_parser::Normal(L"GeneralTableDefine"))
-
 						|
 						(
 

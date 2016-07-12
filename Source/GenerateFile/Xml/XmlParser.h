@@ -15,7 +15,7 @@
 				using std::make_shared;
 				#include "..\..\Include\GeneralTableDefine.h"
 				#include "..\..\Include\GeneralTreeNode.h"
-				#include "..\..\Include\GeneralLALRParser.h"
+				#include "..\..\Include\GeneralLALRExecutor.h"
 				
 							namespace ztl
 							{
@@ -58,6 +58,7 @@ virtual void		Visit(Text* node) =0;
 
 				}
 				
+				
 			};
 			
 
@@ -75,6 +76,7 @@ virtual void		Visit(Text* node) =0;
 				}
 				
 				
+				
 			};
 			
 
@@ -90,6 +92,7 @@ virtual void		Visit(Text* node) =0;
 				{
 					visitor->Visit(this);
 				}
+				
 				
 				
 			};
@@ -110,6 +113,7 @@ wstring    value;
 				}
 				
 				
+				
 			};
 			
 
@@ -125,6 +129,7 @@ wstring    value;
 				{
 					visitor->Visit(this);
 				}
+				
 				
 				
 			};
@@ -147,6 +152,7 @@ vector<shared_ptr<Node>>    subNodes;
 				}
 				
 				
+				
 			};
 			
 
@@ -163,6 +169,7 @@ vector<shared_ptr<Attribute>>    attributes;
 				{
 					visitor->Visit(this);
 				}
+				
 				
 				
 			};
@@ -183,12 +190,13 @@ shared_ptr<Element>    rootElement;
 				}
 				
 				
+				
 			};
 			
 				shared_ptr<ztl::general_parser::GeneralTableDefine> BootStrapDefineTable();
 				
-			shared_ptr<void> GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser,ztl::general_parser::GeneralTreeNode* root);
-			shared_ptr<void>	GeneralHeterogeneousParserTree(ztl::general_parser::GeneralParserBase& parser);
+			shared_ptr<void> GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser,ztl::general_parser::GeneralTreeNode* root);
+			shared_ptr<void>	GenerateHeterogeneousParserTree(ztl::general_parser::GeneralLRExecutor& parser);
 			
 							}
 						 

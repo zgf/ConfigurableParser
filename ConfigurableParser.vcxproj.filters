@@ -77,6 +77,7 @@
     <Text Include="Doc\逻辑上各个功能模块的总体设计.txt">
       <Filter>Doc</Filter>
     </Text>
+    <Text Include="Source\GenerateFile\MiniSharp\backup.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
@@ -97,9 +98,6 @@
     <ClCompile Include="Source\GeneralAnalyze.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralPushDownAutoMachine.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GeneralPDAGraph.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
@@ -107,9 +105,6 @@
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GeneralParserLexer.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GeneralParserFile.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\GeneralSerialzeCoreModule.cpp">
@@ -130,19 +125,7 @@
     <ClCompile Include="Source\GeneralParserReflection.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GeneralPushDownMachineDatacpp.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GeneralLRMachine.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
     <ClCompile Include="Source\LogParser.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GeneralLALRParser.cpp">
-      <Filter>Source\Implement</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GeneralParserBase.cpp">
       <Filter>Source\Implement</Filter>
     </ClCompile>
     <ClCompile Include="Source\BootstrapDefineTable.cpp">
@@ -163,12 +146,33 @@
     <ClCompile Include="Source\GenerateFile\PureRegex\DFATableBuilder.cpp">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GenerateFile\PureRegex\GeneralLexer.cpp">
-      <Filter>Source\GenerateFile\PureRegex</Filter>
-    </ClCompile>
     <ClCompile Include="UnitTest\Source\TestCodeAnalyze.cpp" />
     <ClCompile Include="Source\GenerateFile\MiniSharp\MiniSharpParser.cpp" />
     <ClCompile Include="Source\GenerateFile\TestAssign\TestAssignParser.cpp" />
+    <ClCompile Include="Source\GeneralLALRExecutor.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralLRExecutor.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralGrammarBuilder.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralLRBuilder.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GeneralParserFileGenerator.cpp">
+      <Filter>Source\Implement</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GenerateFile\PureRegex\GeneralRegexLexer.cpp">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GenerateIRCodeGenModule.cpp" />
+    <ClCompile Include="Lib\ZTL\ztl_algorithm.cpp" />
+    <ClCompile Include="Source\GenerateFile\MiniSharp\SemanticAnalysis_CollectIdentifierSymbolDefine.cpp" />
+    <ClCompile Include="Source\GenerateFile\MiniSharp\SemanticAnalysis_MapIdentifierObjectToDefine.cpp" />
+    <ClCompile Include="Source\GenerateFile\MiniSharp\SemanticAnalysis_LLVMTypeObjectConstruct.cpp" />
+    <ClCompile Include="Source\GenerateFile\MiniSharp\SemanticAnalysis_VerificationTypeInference.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Include\GeneralTableDefine.h">
@@ -186,13 +190,7 @@
     <ClInclude Include="Source\Include\ParserSymbol.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Include\GeneralPushDownAutoMachine.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Include\GeneralTreeNode.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralParserFile.h">
       <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\GenerateFile\Json\JsonParser.h">
@@ -200,18 +198,6 @@
     </ClInclude>
     <ClInclude Include="Source\GenerateFile\Xml\XmlParser.h">
       <Filter>Source\GenerateFile\Xml</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralPushDownMachineData.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralLRMachine.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralLALRParser.h">
-      <Filter>Source\AInclude</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Include\GeneralParserBase.h">
-      <Filter>Source\AInclude</Filter>
     </ClInclude>
     <ClInclude Include="Source\GenerateFile\PureRegex\PureRegexParser.h">
       <Filter>Source\GenerateFile\PureRegex</Filter>
@@ -237,9 +223,6 @@
     <ClInclude Include="Source\GenerateFile\PureRegex\DFATableBuilder.h">
       <Filter>Source\GenerateFile\PureRegex</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GenerateFile\PureRegex\GeneralLexer.h">
-      <Filter>Source\GenerateFile\PureRegex</Filter>
-    </ClInclude>
     <ClInclude Include="UnitTest\TestGeneralLexer.h">
       <Filter>UnitTest</Filter>
     </ClInclude>
@@ -252,6 +235,30 @@
     <ClInclude Include="Lib\ZTL\ztl_pair_builder.hpp" />
     <ClInclude Include="Source\GenerateFile\MiniSharp\MiniSharpParser.h" />
     <ClInclude Include="Source\GenerateFile\TestAssign\TestAssignParser.h" />
+    <ClInclude Include="Source\Include\GeneralLALRExecutor.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralLRExecutor.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralGrammarBuilder.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralGrammarBuilderData.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralLRBuilder.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Include\GeneralParserFileGenerator.h">
+      <Filter>Source\AInclude</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\PureRegex\GeneralRegexLexer.h">
+      <Filter>Source\GenerateFile\PureRegex</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GenerateFile\MiniSharp\MiniSharpParserIRCodeGen.h" />
+    <ClInclude Include="Source\GenerateFile\MiniSharp\MiniSharpParserSymbol.hpp" />
+    <ClInclude Include="Source\GenerateFile\MiniSharp\MiniSharpSymbolManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
